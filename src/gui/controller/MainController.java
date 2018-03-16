@@ -6,33 +6,30 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import com.synthbot.jasiohost.AsioChannel;
-
 import control.ASIOController;
 import data.Channel;
 import gui.utilities.FXMLUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ListView.EditEvent;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import main.Main;
 
 public class MainController implements Initializable {
@@ -41,11 +38,8 @@ public class MainController implements Initializable {
 	private static final String		TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
 	private static final Logger		LOG				= Logger.getLogger(MainController.class);
 	private static MainController	instance;
-
 	@FXML
 	private ToggleButton			toggleFFT, toggleCue;
-
-
 	@FXML
 	private BorderPane				root;
 	@FXML
@@ -56,15 +50,11 @@ public class MainController implements Initializable {
 	private MenuItem				closeMenu;
 	@FXML
 	private ListView<Channel>		channelList;
-
-
 	@FXML
 	private CheckMenuItem			menuShowCue, menuStartFFT;
-
 	@FXML
 	private Label					lblDriver, lblLatency;
 	private ASIOController			controller;
-
 	private FFTController			fftController;
 	private TimeKeeperController	timeKeeperController;
 
@@ -80,7 +70,6 @@ public class MainController implements Initializable {
 		initFullScreen();
 		initTimekeeper();
 		initChart();
-
 	}
 
 	private void initChart() {
@@ -99,6 +88,7 @@ public class MainController implements Initializable {
 		if (p != null) {
 			timeKeeperController = (TimeKeeperController) FXMLUtil.getController();
 			root.setRight(p);
+			timeKeeperController.show(toggleCue.selectedProperty().get());
 		} else {
 			LOG.warn("Unable to load TimeKeeper");
 		}
@@ -114,19 +104,35 @@ public class MainController implements Initializable {
 		});
 	}
 
-
 	private void initChannelList() {
-		channelList.setCellFactory(e -> new ListCell<Channel>() {
+		channelList.setCellFactory(e -> {
+			TextFieldListCell<Channel> cell = new TextFieldListCell<Channel>() {
 
-			@Override
-			public void updateItem(Channel item, boolean empty) {
-				super.updateItem(item, empty);
-				if (item == null || empty) {
-					setText(null);
-				} else {
-					setText(item.getName());
+				@Override
+				public void updateItem(Channel item, boolean empty) {
+					super.updateItem(item, empty);
+					if (item == null || empty) {
+						setText(null);
+					} else {
+						setText(item.getName());
+					}
 				}
-			}
+			};
+			cell.setConverter(new StringConverter<Channel>() {
+
+				@Override
+				public String toString(Channel object) {
+					return object.getName();
+				}
+
+				@Override
+				public Channel fromString(String string) {
+					Channel channel = cell.getItem();
+					channel.setName(string);
+					return channel;
+				}
+			});
+			return cell;
 		});
 		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Channel>() {
 
@@ -137,7 +143,6 @@ public class MainController implements Initializable {
 		});
 		// Edit channel list
 		channelList.setEditable(true);
-
 	}
 
 	private void initMenu() {
@@ -192,21 +197,23 @@ public class MainController implements Initializable {
 		controller = new ASIOController(ioName);
 		fftController.setDriver(controller);
 		channelList.getItems().setAll(controller.getInputList());
+		timeKeeperController.setChannels(controller.getInputList());
 		lblDriver.setText(ioName);
 		lblLatency.setText(controller.getLatency() + " ms");
+		if (channelList.getItems().size() > 0) {
+			channelList.getSelectionModel().select(0);
+		}
 	}
 
 	public void setChannelList(List<Channel> list) {
 		channelList.getItems().setAll(list);
 	}
 
-
 	@FXML
 	private void toggleFFT(ActionEvent e) {
 		fftController.play(!fftController.isPlaying());
 		toggleFFT.setSelected(fftController.isPlaying());
 	}
-
 
 	public void setSelectedChannel(Channel channel) {
 		channelList.getSelectionModel().select(channel);

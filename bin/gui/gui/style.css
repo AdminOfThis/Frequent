@@ -1,6 +1,6 @@
 .root {
     -fx-base: rgba(60, 63, 65, 255); // dark
-	-fx-accent: #adff2f;
+	-fx-accent: #7dff2f;
 	-fx-focus-color: derive(-fx-accent, 50%);
 }
 
@@ -9,7 +9,8 @@
 .default-color0.chart-series-area-fill { -fx-fill: linear-gradient(
         to bottom,
         -fx-accent,
-        derive(-fx-accent, -50%)
+        derive(-fx-accent, -50%),
+		red
     ); }
 	
 	

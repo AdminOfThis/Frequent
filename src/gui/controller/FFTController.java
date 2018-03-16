@@ -20,6 +20,8 @@ import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -29,17 +31,19 @@ import javafx.util.Duration;
 public class FFTController implements Initializable {
 
 	private static final Logger		LOG				= Logger.getLogger(FFTController.class);
-
 	private static final int		X_MIN			= 25;
 	private static final int		X_MAX			= 20000;
-	private static final int		REFRESH_RATE	= 50;
-	
+	private static final int		REFRESH_RATE	= 25;
 	@FXML
 	private HBox					chartRoot;
 	@FXML
 	private StackPane				vuPane;
 	@FXML
-	private Pane					vuRmsPane, vuPeakPane;
+	private Pane					vuPeakPane, vuLastPeakPane;
+	@FXML
+	private Label					lblPeak;
+	@FXML
+	private AnchorPane				clippingPane;
 	private XYChart<Number, Number>	chart;
 	private Timeline				line;
 	private ASIOController			controller;
@@ -56,8 +60,16 @@ public class FFTController implements Initializable {
 		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
 			// System.out.println("Updating Peaks");
 			// System.out.println(controller.getPeak());
-			vuRmsPane.setPrefHeight(vuPane.getHeight() * controller.getPeak());
-			vuPeakPane.setPrefHeight(vuPane.getHeight() * controller.getLastPeak());
+			double peakdB = percentToDB(controller.getPeak() * 1000.0);
+			vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + 60.0) / 60.0);
+			double lastPeakdB = percentToDB(controller.getLastPeak() * 1000.0);
+			vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (lastPeakdB + 60.0) / 60.0);
+			lblPeak.setText(Math.round(peakdB * 10.0) / 10.0 + "");
+			if (controller.getPeak() >= 0.99) {
+				clippingPane.setStyle("-fx-background-color: red");
+			} else {
+				clippingPane.setStyle("");
+			}
 			double[][] map = controller.getSpectrumMap();
 			// long before = System.currentTimeMillis();
 			// System.out.println("Updating");
@@ -107,13 +119,16 @@ public class FFTController implements Initializable {
 		ValueAxis<Number> logAxis = new LogarithmicAxis(X_MIN, X_MAX);
 		chart = new NegativeBackgroundAreaChart<>(logAxis, yaxis);
 		chart.setAnimated(false);
-		// chart.setCreateSymbols(false);
+		((NegativeBackgroundAreaChart<Number, Number>) chart).setCreateSymbols(false);
 		chart.setLegendVisible(false);
 		chart.setLegendSide(Side.RIGHT);
+		chart.setHorizontalZeroLineVisible(false);
 		chartRoot.getChildren().add(chart);
 		HBox.setHgrow(chart, Priority.ALWAYS);
 		// chart.setPrefHeight(100.0);
 		// chart.setPrefWidth(200.0);
+		clippingPane.prefHeightProperty().bind(logAxis.heightProperty().add(12.0));
+		clippingPane.minHeightProperty().bind(logAxis.heightProperty().add(12.0));
 	}
 
 	public void setDriver(ASIOController driver) {

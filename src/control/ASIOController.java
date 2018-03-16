@@ -25,8 +25,7 @@ public class ASIOController implements AsioDriverListener {
 	private int						bufferSize	= 1024;
 	private double					sampleRate;
 	private AsioChannel				activeChannel;
-	float							lastPeak	= 0;
-	float							peak		= 0;
+	float							lastPeak	= 0, peak = 0, rms = 0;
 	// FFT
 	private float[]					output;
 	private int						bufferCount;
@@ -35,7 +34,6 @@ public class ASIOController implements AsioDriverListener {
 	private double[][]				fftBuffer;
 	private static int				fftBufferSize;
 	private double[][]				spectrumMap;
-
 	private ArrayList<Channel>		channelList;
 
 	public static List<String> getInputDevices() {
@@ -51,7 +49,8 @@ public class ASIOController implements AsioDriverListener {
 		instance = this;
 		try {
 			asioDriver = AsioDriver.getDriver(ioName);
-		} catch (AsioException e) {
+		}
+		catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -63,10 +62,10 @@ public class ASIOController implements AsioDriverListener {
 		// channels will be used
 		activeChannels = new HashSet<>();
 		// configure the ASIO driver to use the given channels
-		// for (int i = 0; i < asioDriver.getNumChannelsInput(); i++) {
-		// activeChannels.add(asioDriver.getChannelInput(i));
-		// }
-		activeChannels.add(asioDriver.getChannelInput(0));
+		for (int i = 0; i < asioDriver.getNumChannelsInput(); i++) {
+			activeChannels.add(asioDriver.getChannelInput(i));
+		}
+		// activeChannels.add(asioDriver.getChannelInput(0));
 		bufferSize = asioDriver.getBufferPreferredSize();
 		output = new float[bufferSize];
 		sampleRate = asioDriver.getSampleRate();
@@ -99,14 +98,13 @@ public class ASIOController implements AsioDriverListener {
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) {
-			return asioDriver.getNumChannelsInput();
-		}
+		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
 		return -1;
 	}
 
 	public List<Channel> getInputList() {
 		if (channelList == null) {
+			channelList = new ArrayList<>();
 			for (int i = 0; i < getNoOfInputs(); i++) {
 				channelList.add(new Channel(asioDriver.getChannelInput(i)));
 			}
@@ -116,7 +114,7 @@ public class ASIOController implements AsioDriverListener {
 
 	public void setActiveChannel(final AsioChannel channel) {
 		activeChannel = channel;
-		restartAudioAnalysis();
+		// restartAudioAnalysis();
 	}
 
 	private void restartAudioAnalysis() {
@@ -161,7 +159,7 @@ public class ASIOController implements AsioDriverListener {
 	@Override
 	public void bufferSwitch(long sampleTime, long samplePosition, Set<AsioChannel> channels) {
 		for (AsioChannel channel : channels) {
-			if (channel.isInput() && channel.isActive() && channel.getChannelIndex() == 0) {
+			if (channel.isInput() && channel.isActive() && channel.getChannelIndex() == activeChannel.getChannelIndex()) {
 				channel.read(output);
 				calculatePeaks(output);
 				fftThis();
@@ -249,9 +247,9 @@ public class ASIOController implements AsioDriverListener {
 			if (abs > peak) {
 				peak = abs;
 			}
-			// rms += Math.abs(sample);
+			rms += Math.abs(sample);
 		}
-		// rms = rms / inputArray.length;
+		rms = rms / inputArray.length;
 		if (lastPeak > peak) {
 			lastPeak = lastPeak * 0.975f;
 		} else {
@@ -265,6 +263,10 @@ public class ASIOController implements AsioDriverListener {
 
 	public float getLastPeak() {
 		return lastPeak;
+	}
+
+	public float getRms() {
+		return rms;
 	}
 
 	// taken from Bachelor thesis at
