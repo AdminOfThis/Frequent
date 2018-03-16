@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import org.apache.log4j.Logger;
+
 import control.ASIOController;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeBackgroundAreaChart;
@@ -26,9 +28,12 @@ import javafx.util.Duration;
 
 public class FFTController implements Initializable {
 
+	private static final Logger		LOG				= Logger.getLogger(FFTController.class);
+
 	private static final int		X_MIN			= 25;
 	private static final int		X_MAX			= 20000;
 	private static final int		REFRESH_RATE	= 50;
+	
 	@FXML
 	private HBox					chartRoot;
 	@FXML
@@ -41,6 +46,7 @@ public class FFTController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		LOG.info("Loaidng FFT Chart");
 		initChart();
 		initTimeline();
 	}

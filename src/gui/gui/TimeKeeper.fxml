@@ -18,7 +18,7 @@
 
 <VBox fx:id="paneCue" alignment="CENTER" minWidth="300.0" prefWidth="300.0" spacing="5.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.TimeKeeperController">
    <children>
-      <Label fx:id="lblTime" style="-fx-font-size: 30;" text="00:00" VBox.vgrow="NEVER" />
+      <Label fx:id="lblTime" style="-fx-font-size: 30;" text="--:--" VBox.vgrow="NEVER" />
       <VBox fx:id="piePane">
          <children>
             <PieChart fx:id="timeChart" clockwise="false" labelLineLength="5.0" labelsVisible="false" legendSide="RIGHT" legendVisible="false" startAngle="90.0" />

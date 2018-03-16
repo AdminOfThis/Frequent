@@ -5,10 +5,9 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import com.synthbot.jasiohost.AsioChannel;
-
 import control.ASIOController;
 import control.TimeKeeper;
+import data.Channel;
 import data.Cue;
 import gui.utilities.DoughnutChart;
 import javafx.animation.KeyFrame;
@@ -60,7 +59,7 @@ public class TimeKeeperController implements Initializable {
 	@FXML
 	private TextField					txtCue, txtCueName;
 	@FXML
-	private ChoiceBox<AsioChannel>		choiceCueChannel;
+	private ChoiceBox<Channel>			choiceCueChannel;
 	@FXML
 	private Label						lblTime;
 
@@ -74,6 +73,7 @@ public class TimeKeeperController implements Initializable {
 	}
 
 	private void initTimeKeeper() {
+		LOG.info("Loading TimeKeeper");
 		piePane.getChildren().clear();
 		timeChart = new DoughnutChart(FXCollections.observableArrayList());
 		piePane.getChildren().add(timeChart);
@@ -112,7 +112,7 @@ public class TimeKeeperController implements Initializable {
 		colChannel.setCellValueFactory(e -> {
 			String result = "";
 			if (e.getValue().getChannelToSelect() != null) {
-				result = e.getValue().getChannelToSelect().getChannelName();
+				result = e.getValue().getChannelToSelect().getName();
 			}
 			return new SimpleStringProperty(result);
 		});
