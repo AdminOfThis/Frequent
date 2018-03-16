@@ -192,6 +192,7 @@ public class TimeKeeperController implements Initializable {
 	@FXML
 	private void toggleTimerStart(ActionEvent e) {
 		if (btnStart.isSelected()) {
+			LOG.info("Starting timer");
 			txtCueName.setDisable(true);
 			choiceCueChannel.setDisable(true);
 			lblTime.setText("00:00");
@@ -229,6 +230,7 @@ public class TimeKeeperController implements Initializable {
 				MainController.getInstance().setSelectedChannel(timeKeeper.getActiveCue().getChannelToSelect());
 			}
 		} else {
+			LOG.info("Stopping timer");
 			txtCueName.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
 			choiceCueChannel.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
 			timeKeeperLine.stop();
@@ -243,6 +245,7 @@ public class TimeKeeperController implements Initializable {
 	@FXML
 	private void round(ActionEvent e) {
 		if (timeKeeper != null) {
+			LOG.info("Jump to next cue ");
 			timeKeeper.round();
 			timeKeeper.getActiveCue();
 			cueTable.getItems().setAll(timeKeeper.getCueList());
