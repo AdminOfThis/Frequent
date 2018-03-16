@@ -9,45 +9,28 @@ import org.apache.log4j.Logger;
 import com.synthbot.jasiohost.AsioChannel;
 
 import control.ASIOController;
-import control.TimeKeeper;
-import data.Cue;
-import gui.utilities.DoughnutChart;
+import data.Channel;
 import gui.utilities.FXMLUtil;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.PieChart.Data;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import main.Main;
 
 public class MainController implements Initializable {
@@ -70,7 +53,7 @@ public class MainController implements Initializable {
 	@FXML
 	private MenuItem				closeMenu;
 	@FXML
-	private ListView<AsioChannel>	channelList;
+	private ListView<Channel>		channelList;
 
 
 	@FXML
@@ -131,23 +114,23 @@ public class MainController implements Initializable {
 
 
 	private void initChannelList() {
-		channelList.setCellFactory(e -> new ListCell<AsioChannel>() {
+		channelList.setCellFactory(e -> new ListCell<Channel>() {
 
 			@Override
-			public void updateItem(AsioChannel item, boolean empty) {
+			public void updateItem(Channel item, boolean empty) {
 				super.updateItem(item, empty);
 				if (item == null || empty) {
 					setText(null);
 				} else {
-					setText(item.getChannelName());
+					setText(item.getName());
 				}
 			}
 		});
-		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AsioChannel>() {
+		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Channel>() {
 
 			@Override
-			public void changed(ObservableValue<? extends AsioChannel> observable, AsioChannel oldValue, AsioChannel newValue) {
-				controller.setActiveChannel(newValue);
+			public void changed(ObservableValue<? extends Channel> observable, Channel oldValue, Channel newValue) {
+				controller.setActiveChannel(newValue.getChannel());
 			}
 		});
 	}
@@ -208,7 +191,7 @@ public class MainController implements Initializable {
 		lblLatency.setText(controller.getLatency() + " ms");
 	}
 
-	public void setChannelList(List<AsioChannel> list) {
+	public void setChannelList(List<Channel> list) {
 		channelList.getItems().setAll(list);
 	}
 
@@ -220,7 +203,7 @@ public class MainController implements Initializable {
 	}
 
 
-	public void setSelectedChannel(AsioChannel channel) {
+	public void setSelectedChannel(Channel channel) {
 		channelList.getSelectionModel().select(channel);
 	}
 }

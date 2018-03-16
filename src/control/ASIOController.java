@@ -13,6 +13,7 @@ import com.synthbot.jasiohost.AsioDriver;
 import com.synthbot.jasiohost.AsioDriverListener;
 import com.synthbot.jasiohost.AsioException;
 
+import data.Channel;
 import main.Main;
 
 public class ASIOController implements AsioDriverListener {
@@ -35,6 +36,8 @@ public class ASIOController implements AsioDriverListener {
 	private static int				fftBufferSize;
 	private double[][]				spectrumMap;
 
+	private ArrayList<Channel>		channelList;
+
 	public static List<String> getInputDevices() {
 		return AsioDriver.getDriverNames();
 	}
@@ -48,8 +51,7 @@ public class ASIOController implements AsioDriverListener {
 		instance = this;
 		try {
 			asioDriver = AsioDriver.getDriver(ioName);
-		}
-		catch (AsioException e) {
+		} catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -57,7 +59,8 @@ public class ASIOController implements AsioDriverListener {
 			Main.quit();
 		}
 		asioDriver.addAsioDriverListener(this);
-		// create a Set of AsioChannels, defining which input and output channels will be used
+		// create a Set of AsioChannels, defining which input and output
+		// channels will be used
 		activeChannels = new HashSet<>();
 		// configure the ASIO driver to use the given channels
 		// for (int i = 0; i < asioDriver.getNumChannelsInput(); i++) {
@@ -82,7 +85,7 @@ public class ASIOController implements AsioDriverListener {
 		bufferCount = 1;
 		// fftBufferSize = 16384;
 		fftBufferSize = 2048;
-// fft = new DoubleFFT_1D(fftBufferSize);
+		// fft = new DoubleFFT_1D(fftBufferSize);
 		fft = new DoubleDCT_1D(fftBufferSize);
 		fftBuffer = new double[bufferCount][fftBufferSize];
 		index = new int[bufferCount];
@@ -96,18 +99,19 @@ public class ASIOController implements AsioDriverListener {
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
+		if (asioDriver != null) {
+			return asioDriver.getNumChannelsInput();
+		}
 		return -1;
 	}
 
-	public List<AsioChannel> getInputList() {
-		ArrayList<AsioChannel> result = new ArrayList<>();
-		if (asioDriver != null) {
+	public List<Channel> getInputList() {
+		if (channelList == null) {
 			for (int i = 0; i < getNoOfInputs(); i++) {
-				result.add(asioDriver.getChannelInput(i));
+				channelList.add(new Channel(asioDriver.getChannelInput(i)));
 			}
 		}
-		return result;
+		return channelList;
 	}
 
 	public void setActiveChannel(final AsioChannel channel) {
@@ -117,9 +121,12 @@ public class ASIOController implements AsioDriverListener {
 
 	private void restartAudioAnalysis() {
 		if (activeChannel != null) {
-			// JVMAudioInputStream stream = new JVMAudioInputStream(audioStream);
+			// JVMAudioInputStream stream = new
+			// JVMAudioInputStream(audioStream);
 			// dispatcher = new AudioDispatcher(stream, 864, overlap);
-			// dispatcher.addAudioProcessor(new PitchProcessor(PitchEstimationAlgorithm.YIN, (float) sampleRate, bufferSize, this));
+			// dispatcher.addAudioProcessor(new
+			// PitchProcessor(PitchEstimationAlgorithm.YIN, (float) sampleRate,
+			// bufferSize, this));
 			// dispatcher.addAudioProcessor(fftProcessor);
 			// run the dispatcher (on a new thread).
 			// new Thread(dispatcher, "Audio dispatching").start();
@@ -175,14 +182,16 @@ public class ASIOController implements AsioDriverListener {
 		for (int i = 0; i < bufferCount; i++) {
 			if (index[i] == fftBufferSize) {
 				fftBuffer[i] = applyHannWindow(fftBuffer[i]);
-// fft.realForward(fftBuffer[i]);
+				// fft.realForward(fftBuffer[i]);
 				fft.forward(fftBuffer[i], false);
-// double[] fftData = fftAbs(fftBuffer[i]);
+				// double[] fftData = fftAbs(fftBuffer[i]);
 				double[] fftData = fftBuffer[i];
 				// int baseFrequencyIndex = getBaseFrequencyIndex(fftData);
-// int baseFrequencyIndex = getBaseFrequencyIndexHPS(fftData);
-// double baseFrequency = getFrequencyForIndex(baseFrequencyIndex, fftData.length, (int) sampleRate) /2;
-// System.out.println("Base " + baseFrequency);
+				// int baseFrequencyIndex = getBaseFrequencyIndexHPS(fftData);
+				// double baseFrequency =
+				// getFrequencyForIndex(baseFrequencyIndex, fftData.length,
+				// (int) sampleRate) /2;
+				// System.out.println("Base " + baseFrequency);
 				spectrumMap = getSpectrum(fftData);
 				// controller.updateText(baseFrequency);
 				index[i] = 0;
@@ -213,19 +222,21 @@ public class ASIOController implements AsioDriverListener {
 				maxInd = i;
 			}
 		}
-		// Interpolate (https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19#file-hps-java-L144)
+		// Interpolate
+		// (https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19#file-hps-java-L144)
 		// not necessary, does not help, gives the same results
-// double mid = spectrum[maxInd];
-// double left = spectrum[maxInd- 1];
-// double right = spectrum[maxInd + 1];
-// double shift = 0.5f*(right-left) / ( 2.0f*mid - left - right );
-// maxInd = (int) Math.round(maxInd + shift);
-// maybe useful can be quadratic interpolation:
-// http://musicweb.ucsd.edu/~trsmyth/analysis/Quadratic_interpolation.html
+		// double mid = spectrum[maxInd];
+		// double left = spectrum[maxInd- 1];
+		// double right = spectrum[maxInd + 1];
+		// double shift = 0.5f*(right-left) / ( 2.0f*mid - left - right );
+		// maxInd = (int) Math.round(maxInd + shift);
+		// maybe useful can be quadratic interpolation:
+		// http://musicweb.ucsd.edu/~trsmyth/analysis/Quadratic_interpolation.html
 		return maxInd;
 	}
 
-	// taken from https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19, author Andreas Kühntopf
+	// taken from https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19,
+	// author Andreas Kühntopf
 	private float getFrequencyForIndex(int index, int size, int rate) {
 		return (float) index * (float) rate / size;
 	}
@@ -256,7 +267,8 @@ public class ASIOController implements AsioDriverListener {
 		return lastPeak;
 	}
 
-	// taken from Bachelor thesis at https://www.vutbr.cz/studium/zaverecne-prace?zp_id=88462
+	// taken from Bachelor thesis at
+	// https://www.vutbr.cz/studium/zaverecne-prace?zp_id=88462
 	public double[] applyHannWindow(double[] input) {
 		double[] out = new double[input.length];
 		for (int i = 0; i < input.length; i++) {
