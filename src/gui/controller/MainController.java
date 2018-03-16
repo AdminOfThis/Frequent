@@ -134,6 +134,7 @@ public class MainController implements Initializable {
 			});
 			return cell;
 		});
+		channelList.setOnEditCommit(e -> timeKeeperController.setChannels(channelList.getItems()));
 		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Channel>() {
 
 			@Override
