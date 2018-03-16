@@ -140,6 +140,9 @@ public class MainController implements Initializable {
 			@Override
 			public void changed(ObservableValue<? extends Channel> observable, Channel oldValue, Channel newValue) {
 				controller.setActiveChannel(newValue.getChannel());
+				if (newValue != null) {
+					LOG.info("Switching to channel " + newValue.getName());
+				}
 			}
 		});
 		// Edit channel list
