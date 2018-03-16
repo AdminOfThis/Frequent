@@ -21,25 +21,25 @@
       <Label fx:id="lblTime" style="-fx-font-size: 30;" text="--:--" VBox.vgrow="NEVER" />
       <VBox fx:id="piePane">
          <children>
-            <PieChart fx:id="timeChart" clockwise="false" labelLineLength="5.0" labelsVisible="false" legendSide="RIGHT" legendVisible="false" startAngle="90.0" />
+            <PieChart fx:id="timeChart" clockwise="false" labelLineLength="5.0" labelsVisible="false" legendSide="RIGHT" legendVisible="false" startAngle="90.0" VBox.vgrow="SOMETIMES" />
          </children>
       </VBox>
-      <GridPane hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">
+      <GridPane hgap="5.0" vgap="5.0" VBox.vgrow="NEVER">
          <columnConstraints>
             <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="50.0" />
             <ColumnConstraints hgrow="ALWAYS" />
          </columnConstraints>
          <rowConstraints>
-            <RowConstraints vgrow="SOMETIMES" />
-            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints fillHeight="false" vgrow="NEVER" />
+            <RowConstraints fillHeight="false" vgrow="NEVER" />
          </rowConstraints>
          <children>
             <Label text="Name" />
-            <TextField fx:id="txtCueName" GridPane.columnIndex="1" />
+            <TextField fx:id="txtCueName" disable="true" GridPane.columnIndex="1" />
             <Label text="Channel" GridPane.rowIndex="1" />
             <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
-                  <ChoiceBox fx:id="choiceCueChannel" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                  <ChoiceBox fx:id="choiceCueChannel" disable="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                </children>
             </AnchorPane>
          </children>
