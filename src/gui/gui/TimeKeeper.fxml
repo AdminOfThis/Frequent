@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="paneCue" alignment="CENTER" minWidth="300.0" prefWidth="300.0" spacing="5.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.TimeKeeperController">
+<VBox fx:id="paneCue" alignment="CENTER" minWidth="300.0" prefWidth="300.0" spacing="5.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.TimeKeeperController">
    <children>
       <Label fx:id="lblTime" style="-fx-font-size: 30;" text="--:--" VBox.vgrow="NEVER" />
       <VBox fx:id="piePane">
@@ -46,13 +46,10 @@
       </GridPane>
       <TableView fx:id="cueTable" VBox.vgrow="SOMETIMES">
          <columns>
-            <TableColumn fx:id="colName" editable="false" minWidth="-1.0" prefWidth="160.0" sortable="false" text="Name" />
-            <TableColumn fx:id="colTime" editable="false" minWidth="-1.0" prefWidth="45.0" resizable="false" sortable="false" text="Time" />
-            <TableColumn fx:id="colChannel" editable="false" minWidth="-1.0" prefWidth="89.0" sortable="false" text="Channel" />
+            <TableColumn fx:id="colName" editable="false" minWidth="-1.0" prefWidth="125.0" text="Name" />
+            <TableColumn fx:id="colTime" editable="false" minWidth="-1.0" prefWidth="45.0" resizable="false" text="Time" />
+            <TableColumn fx:id="colChannel" editable="false" minWidth="-1.0" prefWidth="125.0" text="Channel" />
          </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
       </TableView>
       <HBox spacing="5.0">
          <children>

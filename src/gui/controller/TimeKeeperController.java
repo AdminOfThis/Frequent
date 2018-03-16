@@ -1,11 +1,11 @@
 package gui.controller;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import control.ASIOController;
 import control.TimeKeeper;
 import data.Channel;
 import data.Cue;
@@ -26,7 +26,6 @@ import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -35,19 +34,17 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
 
 public class TimeKeeperController implements Initializable {
 
 	private static final Logger			LOG	= Logger.getLogger(TimeKeeperController.class);
-
 	@FXML
 	private Parent						paneCue;
 	@FXML
 	private VBox						piePane;
 	@FXML
 	private PieChart					timeChart;
-	@FXML
-	private MenuItem					menuCueRound;
 	@FXML
 	private Button						btnTime;
 	@FXML
@@ -62,14 +59,12 @@ public class TimeKeeperController implements Initializable {
 	private ChoiceBox<Channel>			choiceCueChannel;
 	@FXML
 	private Label						lblTime;
-
 	private TimeKeeper					timeKeeper;
 	private Timeline					timeKeeperLine;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initTimeKeeper();
-
 	}
 
 	private void initTimeKeeper() {
@@ -78,7 +73,6 @@ public class TimeKeeperController implements Initializable {
 		timeChart = new DoughnutChart(FXCollections.observableArrayList());
 		piePane.getChildren().add(timeChart);
 		timeKeeper = new TimeKeeper();
-		menuCueRound.disableProperty().bind(btnStart.selectedProperty().not());
 		btnTime.disableProperty().bind(btnStart.selectedProperty().not());
 		btnStart.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
@@ -128,8 +122,19 @@ public class TimeKeeperController implements Initializable {
 			}
 			return new SimpleStringProperty(result);
 		});
+		choiceCueChannel.setConverter(new StringConverter<Channel>() {
+
+			@Override
+			public String toString(Channel object) {
+				return object.getName();
+			}
+
+			@Override
+			public Channel fromString(String string) {
+				return null;
+			}
+		});
 		// EDIT
-		choiceCueChannel.getItems().setAll(ASIOController.getInstance().getInputList());
 		cueTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Cue>() {
 
 			@Override
@@ -153,6 +158,17 @@ public class TimeKeeperController implements Initializable {
 			}
 			cueTable.refresh();
 		});
+		choiceCueChannel.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Channel>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Channel> observable, Channel oldValue, Channel newValue) {
+				Cue cue = cueTable.getSelectionModel().getSelectedItem();
+				if (cue != null) {
+					cue.setChannelToSelect(newValue);
+				}
+				cueTable.refresh();
+			}
+		});
 		// Spacebar
 		// paneCue.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
 		// System.out.println("Test");
@@ -163,6 +179,10 @@ public class TimeKeeperController implements Initializable {
 			}
 		});
 		btnTime.disableProperty().bind(btnStart.selectedProperty().not());
+	}
+
+	public void setChannels(List<Channel> list) {
+		choiceCueChannel.getItems().setAll(list);
 	}
 
 	@FXML
@@ -201,6 +221,9 @@ public class TimeKeeperController implements Initializable {
 			timeKeeperLine.playFromStart();
 			cueTable.getItems().setAll(timeKeeper.getCueList());
 			cueTable.getSelectionModel().select(0);
+			if (timeKeeper.getActiveCue().getChannelToSelect() != null) {
+				MainController.getInstance().setSelectedChannel(timeKeeper.getActiveCue().getChannelToSelect());
+			}
 		} else {
 			txtCueName.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
 			choiceCueChannel.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
@@ -209,11 +232,9 @@ public class TimeKeeperController implements Initializable {
 		}
 	}
 
-
 	public void timerToggle() {
 		toggleTimerStart(new ActionEvent());
 	}
-
 
 	@FXML
 	private void round(ActionEvent e) {
@@ -224,7 +245,6 @@ public class TimeKeeperController implements Initializable {
 			cueTable.getSelectionModel().select(timeKeeper.getActiveIndex());
 			if (timeKeeper.getActiveCue().getChannelToSelect() != null) {
 				MainController.getInstance().setSelectedChannel(timeKeeper.getActiveCue().getChannelToSelect());
-
 			}
 		}
 	}
@@ -250,10 +270,9 @@ public class TimeKeeperController implements Initializable {
 
 	public void show(boolean value) {
 		paneCue.setVisible(value);
-		paneCue.setManaged(!value);
+		paneCue.setManaged(value);
 		if (value) {
 			cueTable.requestFocus();
 		}
 	}
-
 }
