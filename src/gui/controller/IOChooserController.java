@@ -38,7 +38,7 @@ public class IOChooserController implements Initializable {
 	@FXML
 	private void start(ActionEvent e) {
 		String selectedIO = listIO.getSelectionModel().getSelectedItem();
-		LOG.info("Loading Driver \"" + selectedIO + "\"");
+		LOG.info("Loading Main-Window with selected Driver \"" + selectedIO + "\"");
 		loadMain(selectedIO);
 		// }
 		Stage stage = null;
@@ -77,6 +77,7 @@ public class IOChooserController implements Initializable {
 			stage.setResizable(true);
 			stage.setScene(new Scene(p));
 			stage.show();
+			LOG.info("Main Window loaded");
 		}
 		catch (IOException e) {
 			LOG.error("Unable to load Main GUI", e);
