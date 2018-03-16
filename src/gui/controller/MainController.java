@@ -12,6 +12,7 @@ import control.ASIOController;
 import control.TimeKeeper;
 import data.Cue;
 import gui.utilities.DoughnutChart;
+import gui.utilities.FXMLUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
@@ -51,44 +52,36 @@ import main.Main;
 
 public class MainController implements Initializable {
 
-	private static final Logger			LOG	= Logger.getLogger(MainController.class);
-	private static MainController		instance;
+	private static final String		FFT_PATH		= "./../gui/FFT.fxml";
+	private static final String		TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
+	private static final Logger		LOG				= Logger.getLogger(MainController.class);
+	private static MainController	instance;
+
 	@FXML
-	private PieChart					timeChart;
+	private ToggleButton			toggleFFT, toggleCue;
+
+
 	@FXML
-	private ToggleButton				toggleStart, toggleCue, btnStart;
+	private BorderPane				root;
 	@FXML
-	private Button						btnTime;
+	private SplitPane				contentPane;
 	@FXML
-	private TextField					txtCue, txtCueName;
+	private Menu					driverMenu;
 	@FXML
-	private ChoiceBox<AsioChannel>		choiceCueChannel;
+	private MenuItem				closeMenu;
 	@FXML
-	private BorderPane					root;
+	private ListView<AsioChannel>	channelList;
+
+
 	@FXML
-	private SplitPane					contentPane;
+	private CheckMenuItem			menuShowCue, menuStartFFT;
+
 	@FXML
-	private Menu						driverMenu;
-	@FXML
-	private MenuItem					closeMenu, menuCueRound, menuTimerStart, menuCueDelete;
-	@FXML
-	private ListView<AsioChannel>		channelList;
-	@FXML
-	private TableView<Cue>				cueTable;
-	@FXML
-	private TableColumn<Cue, String>	colName, colTime, colChannel;
-	@FXML
-	private CheckMenuItem				menuShowCue, menuStartFFT;
-	@FXML
-	private Parent						paneCue;
-	@FXML
-	private VBox						piePane;
-	@FXML
-	private Label						lblDriver, lblLatency, lblTime;
-	private ASIOController				controller;
-	private TimeKeeper					timeKeeper;
-	private Timeline					timeKeeperLine;
-	private FFTController				fftcontroller;
+	private Label					lblDriver, lblLatency;
+	private ASIOController			controller;
+
+	private FFTController			fftController;
+	private TimeKeeperController	timeKeeperController;
 
 	public static MainController getInstance() {
 		return instance;
@@ -99,21 +92,30 @@ public class MainController implements Initializable {
 		instance = this;
 		initMenu();
 		initChannelList();
-		initTimekeeper();
 		initFullScreen();
+		initTimekeeper();
 		initChart();
+
 	}
 
 	private void initChart() {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("./../gui/FFT.fxml"));
-			Parent p = loader.load();
-			fftcontroller = loader.getController();
-			fftcontroller.setDriver(controller);
+		Parent p = FXMLUtil.loadFXML(FFT_PATH);
+		if (p != null) {
+			fftController = (FFTController) FXMLUtil.getController();
+			fftController.setDriver(controller);
 			contentPane.getItems().add(0, p);
+		} else {
+			LOG.warn("Unable to load FFT Chart");
 		}
-		catch (Exception e) {
-			LOG.error("Unable to load FFT Chart", e);
+	}
+
+	private void initTimekeeper() {
+		Parent p = FXMLUtil.loadFXML(TIMEKEEPER_PATH);
+		if (p != null) {
+			timeKeeperController = (TimeKeeperController) FXMLUtil.getController();
+			root.setRight(p);
+		} else {
+			LOG.warn("Unable to load TimeKeeper");
 		}
 	}
 
@@ -127,97 +129,6 @@ public class MainController implements Initializable {
 		});
 	}
 
-	private void initTimekeeper() {
-		piePane.getChildren().clear();
-		timeChart = new DoughnutChart(FXCollections.observableArrayList());
-		piePane.getChildren().add(timeChart);
-		timeKeeper = new TimeKeeper();
-		menuCueRound.disableProperty().bind(btnStart.selectedProperty().not());
-		btnTime.disableProperty().bind(btnStart.selectedProperty().not());
-		btnStart.selectedProperty().addListener(new ChangeListener<Boolean>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				if (newValue) {
-					btnStart.setText("Stop");
-					if (!cueTable.getItems().isEmpty()) {
-						cueTable.getSelectionModel().select(0);
-					}
-					cueTable.requestFocus();
-				} else {
-					btnStart.setText("Start");
-				}
-			}
-		});
-		txtCue.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent event) {
-				if (event.getCode() == KeyCode.ENTER) {
-					if (timeKeeper != null) {
-						timeKeeper.addCue(new Cue(txtCue.getText().trim()));
-						cueTable.getItems().setAll(timeKeeper.getCueList());
-						txtCue.clear();
-					}
-				}
-			}
-		});
-		colName.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getName()));
-		colChannel.setCellValueFactory(e -> {
-			String result = "";
-			if (e.getValue().getChannelToSelect() != null) {
-				result = e.getValue().getChannelToSelect().getChannelName();
-			}
-			return new SimpleStringProperty(result);
-		});
-		colTime.setStyle("-fx-alignment: CENTER;");
-		colTime.setCellValueFactory(e -> {
-			long time = e.getValue().getTime();
-			String result = "--:--";
-			if (time > 0) {
-				time = time / 1000;
-				int mins = (int) (time / 60);
-				int secs = (int) (time % 60);
-				result = String.format("%02d", mins) + ":" + String.format("%02d", secs);
-			}
-			return new SimpleStringProperty(result);
-		});
-		// EDIT
-		choiceCueChannel.setItems(channelList.getItems());
-		cueTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Cue>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Cue> observable, Cue oldValue, Cue newValue) {
-				txtCueName.setDisable(newValue == null || btnStart.isSelected());
-				choiceCueChannel.setDisable(newValue == null || btnStart.isSelected());
-				if (newValue == null) {
-					txtCueName.setText(null);
-					choiceCueChannel.getSelectionModel().select(-1);
-				} else {
-					txtCueName.setText(newValue.getName());
-					choiceCueChannel.getSelectionModel().select(newValue.getChannelToSelect());
-				}
-			}
-		});
-		txtCueName.setOnKeyPressed(e -> {
-			if (e.getCode() == KeyCode.ENTER) {
-				cueTable.getSelectionModel().getSelectedItem().setName(txtCueName.getText());
-			} else if (e.getCode() == KeyCode.ESCAPE) {
-				txtCueName.setText(cueTable.getSelectionModel().getSelectedItem().getName());
-			}
-			cueTable.refresh();
-		});
-		// Spacebar
-		// paneCue.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-		// System.out.println("Test");
-		// });
-		cueTable.setOnKeyPressed(e -> {
-			if (e.getCode() == KeyCode.DELETE) {
-				deleteCue(new ActionEvent());
-			}
-		});
-		btnTime.disableProperty().bind(btnStart.selectedProperty().not());
-	}
 
 	private void initChannelList() {
 		channelList.setCellFactory(e -> new ListCell<AsioChannel>() {
@@ -248,10 +159,10 @@ public class MainController implements Initializable {
 				e.consume();
 			}
 		});
-		toggleStart.selectedProperty().bindBidirectional(menuStartFFT.selectedProperty());
-		toggleStart.selectedProperty().addListener(e -> {
+		toggleFFT.selectedProperty().bindBidirectional(menuStartFFT.selectedProperty());
+		toggleFFT.selectedProperty().addListener(e -> {
 			Image image;
-			if (toggleStart.isSelected()) {
+			if (toggleFFT.isSelected()) {
 				image = new Image("./gui/res/sample_selected.png");
 			} else {
 				image = new Image("./gui/res/sample.png");
@@ -259,7 +170,7 @@ public class MainController implements Initializable {
 			ImageView view = new ImageView(image);
 			view.setFitWidth(25.0);
 			view.setFitHeight(25.0);
-			toggleStart.setGraphic(view);
+			toggleFFT.setGraphic(view);
 		});
 		// final ToggleGroup group = new ToggleGroup();
 		// KeyCombination comb = KeyCombination.keyCombination("D");
@@ -282,16 +193,7 @@ public class MainController implements Initializable {
 			toggleCue.setGraphic(view);
 		});
 		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
-		paneCue.visibleProperty().bind(menuShowCue.selectedProperty());
-		paneCue.managedProperty().bind(menuShowCue.selectedProperty());
-		menuShowCue.selectedProperty().addListener(e -> {
-			if (menuShowCue.isSelected()) {
-				cueTable.requestFocus();
-			}
-		});
-		// Timer
-		menuTimerStart.setOnAction(e -> btnStart.fire());
-		menuCueDelete.disableProperty().bind(btnStart.selectedProperty().or(cueTable.getSelectionModel().selectedItemProperty().isNull()));
+		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
 		// Close Button
 		closeMenu.setOnAction(e -> {
 			Main.close();
@@ -300,7 +202,7 @@ public class MainController implements Initializable {
 
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);
-		fftcontroller.setDriver(controller);
+		fftController.setDriver(controller);
 		channelList.getItems().setAll(controller.getInputList());
 		lblDriver.setText(ioName);
 		lblLatency.setText(controller.getLatency() + " ms");
@@ -310,87 +212,15 @@ public class MainController implements Initializable {
 		channelList.getItems().setAll(list);
 	}
 
-	@FXML
-	private void toggleTimerStart(ActionEvent e) {
-		if (btnStart.isSelected()) {
-			menuTimerStart.setText("Stop Timer");
-			txtCueName.setDisable(true);
-			choiceCueChannel.setDisable(true);
-			lblTime.setText("00:00");
-			timeChart.getData().clear();
-			timeKeeper.reset();
-			timeKeeper.getActiveCue();
-			timeKeeperLine = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-				String name = timeKeeper.getActiveCue().getName();
-				Data data = null;
-				for (Data temp : timeChart.getData()) {
-					if (temp.getName().equals(name)) {
-						data = temp;
-						break;
-					}
-				}
-				if (data == null) {
-					data = new Data(name, timeKeeper.getTimeRunning());
-					timeChart.getData().add(data);
-				}
-				data.setPieValue(timeKeeper.getRoundTime());
-				timeKeeper.getActiveCue().setTime(timeKeeper.getRoundTime());
-				cueTable.refresh();
-				// total time
-				long time = System.currentTimeMillis() - timeKeeper.getStartTime();
-				time = time / 1000;
-				int mins = (int) (time / 60);
-				int secs = (int) (time % 60);
-				lblTime.setText(String.format("%02d", mins) + ":" + String.format("%02d", secs));
-			}));
-			timeKeeperLine.setCycleCount(Timeline.INDEFINITE);
-			timeKeeperLine.playFromStart();
-			cueTable.getItems().setAll(timeKeeper.getCueList());
-			cueTable.getSelectionModel().select(0);
-		} else {
-			menuTimerStart.setText("Start Timer");
-			txtCueName.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
-			choiceCueChannel.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
-			timeKeeperLine.stop();
-			timeKeeper.reset();
-		}
-	}
-
-	@FXML
-	private void round(ActionEvent e) {
-		if (timeKeeper != null) {
-			timeKeeper.round();
-			timeKeeper.getActiveCue();
-			cueTable.getItems().setAll(timeKeeper.getCueList());
-			cueTable.getSelectionModel().select(timeKeeper.getActiveIndex());
-			if (timeKeeper.getActiveCue().getChannelToSelect() != null) {
-				channelList.getSelectionModel().select(timeKeeper.getActiveCue().getChannelToSelect());
-			}
-		}
-	}
-
-	@FXML
-	private void deleteCue(ActionEvent e) {
-		if (!btnStart.isSelected()) {
-			if (cueTable.getSelectionModel().getSelectedItem() != null) {
-				Cue del = cueTable.getSelectionModel().getSelectedItem();
-				if (timeKeeper != null) {
-					int index = cueTable.getSelectionModel().getSelectedIndex();
-					timeKeeper.removeCue(del);
-					cueTable.getItems().setAll(timeKeeper.getCueList());
-					if (cueTable.getItems().size() > index) {
-						cueTable.getSelectionModel().select(index);
-					} else {
-						cueTable.getSelectionModel().select(cueTable.getItems().size() - 1);
-					}
-				}
-			}
-		}
-	}
 
 	@FXML
 	private void toggleFFT(ActionEvent e) {
-		fftcontroller.play(!fftcontroller.isPlaying());
-		toggleStart.setSelected(fftcontroller.isPlaying());
+		fftController.play(!fftController.isPlaying());
+		toggleFFT.setSelected(fftController.isPlaying());
+	}
+
+
+	public void setSelectedChannel(AsioChannel channel) {
+		channelList.getSelectionModel().select(channel);
 	}
 }
