@@ -4,9 +4,9 @@ import com.synthbot.jasiohost.AsioChannel;
 
 public class Cue {
 
-	private String		name;
-	private AsioChannel	channelToSelect;
-	private long		time;
+	private String	name;
+	private Channel	channelToSelect;
+	private long	time;
 
 
 	public Cue(String name) {
@@ -24,12 +24,12 @@ public class Cue {
 	}
 
 
-	public AsioChannel getChannelToSelect() {
+	public Channel getChannelToSelect() {
 		return channelToSelect;
 	}
 
 
-	public void setChannelToSelect(AsioChannel channelToSelect) {
+	public void setChannelToSelect(Channel channelToSelect) {
 		this.channelToSelect = channelToSelect;
 	}
 
