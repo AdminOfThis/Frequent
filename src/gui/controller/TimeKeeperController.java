@@ -182,7 +182,11 @@ public class TimeKeeperController implements Initializable {
 	}
 
 	public void setChannels(List<Channel> list) {
+		Channel selected = choiceCueChannel.getSelectionModel().getSelectedItem();
 		choiceCueChannel.getItems().setAll(list);
+		if (selected != null) {
+			choiceCueChannel.getSelectionModel().select(selected);
+		}
 	}
 
 	@FXML
