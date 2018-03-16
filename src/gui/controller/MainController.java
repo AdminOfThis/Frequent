@@ -14,6 +14,7 @@ import gui.utilities.FXMLUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -25,6 +26,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ListView.EditEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -133,6 +135,9 @@ public class MainController implements Initializable {
 				controller.setActiveChannel(newValue.getChannel());
 			}
 		});
+		// Edit channel list
+		channelList.setEditable(true);
+
 	}
 
 	private void initMenu() {
