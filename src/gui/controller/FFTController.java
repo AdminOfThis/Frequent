@@ -6,13 +6,13 @@ import java.util.ResourceBundle;
 
 import control.ASIOController;
 import gui.utilities.LogarithmicAxis;
+import gui.utilities.NegativeBackgroundAreaChart;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
-import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
@@ -26,18 +26,18 @@ import javafx.util.Duration;
 
 public class FFTController implements Initializable {
 
-	private static final int			X_MIN			= 25;
-	private static final int			X_MAX			= 20000;
-	private static final int			REFRESH_RATE	= 50;
+	private static final int		X_MIN			= 25;
+	private static final int		X_MAX			= 20000;
+	private static final int		REFRESH_RATE	= 50;
 	@FXML
-	private HBox						chartRoot;
+	private HBox					chartRoot;
 	@FXML
-	private StackPane					vuPane;
+	private StackPane				vuPane;
 	@FXML
-	private Pane						vuRmsPane, vuPeakPane;
-	private LineChart<Number, Number>	chart;
-	private Timeline					line;
-	private ASIOController				controller;
+	private Pane					vuRmsPane, vuPeakPane;
+	private XYChart<Number, Number>	chart;
+	private Timeline				line;
+	private ASIOController			controller;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -65,7 +65,8 @@ public class FFTController implements Initializable {
 					series = new XYChart.Series<>();
 					chart.getData().add(series);
 				}
-				// System.out.println("Displaying " + map[0].length + " frequencies");
+				// System.out.println("Displaying " + map[0].length + "
+				// frequencies");
 				// series.getData().add(new Data<Number, Number>(20, 0.0));
 				ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
 				for (int count = 0; count < map[0].length; count++) {
@@ -98,9 +99,9 @@ public class FFTController implements Initializable {
 		// yaxis.setOpacity(0.0);
 		yaxis.setAnimated(true);
 		ValueAxis<Number> logAxis = new LogarithmicAxis(X_MIN, X_MAX);
-		chart = new LineChart<>(logAxis, yaxis);
+		chart = new NegativeBackgroundAreaChart<>(logAxis, yaxis);
 		chart.setAnimated(false);
-		chart.setCreateSymbols(false);
+		// chart.setCreateSymbols(false);
 		chart.setLegendVisible(false);
 		chart.setLegendSide(Side.RIGHT);
 		chartRoot.getChildren().add(chart);
