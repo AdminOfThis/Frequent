@@ -27,14 +27,15 @@ public class Main extends Application {
 		try {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
 			LOG = Logger.getLogger(Main.class);
-		}
-		catch (Exception e) {
+			LOG.info("=== Starting Frequent ===");
+		} catch (Exception e) {
 			LOG.fatal("Unexpected error while initializing logging", e);
 		}
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		LOG.info("Showing IOChooser");
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/gui/IOChooser.fxml"));
 		Parent parent = loader.load();
 		IOChooserController controller = loader.getController();
