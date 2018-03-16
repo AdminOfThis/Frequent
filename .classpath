@@ -4,7 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/log4j.jar"/>
 	<classpathentry kind="lib" path="lib/JAsioHost.jar"/>
-	<classpathentry kind="lib" path="lib/controlsfx.jar"/>
 	<classpathentry kind="lib" path="lib/JTransforms-3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
