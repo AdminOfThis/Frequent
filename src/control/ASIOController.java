@@ -49,8 +49,7 @@ public class ASIOController implements AsioDriverListener {
 		instance = this;
 		try {
 			asioDriver = AsioDriver.getDriver(ioName);
-		}
-		catch (AsioException e) {
+		} catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -98,7 +97,9 @@ public class ASIOController implements AsioDriverListener {
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
+		if (asioDriver != null) {
+			return asioDriver.getNumChannelsInput();
+		}
 		return -1;
 	}
 
@@ -159,11 +160,30 @@ public class ASIOController implements AsioDriverListener {
 	@Override
 	public void bufferSwitch(long sampleTime, long samplePosition, Set<AsioChannel> channels) {
 		for (AsioChannel channel : channels) {
-			if (channel.isInput() && channel.isActive() && channel.getChannelIndex() == activeChannel.getChannelIndex()) {
+			if (channel.isInput() && channel.isActive()) {
+				if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
+					channel.read(output);
+					calculatePeaks(output);
+					fftThis();
+				}
+			} else {
 				channel.read(output);
-				calculatePeaks(output);
-				fftThis();
-				break;
+				float max = 0;
+				for (float f : output) {
+					if (f > max) {
+						max = f;
+					}
+				}
+				Channel c = null;
+				for (Channel cTemp : channelList) {
+					if (cTemp.getChannel().equals(channel)) {
+						c = cTemp;
+						break;
+					}
+				}
+				if (c != null) {
+					c.setLevel(max);
+				}
 			}
 		}
 	}

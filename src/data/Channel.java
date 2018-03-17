@@ -5,7 +5,7 @@ import com.synthbot.jasiohost.AsioChannel;
 public class Channel {
 	private AsioChannel	channel;
 	private String		name;
-
+	private float		level	= 0;
 
 	public Channel(AsioChannel channel) {
 		this.channel = channel;
@@ -32,7 +32,13 @@ public class Channel {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
-	
+
+	public float getLevel() {
+		return level;
+	}
+
+	public void setLevel(float level) {
+		this.level = level;
+	}
+
 }
