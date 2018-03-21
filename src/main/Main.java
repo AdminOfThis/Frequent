@@ -16,7 +16,12 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+
 	private static Logger		LOG;
+
+	private static final String	TITLE			= "Frequent";
+	private static final String	VERSION			= "0.0.1";
+
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
 	private static final String	GUI_IO_CHOOSER	= "IOChooser.fxml";
 
@@ -67,7 +72,7 @@ public class Main extends Application {
 		IOChooserController controller = (IOChooserController) FXMLUtil.getController();
 		primaryStage.setScene(new Scene(parent));
 		primaryStage.setOnCloseRequest(e -> Main.close());
-		primaryStage.setTitle("AudioAnalyzer");
+		primaryStage.setTitle(TITLE + " " + VERSION);
 		primaryStage.setResizable(false);
 		primaryStage.setOnShowing(e -> {
 			if (Main.isDebug()) {
