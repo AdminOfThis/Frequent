@@ -3,6 +3,8 @@ package main;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import com.synthbot.jasiohost.AsioChannel;
+
 import control.ASIOController;
 import gui.controller.IOChooserController;
 import gui.utilities.FXMLUtil;
@@ -82,8 +84,10 @@ public class Main extends Application {
 	public static void close() {
 		LOG.info("Stopping GUI");
 		Platform.exit();
-		LOG.info("Stopping AudioDriver");
-		ASIOController.getInstance().shutdown();
+		if (ASIOController.getInstance() != null) {
+			LOG.info("Stopping AudioDriver");
+			ASIOController.getInstance().shutdown();
+		}
 		LOG.info("Bye");
 		System.exit(0);
 	}
