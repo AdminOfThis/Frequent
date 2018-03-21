@@ -72,6 +72,7 @@ public class MainController implements Initializable, DataHolder<Channel> {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
+		FileIO.registerSaveData(this);
 		initMenu();
 		initChannelList();
 		initFullScreen();
@@ -255,20 +256,24 @@ public class MainController implements Initializable, DataHolder<Channel> {
 
 	@FXML
 	private void save(ActionEvent e) {
-		DirectoryChooser chooser = new DirectoryChooser();
-		chooser.setTitle("Save to Directory");
-		chooser.setInitialDirectory(FileIO.getCurrentDir());
-		File result = chooser.showDialog(root.getScene().getWindow());
-		if (result != null) {
-			if (timeKeeperController != null) {
-				timeKeeperController.save(new File(result.getPath() + "/test" + FileIO.CUE_ENDING));
-			}
+		if (FileIO.getCurrentFile() != null) {
+			FileIO.save(FileIO.getCurrentFile());
+		} else {
+			saveAs(e);
 		}
 	}
 
 	@FXML
 	private void saveAs(ActionEvent e) {
-
+		FileChooser chooser = new FileChooser();
+		chooser.setTitle("Save to Directory");
+		chooser.setInitialDirectory(FileIO.getCurrentDir());
+		File result = chooser.showSaveDialog(root.getScene().getWindow());
+		if (result != null) {
+			if (timeKeeperController != null) {
+				FileIO.save(result);
+			}
+		}
 	}
 
 	public TimeKeeperController getTimeKeeperController() {
@@ -300,11 +305,23 @@ public class MainController implements Initializable, DataHolder<Channel> {
 			for (File f : e.getDragboard().getFiles()) {
 				try {
 					FileIO.open(f);
-					LOG.info("Dat File dropped");
+					LOG.info("File dropped");
 				} catch (Exception ex) {
 					LOG.info("Unable to load from " + f.getAbsolutePath());
 				}
 			}
 		}
+	}
+
+	@Override
+	public List<Channel> getData() {
+		return channelList.getItems();
+	}
+
+	@Override
+	public void clear() {
+		// TODO this is not finished, needs some merging
+		channelList.getItems().clear();
+
 	}
 }

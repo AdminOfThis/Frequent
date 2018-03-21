@@ -68,6 +68,7 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		FileIO.registerSaveData(this);
 		initTimeKeeper();
 	}
 
@@ -312,6 +313,17 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 	@Override
 	public void set(List<Cue> list) {
 		cueTable.getItems().setAll(list);
+
+	}
+
+	@Override
+	public List<Cue> getData() {
+		return cueTable.getItems();
+	}
+
+	@Override
+	public void clear() {
+		cueTable.getItems().clear();
 
 	}
 }

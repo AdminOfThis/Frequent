@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -18,16 +19,27 @@ import gui.controller.MainController;
 
 public abstract class FileIO {
 
-	private static final Logger	LOG			= Logger.getLogger(FileIO.class);
+	private static final Logger			LOG			= Logger.getLogger(FileIO.class);
 
-	public static final String	CUE_ENDING	= ".cue";
+	public static final String			CUE_ENDING	= ".cue";
 
 
 	// files
-	private static File			currentDir	= new File(System.getProperty("user.home"));
+	private static File					currentDir	= new File(System.getProperty("user.home"));
+	private static File					currentFile;
+
+	private static List<DataHolder<?>>	holderList	= new ArrayList<>();
+
+	public static void registerSaveData(DataHolder<?> holder) {
+		if (!holderList.contains(holder)) {
+			holderList.add(holder);
+		}
+	}
 
 	public static void open(File file) {
 		if (file != null) {
+			currentFile = file;
+			currentDir = file.getParentFile();
 			List<Serializable> result = null;
 			currentDir = file.getParentFile();
 			LOG.info("Trying to open file " + file.getName());
@@ -37,6 +49,9 @@ public abstract class FileIO {
 				result = openFile(file);
 			}
 			if (result != null && !result.isEmpty()) {
+				for(DataHolder<?> h : holderList) {
+					h.clear();
+				}
 				handleResult(result);
 			} else {
 				LOG.warn("Nothing loaded");
@@ -103,7 +118,27 @@ public abstract class FileIO {
 		return currentDir;
 	}
 
+	public static File getCurrentFile() {
+		return currentFile;
+	}
+
+	public static boolean save(File file) {
+		return save(collectData(), file);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<Serializable> collectData() {
+		ArrayList<Serializable> result = new ArrayList<>();
+		for (DataHolder<?> h : holderList) {
+			result.addAll((Collection<? extends Serializable>) h.getData());
+		}
+		return result;
+	}
+
 	public static boolean save(List<Serializable> objects, File file) {
+		LOG.info("Saving "+objects.size() + " object(s) to " + file.getPath());
+		currentDir = file.getParentFile();
+		currentFile = file;
 		boolean result = true;
 		ObjectOutputStream stream = null;
 		try {
@@ -123,6 +158,7 @@ public abstract class FileIO {
 				LOG.debug("", e);
 			}
 		}
+		LOG.info("Successful saved");
 		return result;
 
 
