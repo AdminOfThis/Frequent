@@ -1,9 +1,12 @@
 package main;
 
+import java.io.File;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import control.ASIOController;
+import data.FileIO;
 import gui.controller.IOChooserController;
 import gui.utilities.FXMLUtil;
 import javafx.application.Application;
@@ -14,15 +17,11 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-
 	private static Logger		LOG;
-
 	public static final String	TITLE			= "Frequent";
 	private static final String	VERSION			= "0.0.1";
-
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
 	private static final String	GUI_IO_CHOOSER	= "IOChooser.fxml";
-
 	private static boolean		debug			= false;
 
 	public static void main(String[] args) {
@@ -31,10 +30,8 @@ public class Main extends Application {
 		launch(args);
 	}
 
-
 	/**
-	 * checks the start parameters for debug keyword and sets the debug flag to
-	 * true if found
+	 * checks the start parameters for debug keyword and sets the debug flag to true if found
 	 * 
 	 * @param args
 	 */
@@ -43,10 +40,10 @@ public class Main extends Application {
 			if (arg.startsWith("-debug")) {
 				debug = true;
 				LOG.info("Enabling debug settings");
+				FileIO.setCurrentDir(new File("."));
 				break;
 			}
 		}
-
 	}
 
 	/**
@@ -57,7 +54,8 @@ public class Main extends Application {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
 			LOG = Logger.getLogger(Main.class);
 			LOG.info("=== Starting Frequent ===");
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.fatal("Unexpected error while initializing logging", e);
 		}
 	}
@@ -65,7 +63,6 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		LOG.info("Showing IOChooser");
-
 		Parent parent = FXMLUtil.loadFXML(GUI_IO_CHOOSER);
 		IOChooserController controller = (IOChooserController) FXMLUtil.getController();
 		primaryStage.setScene(new Scene(parent));
@@ -83,7 +80,6 @@ public class Main extends Application {
 	/**
 	 * stops all running threads and terminates the gui
 	 */
-
 	public static void close() {
 		LOG.info("Stopping GUI");
 		Platform.exit();

@@ -21,7 +21,6 @@ public class ASIOController implements AsioDriverListener {
 	private static ASIOController	instance;
 	private static final Logger		LOG			= Logger.getLogger(ASIOController.class);
 	private String					driverName;
-
 	private AsioDriver				asioDriver;
 	private Set<AsioChannel>		activeChannels;
 	private int						bufferSize	= 1024;
@@ -62,7 +61,8 @@ public class ASIOController implements AsioDriverListener {
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		} catch (AsioException e) {
+		}
+		catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -90,7 +90,6 @@ public class ASIOController implements AsioDriverListener {
 		LOG.info("Samplerate: " + sampleRate);
 	}
 
-
 	private void initFFT() {
 		bufferCount = 1;
 		// fftBufferSize = 16384;
@@ -109,9 +108,7 @@ public class ASIOController implements AsioDriverListener {
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) {
-			return asioDriver.getNumChannelsInput();
-		}
+		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
 		return -1;
 	}
 

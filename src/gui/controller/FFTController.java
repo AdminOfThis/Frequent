@@ -131,6 +131,12 @@ public class FFTController implements Initializable {
 		// chart.setPrefWidth(200.0);
 		clippingPane.prefHeightProperty().bind(logAxis.heightProperty().add(12.0));
 		clippingPane.minHeightProperty().bind(logAxis.heightProperty().add(12.0));
+// chart.addEventHandler(KeyEvent.ANY, e -> {
+// if (e.getCode() == KeyCode.SPACE) {
+// MainController.getInstance().toggleFFT(new ActionEvent());
+// e.consume();
+// }
+// });
 	}
 
 	public void setDriver(ASIOController driver) {
@@ -148,6 +154,4 @@ public class FFTController implements Initializable {
 	public boolean isPlaying() {
 		return line.getStatus() == Animation.Status.RUNNING;
 	}
-
-
 }

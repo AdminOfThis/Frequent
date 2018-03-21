@@ -20,14 +20,10 @@ import gui.controller.MainController;
 public abstract class FileIO {
 
 	private static final Logger			LOG			= Logger.getLogger(FileIO.class);
-
 	public static final String			ENDING		= ".fre";
-
-
 	// files
 	private static File					currentDir	= new File(System.getProperty("user.home"));
 	private static File					currentFile;
-
 	private static List<DataHolder<?>>	holderList	= new ArrayList<>();
 
 	public static void registerSaveData(DataHolder<?> holder) {
@@ -61,13 +57,11 @@ public abstract class FileIO {
 				LOG.warn("Nothing loaded");
 			}
 		}
-
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void handleResult(List<Serializable> result) {
 		for (Object o : result) {
-
 			// finding right controller
 			DataHolder holder = null;
 			if (o instanceof Cue) {
@@ -75,7 +69,6 @@ public abstract class FileIO {
 			} else if (o instanceof Channel) {
 				holder = MainController.getInstance();
 			}
-
 			// adding
 			if (holder != null) {
 				holder.add(o);
@@ -89,26 +82,29 @@ public abstract class FileIO {
 		try {
 			stream = new ObjectInputStream(new FileInputStream(file));
 			Object o;
-
 			while ((o = stream.readObject()) != null) {
 				if (o instanceof Serializable) {
 					result.add((Serializable) o);
 				}
 			}
-
-		} catch (FileNotFoundException e) {
+		}
+		catch (FileNotFoundException e) {
 			LOG.warn("File not found");
 			LOG.debug("", e);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			LOG.warn("Unable to read file");
 			LOG.debug("", e);
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e) {
 			LOG.warn("Class not found");
 			LOG.debug("", e);
-		} finally {
+		}
+		finally {
 			try {
 				stream.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				LOG.error("Unable to close file stream");
 				LOG.debug("", e);
 			}
@@ -116,7 +112,6 @@ public abstract class FileIO {
 		LOG.info("Successfully loaded " + result.size() + " object(s)");
 		return result;
 	}
-
 
 	public static File getCurrentDir() {
 		return currentDir;
@@ -139,7 +134,6 @@ public abstract class FileIO {
 		return save(collectData(), file);
 	}
 
-
 	public static boolean save(List<Serializable> objects, File file) {
 		LOG.info("Saving " + objects.size() + " object(s) to " + file.getPath());
 		currentDir = file.getParentFile();
@@ -154,22 +148,26 @@ public abstract class FileIO {
 			for (Serializable o : objects) {
 				stream.writeObject(o);
 			}
-		} catch (IOException e) {
-			LOG.warn("Unable to read file");
+		}
+		catch (IOException e) {
+			LOG.warn("Unable to write file");
 			LOG.debug("", e);
 			result = false;
-		} finally {
+		}
+		finally {
 			try {
 				stream.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				LOG.error("Unable to close file stream");
 				LOG.debug("", e);
 			}
 		}
 		LOG.info("Successful saved");
 		return result;
-
-
 	}
 
+	public static void setCurrentDir(File file) {
+		currentDir = file;
+	}
 }

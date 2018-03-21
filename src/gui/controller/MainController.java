@@ -29,7 +29,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
@@ -43,8 +42,7 @@ public class MainController implements Initializable, DataHolder<Channel> {
 	private static final String				FFT_PATH		= "./../gui/FFT.fxml";
 	private static final String				TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", FileIO.ENDING);
-
+	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private ToggleButton					toggleFFT, toggleCue;
@@ -65,7 +63,6 @@ public class MainController implements Initializable, DataHolder<Channel> {
 	private ASIOController					controller;
 	private FFTController					fftController;
 	private TimeKeeperController			timeKeeperController;
-
 
 	public static MainController getInstance() {
 		return instance;
@@ -97,11 +94,9 @@ public class MainController implements Initializable, DataHolder<Channel> {
 		Parent p = FXMLUtil.loadFXML(TIMEKEEPER_PATH);
 		if (p != null) {
 			SplitPane.setResizableWithParent(p, false);
-
 			timeKeeperController = (TimeKeeperController) FXMLUtil.getController();
 			// contentPane.getItems().add(p);
 			toggleCue.selectedProperty().addListener(e -> {
-
 				if (!toggleCue.isSelected()) {
 					contentPane.getItems().remove(p);
 				} else {
@@ -162,8 +157,8 @@ public class MainController implements Initializable, DataHolder<Channel> {
 
 			@Override
 			public void changed(ObservableValue<? extends Channel> observable, Channel oldValue, Channel newValue) {
-				controller.setActiveChannel(newValue.getChannel());
 				if (newValue != null) {
+					controller.setActiveChannel(newValue.getChannel());
 					LOG.info("Switching to channel " + newValue.getName());
 				}
 			}
@@ -173,12 +168,6 @@ public class MainController implements Initializable, DataHolder<Channel> {
 	}
 
 	private void initMenu() {
-		root.addEventHandler(KeyEvent.ANY, e -> {
-			if (e.getCode() == KeyCode.SPACE) {
-				toggleFFT(new ActionEvent());
-				e.consume();
-			}
-		});
 		toggleFFT.selectedProperty().bindBidirectional(menuStartFFT.selectedProperty());
 		toggleFFT.selectedProperty().addListener(e -> {
 			Image image;
@@ -257,7 +246,6 @@ public class MainController implements Initializable, DataHolder<Channel> {
 		FileIO.open(result);
 	}
 
-
 	@FXML
 	private void save(ActionEvent e) {
 		if (FileIO.getCurrentFile() != null) {
@@ -323,6 +311,5 @@ public class MainController implements Initializable, DataHolder<Channel> {
 	public void clear() {
 		// TODO this is not finished, needs some merging
 		channelList.getItems().clear();
-
 	}
 }
