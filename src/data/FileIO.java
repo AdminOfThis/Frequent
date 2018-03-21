@@ -21,7 +21,7 @@ public abstract class FileIO {
 
 	private static final Logger			LOG			= Logger.getLogger(FileIO.class);
 
-	public static final String			CUE_ENDING	= ".cue";
+	public static final String			ENDING		= ".fre";
 
 
 	// files
@@ -38,6 +38,10 @@ public abstract class FileIO {
 
 	public static void open(File file) {
 		if (file != null) {
+			if (!file.getName().endsWith(ENDING)) {
+				LOG.warn("Unable to load file " + file.getName());
+				return;
+			}
 			currentFile = file;
 			currentDir = file.getParentFile();
 			List<Serializable> result = null;
@@ -45,11 +49,11 @@ public abstract class FileIO {
 			LOG.info("Trying to open file " + file.getName());
 			String ending = file.getName().substring(file.getName().lastIndexOf("."));
 			switch (ending) {
-			case CUE_ENDING:
+			case ENDING:
 				result = openFile(file);
 			}
 			if (result != null && !result.isEmpty()) {
-				for(DataHolder<?> h : holderList) {
+				for (DataHolder<?> h : holderList) {
 					h.clear();
 				}
 				handleResult(result);
@@ -122,10 +126,6 @@ public abstract class FileIO {
 		return currentFile;
 	}
 
-	public static boolean save(File file) {
-		return save(collectData(), file);
-	}
-
 	@SuppressWarnings("unchecked")
 	private static List<Serializable> collectData() {
 		ArrayList<Serializable> result = new ArrayList<>();
@@ -135,10 +135,18 @@ public abstract class FileIO {
 		return result;
 	}
 
+	public static boolean save(File file) {
+		return save(collectData(), file);
+	}
+
+
 	public static boolean save(List<Serializable> objects, File file) {
-		LOG.info("Saving "+objects.size() + " object(s) to " + file.getPath());
+		LOG.info("Saving " + objects.size() + " object(s) to " + file.getPath());
 		currentDir = file.getParentFile();
 		currentFile = file;
+		if (!currentFile.getName().endsWith(ENDING)) {
+			currentFile = new File(currentFile.getPath() + ENDING);
+		}
 		boolean result = true;
 		ObjectOutputStream stream = null;
 		try {
