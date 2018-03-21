@@ -9,12 +9,10 @@ public class Channel implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= 1L;
-
-
-	private AsioChannel			channel;
-	private String				name;
-	private float				level				= 0;
+	private static final long		serialVersionUID	= 1L;
+	private transient AsioChannel	channel;
+	private String					name;
+	private float					level				= 0;
 
 	public Channel(AsioChannel channel) {
 		this.channel = channel;
@@ -49,6 +47,4 @@ public class Channel implements Serializable {
 	public void setLevel(float level) {
 		this.level = level;
 	}
-
-
 }
