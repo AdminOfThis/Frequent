@@ -1,5 +1,6 @@
 package gui.controller;
 
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -8,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import control.ASIOController;
 import data.Channel;
+import data.FileIO;
 import gui.utilities.FXMLUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,14 +27,18 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import main.Main;
 
-public class MainController implements Initializable {
+public class MainController implements Initializable, DataHolder<Channel> {
 
 	private static final String		FFT_PATH		= "./../gui/FFT.fxml";
 	private static final String		TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
@@ -57,6 +63,7 @@ public class MainController implements Initializable {
 	private ASIOController			controller;
 	private FFTController			fftController;
 	private TimeKeeperController	timeKeeperController;
+
 
 	public static MainController getInstance() {
 		return instance;
@@ -86,9 +93,22 @@ public class MainController implements Initializable {
 	private void initTimekeeper() {
 		Parent p = FXMLUtil.loadFXML(TIMEKEEPER_PATH);
 		if (p != null) {
+			SplitPane.setResizableWithParent(p, false);
+
 			timeKeeperController = (TimeKeeperController) FXMLUtil.getController();
-			root.setRight(p);
-			timeKeeperController.show(toggleCue.selectedProperty().get());
+			// contentPane.getItems().add(p);
+			toggleCue.selectedProperty().addListener(e -> {
+
+				if (!toggleCue.isSelected()) {
+					contentPane.getItems().remove(p);
+				} else {
+					if (!contentPane.getItems().contains(p)) {
+						contentPane.getItems().add(p);
+						contentPane.setDividerPosition(0, 0.72);
+					}
+				}
+			});
+			// timeKeeperController.show(toggleCue.selectedProperty().get());
 		} else {
 			LOG.warn("Unable to load TimeKeeper");
 		}
@@ -221,5 +241,70 @@ public class MainController implements Initializable {
 
 	public void setSelectedChannel(Channel channel) {
 		channelList.getSelectionModel().select(channel);
+	}
+
+	@FXML
+	private void open(ActionEvent e) {
+		FileChooser chooser = new FileChooser();
+		chooser.setTitle("Open");
+		chooser.setInitialDirectory(FileIO.getCurrentDir());
+		File result = chooser.showOpenDialog(root.getScene().getWindow());
+		FileIO.open(result);
+	}
+
+
+	@FXML
+	private void save(ActionEvent e) {
+		DirectoryChooser chooser = new DirectoryChooser();
+		chooser.setTitle("Save to Directory");
+		chooser.setInitialDirectory(FileIO.getCurrentDir());
+		File result = chooser.showDialog(root.getScene().getWindow());
+		if (result != null) {
+			if (timeKeeperController != null) {
+				timeKeeperController.save(new File(result.getPath() + "/test" + FileIO.CUE_ENDING));
+			}
+		}
+	}
+
+	@FXML
+	private void saveAs(ActionEvent e) {
+
+	}
+
+	public TimeKeeperController getTimeKeeperController() {
+		return timeKeeperController;
+	}
+
+	@Override
+	public void add(Channel t) {
+		if (!channelList.getItems().contains(t)) {
+			channelList.getItems().add(t);
+		}
+	}
+
+	@Override
+	public void set(List<Channel> list) {
+		channelList.getItems().setAll(list);
+	}
+
+	@FXML
+	public void dragOver(DragEvent e) {
+		if (e.getDragboard().hasFiles()) {
+			e.acceptTransferModes(TransferMode.MOVE);
+		}
+	}
+
+	@FXML
+	public void dragDropped(DragEvent e) {
+		if (e.getDragboard().hasFiles()) {
+			for (File f : e.getDragboard().getFiles()) {
+				try {
+					FileIO.open(f);
+					LOG.info("Dat File dropped");
+				} catch (Exception ex) {
+					LOG.info("Unable to load from " + f.getAbsolutePath());
+				}
+			}
+		}
 	}
 }

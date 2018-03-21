@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
@@ -19,7 +20,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.MainController">
+<BorderPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.MainController">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -27,6 +28,10 @@
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
+                        <MenuItem mnemonicParsing="false" onAction="#open" text="Open" />
+                        <MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
+                        <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
                     <MenuItem fx:id="closeMenu" mnemonicParsing="false" text="Close" />
                   </items>
                 </Menu>
@@ -85,6 +90,6 @@
       </ToolBar>
    </bottom>
    <center>
-      <SplitPane fx:id="contentPane" orientation="VERTICAL" BorderPane.alignment="CENTER" />
+      <SplitPane fx:id="contentPane" onDragDropped="#dragDropped" onDragOver="#dragOver" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>

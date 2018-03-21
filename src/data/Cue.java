@@ -1,12 +1,17 @@
 package data;
 
-import com.synthbot.jasiohost.AsioChannel;
+import java.io.Serializable;
 
-public class Cue {
+public class Cue implements Serializable {
 
-	private String	name;
-	private Channel	channelToSelect;
-	private long	time;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
+
+	private String				name;
+	private Channel				channelToSelect;
+	private long				time;
 
 
 	public Cue(String name) {

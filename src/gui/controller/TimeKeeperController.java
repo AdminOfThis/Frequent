@@ -1,6 +1,9 @@
 package gui.controller;
 
+import java.io.File;
+import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -9,6 +12,7 @@ import org.apache.log4j.Logger;
 import control.TimeKeeper;
 import data.Channel;
 import data.Cue;
+import data.FileIO;
 import gui.utilities.DoughnutChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -36,7 +40,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
-public class TimeKeeperController implements Initializable {
+public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 
 	private static final Logger			LOG	= Logger.getLogger(TimeKeeperController.class);
 	@FXML
@@ -281,5 +285,33 @@ public class TimeKeeperController implements Initializable {
 		if (value) {
 			cueTable.requestFocus();
 		}
+	}
+
+	public void save(File file) {
+		LOG.info("Saving cues");
+		List<Serializable> list = new ArrayList<>();
+		for (Cue c : cueTable.getItems()) {
+			list.add(c);
+		}
+
+		boolean result = FileIO.save(list, file);
+		if (result) {
+			LOG.info("Saving successful");
+		} else {
+			LOG.warn("Unable to save");
+		}
+	}
+
+	@Override
+	public void add(Cue t) {
+		if (!cueTable.getItems().contains(t)) {
+			cueTable.getItems().add(t);
+		}
+	}
+
+	@Override
+	public void set(List<Cue> list) {
+		cueTable.getItems().setAll(list);
+
 	}
 }

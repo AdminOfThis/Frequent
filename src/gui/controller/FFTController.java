@@ -148,4 +148,6 @@ public class FFTController implements Initializable {
 	public boolean isPlaying() {
 		return line.getStatus() == Animation.Status.RUNNING;
 	}
+
+
 }
