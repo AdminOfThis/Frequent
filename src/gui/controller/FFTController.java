@@ -50,7 +50,7 @@ public class FFTController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		LOG.info("Loaidng FFT Chart");
+		LOG.info("Loading FFT Chart");
 		initChart();
 		initTimeline();
 	}
@@ -58,49 +58,51 @@ public class FFTController implements Initializable {
 	private void initTimeline() {
 		line = new Timeline();
 		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
-			// System.out.println("Updating Peaks");
-			// System.out.println(controller.getPeak());
-			double peakdB = percentToDB(controller.getPeak() * 1000.0);
-			vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + 60.0) / 60.0);
-			double lastPeakdB = percentToDB(controller.getLastPeak() * 1000.0);
-			vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (lastPeakdB + 60.0) / 60.0);
-			lblPeak.setText(Math.round(peakdB * 10.0) / 10.0 + "");
-			if (controller.getPeak() >= 0.99) {
-				clippingPane.setStyle("-fx-background-color: red");
-			} else {
-				clippingPane.setStyle("");
-			}
-			double[][] map = controller.getSpectrumMap();
-			// long before = System.currentTimeMillis();
-			// System.out.println("Updating");
-			if (map != null) {
-				Series<Number, Number> series = null;
-				if (!chart.getData().isEmpty()) {
-					series = chart.getData().get(0);
-					series.getData().clear();
+			if (controller != null) {
+				double peakdB = percentToDB(controller.getPeak() * 1000.0);
+				vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + 60.0) / 60.0);
+				double lastPeakdB = percentToDB(controller.getLastPeak() * 1000.0);
+				vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (lastPeakdB + 60.0) / 60.0);
+				lblPeak.setText(Math.round(peakdB * 10.0) / 10.0 + "");
+				if (controller.getPeak() >= 0.99) {
+					clippingPane.setStyle("-fx-background-color: red");
+				} else {
+					clippingPane.setStyle("");
 				}
-				if (series == null) {
-					series = new XYChart.Series<>();
-					chart.getData().add(series);
-				}
-				// System.out.println("Displaying " + map[0].length + "
-				// frequencies");
-				// series.getData().add(new Data<Number, Number>(20, 0.0));
-				ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
-				for (int count = 0; count < map[0].length; count++) {
-					double frequency = map[0][count];
-					if (frequency >= 20 && frequency <= X_MAX) {
-						double level = Math.abs(map[1][count]);
-						level = percentToDB(level);
-						Data<Number, Number> data = new XYChart.Data<>(frequency, level);
-						dataList.add(data);
+				double[][] map = controller.getSpectrumMap();
+				// long before = System.currentTimeMillis();
+				// System.out.println("Updating");
+				if (map != null) {
+					Series<Number, Number> series = null;
+					if (!chart.getData().isEmpty()) {
+						series = chart.getData().get(0);
+						series.getData().clear();
 					}
+					if (series == null) {
+						series = new XYChart.Series<>();
+						chart.getData().add(series);
+					}
+					// System.out.println("Displaying " + map[0].length + "
+					// frequencies");
+					// series.getData().add(new Data<Number, Number>(20, 0.0));
+					ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
+					for (int count = 0; count < map[0].length; count++) {
+						double frequency = map[0][count];
+						if (frequency >= 20 && frequency <= X_MAX) {
+							double level = Math.abs(map[1][count]);
+							level = percentToDB(level);
+							Data<Number, Number> data = new XYChart.Data<>(frequency, level);
+							dataList.add(data);
+						}
+					}
+					series.getData().addAll(dataList);
+					// series.getData().add(new Data<Number, Number>(X_MAX,
+					// 0.0));
 				}
-				series.getData().addAll(dataList);
-				// series.getData().add(new Data<Number, Number>(X_MAX, 0.0));
+				// System.out.println("Finished updating");
+				// System.out.println(System.currentTimeMillis() - before + "
+				// ms");
 			}
-			// System.out.println("Finished updating");
-			// System.out.println(System.currentTimeMillis() - before + " ms");
 		});
 		line.getKeyFrames().add(frame);
 		line.setCycleCount(Timeline.INDEFINITE);

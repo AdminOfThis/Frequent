@@ -59,11 +59,15 @@ public class IOChooserController implements Initializable {
 	}
 
 	public void startDebug() {
+		// if (!listIO.getItems().isEmpty()) {
+		listIO.getSelectionModel().select(0);
 		if (!listIO.getItems().isEmpty()) {
-			listIO.getSelectionModel().select(0);
 			LOG.info("DEBUG, Starting with index 0: " + listIO.getItems().get(0));
-			start(new ActionEvent());
+		} else {
+			LOG.warn("Starting without selected driver, for DEBUG purposes only!");
 		}
+		start(new ActionEvent());
+		// }
 	}
 
 	private void loadMain(String ioName) {
