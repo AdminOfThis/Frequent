@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import control.ASIOController;
 import control.TimeKeeper;
 import data.Channel;
 import data.Cue;
@@ -28,7 +29,7 @@ import javafx.scene.Parent;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -40,7 +41,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
-public class TimeKeeperController implements Initializable, DataHolder<Cue> {
+public class TimeKeeperController implements Initializable {
 
 	private static final Logger			LOG	= Logger.getLogger(TimeKeeperController.class);
 	@FXML
@@ -60,15 +61,13 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 	@FXML
 	private TextField					txtCue, txtCueName;
 	@FXML
-	private ChoiceBox<Channel>			choiceCueChannel;
+	private ComboBox<Channel>			choiceCueChannel;
 	@FXML
 	private Label						lblTime;
-	private TimeKeeper					timeKeeper;
 	private Timeline					timeKeeperLine;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		FileIO.registerSaveData(this);
 		initTimeKeeper();
 	}
 
@@ -77,7 +76,6 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 		piePane.getChildren().clear();
 		timeChart = new DoughnutChart(FXCollections.observableArrayList());
 		piePane.getChildren().add(timeChart);
-		timeKeeper = new TimeKeeper();
 		btnTime.disableProperty().bind(btnStart.selectedProperty().not());
 		btnStart.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
@@ -99,11 +97,9 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 			@Override
 			public void handle(KeyEvent event) {
 				if (event.getCode() == KeyCode.ENTER) {
-					if (timeKeeper != null) {
-						timeKeeper.addCue(new Cue(txtCue.getText().trim()));
-						cueTable.getItems().setAll(timeKeeper.getCueList());
-						txtCue.clear();
-					}
+					TimeKeeper.getInstance().addCue(new Cue(txtCue.getText().trim()));
+					cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
+					txtCue.clear();
 				}
 			}
 		});
@@ -131,6 +127,10 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 
 			@Override
 			public String toString(Channel object) {
+				if (object == null) {
+					LOG.info("");
+					return "- NONE -";
+				}
 				return object.getName();
 			}
 
@@ -139,7 +139,7 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 				return null;
 			}
 		});
-		// EDIT
+// EDIT
 		cueTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Cue>() {
 
 			@Override
@@ -202,10 +202,10 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 			choiceCueChannel.setDisable(true);
 			lblTime.setText("00:00");
 			timeChart.getData().clear();
-			timeKeeper.reset();
-			timeKeeper.getActiveCue();
+			TimeKeeper.getInstance().reset();
+			TimeKeeper.getInstance().getActiveCue();
 			timeKeeperLine = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-				String name = timeKeeper.getActiveCue().getName();
+				String name = TimeKeeper.getInstance().getActiveCue().getName();
 				Data data = null;
 				for (Data temp : timeChart.getData()) {
 					if (temp.getName().equals(name)) {
@@ -214,14 +214,14 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 					}
 				}
 				if (data == null) {
-					data = new Data(name, timeKeeper.getTimeRunning());
+					data = new Data(name, TimeKeeper.getInstance().getTimeRunning());
 					timeChart.getData().add(data);
 				}
-				data.setPieValue(timeKeeper.getRoundTime());
-				timeKeeper.getActiveCue().setTime(timeKeeper.getRoundTime());
+				data.setPieValue(TimeKeeper.getInstance().getRoundTime());
+				TimeKeeper.getInstance().getActiveCue().setTime(TimeKeeper.getInstance().getRoundTime());
 				cueTable.refresh();
 				// total time
-				long time = System.currentTimeMillis() - timeKeeper.getStartTime();
+				long time = System.currentTimeMillis() - TimeKeeper.getInstance().getStartTime();
 				time = time / 1000;
 				int mins = (int) (time / 60);
 				int secs = (int) (time % 60);
@@ -229,17 +229,17 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 			}));
 			timeKeeperLine.setCycleCount(Timeline.INDEFINITE);
 			timeKeeperLine.playFromStart();
-			cueTable.getItems().setAll(timeKeeper.getCueList());
+			cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
 			cueTable.getSelectionModel().select(0);
-			if (timeKeeper.getActiveCue().getChannelToSelect() != null) {
-				MainController.getInstance().setSelectedChannel(timeKeeper.getActiveCue().getChannelToSelect());
+			if (TimeKeeper.getInstance().getActiveCue().getChannelToSelect() != null) {
+				MainController.getInstance().setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
 			}
 		} else {
 			LOG.info("Stopping timer");
 			txtCueName.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
 			choiceCueChannel.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
 			timeKeeperLine.stop();
-			timeKeeper.reset();
+			TimeKeeper.getInstance().reset();
 		}
 	}
 
@@ -249,15 +249,13 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 
 	@FXML
 	private void round(ActionEvent e) {
-		if (timeKeeper != null) {
-			LOG.info("Jump to next cue ");
-			timeKeeper.round();
-			timeKeeper.getActiveCue();
-			cueTable.getItems().setAll(timeKeeper.getCueList());
-			cueTable.getSelectionModel().select(timeKeeper.getActiveIndex());
-			if (timeKeeper.getActiveCue().getChannelToSelect() != null) {
-				MainController.getInstance().setSelectedChannel(timeKeeper.getActiveCue().getChannelToSelect());
-			}
+		TimeKeeper.getInstance().round();
+		Cue activeCue = TimeKeeper.getInstance().getActiveCue();
+		LOG.info("Jump to next cue: " + activeCue.getName());
+		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
+		cueTable.getSelectionModel().select(TimeKeeper.getInstance().getActiveIndex());
+		if (TimeKeeper.getInstance().getActiveCue().getChannelToSelect() != null) {
+			MainController.getInstance().setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
 		}
 	}
 
@@ -266,15 +264,13 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 		if (!btnStart.isSelected()) {
 			if (cueTable.getSelectionModel().getSelectedItem() != null) {
 				Cue del = cueTable.getSelectionModel().getSelectedItem();
-				if (timeKeeper != null) {
-					int index = cueTable.getSelectionModel().getSelectedIndex();
-					timeKeeper.removeCue(del);
-					cueTable.getItems().setAll(timeKeeper.getCueList());
-					if (cueTable.getItems().size() > index) {
-						cueTable.getSelectionModel().select(index);
-					} else {
-						cueTable.getSelectionModel().select(cueTable.getItems().size() - 1);
-					}
+				int index = cueTable.getSelectionModel().getSelectedIndex();
+				TimeKeeper.getInstance().removeCue(del);
+				cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
+				if (cueTable.getItems().size() > index) {
+					cueTable.getSelectionModel().select(index);
+				} else {
+					cueTable.getSelectionModel().select(cueTable.getItems().size() - 1);
 				}
 			}
 		}
@@ -294,7 +290,6 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 		for (Cue c : cueTable.getItems()) {
 			list.add(c);
 		}
-
 		boolean result = FileIO.save(list, file);
 		if (result) {
 			LOG.info("Saving successful");
@@ -303,27 +298,8 @@ public class TimeKeeperController implements Initializable, DataHolder<Cue> {
 		}
 	}
 
-	@Override
-	public void add(Cue t) {
-		if (!cueTable.getItems().contains(t)) {
-			cueTable.getItems().add(t);
-		}
-	}
-
-	@Override
-	public void set(List<Cue> list) {
-		cueTable.getItems().setAll(list);
-
-	}
-
-	@Override
-	public List<Cue> getData() {
-		return cueTable.getItems();
-	}
-
-	@Override
-	public void clear() {
-		cueTable.getItems().clear();
-
+	public void refresh() {
+		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
+		choiceCueChannel.getItems().setAll(ASIOController.getInstance().getInputList());
 	}
 }
