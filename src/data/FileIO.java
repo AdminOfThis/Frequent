@@ -1,5 +1,6 @@
 package data;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,6 +15,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import control.ASIOController;
+import control.TimeKeeper;
 import gui.controller.DataHolder;
 import gui.controller.MainController;
 
@@ -39,20 +42,16 @@ public abstract class FileIO {
 				return;
 			}
 			currentFile = file;
-			currentDir = file.getParentFile();
 			List<Serializable> result = null;
 			currentDir = file.getParentFile();
 			LOG.info("Trying to open file " + file.getName());
-			String ending = file.getName().substring(file.getName().lastIndexOf("."));
-			switch (ending) {
-			case ENDING:
-				result = openFile(file);
-			}
+			result = openFile(file);
 			if (result != null && !result.isEmpty()) {
 				for (DataHolder<?> h : holderList) {
 					h.clear();
 				}
 				handleResult(result);
+				MainController.getInstance().refresh();
 			} else {
 				LOG.warn("Nothing loaded");
 			}
@@ -65,9 +64,9 @@ public abstract class FileIO {
 			// finding right controller
 			DataHolder holder = null;
 			if (o instanceof Cue) {
-				holder = MainController.getInstance().getTimeKeeperController();
+				holder = TimeKeeper.getInstance();
 			} else if (o instanceof Channel) {
-				holder = MainController.getInstance();
+				holder = ASIOController.getInstance();
 			}
 			// adding
 			if (holder != null) {
@@ -92,6 +91,7 @@ public abstract class FileIO {
 			LOG.warn("File not found");
 			LOG.debug("", e);
 		}
+		catch (EOFException e) {}
 		catch (IOException e) {
 			LOG.warn("Unable to read file");
 			LOG.debug("", e);

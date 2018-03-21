@@ -11,15 +11,16 @@ public class Channel implements Serializable {
 	 */
 	private static final long		serialVersionUID	= 1L;
 	private transient AsioChannel	channel;
+	private int						channelIndex		= -1;
 	private String					name;
 	private float					level				= 0;
 
 	public Channel(AsioChannel channel) {
-		this.channel = channel;
-		this.name = channel.getChannelName();
+		this(channel, channel.getChannelName());
 	}
 
 	public Channel(AsioChannel channel, String name) {
+		this.channelIndex = channel.getChannelIndex();
 		this.channel = channel;
 		this.name = name;
 	}
@@ -30,6 +31,11 @@ public class Channel implements Serializable {
 
 	public void setChannel(AsioChannel channel) {
 		this.channel = channel;
+		if (channel != null) {
+			this.channelIndex = channel.getChannelIndex();
+		} else {
+			channelIndex = -1;
+		}
 	}
 
 	public String getName() {
@@ -46,5 +52,9 @@ public class Channel implements Serializable {
 
 	public void setLevel(float level) {
 		this.level = level;
+	}
+
+	public int getChannelIndex() {
+		return channelIndex;
 	}
 }

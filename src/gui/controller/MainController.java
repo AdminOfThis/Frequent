@@ -37,7 +37,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import main.Main;
 
-public class MainController implements Initializable, DataHolder<Channel> {
+public class MainController implements Initializable {
 
 	private static final String				FFT_PATH		= "./../gui/FFT.fxml";
 	private static final String				TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
@@ -71,7 +71,6 @@ public class MainController implements Initializable, DataHolder<Channel> {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
-		FileIO.registerSaveData(this);
 		initMenu();
 		initChannelList();
 		initFullScreen();
@@ -274,18 +273,6 @@ public class MainController implements Initializable, DataHolder<Channel> {
 		return timeKeeperController;
 	}
 
-	@Override
-	public void add(Channel t) {
-		if (!channelList.getItems().contains(t)) {
-			channelList.getItems().add(t);
-		}
-	}
-
-	@Override
-	public void set(List<Channel> list) {
-		channelList.getItems().setAll(list);
-	}
-
 	@FXML
 	public void dragOver(DragEvent e) {
 		if (e.getDragboard().hasFiles() && e.getDragboard().getFiles().get(0).getName().endsWith(FileIO.ENDING)) {
@@ -302,14 +289,8 @@ public class MainController implements Initializable, DataHolder<Channel> {
 		}
 	}
 
-	@Override
-	public List<Channel> getData() {
-		return channelList.getItems();
-	}
-
-	@Override
-	public void clear() {
-		// TODO this is not finished, needs some merging
-		channelList.getItems().clear();
+	public void refresh() {
+		channelList.getItems().setAll(controller.getInputList());
+		timeKeeperController.refresh();
 	}
 }

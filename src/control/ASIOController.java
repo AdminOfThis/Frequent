@@ -14,9 +14,11 @@ import com.synthbot.jasiohost.AsioDriverListener;
 import com.synthbot.jasiohost.AsioException;
 
 import data.Channel;
+import data.FileIO;
+import gui.controller.DataHolder;
 import main.Main;
 
-public class ASIOController implements AsioDriverListener {
+public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 
 	private static ASIOController	instance;
 	private static final Logger		LOG			= Logger.getLogger(ASIOController.class);
@@ -35,7 +37,7 @@ public class ASIOController implements AsioDriverListener {
 	private double[][]				fftBuffer;
 	private static int				fftBufferSize;
 	private double[][]				spectrumMap;
-	private ArrayList<Channel>		channelList;
+	private List<Channel>			channelList;
 
 	public static List<String> getInputDevices() {
 		return AsioDriver.getDriverNames();
@@ -46,8 +48,10 @@ public class ASIOController implements AsioDriverListener {
 	}
 
 	public ASIOController(String ioName) {
+		LOG.info("Created ASIO Controller");
 		this.driverName = ioName;
 		instance = this;
+		FileIO.registerSaveData(this);
 		restartASIODriver();
 		LOG.info("ASIO driver started");
 		initFFT();
@@ -160,10 +164,17 @@ public class ASIOController implements AsioDriverListener {
 	public void bufferSwitch(long sampleTime, long samplePosition, Set<AsioChannel> channels) {
 		for (AsioChannel channel : channels) {
 			if (channel.isInput() && channel.isActive()) {
-				if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
-					channel.read(output);
-					calculatePeaks(output);
-					fftThis();
+				try {
+					if (activeChannel != null) {
+						if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
+							channel.read(output);
+							calculatePeaks(output);
+							fftThis();
+						}
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
 				}
 			} else {
 				channel.read(output);
@@ -306,5 +317,40 @@ public class ASIOController implements AsioDriverListener {
 			return Math.round(inSec * 10000.0) / 10.0;
 		}
 		return 0;
+	}
+
+	@Override
+	public void set(List<Channel> list) {
+		channelList = list;
+	}
+
+	@Override
+	public List<Channel> getData() {
+		return getInputList();
+	}
+
+	@Override
+	public void clear() {
+		// do nothing
+		// channelList.clear();
+	}
+
+	@Override
+	public void add(Channel t) {
+		if (!channelList.contains(t)) {
+			Channel oldChannel = null;
+			for (Channel c : channelList) {
+				// remove pld channel, and replace with new
+				if (c.getChannelIndex() == t.getChannelIndex()) {
+					oldChannel = c;
+					break;
+				}
+			}
+			if (oldChannel != null) {
+				channelList.remove(oldChannel);
+				channelList.add(t);
+				t.setChannel(oldChannel.getChannel());
+			}
+		}
 	}
 }
