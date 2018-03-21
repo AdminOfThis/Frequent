@@ -20,6 +20,8 @@ public class ASIOController implements AsioDriverListener {
 
 	private static ASIOController	instance;
 	private static final Logger		LOG			= Logger.getLogger(ASIOController.class);
+	private String					driverName;
+
 	private AsioDriver				asioDriver;
 	private Set<AsioChannel>		activeChannels;
 	private int						bufferSize	= 1024;
@@ -45,15 +47,26 @@ public class ASIOController implements AsioDriverListener {
 	}
 
 	public ASIOController(String ioName) {
-		LOG.info("Loading ASIO driver '" + ioName + "'");
+		this.driverName = ioName;
 		instance = this;
+		restartASIODriver();
+		LOG.info("ASIO driver started");
+		initFFT();
+		LOG.info("FFT Analysis started");
+	}
+
+	private void restartASIODriver() {
+		if (asioDriver != null) {
+			asioDriver.shutdownAndUnloadDriver();
+		}
+		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
-			asioDriver = AsioDriver.getDriver(ioName);
+			asioDriver = AsioDriver.getDriver(driverName);
 		} catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
-			LOG.warn("Unable to load ASIO driver '" + ioName + "'");
+			LOG.warn("Unable to load ASIO driver '" + driverName + "'");
 			Main.close();
 		}
 		asioDriver.addAsioDriverListener(this);
@@ -75,10 +88,8 @@ public class ASIOController implements AsioDriverListener {
 		LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
 		LOG.info("Buffer size: " + bufferSize);
 		LOG.info("Samplerate: " + sampleRate);
-		LOG.info("ASIO driver started");
-		initFFT();
-		LOG.info("FFT Analysis started");
 	}
+
 
 	private void initFFT() {
 		bufferCount = 1;
@@ -116,46 +127,36 @@ public class ASIOController implements AsioDriverListener {
 
 	public void setActiveChannel(final AsioChannel channel) {
 		activeChannel = channel;
-		// restartAudioAnalysis();
-	}
-
-	private void restartAudioAnalysis() {
-		if (activeChannel != null) {
-			// JVMAudioInputStream stream = new
-			// JVMAudioInputStream(audioStream);
-			// dispatcher = new AudioDispatcher(stream, 864, overlap);
-			// dispatcher.addAudioProcessor(new
-			// PitchProcessor(PitchEstimationAlgorithm.YIN, (float) sampleRate,
-			// bufferSize, this));
-			// dispatcher.addAudioProcessor(fftProcessor);
-			// run the dispatcher (on a new thread).
-			// new Thread(dispatcher, "Audio dispatching").start();
-		}
 	}
 
 	@Override
 	public void sampleRateDidChange(double sampleRate) {
-		// TODO Auto-generated method stub
+		LOG.info("Sample rate changed");
+		restartASIODriver();
 	}
 
 	@Override
 	public void resetRequest() {
-		// TODO Auto-generated method stub
+		LOG.info("Reset requested");
+		restartASIODriver();
 	}
 
 	@Override
 	public void resyncRequest() {
-		// TODO Auto-generated method stub
+		LOG.info("Resync requested");
+		restartASIODriver();
 	}
 
 	@Override
 	public void bufferSizeChanged(int bufferSize) {
-		// TODO Auto-generated method stub
+		LOG.info("Buffer size changed");
+		restartASIODriver();
 	}
 
 	@Override
 	public void latenciesChanged(int inputLatency, int outputLatency) {
-		// TODO Auto-generated method stub
+		LOG.info("Latencies changed");
+		restartASIODriver();
 	}
 
 	@Override
@@ -232,6 +233,7 @@ public class ASIOController implements AsioDriverListener {
 		return result;
 	}
 
+	@SuppressWarnings("unused")
 	private int getBaseFrequencyIndex(double[] spectrum) {
 		double maxVal = Double.NEGATIVE_INFINITY;
 		int maxInd = 0;
@@ -301,11 +303,10 @@ public class ASIOController implements AsioDriverListener {
 		return out;
 	}
 
-	public int getLatency() {
+	public double getLatency() {
 		if (asioDriver != null) {
 			double inSec = asioDriver.getLatencyInput() / asioDriver.getSampleRate();
-			double inMillis = inSec * 100;
-			return (int) Math.round(inMillis);
+			return Math.round(inSec * 10000.0) / 10.0;
 		}
 		return 0;
 	}
