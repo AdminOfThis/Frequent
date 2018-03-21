@@ -5,24 +5,48 @@ import org.apache.log4j.PropertyConfigurator;
 
 import control.ASIOController;
 import gui.controller.IOChooserController;
+import gui.utilities.FXMLUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
-	private static Logger			LOG;
-	public static final String		LOG_CONFIG_FILE	= "./log4j.ini";
-	private static final boolean	DEBUG			= true;
+	private static Logger		LOG;
+	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
+	private static final String	GUI_IO_CHOOSER	= "IOChooser.fxml";
+
+	private static boolean		debug			= false;
 
 	public static void main(String[] args) {
 		initLogger();
+		setDebug(args);
 		launch(args);
 	}
 
+
+	/**
+	 * checks the start parameters for debug keyword and sets the debug flag to
+	 * true if found
+	 * 
+	 * @param args
+	 */
+	private static void setDebug(String[] args) {
+		for (String arg : args) {
+			if (arg.startsWith("-debug")) {
+				debug = true;
+				LOG.info("Enabling debug settings");
+				break;
+			}
+		}
+
+	}
+
+	/**
+	 * sets up the Log4j logger ba reading the properties file
+	 */
 	private static void initLogger() {
 		try {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
@@ -36,11 +60,11 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		LOG.info("Showing IOChooser");
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/gui/IOChooser.fxml"));
-		Parent parent = loader.load();
-		IOChooserController controller = loader.getController();
+
+		Parent parent = FXMLUtil.loadFXML(GUI_IO_CHOOSER);
+		IOChooserController controller = (IOChooserController) FXMLUtil.getController();
 		primaryStage.setScene(new Scene(parent));
-		primaryStage.setOnCloseRequest(e -> Main.quit());
+		primaryStage.setOnCloseRequest(e -> Main.close());
 		primaryStage.setTitle("AudioAnalyzer");
 		primaryStage.setResizable(false);
 		primaryStage.setOnShowing(e -> {
@@ -51,6 +75,10 @@ public class Main extends Application {
 		primaryStage.show();
 	}
 
+	/**
+	 * stops all running threads and terminates the gui
+	 */
+
 	public static void close() {
 		LOG.info("Stopping GUI");
 		Platform.exit();
@@ -60,13 +88,7 @@ public class Main extends Application {
 		System.exit(0);
 	}
 
-	public static void quit() {
-		LOG.info("Quitting...");
-		LOG.info("Bye");
-		System.exit(0);
-	}
-
 	public static boolean isDebug() {
-		return DEBUG;
+		return debug;
 	}
 }

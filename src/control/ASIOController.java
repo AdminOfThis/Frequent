@@ -54,7 +54,7 @@ public class ASIOController implements AsioDriverListener {
 		}
 		if (asioDriver == null) {
 			LOG.warn("Unable to load ASIO driver '" + ioName + "'");
-			Main.quit();
+			Main.close();
 		}
 		asioDriver.addAsioDriverListener(this);
 		// create a Set of AsioChannels, defining which input and output

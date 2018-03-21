@@ -34,10 +34,10 @@ public class IOChooserController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		Collection<String> ioList = ASIOController.getInputDevices();
 		LOG.info("Loaded " + ioList.size() + " possible drivers");
-		label.setText(ioList.size() +" Driver(s)");
+		label.setText(ioList.size() + " Driver(s)");
 		listIO.getItems().setAll(ioList);
 		// Quit Button
-		btnQuit.setOnAction(e -> Main.quit());
+		btnQuit.setOnAction(e -> Main.close());
 		btnStart.disableProperty().bind(listIO.getSelectionModel().selectedItemProperty().isNull());
 		// Debug
 	}
@@ -86,7 +86,7 @@ public class IOChooserController implements Initializable {
 			LOG.info("Main Window loaded");
 		} catch (IOException e) {
 			LOG.error("Unable to load Main GUI", e);
-			Main.quit();
+			Main.close();
 		}
 	}
 }
