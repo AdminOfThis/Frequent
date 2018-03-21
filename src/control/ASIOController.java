@@ -75,8 +75,9 @@ public class ASIOController implements AsioDriverListener {
 		LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
 		LOG.info("Buffer size: " + bufferSize);
 		LOG.info("Samplerate: " + sampleRate);
-		initFFT();
 		LOG.info("ASIO driver started");
+		initFFT();
+		LOG.info("FFT Analysis started");
 	}
 
 	private void initFFT() {
