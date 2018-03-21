@@ -32,37 +32,39 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import main.Main;
 
 public class MainController implements Initializable, DataHolder<Channel> {
 
-	private static final String		FFT_PATH		= "./../gui/FFT.fxml";
-	private static final String		TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
-	private static final Logger		LOG				= Logger.getLogger(MainController.class);
-	private static MainController	instance;
+	private static final String				FFT_PATH		= "./../gui/FFT.fxml";
+	private static final String				TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
+	private static final Logger				LOG				= Logger.getLogger(MainController.class);
+	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", FileIO.ENDING);
+
+	private static MainController			instance;
 	@FXML
-	private ToggleButton			toggleFFT, toggleCue;
+	private ToggleButton					toggleFFT, toggleCue;
 	@FXML
-	private BorderPane				root;
+	private BorderPane						root;
 	@FXML
-	private SplitPane				contentPane;
+	private SplitPane						contentPane;
 	@FXML
-	private Menu					driverMenu;
+	private Menu							driverMenu;
 	@FXML
-	private MenuItem				closeMenu;
+	private MenuItem						closeMenu;
 	@FXML
-	private ListView<Channel>		channelList;
+	private ListView<Channel>				channelList;
 	@FXML
-	private CheckMenuItem			menuShowCue, menuStartFFT;
+	private CheckMenuItem					menuShowCue, menuStartFFT;
 	@FXML
-	private Label					lblDriver, lblLatency;
-	private ASIOController			controller;
-	private FFTController			fftController;
-	private TimeKeeperController	timeKeeperController;
+	private Label							lblDriver, lblLatency;
+	private ASIOController					controller;
+	private FFTController					fftController;
+	private TimeKeeperController			timeKeeperController;
 
 
 	public static MainController getInstance() {
@@ -249,6 +251,8 @@ public class MainController implements Initializable, DataHolder<Channel> {
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Open");
 		chooser.setInitialDirectory(FileIO.getCurrentDir());
+		chooser.getExtensionFilters().add(FILTER);
+		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showOpenDialog(root.getScene().getWindow());
 		FileIO.open(result);
 	}
@@ -268,6 +272,8 @@ public class MainController implements Initializable, DataHolder<Channel> {
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Save to Directory");
 		chooser.setInitialDirectory(FileIO.getCurrentDir());
+		chooser.getExtensionFilters().add(FILTER);
+		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
 		if (result != null) {
 			if (timeKeeperController != null) {
@@ -294,7 +300,7 @@ public class MainController implements Initializable, DataHolder<Channel> {
 
 	@FXML
 	public void dragOver(DragEvent e) {
-		if (e.getDragboard().hasFiles()) {
+		if (e.getDragboard().hasFiles() && e.getDragboard().getFiles().get(0).getName().endsWith(FileIO.ENDING)) {
 			e.acceptTransferModes(TransferMode.MOVE);
 		}
 	}
@@ -303,12 +309,7 @@ public class MainController implements Initializable, DataHolder<Channel> {
 	public void dragDropped(DragEvent e) {
 		if (e.getDragboard().hasFiles()) {
 			for (File f : e.getDragboard().getFiles()) {
-				try {
-					FileIO.open(f);
-					LOG.info("File dropped");
-				} catch (Exception ex) {
-					LOG.info("Unable to load from " + f.getAbsolutePath());
-				}
+				FileIO.open(f);
 			}
 		}
 	}
