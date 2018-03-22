@@ -91,6 +91,9 @@
          <center>
             <SplitPane fx:id="contentPane" onDragDropped="#dragDropped" onDragOver="#dragOver" />
          </center>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
       </BorderPane>
    </center>
    <left>
