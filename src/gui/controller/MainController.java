@@ -303,6 +303,11 @@ public class MainController implements Initializable {
 		}
 	}
 
+	@FXML
+	private void newGroup() {
+		
+	}
+
 	public void refresh() {
 		if (controller != null) {
 			channelList.getItems().setAll(controller.getInputList());

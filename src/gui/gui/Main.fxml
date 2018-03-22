@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
@@ -104,6 +105,19 @@
       </BorderPane>
    </center>
    <left>
-      <ListView fx:id="channelList" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ListView fx:id="channelList" prefWidth="200.0">
+         <contextMenu>
+            <ContextMenu>
+              <items>
+                  <Menu mnemonicParsing="false" text="Group">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#newGroup" text="New Group" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                    </items>
+                  </Menu>
+              </items>
+            </ContextMenu>
+         </contextMenu>
+      </ListView>
    </left>
 </BorderPane>
