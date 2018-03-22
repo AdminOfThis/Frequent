@@ -45,7 +45,7 @@ public class TimeKeeperController implements Initializable {
 
 	private static final Logger			LOG				= Logger.getLogger(TimeKeeperController.class);
 
-	private static final double			REFRESH_RATE	= 50;
+	private static final double			REFRESH_RATE	= 1000;
 	@FXML
 	private Parent						paneCue;
 	@FXML

@@ -15,6 +15,7 @@ import com.synthbot.jasiohost.AsioException;
 
 import data.Channel;
 import data.FileIO;
+import data.Group;
 import main.Main;
 
 public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
@@ -40,6 +41,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 	private static int				fftBufferSize;
 	private double[][]				spectrumMap;
 	private List<Channel>			channelList;
+	private List<Group>				groupList		= new ArrayList<>();
 
 	public static List<String> getInputDevices() {
 		return AsioDriver.getDriverNames();
@@ -356,5 +358,15 @@ public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 
 	public float getBaseFrequency() {
 		return baseFrequency;
+	}
+
+	public ArrayList<Group> getChannelList() {
+		return new ArrayList<Group>(groupList);
+	}
+
+	public void addGroup(Group group) {
+		if (!groupList.contains(group)) {
+			groupList.add(group);
+		}
 	}
 }
