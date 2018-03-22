@@ -31,6 +31,7 @@ import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -66,11 +67,19 @@ public class TimeKeeperController implements Initializable {
 	private ComboBox<Channel>			choiceCueChannel;
 	@FXML
 	private Label						lblTime;
+
+	/**************
+	 * contextmenu
+	 *************/
+	@FXML
+	private MenuItem					cxtResetChannel;
+
 	private Timeline					timeKeeperLine;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initTimeKeeper();
+		enableContextMenu(false);
 	}
 
 	private void initTimeKeeper() {
@@ -146,6 +155,8 @@ public class TimeKeeperController implements Initializable {
 
 			@Override
 			public void changed(ObservableValue<? extends Cue> observable, Cue oldValue, Cue newValue) {
+				enableContextMenu(newValue != null);
+
 				txtCueName.setDisable(newValue == null || btnStart.isSelected());
 				choiceCueChannel.setDisable(newValue == null || btnStart.isSelected());
 				if (newValue == null) {
@@ -156,6 +167,8 @@ public class TimeKeeperController implements Initializable {
 					choiceCueChannel.getSelectionModel().select(newValue.getChannelToSelect());
 				}
 			}
+
+
 		});
 		txtCueName.setOnKeyPressed(e -> {
 			if (e.getCode() == KeyCode.ENTER) {
@@ -304,6 +317,18 @@ public class TimeKeeperController implements Initializable {
 		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
 		if (ASIOController.getInstance() != null) {
 			choiceCueChannel.getItems().setAll(ASIOController.getInstance().getInputList());
+		}
+	}
+
+	private void enableContextMenu(boolean b) {
+		cxtResetChannel.setDisable(!b);
+	}
+
+	@FXML
+	private void resetChannel(ActionEvent e) {
+		Cue cue = cueTable.getSelectionModel().getSelectedItem();
+		if (cue != null) {
+			cue.setChannelToSelect(null);
 		}
 	}
 }
