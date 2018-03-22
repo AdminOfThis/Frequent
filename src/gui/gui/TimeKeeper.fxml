@@ -57,12 +57,9 @@
             <Button fx:id="btnTime" mnemonicParsing="false" onAction="#round" text="Next" />
             <ToggleButton fx:id="btnStart" mnemonicParsing="false" onAction="#toggleTimerStart" text="Start" />
          </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" />
-         </padding>
       </HBox>
    </children>
    <padding>
-      <Insets left="5.0" />
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
    </padding>
 </VBox>

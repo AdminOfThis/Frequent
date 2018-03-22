@@ -43,7 +43,9 @@ import javafx.util.StringConverter;
 
 public class TimeKeeperController implements Initializable {
 
-	private static final Logger			LOG	= Logger.getLogger(TimeKeeperController.class);
+	private static final Logger			LOG				= Logger.getLogger(TimeKeeperController.class);
+
+	private static final double			REFRESH_RATE	= 50;
 	@FXML
 	private Parent						paneCue;
 	@FXML
@@ -139,7 +141,7 @@ public class TimeKeeperController implements Initializable {
 				return null;
 			}
 		});
-// EDIT
+		// EDIT
 		cueTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Cue>() {
 
 			@Override
@@ -204,7 +206,7 @@ public class TimeKeeperController implements Initializable {
 			timeChart.getData().clear();
 			TimeKeeper.getInstance().reset();
 			TimeKeeper.getInstance().getActiveCue();
-			timeKeeperLine = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+			timeKeeperLine = new Timeline(new KeyFrame(Duration.millis(REFRESH_RATE), event -> {
 				String name = TimeKeeper.getInstance().getActiveCue().getName();
 				Data data = null;
 				for (Data temp : timeChart.getData()) {

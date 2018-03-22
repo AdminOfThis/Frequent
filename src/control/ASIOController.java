@@ -15,20 +15,22 @@ import com.synthbot.jasiohost.AsioException;
 
 import data.Channel;
 import data.FileIO;
-import gui.controller.DataHolder;
 import main.Main;
 
 public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 
 	private static ASIOController	instance;
-	private static final Logger		LOG			= Logger.getLogger(ASIOController.class);
+	private static final Logger		LOG				= Logger.getLogger(ASIOController.class);
 	private String					driverName;
 	private AsioDriver				asioDriver;
 	private Set<AsioChannel>		activeChannels;
-	private int						bufferSize	= 1024;
+	private int						bufferSize		= 1024;
 	private double					sampleRate;
 	private AsioChannel				activeChannel;
-	float							lastPeak	= 0, peak = 0, rms = 0;
+	float							lastPeak		= 0, peak = 0, rms = 0;
+
+	private float					baseFrequency	= -1;
+
 	// FFT
 	private float[]					output;
 	private int						bufferCount;
@@ -65,8 +67,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		}
-		catch (AsioException e) {
+		} catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -112,7 +113,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
+		if (asioDriver != null) {
+			return asioDriver.getNumChannelsInput();
+		}
 		return -1;
 	}
 
@@ -172,8 +175,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 							fftThis();
 						}
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			} else {
@@ -214,11 +216,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 				fft.forward(fftBuffer[i], false);
 				// double[] fftData = fftAbs(fftBuffer[i]);
 				double[] fftData = fftBuffer[i];
-				// int baseFrequencyIndex = getBaseFrequencyIndex(fftData);
+				int baseFrequencyIndex = getBaseFrequencyIndex(fftData);
 				// int baseFrequencyIndex = getBaseFrequencyIndexHPS(fftData);
-				// double baseFrequency =
-				// getFrequencyForIndex(baseFrequencyIndex, fftData.length,
-				// (int) sampleRate) /2;
+				baseFrequency = getFrequencyForIndex(baseFrequencyIndex, fftData.length, (int) sampleRate) / 2;
 				// System.out.println("Base " + baseFrequency);
 				spectrumMap = getSpectrum(fftData);
 				// controller.updateText(baseFrequency);
@@ -352,5 +352,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 				t.setChannel(oldChannel.getChannel());
 			}
 		}
+	}
+
+	public float getBaseFrequency() {
+		return baseFrequency;
 	}
 }

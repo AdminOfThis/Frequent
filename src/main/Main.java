@@ -19,7 +19,7 @@ public class Main extends Application {
 
 	private static Logger		LOG;
 	public static final String	TITLE			= "Frequent";
-	private static final String	VERSION			= "0.0.1";
+	private static final String	VERSION			= "0.0.2";
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
 	private static final String	GUI_IO_CHOOSER	= "IOChooser.fxml";
 	private static boolean		debug			= false;

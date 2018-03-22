@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -12,8 +11,6 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -46,50 +43,41 @@
                 </Menu>
                   <Menu mnemonicParsing="false" text="View">
                     <items>
+                        <CheckMenuItem fx:id="menuStartFFT" mnemonicParsing="false" onAction="#toggleFFT" text="Start FFT">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="SPACE" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></CheckMenuItem>
                         <CheckMenuItem fx:id="menuShowCue" mnemonicParsing="false" text="Show CueList">
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="C" control="ANY" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </CheckMenuItem>
-                        <CheckMenuItem fx:id="menuStartFFT" mnemonicParsing="false" onAction="#toggleFFT" text="Start FFT" />
+                        <CheckMenuItem fx:id="menuShowTuner" mnemonicParsing="false" text="Show Tuner">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="T" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </CheckMenuItem>
                     </items>
                   </Menu>
               </menus>
             </MenuBar>
-            <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="5.0">
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
                <children>
-                  <ToggleButton fx:id="toggleFFT" mnemonicParsing="false" onAction="#toggleFFT" prefHeight="35.0">
-                     <graphic>
-                        <ImageView fitHeight="25.0" fitWidth="25.0">
-                           <image>
-                              <Image url="@../res/sample.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></ToggleButton>
+                  <ToggleButton fx:id="toggleFFT" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="50.0" text="FFT" />
+                  <ToggleButton fx:id="toggleTuner" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="50.0" text="Tuner" />
                   <Pane prefWidth="100.0" HBox.hgrow="ALWAYS" />
-                  <ToggleButton fx:id="toggleCue" mnemonicParsing="false" prefHeight="35.0">
-                     <graphic>
-                        <ImageView fitHeight="25.0" fitWidth="25.0">
-                           <image>
-                              <Image url="@../res/cue.png" />
-                           </image>
-                           <viewport>
-                              <Rectangle2D />
-                           </viewport>
-                        </ImageView>
-                     </graphic>
-                  </ToggleButton>
+                  <ToggleButton fx:id="toggleCue" mnemonicParsing="false" prefWidth="50.0" text="Cues" />
                </children>
                <VBox.margin>
                   <Insets left="5.0" right="5.0" />
                </VBox.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
             </HBox>
          </children>
       </VBox>
    </top>
-   <left>
-      <ListView fx:id="channelList" maxWidth="150.0" BorderPane.alignment="CENTER" />
-   </left>
    <bottom>
       <ToolBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
          <items>
@@ -99,6 +87,13 @@
       </ToolBar>
    </bottom>
    <center>
-      <SplitPane fx:id="contentPane" onDragDropped="#dragDropped" onDragOver="#dragOver" BorderPane.alignment="CENTER" />
+      <BorderPane fx:id="sub" BorderPane.alignment="CENTER">
+         <center>
+            <SplitPane fx:id="contentPane" onDragDropped="#dragDropped" onDragOver="#dragOver" />
+         </center>
+      </BorderPane>
    </center>
+   <left>
+      <ListView fx:id="channelList" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </left>
 </BorderPane>
