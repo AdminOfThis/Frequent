@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -13,6 +14,7 @@ import control.ASIOController;
 import control.TimeKeeper;
 import data.Channel;
 import data.FileIO;
+import data.Group;
 import gui.utilities.FXMLUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -26,12 +28,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -57,6 +62,8 @@ public class MainController implements Initializable {
 	private Menu							driverMenu;
 	@FXML
 	private MenuItem						closeMenu;
+	@FXML
+	private Menu							groupMenu;
 	@FXML
 	private ListView<Channel>				channelList;
 	@FXML
@@ -161,6 +168,7 @@ public class MainController implements Initializable {
 					LOG.info("Switching to channel " + newValue.getName());
 				}
 			}
+
 		});
 		// Edit channel list
 		channelList.setEditable(true);
@@ -274,6 +282,7 @@ public class MainController implements Initializable {
 		chooser.setInitialDirectory(FileIO.getCurrentDir());
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
+
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
 		if (result != null) {
 			if (timeKeeperController != null) {
@@ -304,13 +313,36 @@ public class MainController implements Initializable {
 	}
 
 	@FXML
-	private void newGroup() {
-		
+	private void newGroup(ActionEvent e) {
+		TextInputDialog dialog = new TextInputDialog("");
+		dialog.initStyle(((Stage) root.getScene().getWindow()).getStyle());
+		dialog.setTitle("New Group");
+		dialog.setHeaderText("Choose a name for the new Group");
+		dialog.setContentText("Please enter the name:");
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			if (ASIOController.getInstance() != null) {
+				ASIOController.getInstance().addGroup(new Group(result.get()));
+			}
+			refresh();
+		}
 	}
 
 	public void refresh() {
 		if (controller != null) {
 			channelList.getItems().setAll(controller.getInputList());
+			for (Group g : controller.getGroupList()) {
+				MenuItem groupItem = new MenuItem(g.getName());
+				if (g.getColor() != null) {
+					Circle circle = new Circle();
+					circle.setStroke(null);
+					circle.setFill(Color.valueOf(g.getColor()));
+					groupItem.setGraphic(circle);
+				}
+				groupMenu.getItems().add(groupItem);
+			}
 		}
 		timeKeeperController.refresh();
 

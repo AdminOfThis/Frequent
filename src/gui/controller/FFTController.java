@@ -113,7 +113,7 @@ public class FFTController implements Initializable {
 	}
 
 	private void initChart() {
-		ValueAxis<Number> yaxis = new NumberAxis(-60, 0, 3);
+		ValueAxis<Number> yaxis = new NumberAxis(-60, 0, 6);
 		yaxis.setPrefWidth(20.0);
 		// yaxis.setAutoRanging(true);
 		// yaxis.setOpacity(0.0);
