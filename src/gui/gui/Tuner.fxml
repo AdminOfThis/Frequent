@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="root" alignment="CENTER" prefWidth="800.0" spacing="5.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.TunerController">
+   <children>
+      <Label fx:id="lblTone" style="-fx-font-size: 30;" text="-" />
+      <Label fx:id="lblFreq" style="-fx-font-size: 15;" text="-" />
+      <HBox alignment="CENTER">
+         <children>
+            <HBox HBox.hgrow="ALWAYS">
+               <children>
+                  <Pane HBox.hgrow="SOMETIMES" />
+                  <Pane fx:id="paneTuneL" maxWidth="0.0" style="-fx-background-color: derive(-fx-accent, -50%);" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Pane prefHeight="50.0" prefWidth="5.0" style="-fx-background-color: -fx-accent;" HBox.hgrow="NEVER" />
+            <HBox HBox.hgrow="ALWAYS">
+               <children>
+                  <Pane fx:id="paneTuneR" maxWidth="100.0" style="-fx-background-color: derive(-fx-accent, -50%);" HBox.hgrow="ALWAYS" />
+                  <Pane HBox.hgrow="SOMETIMES" />
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</VBox>

@@ -25,8 +25,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.TransferMode;
@@ -41,13 +39,15 @@ public class MainController implements Initializable {
 
 	private static final String				FFT_PATH		= "./../gui/FFT.fxml";
 	private static final String				TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
+	private static final String				TUNER_PATH		= "./../gui/Tuner.fxml";
+
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
-	private ToggleButton					toggleFFT, toggleCue;
+	private ToggleButton					toggleFFT, toggleCue, toggleTuner;
 	@FXML
-	private BorderPane						root;
+	private BorderPane						root, sub;
 	@FXML
 	private SplitPane						contentPane;
 	@FXML
@@ -57,12 +57,13 @@ public class MainController implements Initializable {
 	@FXML
 	private ListView<Channel>				channelList;
 	@FXML
-	private CheckMenuItem					menuShowCue, menuStartFFT;
+	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
 	private ASIOController					controller;
 	private FFTController					fftController;
 	private TimeKeeperController			timeKeeperController;
+	private TunerController					tunerController;
 
 	public static MainController getInstance() {
 		return instance;
@@ -74,9 +75,11 @@ public class MainController implements Initializable {
 		initMenu();
 		initChannelList();
 		initFullScreen();
+		initTuner();
 		initTimekeeper();
 		initChart();
 	}
+
 
 	private void initChart() {
 		Parent p = FXMLUtil.loadFXML(FFT_PATH);
@@ -94,16 +97,10 @@ public class MainController implements Initializable {
 		if (p != null) {
 			SplitPane.setResizableWithParent(p, false);
 			timeKeeperController = (TimeKeeperController) FXMLUtil.getController();
-			// contentPane.getItems().add(p);
+			root.setRight(p);
+			timeKeeperController.show(false);
 			toggleCue.selectedProperty().addListener(e -> {
-				if (!toggleCue.isSelected()) {
-					contentPane.getItems().remove(p);
-				} else {
-					if (!contentPane.getItems().contains(p)) {
-						contentPane.getItems().add(p);
-						contentPane.setDividerPosition(0, 0.72);
-					}
-				}
+				timeKeeperController.show(toggleCue.isSelected());
 			});
 			// timeKeeperController.show(toggleCue.selectedProperty().get());
 		} else {
@@ -168,44 +165,25 @@ public class MainController implements Initializable {
 
 	private void initMenu() {
 		toggleFFT.selectedProperty().bindBidirectional(menuStartFFT.selectedProperty());
-		toggleFFT.selectedProperty().addListener(e -> {
-			Image image;
-			if (toggleFFT.isSelected()) {
-				image = new Image("./gui/res/sample_selected.png");
-			} else {
-				image = new Image("./gui/res/sample.png");
-			}
-			ImageView view = new ImageView(image);
-			view.setFitWidth(25.0);
-			view.setFitHeight(25.0);
-			toggleFFT.setGraphic(view);
-		});
-		// final ToggleGroup group = new ToggleGroup();
-		// KeyCombination comb = KeyCombination.keyCombination("D");
-		// driverMenu.setAccelerator(comb);
-		// for (String driverName :
-		// RadioMenuItem driverCheckMenu = new RadioMenuItem(driverName);
-		// driverCheckMenu.setToggleGroup(group);
-		// driverMenu.getItems().add(driverCheckMenu);
-		// }
-		toggleCue.selectedProperty().addListener(e -> {
-			Image image;
-			if (toggleCue.isSelected()) {
-				image = new Image("./gui/res/cue_selected.png");
-			} else {
-				image = new Image("./gui/res/cue.png");
-			}
-			ImageView view = new ImageView(image);
-			view.setFitWidth(25.0);
-			view.setFitHeight(25.0);
-			toggleCue.setGraphic(view);
-		});
 		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
+		toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
 		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
 		// Close Button
 		closeMenu.setOnAction(e -> {
 			Main.close();
 		});
+	}
+
+	private void initTuner() {
+		Parent p = FXMLUtil.loadFXML(TUNER_PATH);
+		tunerController = (TunerController) FXMLUtil.getController();
+		sub.setBottom(p);
+
+		toggleTuner.selectedProperty().addListener(e -> {
+			tunerController.show(toggleTuner.isSelected());
+		});
+
+		tunerController.show(false);
 	}
 
 	public void initIO(String ioName) {
@@ -219,6 +197,7 @@ public class MainController implements Initializable {
 			channelList.getSelectionModel().select(0);
 		}
 	}
+
 
 	public void setChannelList(List<Channel> list) {
 		channelList.getItems().setAll(list);

@@ -16,8 +16,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
+import control.DataHolder;
 import control.TimeKeeper;
-import gui.controller.DataHolder;
 import gui.controller.MainController;
 
 public abstract class FileIO {
