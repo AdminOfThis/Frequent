@@ -70,6 +70,13 @@ public class MainController implements Initializable {
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
+
+	/**************
+	 * contextmenu
+	 **************/
+	@FXML
+	private MenuItem						cxtResetName, cxtUngroup;
+
 	private ASIOController					controller;
 	private FFTController					fftController;
 	private TimeKeeperController			timeKeeperController;
@@ -167,6 +174,7 @@ public class MainController implements Initializable {
 					controller.setActiveChannel(newValue.getChannel());
 					LOG.info("Switching to channel " + newValue.getName());
 				}
+				enableContextMenu(newValue != null);
 			}
 
 		});
@@ -183,6 +191,8 @@ public class MainController implements Initializable {
 		closeMenu.setOnAction(e -> {
 			Main.close();
 		});
+
+		enableContextMenu(false);
 	}
 
 	private void initTuner() {
@@ -345,7 +355,19 @@ public class MainController implements Initializable {
 			}
 		}
 		timeKeeperController.refresh();
+	}
 
+	@FXML
+	private void resetName(ActionEvent e) {
+		Channel channel = channelList.getSelectionModel().getSelectedItem();
+		if (channel != null) {
+			channel.resetName();
+		}
+	}
+
+	private void enableContextMenu(boolean value) {
+		cxtResetName.setDisable(!value);
+		cxtUngroup.setDisable(!value);
 	}
 
 }

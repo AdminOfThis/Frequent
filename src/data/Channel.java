@@ -67,4 +67,10 @@ public class Channel implements Serializable {
 	public void setGroup(Group group) {
 		this.group = group;
 	}
+
+	public void resetName() {
+		if (channel != null) {
+			name = channel.getChannelName();
+		}
+	}
 }

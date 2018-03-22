@@ -109,8 +109,11 @@
          <contextMenu>
             <ContextMenu>
               <items>
-                  <Menu mnemonicParsing="false" text="Group">
+                  <MenuItem fx:id="cxtResetName" mnemonicParsing="false" onAction="#resetName" text="Reset Name" />
+                  <Menu fx:id="groupMenu" mnemonicParsing="false" text="Group">
                     <items>
+                        <MenuItem fx:id="cxtUngroup" mnemonicParsing="false" text="Ungroup" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
                       <MenuItem mnemonicParsing="false" onAction="#newGroup" text="New Group" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                     </items>
