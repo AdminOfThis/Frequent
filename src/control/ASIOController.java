@@ -360,7 +360,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 		return baseFrequency;
 	}
 
-	public ArrayList<Group> getChannelList() {
+	public ArrayList<Group> getGroupList() {
 		return new ArrayList<Group>(groupList);
 	}
 
