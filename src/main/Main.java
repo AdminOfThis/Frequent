@@ -31,7 +31,8 @@ public class Main extends Application {
 	}
 
 	/**
-	 * checks the start parameters for debug keyword and sets the debug flag to true if found
+	 * checks the start parameters for debug keyword and sets the debug flag to
+	 * true if found
 	 * 
 	 * @param args
 	 */
@@ -54,8 +55,7 @@ public class Main extends Application {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
 			LOG = Logger.getLogger(Main.class);
 			LOG.info("=== Starting Frequent ===");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.fatal("Unexpected error while initializing logging", e);
 		}
 	}
