@@ -302,6 +302,8 @@ public class TimeKeeperController implements Initializable {
 
 	public void refresh() {
 		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
-		choiceCueChannel.getItems().setAll(ASIOController.getInstance().getInputList());
+		if (ASIOController.getInstance() != null) {
+			choiceCueChannel.getItems().setAll(ASIOController.getInstance().getInputList());
+		}
 	}
 }

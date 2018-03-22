@@ -1,13 +1,16 @@
 package gui.controller;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
+import control.TimeKeeper;
 import data.Channel;
 import data.FileIO;
 import gui.utilities.FXMLUtil;
@@ -224,6 +227,37 @@ public class MainController implements Initializable {
 		FileIO.open(result);
 	}
 
+
+	@FXML
+	private void saveCues(ActionEvent e) {
+		FileChooser chooser = new FileChooser();
+		chooser.setTitle("Save cues");
+		chooser.setInitialDirectory(FileIO.getCurrentDir());
+		chooser.getExtensionFilters().add(FILTER);
+		chooser.setSelectedExtensionFilter(FILTER);
+		File result = chooser.showSaveDialog(root.getScene().getWindow());
+		if (result != null) {
+			if (timeKeeperController != null) {
+				FileIO.save(new ArrayList<Serializable>(TimeKeeper.getInstance().getData()), result);
+			}
+		}
+	}
+
+	@FXML
+	private void saveChannels(ActionEvent e) {
+		FileChooser chooser = new FileChooser();
+		chooser.setTitle("Save channels");
+		chooser.setInitialDirectory(FileIO.getCurrentDir());
+		chooser.getExtensionFilters().add(FILTER);
+		chooser.setSelectedExtensionFilter(FILTER);
+		File result = chooser.showSaveDialog(root.getScene().getWindow());
+		if (result != null) {
+			if (timeKeeperController != null) {
+				FileIO.save(new ArrayList<Serializable>(ASIOController.getInstance().getData()), result);
+			}
+		}
+	}
+
 	@FXML
 	private void save(ActionEvent e) {
 		if (FileIO.getCurrentFile() != null) {
@@ -261,6 +295,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void dragDropped(DragEvent e) {
+
 		if (e.getDragboard().hasFiles()) {
 			for (File f : e.getDragboard().getFiles()) {
 				FileIO.open(f);
@@ -269,7 +304,11 @@ public class MainController implements Initializable {
 	}
 
 	public void refresh() {
-		channelList.getItems().setAll(controller.getInputList());
+		if (controller != null) {
+			channelList.getItems().setAll(controller.getInputList());
+		}
 		timeKeeperController.refresh();
+
 	}
+
 }
