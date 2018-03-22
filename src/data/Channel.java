@@ -13,7 +13,9 @@ public class Channel implements Serializable {
 	private transient AsioChannel	channel;
 	private int						channelIndex		= -1;
 	private String					name;
+	private Group					group;
 	private float					level				= 0;
+
 
 	public Channel(AsioChannel channel) {
 		this(channel, channel.getChannelName());
@@ -56,5 +58,13 @@ public class Channel implements Serializable {
 
 	public int getChannelIndex() {
 		return channelIndex;
+	}
+
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
 	}
 }
