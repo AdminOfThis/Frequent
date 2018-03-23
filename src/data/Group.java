@@ -19,6 +19,9 @@ public class Group implements Serializable {
 		if (!channelList.contains(channel)) {
 			channelList.add(channel);
 		}
+		if (channel.getGroup() != this && channel != null) {
+			channel.setGroup(this);
+		}
 	}
 
 
