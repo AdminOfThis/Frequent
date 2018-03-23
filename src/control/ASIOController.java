@@ -1,5 +1,6 @@
 package control;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +19,7 @@ import data.FileIO;
 import data.Group;
 import main.Main;
 
-public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
+public class ASIOController implements AsioDriverListener, DataHolder<Serializable> {
 
 	private static ASIOController	instance;
 	private static final Logger		LOG				= Logger.getLogger(ASIOController.class);
@@ -322,13 +323,22 @@ public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 	}
 
 	@Override
-	public void set(List<Channel> list) {
-		channelList = list;
+	public void set(List<Serializable> list) {
+		for (Serializable s : list) {
+			if (s instanceof Channel) {
+				channelList.add((Channel) s);
+			} else if (s instanceof Group) {
+				groupList.add((Group) s);
+			}
+		}
 	}
 
 	@Override
-	public List<Channel> getData() {
-		return getInputList();
+	public List<Serializable> getData() {
+		ArrayList<Serializable> result = new ArrayList<>();
+		result.addAll(getInputList());
+		result.addAll(getGroupList());
+		return result;
 	}
 
 	@Override
@@ -338,20 +348,28 @@ public class ASIOController implements AsioDriverListener, DataHolder<Channel> {
 	}
 
 	@Override
-	public void add(Channel t) {
-		if (!channelList.contains(t)) {
-			Channel oldChannel = null;
-			for (Channel c : channelList) {
-				// remove pld channel, and replace with new
-				if (c.getChannelIndex() == t.getChannelIndex()) {
-					oldChannel = c;
-					break;
+	public void add(Serializable t) {
+		if (t instanceof Channel) {
+			Channel channel = (Channel) t;
+			if (!channelList.contains(channel)) {
+				Channel oldChannel = null;
+				for (Channel c : channelList) {
+					// remove pld channel, and replace with new
+					if (c.getChannelIndex() == channel.getChannelIndex()) {
+						oldChannel = c;
+						break;
+					}
+				}
+				if (oldChannel != null) {
+					channelList.remove(oldChannel);
+					channelList.add(channel);
+					channel.setChannel(oldChannel.getChannel());
 				}
 			}
-			if (oldChannel != null) {
-				channelList.remove(oldChannel);
-				channelList.add(t);
-				t.setChannel(oldChannel.getChannel());
+		} else if (t instanceof Group) {
+			Group g = (Group) t;
+			if (!groupList.contains(g)) {
+				groupList.add(g);
 			}
 		}
 	}
