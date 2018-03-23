@@ -351,6 +351,7 @@ public class MainController implements Initializable {
 					circle.setFill(Color.valueOf(g.getColor()));
 					groupItem.setGraphic(circle);
 				}
+				groupItem.setOnAction(e -> channelList.getSelectionModel().getSelectedItem().setGroup(g));
 				groupMenu.getItems().add(groupItem);
 			}
 		}
