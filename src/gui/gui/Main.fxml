@@ -8,10 +8,10 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -72,9 +72,9 @@
             <HBox alignment="CENTER_LEFT" spacing="5.0">
                <children>
                   <ToggleButton fx:id="toggleFFT" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="50.0" text="FFT" />
-                  <ToggleButton fx:id="toggleTuner" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="50.0" text="Tuner" />
                   <Pane prefWidth="100.0" HBox.hgrow="ALWAYS" />
                   <ToggleButton fx:id="toggleCue" mnemonicParsing="false" prefWidth="50.0" text="Cues" />
+                  <ToggleButton fx:id="toggleTuner" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="50.0" text="Tuner" />
                </children>
                <VBox.margin>
                   <Insets left="5.0" right="5.0" />
@@ -87,12 +87,17 @@
       </VBox>
    </top>
    <bottom>
-      <ToolBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
-         <items>
+      <HBox alignment="CENTER" spacing="5.0" BorderPane.alignment="CENTER">
+         <children>
+            <ProgressIndicator maxHeight="15.0" maxWidth="15.0" />
+            <Pane HBox.hgrow="ALWAYS" />
             <Label fx:id="lblLatency" text="[Latency]" />
             <Label fx:id="lblDriver" text="[Driver]" />
-         </items>
-      </ToolBar>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
    </bottom>
    <center>
       <BorderPane fx:id="sub" BorderPane.alignment="CENTER">
@@ -105,22 +110,26 @@
       </BorderPane>
    </center>
    <left>
-      <ListView fx:id="channelList" prefWidth="200.0">
-         <contextMenu>
-            <ContextMenu>
-              <items>
-                  <MenuItem fx:id="cxtResetName" mnemonicParsing="false" onAction="#resetName" text="Reset Name" />
-                  <Menu fx:id="groupMenu" mnemonicParsing="false" text="Group">
+      <VBox>
+         <children>
+            <ListView fx:id="channelList" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <contextMenu>
+                  <ContextMenu>
                     <items>
-                        <MenuItem fx:id="cxtUngroup" mnemonicParsing="false" text="Ungroup" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                      <MenuItem mnemonicParsing="false" onAction="#newGroup" text="New Group" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="cxtResetName" mnemonicParsing="false" onAction="#resetName" text="Reset Name" />
+                        <Menu fx:id="groupMenu" mnemonicParsing="false" text="Group">
+                          <items>
+                              <MenuItem fx:id="cxtUngroup" mnemonicParsing="false" text="Ungroup" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                            <MenuItem mnemonicParsing="false" onAction="#newGroup" text="New Group" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                          </items>
+                        </Menu>
                     </items>
-                  </Menu>
-              </items>
-            </ContextMenu>
-         </contextMenu>
-      </ListView>
+                  </ContextMenu>
+               </contextMenu>
+            </ListView>
+         </children>
+      </VBox>
    </left>
 </BorderPane>

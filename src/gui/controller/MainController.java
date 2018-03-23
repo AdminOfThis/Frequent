@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
+import org.controlsfx.control.HiddenSidesPane;
 
 import control.ASIOController;
 import control.TimeKeeper;
@@ -70,6 +71,7 @@ public class MainController implements Initializable {
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
+
 
 	/**************
 	 * contextmenu
