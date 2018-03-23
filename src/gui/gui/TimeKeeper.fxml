@@ -50,7 +50,7 @@
          <columns>
             <TableColumn fx:id="colName" editable="false" minWidth="-1.0" prefWidth="125.0" text="Name" />
             <TableColumn fx:id="colTime" editable="false" minWidth="-1.0" prefWidth="45.0" resizable="false" text="Time" />
-            <TableColumn fx:id="colChannel" editable="false" maxWidth="50000.0" minWidth="-1.0" prefWidth="119.0" text="Channel" />
+            <TableColumn fx:id="colChannel" editable="false" maxWidth="50000.0" minWidth="-1.0" prefWidth="115.0" text="Channel" />
          </columns>
          <contextMenu>
             <ContextMenu>
