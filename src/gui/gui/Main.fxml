@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.MainController">
+<BorderPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.MainController">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -71,7 +71,7 @@
                   <ToggleButton fx:id="toggleFFT" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="50.0" text="FFT" />
                   <Pane prefWidth="100.0" HBox.hgrow="ALWAYS" />
                   <ToggleButton fx:id="toggleCue" mnemonicParsing="false" prefWidth="50.0" text="Cues" />
-                  <ToggleButton fx:id="toggleTuner" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="50.0" text="Tuner" />
+                  <ToggleButton fx:id="toggleTuner" mnemonicParsing="false" prefWidth="50.0" text="Tuner" />
                </children>
                <VBox.margin>
                   <Insets left="5.0" right="5.0" />
