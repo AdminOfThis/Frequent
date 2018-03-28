@@ -50,12 +50,9 @@ public class MainController implements Initializable {
 	private static final String				TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
 	private static final String				TUNER_PATH		= "./../gui/Tuner.fxml";
 	private static final String				BACKGROUND_PATH	= "./../gui/Background.fxml";
-
-
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
-
 	@FXML
 	private StackPane						stack;
 	@FXML
@@ -76,14 +73,11 @@ public class MainController implements Initializable {
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
-
-
 	/**************
 	 * contextmenu
 	 **************/
 	@FXML
 	private MenuItem						cxtResetName, cxtUngroup;
-
 	private ASIOController					controller;
 	private FFTController					fftController;
 	private TimeKeeperController			timeKeeperController;
@@ -105,7 +99,6 @@ public class MainController implements Initializable {
 		initChart();
 		initStackPane();
 	}
-
 
 	private void initStackPane() {
 		if (Main.isFUI()) {
@@ -197,7 +190,6 @@ public class MainController implements Initializable {
 				}
 				enableContextMenu(newValue != null);
 			}
-
 		});
 		// Edit channel list
 		channelList.setEditable(true);
@@ -212,7 +204,6 @@ public class MainController implements Initializable {
 		closeMenu.setOnAction(e -> {
 			Main.close();
 		});
-
 		enableContextMenu(false);
 	}
 
@@ -220,11 +211,9 @@ public class MainController implements Initializable {
 		Parent p = FXMLUtil.loadFXML(TUNER_PATH);
 		tunerController = (TunerController) FXMLUtil.getController();
 		sub.setBottom(p);
-
 		toggleTuner.selectedProperty().addListener(e -> {
 			tunerController.show(toggleTuner.isSelected());
 		});
-
 		tunerController.show(false);
 	}
 
@@ -239,7 +228,6 @@ public class MainController implements Initializable {
 			channelList.getSelectionModel().select(0);
 		}
 	}
-
 
 	public void setChannelList(List<Channel> list) {
 		channelList.getItems().setAll(list);
@@ -266,7 +254,6 @@ public class MainController implements Initializable {
 		FileIO.open(result);
 	}
 
-
 	@FXML
 	private void saveCues(ActionEvent e) {
 		FileChooser chooser = new FileChooser();
@@ -292,7 +279,7 @@ public class MainController implements Initializable {
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
 		if (result != null) {
 			if (timeKeeperController != null) {
-				FileIO.save(new ArrayList<Serializable>(ASIOController.getInstance().getData()), result);
+				FileIO.save(new ArrayList<>(ASIOController.getInstance().getData()), result);
 			}
 		}
 	}
@@ -313,7 +300,6 @@ public class MainController implements Initializable {
 		chooser.setInitialDirectory(FileIO.getCurrentDir());
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
-
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
 		if (result != null) {
 			if (timeKeeperController != null) {
@@ -335,7 +321,6 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void dragDropped(DragEvent e) {
-
 		if (e.getDragboard().hasFiles()) {
 			for (File f : e.getDragboard().getFiles()) {
 				FileIO.open(f);
@@ -350,7 +335,6 @@ public class MainController implements Initializable {
 		dialog.setTitle("New Group");
 		dialog.setHeaderText("Choose a name for the new Group");
 		dialog.setContentText("Please enter the name:");
-
 		// Traditional way to get the response value.
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
@@ -384,6 +368,7 @@ public class MainController implements Initializable {
 		Channel channel = channelList.getSelectionModel().getSelectedItem();
 		if (channel != null) {
 			channel.resetName();
+			refresh();
 		}
 	}
 
@@ -391,5 +376,4 @@ public class MainController implements Initializable {
 		cxtResetName.setDisable(!value);
 		cxtUngroup.setDisable(!value);
 	}
-
 }
