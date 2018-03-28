@@ -30,9 +30,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	private double					sampleRate;
 	private AsioChannel				activeChannel;
 	float							lastPeak		= 0, peak = 0, rms = 0;
-
 	private float					baseFrequency	= -1;
-
 	// FFT
 	private float[]					output;
 	private int						bufferCount;
@@ -70,7 +68,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		} catch (AsioException e) {
+		}
+		catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -116,9 +115,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) {
-			return asioDriver.getNumChannelsInput();
-		}
+		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
 		return -1;
 	}
 
@@ -178,7 +175,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 							fftThis();
 						}
 					}
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 			} else {
@@ -379,7 +377,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	}
 
 	public ArrayList<Group> getGroupList() {
-		return new ArrayList<Group>(groupList);
+		return new ArrayList<>(groupList);
 	}
 
 	public void addGroup(Group group) {
