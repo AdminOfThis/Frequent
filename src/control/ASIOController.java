@@ -382,6 +382,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 
 	public void addGroup(Group group) {
 		if (!groupList.contains(group)) {
+			LOG.info("Group " + group.getName() + " added");
 			groupList.add(group);
 		}
 	}
