@@ -5,15 +5,11 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import com.synthbot.jasiohost.AsioChannel;
-
 import control.ASIOController;
-import control.TimeKeeper;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -38,7 +34,7 @@ public class TunerController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		LOG.info("Loading tuner");
+		LOG.info("Loading Tuner");
 		paneTuneL.setMaxWidth(0.0);
 		paneTuneR.setMaxWidth(0.0);
 		line = new Timeline();

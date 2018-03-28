@@ -23,10 +23,11 @@ public class Main extends Application {
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
 	private static final String	GUI_IO_CHOOSER	= "IOChooser.fxml";
 	private static boolean		debug			= false;
+	private static boolean		fuiStyle		= false;
 
 	public static void main(String[] args) {
 		initLogger();
-		setDebug(args);
+		pasrseArgs(args);
 		launch(args);
 	}
 
@@ -36,13 +37,15 @@ public class Main extends Application {
 	 * 
 	 * @param args
 	 */
-	private static void setDebug(String[] args) {
+	private static void pasrseArgs(String[] args) {
 		for (String arg : args) {
-			if (arg.startsWith("-debug")) {
+			if (arg.equalsIgnoreCase("-debug")) {
 				debug = true;
 				LOG.info("Enabling debug settings");
 				FileIO.setCurrentDir(new File("."));
-				break;
+			} else if (arg.equalsIgnoreCase("-fui")) {
+				LOG.info("Enabling futuristic interface");
+				fuiStyle = true;
 			}
 		}
 	}
@@ -93,5 +96,9 @@ public class Main extends Application {
 
 	public static boolean isDebug() {
 		return debug;
+	}
+
+	public static boolean isFUI() {
+		return fuiStyle;
 	}
 }

@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
-import org.controlsfx.control.HiddenSidesPane;
 
 import control.ASIOController;
 import control.TimeKeeper;
@@ -36,6 +35,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
@@ -49,10 +49,15 @@ public class MainController implements Initializable {
 	private static final String				FFT_PATH		= "./../gui/FFT.fxml";
 	private static final String				TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
 	private static final String				TUNER_PATH		= "./../gui/Tuner.fxml";
+	private static final String				BACKGROUND_PATH	= "./../gui/Background.fxml";
+
 
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
+
+	@FXML
+	private StackPane						stack;
 	@FXML
 	private ToggleButton					toggleFFT, toggleCue, toggleTuner;
 	@FXML
@@ -83,6 +88,7 @@ public class MainController implements Initializable {
 	private FFTController					fftController;
 	private TimeKeeperController			timeKeeperController;
 	private TunerController					tunerController;
+	private BackgroundController			backgroundController;
 
 	public static MainController getInstance() {
 		return instance;
@@ -97,8 +103,21 @@ public class MainController implements Initializable {
 		initTuner();
 		initTimekeeper();
 		initChart();
+		initStackPane();
 	}
 
+
+	private void initStackPane() {
+		if (Main.isFUI()) {
+			Parent p = FXMLUtil.loadFXML(BACKGROUND_PATH);
+			if (p != null) {
+				backgroundController = (BackgroundController) FXMLUtil.getController();
+				stack.getChildren().add(0, p);
+			} else {
+				LOG.warn("Unable to load Background");
+			}
+		}
+	}
 
 	private void initChart() {
 		Parent p = FXMLUtil.loadFXML(FFT_PATH);

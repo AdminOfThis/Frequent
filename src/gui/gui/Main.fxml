@@ -16,6 +16,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.MainController">
@@ -30,11 +31,7 @@
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator></MenuItem>
-                        <MenuItem mnemonicParsing="false" onAction="#save" text="Save">
-                           <accelerator>
-                              <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator>
-                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
                         <Menu mnemonicParsing="false" text="Save ...">
                           <items>
                             <MenuItem mnemonicParsing="false" onAction="#saveCues" text="Cues" />
@@ -100,14 +97,18 @@
       </HBox>
    </bottom>
    <center>
-      <BorderPane fx:id="sub" BorderPane.alignment="CENTER">
-         <center>
-            <SplitPane fx:id="contentPane" onDragDropped="#dragDropped" onDragOver="#dragOver" />
-         </center>
+      <StackPane fx:id="stack" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>
-      </BorderPane>
+         <children>
+            <BorderPane fx:id="sub" styleClass="transparent">
+               <center>
+                  <SplitPane fx:id="contentPane" onDragDropped="#dragDropped" onDragOver="#dragOver" styleClass="transparent" />
+               </center>
+            </BorderPane>
+         </children>
+      </StackPane>
    </center>
    <left>
       <VBox>
