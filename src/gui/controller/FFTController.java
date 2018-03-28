@@ -121,6 +121,7 @@ public class FFTController implements Initializable {
 		ValueAxis<Number> logAxis = new LogarithmicAxis(X_MIN, X_MAX);
 		chart = new NegativeBackgroundAreaChart<>(logAxis, yaxis);
 		chart.setAnimated(false);
+		chart.getStyleClass().add("transparent");
 		((NegativeBackgroundAreaChart<Number, Number>) chart).setCreateSymbols(false);
 		chart.setLegendVisible(false);
 		chart.setLegendSide(Side.RIGHT);
@@ -131,12 +132,14 @@ public class FFTController implements Initializable {
 		// chart.setPrefWidth(200.0);
 		clippingPane.prefHeightProperty().bind(logAxis.heightProperty().add(12.0));
 		clippingPane.minHeightProperty().bind(logAxis.heightProperty().add(12.0));
-// chart.addEventHandler(KeyEvent.ANY, e -> {
-// if (e.getCode() == KeyCode.SPACE) {
-// MainController.getInstance().toggleFFT(new ActionEvent());
-// e.consume();
-// }
-// });
+
+
+		// chart.addEventHandler(KeyEvent.ANY, e -> {
+		// if (e.getCode() == KeyCode.SPACE) {
+		// MainController.getInstance().toggleFFT(new ActionEvent());
+		// e.consume();
+		// }
+		// });
 	}
 
 	public void setDriver(ASIOController driver) {

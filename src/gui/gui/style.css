@@ -1,8 +1,10 @@
 .root {
-    -fx-base: rgba(60, 63, 65, 255); // dark
+     -fx-base: rgba(30, 33, 35, 255); // dark
 	-fx-accent: #7dff2f;
 	-fx-focus-color: derive(-fx-accent, 50%);
 }
+
+
 
 
 .default-color0.chart-series-area-line { -fx-stroke: -fx-accent }
@@ -30,4 +32,18 @@
 .chart-pie .data{
     -fx-border-color: -fx-background;
     -fx-border-width: 5px;
+}
+
+.transparent {
+	-fx-background-color: transparent;
+	-fx-fill: transparent;
+}
+
+.transparent > *{
+	-fx-background-color: transparent;
+	-fx-fill: transparent;
+}
+
+.transparent  .chart-content .chart-plot-background{
+	-fx-background-color: transparent;
 }
