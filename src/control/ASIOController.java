@@ -173,29 +173,29 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 							channel.read(output);
 							calculatePeaks(output);
 							fftThis();
+						} else {
+							channel.read(output);
+						}
+						float max = 0;
+						for (float f : output) {
+							if (f > max) {
+								max = f;
+							}
+						}
+						Channel c = null;
+						for (Channel cTemp : channelList) {
+							if (cTemp.getChannel().equals(channel)) {
+								c = cTemp;
+								break;
+							}
+						}
+						if (c != null) {
+							c.setLevel(max);
 						}
 					}
 				}
 				catch (Exception e) {
 					e.printStackTrace();
-				}
-			} else {
-				channel.read(output);
-				float max = 0;
-				for (float f : output) {
-					if (f > max) {
-						max = f;
-					}
-				}
-				Channel c = null;
-				for (Channel cTemp : channelList) {
-					if (cTemp.getChannel().equals(channel)) {
-						c = cTemp;
-						break;
-					}
-				}
-				if (c != null) {
-					c.setLevel(max);
 				}
 			}
 		}

@@ -22,6 +22,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -50,6 +51,7 @@ public class MainController implements Initializable {
 	private static final String				TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
 	private static final String				TUNER_PATH		= "./../gui/Tuner.fxml";
 	private static final String				BACKGROUND_PATH	= "./../gui/Background.fxml";
+	private static final String				DRUM_PATH		= "./../gui/Drum.fxml";
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
@@ -83,6 +85,7 @@ public class MainController implements Initializable {
 	private TimeKeeperController			timeKeeperController;
 	private TunerController					tunerController;
 	private BackgroundController			backgroundController;
+	private DrumController					drumController;
 
 	public static MainController getInstance() {
 		return instance;
@@ -375,5 +378,25 @@ public class MainController implements Initializable {
 	private void enableContextMenu(boolean value) {
 		cxtResetName.setDisable(!value);
 		cxtUngroup.setDisable(!value);
+	}
+
+	@FXML
+	private void openDrumMonitor(ActionEvent e) {
+		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
+		// drumController = (DrumController) FXMLUtil.getController();
+		Stage secondStage = new Stage();
+		secondStage.setOnCloseRequest(ev -> {
+			LOG.info("Closing DrumStage");
+			secondStage.close();
+		});
+		secondStage.setScene(new Scene(p));
+		secondStage.centerOnScreen();
+		secondStage.setWidth(1280);
+		secondStage.setHeight(960);
+		secondStage.show();
+	}
+
+	protected void setDrumController(DrumController con) {
+		this.drumController = con;
 	}
 }

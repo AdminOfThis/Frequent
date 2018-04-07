@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
@@ -69,7 +70,9 @@
             <HBox alignment="CENTER_LEFT" spacing="5.0">
                <children>
                   <ToggleButton fx:id="toggleFFT" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="50.0" text="FFT" />
-                  <Pane prefWidth="100.0" HBox.hgrow="ALWAYS" />
+                  <Pane HBox.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" onAction="#openDrumMonitor" text="Drum Monitor" />
+                  <Pane HBox.hgrow="ALWAYS" />
                   <ToggleButton fx:id="toggleCue" mnemonicParsing="false" prefWidth="50.0" text="Cues" />
                   <ToggleButton fx:id="toggleTuner" mnemonicParsing="false" prefWidth="50.0" text="Tuner" />
                </children>
