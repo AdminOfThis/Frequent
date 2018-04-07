@@ -15,7 +15,7 @@ public class Channel implements Serializable {
 	private String					name;
 	private Group					group;
 	private float					level				= 0;
-
+	private LevelObserver			observer;
 
 	public Channel(AsioChannel channel) {
 		this(channel, channel.getChannelName());
@@ -54,6 +54,9 @@ public class Channel implements Serializable {
 
 	public void setLevel(float level) {
 		this.level = level;
+		if (observer != null) {
+			observer.levelChanged(level);
+		}
 	}
 
 	public int getChannelIndex() {
@@ -73,9 +76,21 @@ public class Channel implements Serializable {
 		}
 	}
 
+	public LevelObserver getObserver() {
+		return observer;
+	}
+
+	public void setObserver(LevelObserver observer) {
+		this.observer = observer;
+	}
+
 	public void resetName() {
 		if (channel != null) {
 			name = channel.getChannelName();
 		}
+	}
+
+	public static double percentToDB(double level) {
+		return 20.0 * Math.log10(level / 1000.0);
 	}
 }

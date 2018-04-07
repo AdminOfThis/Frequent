@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
+import data.Channel;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeBackgroundAreaChart;
 import javafx.animation.Animation;
@@ -59,9 +60,9 @@ public class FFTController implements Initializable {
 		line = new Timeline();
 		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
 			if (controller != null) {
-				double peakdB = percentToDB(controller.getPeak() * 1000.0);
+				double peakdB = Channel.percentToDB(controller.getPeak() * 1000.0);
 				vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + 60.0) / 60.0);
-				double lastPeakdB = percentToDB(controller.getLastPeak() * 1000.0);
+				double lastPeakdB = Channel.percentToDB(controller.getLastPeak() * 1000.0);
 				vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (lastPeakdB + 60.0) / 60.0);
 				lblPeak.setText(Math.round(peakdB * 10.0) / 10.0 + "");
 				if (controller.getPeak() >= 0.99) {
@@ -90,7 +91,7 @@ public class FFTController implements Initializable {
 						double frequency = map[0][count];
 						if (frequency >= 20 && frequency <= X_MAX) {
 							double level = Math.abs(map[1][count]);
-							level = percentToDB(level);
+							level = Channel.percentToDB(level);
 							Data<Number, Number> data = new XYChart.Data<>(frequency, level);
 							dataList.add(data);
 						}
@@ -106,10 +107,6 @@ public class FFTController implements Initializable {
 		});
 		line.getKeyFrames().add(frame);
 		line.setCycleCount(Timeline.INDEFINITE);
-	}
-
-	private double percentToDB(double level) {
-		return 20.0 * Math.log10(level / 1000.0);
 	}
 
 	private void initChart() {
@@ -132,8 +129,6 @@ public class FFTController implements Initializable {
 		// chart.setPrefWidth(200.0);
 		clippingPane.prefHeightProperty().bind(logAxis.heightProperty().add(12.0));
 		clippingPane.minHeightProperty().bind(logAxis.heightProperty().add(12.0));
-
-
 		// chart.addEventHandler(KeyEvent.ANY, e -> {
 		// if (e.getCode() == KeyCode.SPACE) {
 		// MainController.getInstance().toggleFFT(new ActionEvent());

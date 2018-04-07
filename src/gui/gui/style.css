@@ -5,6 +5,10 @@
 }
 
 
+.default-color0.chart-symbol { -fx-background-color: derive(-fx-accent, -50%); }
+.default-color1.chart-symbol { -fx-background-color: derive(-fx-accent, -75%) }
+.default-color2.chart-symbol { -fx-background-color: derive(-fx-accent, 50%) }
+.default-color3.chart-symbol { -fx-background-color: derive(-fx-accent, 75%) }
 
 
 .default-color0.chart-series-area-line { -fx-stroke: -fx-accent }
@@ -15,11 +19,18 @@
 		red
     ); }
 	
+.default-color1.chart-series-area-line { -fx-stroke: -fx-accent }
+.default-color1.chart-series-area-fill { -fx-fill: linear-gradient(
+        to bottom,
+        -fx-accent,
+        transparent
+    ); }
+	
 	
 .default-color0.chart-series-line { -fx-stroke: -fx-accent }
 
 .default-color0.chart-pie { -fx-pie-color: -fx-accent }
-.default-color1.chart-pie { -fx-pie-color: derive(-fx-accent, -25%); }
+.default-color1.chart-pie { -fx-pie-color: derive(-fx-accent, -25%) }
 .default-color2.chart-pie { -fx-pie-color: derive(-fx-accent, -50%) }
 .default-color3.chart-pie { -fx-pie-color: derive(-fx-accent, -75%) }
 .default-color4.chart-pie { -fx-pie-color: derive(-fx-accent, -100%) }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+
+
+<HBox alignment="CENTER_LEFT" spacing="5.0" stylesheets="@../../gui/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.DrumTriggerItemController">
+   <children>
+      <Label fx:id="label" prefWidth="50.0" text="Label" />
+      <ComboBox fx:id="combo" prefWidth="150.0" />
+      <Slider fx:id="slider" blockIncrement="6.0" majorTickUnit="12.0" max="0.0" min="-60.0" showTickLabels="true" showTickMarks="true" />
+      <ToggleButton fx:id="view" mnemonicParsing="false" text="View" />
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</HBox>
