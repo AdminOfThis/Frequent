@@ -39,7 +39,9 @@ public class DrumTriggerItemController implements Initializable, DrumTriggerObse
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		group.getToggles().add(view);
-		combo.getItems().setAll(ASIOController.getInstance().getInputList());
+		if (ASIOController.getInstance() != null) {
+			combo.getItems().setAll(ASIOController.getInstance().getInputList());
+		}
 		combo.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Channel>() {
 
 			@Override
@@ -70,7 +72,8 @@ public class DrumTriggerItemController implements Initializable, DrumTriggerObse
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				if (trigger != null) {
-					// LOG.info("Setting Treshold on Trigger " + trigger.getName() + " to " + slider.getValue());
+					// LOG.info("Setting Treshold on Trigger " +
+					// trigger.getName() + " to " + slider.getValue());
 					trigger.setTreshold(slider.getValue());
 					controller.redrawThreshold();
 				}
