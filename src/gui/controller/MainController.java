@@ -382,18 +382,22 @@ public class MainController implements Initializable {
 
 	@FXML
 	private void openDrumMonitor(ActionEvent e) {
+		if(drumController == null) {
 		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
 		drumController = (DrumController) FXMLUtil.getController();
 		Stage secondStage = new Stage();
 		secondStage.setOnCloseRequest(ev -> {
 			LOG.info("Closing DrumStage");
-			secondStage.close();
+			secondStage.hide();
 		});
 		secondStage.setScene(new Scene(p));
 		secondStage.centerOnScreen();
 		secondStage.setWidth(1280);
 		secondStage.setHeight(960);
 		secondStage.show();
+		} else {
+			drumController.show();
+		}
 	}
 
 	protected void setDrumController(DrumController con) {

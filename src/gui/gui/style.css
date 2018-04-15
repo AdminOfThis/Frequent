@@ -4,6 +4,10 @@
 	-fx-focus-color: derive(-fx-accent, 50%);
 }
 
+.toggle-button: selected{
+	-fx-text-fill: -fx-accent;
+}
+
 
 .default-color0.chart-symbol { -fx-background-color: derive(-fx-accent, -50%); }
 .default-color1.chart-symbol { -fx-background-color: derive(-fx-accent, -75%) }

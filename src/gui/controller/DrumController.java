@@ -33,6 +33,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
@@ -249,5 +250,13 @@ public class DrumController implements Initializable {
 				}
 			}
 		});
+	}
+
+	public void show() {
+		Stage stage = (Stage) btnSetup.getScene().getWindow();
+		if(!stage.isShowing()) {
+			stage.show();
+			stage.requestFocus();
+		}
 	}
 }
