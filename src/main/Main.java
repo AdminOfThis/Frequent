@@ -21,7 +21,7 @@ public class Main extends Application {
 	public static final String	TITLE			= "Frequent";
 	private static final String	VERSION			= "0.0.2";
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
-	private static final String	GUI_IO_CHOOSER	= "IOChooser.fxml";
+	private static final String	GUI_IO_CHOOSER	= "/gui/gui/IOChooser.fxml";
 	private static boolean		debug			= false;
 	private static boolean		fuiStyle		= false;
 
@@ -32,8 +32,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * checks the start parameters for debug keyword and sets the debug flag to
-	 * true if found
+	 * checks the start parameters for debug keyword and sets the debug flag to true if found
 	 * 
 	 * @param args
 	 */
@@ -58,7 +57,8 @@ public class Main extends Application {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
 			LOG = Logger.getLogger(Main.class);
 			LOG.info("=== Starting Frequent ===");
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.fatal("Unexpected error while initializing logging", e);
 		}
 	}

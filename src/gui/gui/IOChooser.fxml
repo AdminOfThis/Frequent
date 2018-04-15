@@ -10,19 +10,19 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 
-<BorderPane prefWidth="300.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.IOChooserController">
+<BorderPane prefWidth="300.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.IOChooserController">
    <bottom>
       <ToolBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
         <items>
-          <Button fx:id="btnQuit" mnemonicParsing="false" text="Quit" />
-            <Button fx:id="btnStart" mnemonicParsing="false" onAction="#start" text="Start" />
+            <Button fx:id="btnStart" defaultButton="true" mnemonicParsing="false" onAction="#start" text="Start" />
+          <Button fx:id="btnQuit" cancelButton="true" mnemonicParsing="false" text="Quit" />
         </items>
       </ToolBar>
    </bottom>
    <center>
       <AnchorPane BorderPane.alignment="CENTER">
          <children>
-            <ChoiceBox fx:id="listIO" prefWidth="150.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+            <ChoiceBox fx:id="listIO" prefWidth="150.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
          </children>
       </AnchorPane>
    </center>

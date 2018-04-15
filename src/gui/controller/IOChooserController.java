@@ -22,7 +22,8 @@ import main.Main;
 
 public class IOChooserController implements Initializable {
 
-	private static final Logger	LOG	= Logger.getLogger(IOChooserController.class);
+	private static final String	GUI_MAIN_PATH	= "/gui/gui/Main.fxml";
+	private static final Logger	LOG				= Logger.getLogger(IOChooserController.class);
 	@FXML
 	private ChoiceBox<String>	listIO;
 	@FXML
@@ -36,6 +37,9 @@ public class IOChooserController implements Initializable {
 		LOG.info("Loaded " + ioList.size() + " possible drivers");
 		label.setText(ioList.size() + " Driver(s)");
 		listIO.getItems().setAll(ioList);
+		if (listIO.getItems().size() > 0) {
+			listIO.getSelectionModel().select(0);
+		}
 		// Quit Button
 		btnQuit.setOnAction(e -> Main.close());
 		btnStart.disableProperty().bind(listIO.getSelectionModel().selectedItemProperty().isNull());
@@ -51,8 +55,8 @@ public class IOChooserController implements Initializable {
 		Stage stage = null;
 		try {
 			stage = (Stage) listIO.getScene().getWindow();
-		} catch (Exception ex) {
 		}
+		catch (Exception ex) {}
 		if (stage != null) {
 			stage.close();
 		}
@@ -71,7 +75,8 @@ public class IOChooserController implements Initializable {
 	}
 
 	private void loadMain(String ioName) {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/Main.fxml"));
+		LOG.info("Loading from: " + GUI_MAIN_PATH);
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
 		try {
 			Parent p = loader.load();
 			MainController controller = loader.getController();
@@ -81,14 +86,17 @@ public class IOChooserController implements Initializable {
 			Stage stage;
 			try {
 				stage = (Stage) listIO.getScene().getWindow();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				stage = new Stage();
 			}
 			stage.setResizable(true);
 			stage.setScene(new Scene(p));
+			stage.centerOnScreen();
 			stage.show();
 			LOG.info("Main Window loaded");
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			LOG.error("Unable to load Main GUI", e);
 			Main.close();
 		}
