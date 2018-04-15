@@ -47,11 +47,11 @@ import main.Main;
 
 public class MainController implements Initializable {
 
-	private static final String				FFT_PATH		= "./../gui/FFT.fxml";
-	private static final String				TIMEKEEPER_PATH	= "./../gui/TimeKeeper.fxml";
-	private static final String				TUNER_PATH		= "./../gui/Tuner.fxml";
-	private static final String				BACKGROUND_PATH	= "./../gui/Background.fxml";
-	private static final String				DRUM_PATH		= "./../gui/Drum.fxml";
+	private static final String				FFT_PATH		= "/gui/gui/FFT.fxml";
+	private static final String				TIMEKEEPER_PATH	= "/gui/gui/TimeKeeper.fxml";
+	private static final String				TUNER_PATH		= "/gui/gui/Tuner.fxml";
+	private static final String				BACKGROUND_PATH	= "/gui/gui/Background.fxml";
+	private static final String				DRUM_PATH		= "/gui/gui/Drum.fxml";
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
@@ -383,7 +383,7 @@ public class MainController implements Initializable {
 	@FXML
 	private void openDrumMonitor(ActionEvent e) {
 		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
-		// drumController = (DrumController) FXMLUtil.getController();
+		drumController = (DrumController) FXMLUtil.getController();
 		Stage secondStage = new Stage();
 		secondStage.setOnCloseRequest(ev -> {
 			LOG.info("Closing DrumStage");

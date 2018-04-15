@@ -39,7 +39,7 @@ import javafx.util.StringConverter;
 public class DrumController implements Initializable {
 
 	private static final Logger										LOG					= Logger.getLogger(DrumController.class);
-	private static final String										DRUM_ITEM_PATH		= "./../utilities/gui/DrumTriggerItem.fxml";
+	private static final String										DRUM_ITEM_PATH		= "/gui/utilities/gui/DrumTriggerItem.fxml";
 	private static final int										REFRESH_RATE		= 10;
 	private static final double										TIME_FRAME			= 7500;
 	private static final double										DRUM_TIME_FRAME		= 5000;
