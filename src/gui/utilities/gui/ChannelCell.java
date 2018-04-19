@@ -21,8 +21,8 @@ public class ChannelCell extends ListCell<Channel> {
 
 	private static final double							REFRESH_RATE	= 50.0;
 
-	// time for the chart in seconds
-	private static final double							TIME_RANGE		= 30.0;
+	// time for the chart in milliseconds
+	private static final double							TIME_RANGE		= 30000.0;
 
 	private BorderPane									pane			= new BorderPane();
 	private Label										label			= new Label();
@@ -94,6 +94,7 @@ public class ChannelCell extends ListCell<Channel> {
 	private void update(Channel item) {
 		if (item == null) {
 			label.setText(null);
+			series.getData().clear();
 			line.stop();
 		} else {
 			label.setText(item.getName());
