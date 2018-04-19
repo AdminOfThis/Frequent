@@ -3,6 +3,7 @@ package gui.utilities.gui;
 import java.util.ArrayList;
 
 import data.Channel;
+import gui.controller.FFTController;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeBackgroundAreaChart;
 import javafx.animation.KeyFrame;
@@ -43,7 +44,7 @@ public class ChannelCell extends ListCell<Channel> {
 		// init list Cell
 		NumberAxis x = new NumberAxis();
 		x.setAutoRanging(false);
-		Axis<Number> y = new LogarithmicAxis(-80.0, 0.0);
+		Axis<Number> y = new LogarithmicAxis(FFTController.FFT_MIN, 0.0);
 		volumeChart = new NegativeBackgroundAreaChart<>(x, y);
 		volumeChart.getData().add(series);
 		chartPane.getChildren().add(volumeChart);
