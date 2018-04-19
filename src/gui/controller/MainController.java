@@ -16,6 +16,7 @@ import data.Channel;
 import data.FileIO;
 import data.Group;
 import gui.utilities.FXMLUtil;
+import gui.utilities.gui.ChannelCell;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -153,35 +154,7 @@ public class MainController implements Initializable {
 	}
 
 	private void initChannelList() {
-		channelList.setCellFactory(e -> {
-			TextFieldListCell<Channel> cell = new TextFieldListCell<Channel>() {
-
-				@Override
-				public void updateItem(Channel item, boolean empty) {
-					super.updateItem(item, empty);
-					if (item == null || empty) {
-						setText(null);
-					} else {
-						setText(item.getName());
-					}
-				}
-			};
-			cell.setConverter(new StringConverter<Channel>() {
-
-				@Override
-				public String toString(Channel object) {
-					return object.getName();
-				}
-
-				@Override
-				public Channel fromString(String string) {
-					Channel channel = cell.getItem();
-					channel.setName(string);
-					return channel;
-				}
-			});
-			return cell;
-		});
+		channelList.setCellFactory(e -> new ChannelCell());
 		channelList.setOnEditCommit(e -> timeKeeperController.setChannels(channelList.getItems()));
 		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Channel>() {
 
@@ -382,19 +355,19 @@ public class MainController implements Initializable {
 
 	@FXML
 	private void openDrumMonitor(ActionEvent e) {
-		if(drumController == null) {
-		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
-		drumController = (DrumController) FXMLUtil.getController();
-		Stage secondStage = new Stage();
-		secondStage.setOnCloseRequest(ev -> {
-			LOG.info("Closing DrumStage");
-			secondStage.hide();
-		});
-		secondStage.setScene(new Scene(p));
-		secondStage.centerOnScreen();
-		secondStage.setWidth(1280);
-		secondStage.setHeight(960);
-		secondStage.show();
+		if (drumController == null) {
+			Parent p = FXMLUtil.loadFXML(DRUM_PATH);
+			drumController = (DrumController) FXMLUtil.getController();
+			Stage secondStage = new Stage();
+			secondStage.setOnCloseRequest(ev -> {
+				LOG.info("Closing DrumStage");
+				secondStage.hide();
+			});
+			secondStage.setScene(new Scene(p));
+			secondStage.centerOnScreen();
+			secondStage.setWidth(1280);
+			secondStage.setHeight(960);
+			secondStage.show();
 		} else {
 			drumController.show();
 		}
