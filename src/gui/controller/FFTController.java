@@ -31,6 +31,8 @@ import javafx.util.Duration;
 
 public class FFTController implements Initializable {
 
+	public static final double		FFT_MIN			= -60;
+
 	private static final Logger		LOG				= Logger.getLogger(FFTController.class);
 	private static final int		X_MIN			= 25;
 	private static final int		X_MAX			= 20000;
@@ -61,9 +63,9 @@ public class FFTController implements Initializable {
 		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
 			if (controller != null) {
 				double peakdB = Channel.percentToDB(controller.getPeak() * 1000.0);
-				vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + 60.0) / 60.0);
+				vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFT_MIN)) / Math.abs(FFT_MIN));
 				double lastPeakdB = Channel.percentToDB(controller.getLastPeak() * 1000.0);
-				vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (lastPeakdB + 60.0) / 60.0);
+				vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (lastPeakdB + Math.abs(FFT_MIN)) / Math.abs(FFT_MIN));
 				lblPeak.setText(Math.round(peakdB * 10.0) / 10.0 + "");
 				if (controller.getPeak() >= 0.99) {
 					clippingPane.setStyle("-fx-background-color: red");
@@ -110,7 +112,7 @@ public class FFTController implements Initializable {
 	}
 
 	private void initChart() {
-		ValueAxis<Number> yaxis = new NumberAxis(-60, 0, 6);
+		ValueAxis<Number> yaxis = new NumberAxis(-FFT_MIN, 0, 6);
 		yaxis.setPrefWidth(20.0);
 		// yaxis.setAutoRanging(true);
 		// yaxis.setOpacity(0.0);
