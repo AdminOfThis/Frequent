@@ -31,7 +31,10 @@
     ); }
 	
 	
-.default-color0.chart-series-line { -fx-stroke: -fx-accent }
+.default-color0.chart-series-line { 
+	-fx-stroke: -fx-accent;
+	-fx-stroke-width: 1px;
+	}
 
 .default-color0.chart-pie { -fx-pie-color: -fx-accent }
 .default-color1.chart-pie { -fx-pie-color: derive(-fx-accent, -25%) }

@@ -9,18 +9,18 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.MainController">
+<BorderPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.MainController">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -89,7 +89,6 @@
    <bottom>
       <HBox alignment="CENTER" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <ProgressIndicator maxHeight="15.0" maxWidth="15.0" />
             <Pane HBox.hgrow="ALWAYS" />
             <Label fx:id="lblLatency" text="[Latency]" />
             <Label fx:id="lblDriver" text="[Driver]" />
@@ -116,23 +115,28 @@
    <left>
       <VBox>
          <children>
-            <ListView fx:id="channelList" prefWidth="200.0" VBox.vgrow="ALWAYS">
-               <contextMenu>
-                  <ContextMenu>
-                    <items>
-                        <MenuItem fx:id="cxtResetName" mnemonicParsing="false" onAction="#resetName" text="Reset Name" />
-                        <Menu fx:id="groupMenu" mnemonicParsing="false" text="Group">
+            <VBox maxWidth="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <ListView fx:id="channelList" VBox.vgrow="ALWAYS">
+                     <contextMenu>
+                        <ContextMenu>
                           <items>
-                            <MenuItem mnemonicParsing="false" onAction="#newGroup" text="New Group" />
-                              <SeparatorMenuItem mnemonicParsing="false" />
-                              <MenuItem fx:id="cxtUngroup" mnemonicParsing="false" text="Ungroup" />
-                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="cxtResetName" mnemonicParsing="false" onAction="#resetName" text="Reset Name" />
+                              <Menu fx:id="groupMenu" mnemonicParsing="false" text="Group">
+                                <items>
+                                  <MenuItem mnemonicParsing="false" onAction="#newGroup" text="New Group" />
+                                    <SeparatorMenuItem mnemonicParsing="false" />
+                                    <MenuItem fx:id="cxtUngroup" mnemonicParsing="false" text="Ungroup" />
+                                    <SeparatorMenuItem mnemonicParsing="false" />
+                                </items>
+                              </Menu>
                           </items>
-                        </Menu>
-                    </items>
-                  </ContextMenu>
-               </contextMenu>
-            </ListView>
+                        </ContextMenu>
+                     </contextMenu>
+                  </ListView>
+                  <AnchorPane fx:id="waveFormPane" maxHeight="200.0" prefHeight="200.0" VBox.vgrow="NEVER" />
+               </children>
+            </VBox>
          </children>
       </VBox>
    </left>

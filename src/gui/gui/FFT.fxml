@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="chartRoot" minHeight="200.0" minWidth="300.0" style="-fx-border-style: none;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.FFTController">
+<HBox fx:id="chartRoot" minHeight="200.0" minWidth="300.0" style="-fx-border-style: none;" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.FFTController">
    <children>
       <VBox>
          <children>
