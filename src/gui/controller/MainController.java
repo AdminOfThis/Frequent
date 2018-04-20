@@ -17,6 +17,7 @@ import data.FileIO;
 import data.Group;
 import gui.utilities.ChannelCell;
 import gui.utilities.FXMLUtil;
+import gui.utilities.controller.WaveFormChartController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -32,10 +33,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -43,7 +44,6 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 import main.Main;
 
 public class MainController implements Initializable {
@@ -53,9 +53,12 @@ public class MainController implements Initializable {
 	private static final String				TUNER_PATH		= "/gui/gui/Tuner.fxml";
 	private static final String				BACKGROUND_PATH	= "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH		= "/gui/gui/Drum.fxml";
+
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
+	@FXML
+	private AnchorPane						waveFormPane;
 	@FXML
 	private StackPane						stack;
 	@FXML
@@ -87,6 +90,7 @@ public class MainController implements Initializable {
 	private TunerController					tunerController;
 	private BackgroundController			backgroundController;
 	private DrumController					drumController;
+	private WaveFormChartController			waveFormController;
 
 	public static MainController getInstance() {
 		return instance;
@@ -95,6 +99,7 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
+		initWaveForm();
 		initMenu();
 		initChannelList();
 		initFullScreen();
@@ -102,6 +107,18 @@ public class MainController implements Initializable {
 		initTimekeeper();
 		initChart();
 		initStackPane();
+	}
+
+	private void initWaveForm() {
+		LOG.info("Loading WaveForm");
+		Parent p = FXMLUtil.loadFXML(WaveFormChartController.PATH);
+		waveFormController = (WaveFormChartController) FXMLUtil.getController();
+		waveFormPane.getChildren().add(p);
+		AnchorPane.setTopAnchor(waveFormPane, .0);
+		AnchorPane.setBottomAnchor(waveFormPane, .0);
+		AnchorPane.setLeftAnchor(waveFormPane, .0);
+		AnchorPane.setRightAnchor(waveFormPane, .0);
+
 	}
 
 	private void initStackPane() {
@@ -199,7 +216,7 @@ public class MainController implements Initializable {
 		channelList.getItems().setAll(controller.getInputList());
 		timeKeeperController.setChannels(controller.getInputList());
 		lblDriver.setText(ioName);
-		lblLatency.setText(controller.getLatency() + " ms");
+		lblLatency.setText(controller.getLatency() + "ms ");
 		if (channelList.getItems().size() > 0) {
 			channelList.getSelectionModel().select(0);
 		}

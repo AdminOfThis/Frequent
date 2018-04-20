@@ -16,19 +16,25 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.util.Duration;
+import main.Main;
 
 public class WaveFormChartController implements Initializable {
 
-	private static final Logger LOG = Logger.getLogger(WaveFormChartController.class);
-	
-	private static final long			TIME_FRAME	= 5000;
+	public static final String			PATH				= "/gui/utilities/gui/WaveFormChart.fxml";
+
+	private static final Logger			LOG					= Logger.getLogger(WaveFormChartController.class);
+
+
+	private static final long			TIME_FRAME			= 5000;
+
+	private static final double			DEBUG_MULTIPLIER	= 300.0;
 
 	@FXML
 	private LineChart<Number, Number>	chart;
-	private Series<Number, Number>		series		= new Series<>();
-	private Timeline					timeline	= new Timeline();
+	private Series<Number, Number>		series				= new Series<>();
+	private Timeline					timeline			= new Timeline();
 	private Channel						channel;
-
+	private double						value				= 1;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -36,13 +42,26 @@ public class WaveFormChartController implements Initializable {
 		series.setName("Test");
 		chart.getData().add(series);
 		KeyFrame frame = new KeyFrame(Duration.millis(9), e -> {
-			if (channel != null) {
-				double value = channel.getLevel();
-				value = value - 500; // TODO
-				Data<Number, Number> newData = new Data<>(System.currentTimeMillis(), value);
+			if (Main.isDebug()) {
+				value = -(value + (Math.random() * DEBUG_MULTIPLIER - (DEBUG_MULTIPLIER / 2.0)));
+				if (value < -900) {
+					value = -900;
+				} else if (value > 900) {
+					value = 900;
+				}
+			} else {
+				value = 0;
+				if (channel != null) {
+					value = channel.getLevel();
+					value = value - 500; // TODO
 
-				series.getData().add(newData);
+				}
 			}
+
+
+			Data<Number, Number> newData = new Data<>(System.currentTimeMillis(), value);
+			series.getData().add(newData);
+
 			long time = System.currentTimeMillis();
 			// axis
 			xAxis.setLowerBound(time - TIME_FRAME);
@@ -69,9 +88,9 @@ public class WaveFormChartController implements Initializable {
 	}
 
 	public void setChannel(Channel c) {
-		
+
 		this.channel = c;
-		if(c != null) {
+		if (c != null) {
 			LOG.info("WaveForm Channel set to " + c.getName());
 		}
 	}
