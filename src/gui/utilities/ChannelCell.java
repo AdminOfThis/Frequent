@@ -1,11 +1,9 @@
-package gui.utilities.gui;
+package gui.utilities;
 
 import java.util.ArrayList;
 
 import data.Channel;
 import gui.controller.FFTController;
-import gui.utilities.LogarithmicAxis;
-import gui.utilities.NegativeBackgroundAreaChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.chart.Axis;

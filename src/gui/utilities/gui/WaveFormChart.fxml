@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.WaveFormChartController">
+   <center>
+      <LineChart fx:id="chart" alternativeRowFillVisible="false" createSymbols="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" legendVisible="false" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
+        <xAxis>
+          <NumberAxis maxHeight="1.0" minHeight="1.0" opacity="0.0" prefHeight="1.0" side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis animated="false" autoRanging="false" lowerBound="-1000.0" maxWidth="1.0" minWidth="1.0" opacity="0.0" prefWidth="1.0" side="LEFT" tickUnit="250.0" upperBound="1000.0" />
+        </yAxis>
+      </LineChart>
+   </center>
+</BorderPane>
