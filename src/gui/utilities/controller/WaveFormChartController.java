@@ -27,7 +27,7 @@ public class WaveFormChartController implements Initializable {
 
 	private static final long			TIME_FRAME			= 5000;
 
-	private static final double			DEBUG_MULTIPLIER	= 300.0;
+	private static final double			DEBUG_MULTIPLIER	= 200.0;
 
 	@FXML
 	private LineChart<Number, Number>	chart;
