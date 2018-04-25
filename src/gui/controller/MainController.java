@@ -53,7 +53,6 @@ public class MainController implements Initializable {
 	private static final String				TUNER_PATH		= "/gui/gui/Tuner.fxml";
 	private static final String				BACKGROUND_PATH	= "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH		= "/gui/gui/Drum.fxml";
-
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
@@ -108,7 +107,6 @@ public class MainController implements Initializable {
 		initTimekeeper();
 		initChart();
 		initStackPane();
-
 	}
 
 	private void initWaveForm() {
@@ -120,7 +118,6 @@ public class MainController implements Initializable {
 		AnchorPane.setBottomAnchor(waveFormPane, .0);
 		AnchorPane.setLeftAnchor(waveFormPane, .0);
 		AnchorPane.setRightAnchor(waveFormPane, .0);
-
 	}
 
 	private void initStackPane() {
@@ -181,6 +178,7 @@ public class MainController implements Initializable {
 			public void changed(ObservableValue<? extends Channel> observable, Channel oldValue, Channel newValue) {
 				if (newValue != null) {
 					controller.setActiveChannel(newValue.getChannel());
+					waveFormController.setChannel(newValue);
 					LOG.info("Switching to channel " + newValue.getName());
 				}
 				enableContextMenu(newValue != null);

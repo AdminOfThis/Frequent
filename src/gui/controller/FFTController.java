@@ -31,8 +31,7 @@ import javafx.util.Duration;
 
 public class FFTController implements Initializable {
 
-	public static final double		FFT_MIN			= -60;
-
+	public static final double		FFT_MIN			= -80;
 	private static final Logger		LOG				= Logger.getLogger(FFTController.class);
 	private static final int		X_MIN			= 25;
 	private static final int		X_MAX			= 20000;
@@ -112,7 +111,7 @@ public class FFTController implements Initializable {
 	}
 
 	private void initChart() {
-		ValueAxis<Number> yaxis = new NumberAxis(-FFT_MIN, 0, 6);
+		ValueAxis<Number> yaxis = new NumberAxis(FFT_MIN, 0, 6);
 		yaxis.setPrefWidth(20.0);
 		// yaxis.setAutoRanging(true);
 		// yaxis.setOpacity(0.0);
