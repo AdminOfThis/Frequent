@@ -65,3 +65,12 @@
 .transparent  .chart-content .chart-plot-background{
 	-fx-background-color: transparent;
 }
+
+.progress-indicator .percentage {
+	-fx-font-size: 1px;
+   -fx-fill:null;
+}
+
+.progress-indicator .determinate-indicator .indicator{
+	-fx-background-color: transparent;
+}

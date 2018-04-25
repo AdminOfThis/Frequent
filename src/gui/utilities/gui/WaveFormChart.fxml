@@ -2,12 +2,25 @@
 
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<LineChart fx:id="chart" alternativeRowFillVisible="false" animated="false" createSymbols="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" legendVisible="false" minHeight="10.0" minWidth="10.0" prefHeight="200.0" prefWidth="200.0" stylesheets="@../../style.css" verticalGridLinesVisible="false" verticalZeroLineVisible="false" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.WaveFormChartController">
-  <xAxis>
-    <NumberAxis animated="false" autoRanging="false" maxHeight="0.0" maxWidth="0.0" minHeight="0.0" minWidth="0.0" opacity="0.0" prefHeight="0.0" prefWidth="0.0" side="BOTTOM" />
-  </xAxis>
-  <yAxis>
-    <NumberAxis animated="false" autoRanging="false" lowerBound="-1000.0" maxHeight="0.0" maxWidth="0.0" minHeight="0.0" minWidth="0.0" opacity="0.0" prefHeight="0.0" prefWidth="0.0" side="LEFT" tickUnit="250.0" upperBound="1000.0" />
-  </yAxis>
-</LineChart>
+
+<StackPane stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.WaveFormChartController">
+   <children>
+      <LineChart fx:id="chart" alternativeRowFillVisible="false" animated="false" createSymbols="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" legendVisible="false" minHeight="10.0" minWidth="10.0" prefHeight="200.0" prefWidth="200.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
+        <xAxis>
+          <NumberAxis animated="false" autoRanging="false" maxHeight="0.0" maxWidth="0.0" minHeight="0.0" minWidth="0.0" opacity="0.0" prefHeight="0.0" prefWidth="0.0" side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis animated="false" autoRanging="false" lowerBound="-1000.0" maxHeight="0.0" maxWidth="0.0" minHeight="0.0" minWidth="0.0" opacity="0.0" prefHeight="0.0" prefWidth="0.0" side="LEFT" tickUnit="250.0" upperBound="1000.0" />
+        </yAxis>
+      </LineChart>
+      <VBox fx:id="loadChart" alignment="CENTER">
+         <children>
+            <ProgressIndicator fx:id="progress" prefHeight="50.0" prefWidth="50.0" progress="0.4" />
+         </children>
+      </VBox>
+   </children>
+</StackPane>
