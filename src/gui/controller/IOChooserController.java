@@ -25,6 +25,8 @@ public class IOChooserController implements Initializable {
 	private static final String	GUI_MAIN_PATH	= "/gui/gui/Main.fxml";
 	private static final Logger	LOG				= Logger.getLogger(IOChooserController.class);
 	@FXML
+	private Parent				root;
+	@FXML
 	private ChoiceBox<String>	listIO;
 	@FXML
 	private Button				btnStart, btnQuit;
@@ -33,6 +35,7 @@ public class IOChooserController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		root.setStyle(Main.getStyle());
 		Collection<String> ioList = ASIOController.getInputDevices();
 		LOG.info("Loaded " + ioList.size() + " possible drivers");
 		label.setText(ioList.size() + " Driver(s)");
@@ -55,8 +58,8 @@ public class IOChooserController implements Initializable {
 		Stage stage = null;
 		try {
 			stage = (Stage) listIO.getScene().getWindow();
+		} catch (Exception ex) {
 		}
-		catch (Exception ex) {}
 		if (stage != null) {
 			stage.close();
 		}
@@ -86,8 +89,7 @@ public class IOChooserController implements Initializable {
 			Stage stage;
 			try {
 				stage = (Stage) listIO.getScene().getWindow();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				stage = new Stage();
 			}
 			stage.setResizable(true);
@@ -95,8 +97,7 @@ public class IOChooserController implements Initializable {
 			stage.centerOnScreen();
 			stage.show();
 			LOG.info("Main Window loaded");
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			LOG.error("Unable to load Main GUI", e);
 			Main.close();
 		}

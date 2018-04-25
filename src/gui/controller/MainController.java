@@ -99,6 +99,7 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
+		root.setStyle(Main.getStyle());
 		initWaveForm();
 		initMenu();
 		initChannelList();
@@ -107,6 +108,7 @@ public class MainController implements Initializable {
 		initTimekeeper();
 		initChart();
 		initStackPane();
+
 	}
 
 	private void initWaveForm() {
