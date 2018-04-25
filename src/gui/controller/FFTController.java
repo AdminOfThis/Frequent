@@ -64,6 +64,7 @@ public class FFTController implements Initializable {
 				double peakdB = Channel.percentToDB(controller.getPeak() * 1000.0);
 				vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFT_MIN)) / Math.abs(FFT_MIN));
 				double lastPeakdB = Channel.percentToDB(controller.getLastPeak() * 1000.0);
+				vuPeakPane.setStyle("-fx-background-color: linear-gradient( to bottom, -fx-accent, derive(-fx-accent, -50%) );");
 				vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (lastPeakdB + Math.abs(FFT_MIN)) / Math.abs(FFT_MIN));
 				lblPeak.setText(Math.round(peakdB * 10.0) / 10.0 + "");
 				if (controller.getPeak() >= 0.99) {
