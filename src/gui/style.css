@@ -20,7 +20,7 @@
         to bottom,
         -fx-accent,
         derive(-fx-accent, -50%),
-		red
+        derive(-fx-accent, -50%) 
     ); }
 	
 .default-color1.chart-series-area-line { -fx-stroke: -fx-accent }
