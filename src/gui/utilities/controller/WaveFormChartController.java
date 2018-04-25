@@ -28,7 +28,7 @@ public class WaveFormChartController implements Initializable {
 	private static final Logger			LOG					= Logger.getLogger(WaveFormChartController.class);
 
 
-	private static final double			STARTUP_TIME		= 2000;
+	private static final double			STARTUP_TIME		= 5500;
 	private static final long			TIME_FRAME			= 5000;
 
 	private static final double			DEBUG_MULTIPLIER	= 200.0;
@@ -46,6 +46,7 @@ public class WaveFormChartController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		chart.setOpacity(0.0);
 		NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 		series.setName("Test");
 		chart.getData().add(series);
@@ -91,14 +92,15 @@ public class WaveFormChartController implements Initializable {
 
 		timeline.getKeyFrames().add(frame);
 		timeline.setCycleCount(Timeline.INDEFINITE);
-
+		timeline.playFromStart();
 		Timeline startLine = new Timeline();
 		long start = System.currentTimeMillis();
 		startLine.getKeyFrames().add(new KeyFrame(Duration.millis(100), e -> {
 			double runTime = System.currentTimeMillis() - start;
 			progress.setProgress(runTime / STARTUP_TIME);
+			chart.setOpacity(runTime / STARTUP_TIME);
 			if (runTime > STARTUP_TIME) {
-				timeline.playFromStart();
+				chart.setOpacity(1.0);
 				((StackPane) loadChart.getParent()).getChildren().remove(loadChart);
 				startLine.stop();
 			}
