@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="root" alignment="CENTER" prefWidth="800.0" spacing="5.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.TunerController">
+<VBox fx:id="root" alignment="CENTER" prefWidth="800.0" spacing="5.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.TunerController">
    <children>
       <Label fx:id="lblTone" style="-fx-font-size: 30;" text="-" />
       <Label fx:id="lblFreq" style="-fx-font-size: 15;" text="-" />

@@ -15,6 +15,9 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import main.Main;
 
@@ -25,10 +28,15 @@ public class WaveFormChartController implements Initializable {
 	private static final Logger			LOG					= Logger.getLogger(WaveFormChartController.class);
 
 
+	private static final double			STARTUP_TIME		= 2000;
 	private static final long			TIME_FRAME			= 5000;
 
 	private static final double			DEBUG_MULTIPLIER	= 200.0;
 
+	@FXML
+	private VBox						loadChart;
+	@FXML
+	private ProgressIndicator			progress;
 	@FXML
 	private LineChart<Number, Number>	chart;
 	private Series<Number, Number>		series				= new Series<>();
@@ -83,7 +91,20 @@ public class WaveFormChartController implements Initializable {
 
 		timeline.getKeyFrames().add(frame);
 		timeline.setCycleCount(Timeline.INDEFINITE);
-		timeline.playFromStart();
+
+		Timeline startLine = new Timeline();
+		long start = System.currentTimeMillis();
+		startLine.getKeyFrames().add(new KeyFrame(Duration.millis(100), e -> {
+			double runTime = System.currentTimeMillis() - start;
+			progress.setProgress(runTime / STARTUP_TIME);
+			if (runTime > STARTUP_TIME) {
+				timeline.playFromStart();
+				((StackPane) loadChart.getParent()).getChildren().remove(loadChart);
+				startLine.stop();
+			}
+		}));
+		startLine.setCycleCount(Timeline.INDEFINITE);
+		startLine.playFromStart();
 
 	}
 
