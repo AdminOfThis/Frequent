@@ -56,7 +56,7 @@ public class WaveFormChartController implements Initializable {
 			xAxis.setUpperBound(time);
 			ArrayList<Data<Number, Number>> removeList = null;
 			for (Data<Number, Number> data : series.getData()) {
-				if ((long) data.getXValue() < xAxis.getLowerBound()) {
+				if ((long) data.getXValue() < xAxis.getLowerBound()-1000) {
 					if (removeList == null) {
 						removeList = new ArrayList<>();
 					}

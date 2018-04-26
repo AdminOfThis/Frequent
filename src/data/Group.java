@@ -1,18 +1,19 @@
 package data;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Group implements Serializable {
+public class Group extends Input {
 
+	/**
+	 * 
+	 */
 	private static final long	serialVersionUID	= 1L;
-	private String				name;
 	private String				hexColor;
 	private List<Channel>		channelList			= new ArrayList<Channel>();
 
 	public Group(String name) {
-		this.name = name;
+		setName(name);
 	}
 
 	public void addChannel(Channel channel) {
@@ -33,9 +34,6 @@ public class Group implements Serializable {
 		return channelList;
 	}
 
-	public String getName() {
-		return name;
-	}
 
 	public boolean setColor(String color) {
 		// trying to parsse string to make sure its a hex string

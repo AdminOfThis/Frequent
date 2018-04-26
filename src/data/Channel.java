@@ -1,20 +1,17 @@
 package data;
 
-import java.io.Serializable;
-
 import com.synthbot.jasiohost.AsioChannel;
 
-public class Channel implements Serializable {
+public class Channel extends Input {
 
 	/**
 	 * 
 	 */
-	private static final long		serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 	private transient AsioChannel	channel;
-	private int						channelIndex		= -1;
-	private String					name;
+	private int						channelIndex	= -1;
 	private Group					group;
-	private float					level				= 0;
+	private float					level			= 0;
 	private LevelObserver			observer;
 
 	public Channel(AsioChannel channel) {
@@ -24,7 +21,7 @@ public class Channel implements Serializable {
 	public Channel(AsioChannel channel, String name) {
 		this.channelIndex = channel.getChannelIndex();
 		this.channel = channel;
-		this.name = name;
+		setName(name);
 	}
 
 	public AsioChannel getChannel() {
@@ -38,14 +35,6 @@ public class Channel implements Serializable {
 		} else {
 			channelIndex = -1;
 		}
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public float getLevel() {
@@ -86,7 +75,7 @@ public class Channel implements Serializable {
 
 	public void resetName() {
 		if (channel != null) {
-			name = channel.getChannelName();
+			setName(channel.getChannelName());
 		}
 	}
 
