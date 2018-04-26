@@ -3,6 +3,7 @@ package gui.utilities;
 import java.util.ArrayList;
 
 import data.Channel;
+import data.Input;
 import gui.controller.FFTController;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -11,12 +12,12 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
+import javafx.scene.control.TreeCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
-public class ChannelCell extends ListCell<Channel> {
+public class ChannelCell extends TreeCell<Input> {
 
 	private static final double							REFRESH_RATE	= 50.0;
 	// time for the chart in milliseconds
@@ -27,7 +28,7 @@ public class ChannelCell extends ListCell<Channel> {
 	private NegativeBackgroundAreaChart<Number, Number>	volumeChart;
 	private Timeline									line;
 	private Series<Number, Number>						series			= new Series<>();
-	private Channel										channel;
+	private Input										input;
 
 	public ChannelCell() {
 		label.setStyle("-fx-font-size: 15px");
@@ -50,24 +51,25 @@ public class ChannelCell extends ListCell<Channel> {
 		x.setAutoRanging(false);
 		x.setForceZeroInRange(false);
 		x.setMinHeight(0.0);
-// x.setMaxHeight(0.0);
+		// x.setMaxHeight(0.0);
 		x.setPrefHeight(0.0);
-// x.setMinWidth(0.0);
-// x.setMaxWidth(0.0);
-// x.setPrefWidth(0.0);
+		// x.setMinWidth(0.0);
+		// x.setMaxWidth(0.0);
+		// x.setPrefWidth(0.0);
 		x.setOpacity(0.0);
 		NumberAxis y = new NumberAxis(FFTController.FFT_MIN, 0.0, 5.0);
-// y.setMinHeight(0.0);
-// y.setMaxHeight(0.0);
-// y.setPrefHeight(0.0);
+		// y.setMinHeight(0.0);
+		// y.setMaxHeight(0.0);
+		// y.setPrefHeight(0.0);
 		y.setMinWidth(0.0);
-// y.setMaxWidth(0.0);
+		// y.setMaxWidth(0.0);
 		y.setPrefWidth(0.0);
 		y.setOpacity(0.0);
 		volumeChart = new NegativeBackgroundAreaChart<>(x, y);
 		volumeChart.setHorizontalZeroLineVisible(false);
 		volumeChart.setHorizontalGridLinesVisible(false);
 		volumeChart.setVerticalGridLinesVisible(false);
+		volumeChart.setVerticalZeroLineVisible(false);
 		volumeChart.setAlternativeColumnFillVisible(false);
 		volumeChart.setAnimated(false);
 		volumeChart.setCreateSymbols(false);
@@ -89,7 +91,8 @@ public class ChannelCell extends ListCell<Channel> {
 	private void initTimeline() {
 		line = new Timeline();
 		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
-			if (channel != null) {
+			if (input != null && input instanceof Channel) {
+				Channel channel = (Channel) input;
 				double value = Channel.percentToDB(channel.getLevel() * 1000.0);
 				NumberAxis y = (NumberAxis) volumeChart.getYAxis();
 				if (value < y.getLowerBound()) {
@@ -121,18 +124,18 @@ public class ChannelCell extends ListCell<Channel> {
 	}
 
 	@Override
-	protected void updateItem(Channel item, boolean empty) {
+	protected void updateItem(Input item, boolean empty) {
 		super.updateItem(item, empty);
 		if (empty) {
 			update(null);
-			channel = null;
-		} else if (channel != item) {
+			input = null;
+		} else if (input != item) {
 			update(item);
-			channel = item;
+			input = item;
 		}
 	}
 
-	private void update(Channel item) {
+	private void update(Input item) {
 		series.getData().clear();
 		if (item == null) {
 			label.setText(null);

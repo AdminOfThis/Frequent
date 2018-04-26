@@ -15,6 +15,7 @@ import control.TimeKeeper;
 import data.Channel;
 import data.FileIO;
 import data.Group;
+import data.Input;
 import gui.utilities.ChannelCell;
 import gui.utilities.FXMLUtil;
 import gui.utilities.controller.WaveFormChartController;
@@ -27,14 +28,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -69,11 +73,11 @@ public class MainController implements Initializable {
 	@FXML
 	private Menu							driverMenu;
 	@FXML
-	private MenuItem						closeMenu;
+	private MenuItem						closeMenu, menuSave;
 	@FXML
 	private Menu							groupMenu;
 	@FXML
-	private ListView<Channel>				channelList;
+	private TreeView<Input>					channelList;
 	@FXML
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
@@ -171,24 +175,29 @@ public class MainController implements Initializable {
 
 	private void initChannelList() {
 		channelList.setCellFactory(e -> new ChannelCell());
-		channelList.setOnEditCommit(e -> timeKeeperController.setChannels(channelList.getItems()));
-		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Channel>() {
+		// channelList.setOnEditCommit(e ->
+		// timeKeeperController.setChannels(channelList.getItems()));
+		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<Input>>() {
 
 			@Override
-			public void changed(ObservableValue<? extends Channel> observable, Channel oldValue, Channel newValue) {
-				if (newValue != null) {
-					controller.setActiveChannel(newValue.getChannel());
-					waveFormController.setChannel(newValue);
-					LOG.info("Switching to channel " + newValue.getName());
+			public void changed(ObservableValue<? extends TreeItem<Input>> observable, TreeItem<Input> oldValue, TreeItem<Input> newValue) {
+				if (newValue.getValue() != null && newValue.getValue() instanceof Channel) {
+					Channel channel = (Channel) newValue.getValue();
+					controller.setActiveChannel(channel.getChannel());
+					waveFormController.setChannel(channel);
+					LOG.info("Switching to channel " + channel.getName());
 				}
 				enableContextMenu(newValue != null);
 			}
+
+
 		});
 		// Edit channel list
 		channelList.setEditable(true);
 	}
 
 	private void initMenu() {
+		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 		toggleFFT.selectedProperty().bindBidirectional(menuStartFFT.selectedProperty());
 		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
 		toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
@@ -213,17 +222,20 @@ public class MainController implements Initializable {
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);
 		fftController.setDriver(controller);
-		channelList.getItems().setAll(controller.getInputList());
+
 		timeKeeperController.setChannels(controller.getInputList());
 		lblDriver.setText(ioName);
 		lblLatency.setText(controller.getLatency() + "ms ");
-		if (channelList.getItems().size() > 0) {
+		if (channelList.getRoot().getChildren().size() > 0) {
 			channelList.getSelectionModel().select(0);
 		}
 	}
 
 	public void setChannelList(List<Channel> list) {
-		channelList.getItems().setAll(list);
+		channelList.getRoot().getChildren().clear();
+		for (Channel c : list) {
+			channelList.getRoot().getChildren().add(new TreeItem<Input>(c));
+		}
 	}
 
 	@FXML
@@ -233,7 +245,7 @@ public class MainController implements Initializable {
 	}
 
 	public void setSelectedChannel(Channel channel) {
-		channelList.getSelectionModel().select(channel);
+		channelList.getSelectionModel().select(new TreeItem<Input>(channel));
 	}
 
 	@FXML
@@ -340,7 +352,10 @@ public class MainController implements Initializable {
 
 	public void refresh() {
 		if (controller != null) {
-			channelList.getItems().setAll(controller.getInputList());
+			channelList.getRoot().getChildren().clear();
+			for (Channel c : controller.getInputList()) {
+				channelList.getRoot().getChildren().add(new TreeItem<Input>(c));
+			}
 			for (Group g : controller.getGroupList()) {
 				MenuItem groupItem = new MenuItem(g.getName());
 				if (g.getColor() != null) {
@@ -349,7 +364,12 @@ public class MainController implements Initializable {
 					circle.setFill(Color.valueOf(g.getColor()));
 					groupItem.setGraphic(circle);
 				}
-				groupItem.setOnAction(e -> channelList.getSelectionModel().getSelectedItem().setGroup(g));
+				groupItem.setOnAction(e -> {
+					if (channelList.getSelectionModel().getSelectedItem().getValue() instanceof Channel) {
+						Channel c = (Channel) channelList.getSelectionModel().getSelectedItem().getValue();
+						c.setGroup(g);
+					}
+				});
 				groupMenu.getItems().add(groupItem);
 			}
 		}
@@ -358,9 +378,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private void resetName(ActionEvent e) {
-		Channel channel = channelList.getSelectionModel().getSelectedItem();
-		if (channel != null) {
-			channel.resetName();
+		Input channel = channelList.getSelectionModel().getSelectedItem().getValue();
+		if (channel != null && channel instanceof Channel) {
+			((Channel) channel).resetName();
 			refresh();
 		}
 	}
