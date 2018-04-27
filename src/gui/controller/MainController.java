@@ -16,8 +16,8 @@ import data.Channel;
 import data.FileIO;
 import data.Group;
 import data.Input;
-import gui.utilities.ChannelCell;
 import gui.utilities.FXMLUtil;
+import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.WaveFormChartController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -58,7 +58,8 @@ public class MainController implements Initializable {
 	private static final String				BACKGROUND_PATH	= "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH		= "/gui/gui/Drum.fxml";
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File",
+	        "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private AnchorPane						waveFormPane;
@@ -189,7 +190,6 @@ public class MainController implements Initializable {
 				}
 				enableContextMenu(newValue != null);
 			}
-
 
 		});
 		// Edit channel list
