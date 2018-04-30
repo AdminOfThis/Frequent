@@ -104,13 +104,19 @@ public class DrumController implements Initializable {
 		rmsSeries.getData().add(new XYChart.Data<>(System.currentTimeMillis(), level));
 		ArrayList<XYChart.Data<Number, Number>> removeList = null;
 		long time = System.currentTimeMillis();
-		for (XYChart.Data<Number, Number> data : rmsSeries.getData()) {
+		boolean continueFlag = true;
+		int count = 0;
+		while (continueFlag) {
+			XYChart.Data<Number, Number> data = rmsSeries.getData().get(count);
 			if (((long) data.getXValue()) < (time - TIME_FRAME - 1000)) {
 				if (removeList == null) {
 					removeList = new ArrayList<>();
 				}
 				removeList.add(data);
+			} else {
+				continueFlag = false;
 			}
+			count++;
 		}
 		if (removeList != null) {
 			rmsSeries.getData().removeAll(removeList);
@@ -128,8 +134,11 @@ public class DrumController implements Initializable {
 		xAxis.setUpperBound(time);
 		// HashMap<Series, ArrayList<Data>> removeMap = new HashMap<>(6);
 		for (Series<Number, Number> series : drumChart.getData()) {
-			ArrayList<Data> removeList = null;
-			for (Data<Number, Number> data : series.getData()) {
+			ArrayList<Data<Number, Number>> removeList = null;
+			boolean continueFlag = true;
+			int count = 0;
+			while (continueFlag) {
+				Data<Number, Number> data = series.getData().get(count);
 				StackPane stackPane = (StackPane) data.getNode();
 				if (stackPane != null) {
 					stackPane.setPrefWidth(CHART_SYMBOL_SIZE);
@@ -140,7 +149,10 @@ public class DrumController implements Initializable {
 						removeList = new ArrayList<>();
 					}
 					removeList.add(data);
+				} else {
+					continueFlag = false;
 				}
+				count++;
 			}
 			if (removeList != null) {
 				series.getData().removeAll(removeList);
@@ -254,7 +266,7 @@ public class DrumController implements Initializable {
 
 	public void show() {
 		Stage stage = (Stage) btnSetup.getScene().getWindow();
-		if(!stage.isShowing()) {
+		if (!stage.isShowing()) {
 			stage.show();
 			stage.requestFocus();
 		}
