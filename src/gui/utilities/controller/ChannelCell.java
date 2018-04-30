@@ -28,7 +28,7 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 
 	private static final Logger							LOG				= Logger.getLogger(ChannelCell.class);
 	private static final String							FXML_PATH		= "/gui/utilities/gui/ChannelCell.fxml";
-	private static final double							REFRESH_RATE	= 50.0;
+	private static final double							REFRESH_RATE	= 100.0;
 	// time for the chart in milliseconds
 	private static final double							TIME_RANGE		= 30000.0;
 	@FXML
@@ -119,14 +119,20 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 				series.getData().clear();
 			}
 			ArrayList<Data<Number, Number>> removeList = null;
-			for (Data<Number, Number> d : series.getData()) {
+			boolean continueFlag = true;
+			int count = 0;
+			while (continueFlag) {
+				Data<Number, Number> d = series.getData().get(count);
 				long time = System.currentTimeMillis();
 				if (time - (long) d.getXValue() > TIME_RANGE) {
 					if (removeList == null) {
 						removeList = new ArrayList<>();
 					}
 					removeList.add(d);
+				} else {
+					continueFlag = false;
 				}
+				count++;
 			}
 			if (removeList != null) {
 				series.getData().removeAll(removeList);

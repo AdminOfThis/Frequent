@@ -23,6 +23,7 @@ public class WaveFormChartController implements Initializable {
 	private static final Logger			LOG				= Logger.getLogger(WaveFormChartController.class);
 	private static final double			STARTUP_TIME	= 5500;
 	private static final long			TIME_FRAME		= 5000;
+	private static final long			REFRESH_RATE	= 9;
 	@FXML
 	private LineChart<Number, Number>	chart;
 	private Series<Number, Number>		series			= new Series<>();
@@ -39,7 +40,7 @@ public class WaveFormChartController implements Initializable {
 		yAxis.setAutoRanging(true);
 		series.setName("Test");
 		chart.getData().add(series);
-		KeyFrame frame = new KeyFrame(Duration.millis(9), e -> {
+		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
 			value = 0;
 			if (channel != null) {
 				value = channel.getLevel();
@@ -54,14 +55,20 @@ public class WaveFormChartController implements Initializable {
 			// axis
 			xAxis.setLowerBound(time - TIME_FRAME);
 			xAxis.setUpperBound(time);
+			boolean continueFlag = true;
+			int count = 0;
 			ArrayList<Data<Number, Number>> removeList = null;
-			for (Data<Number, Number> data : series.getData()) {
-				if ((long) data.getXValue() < xAxis.getLowerBound()-1000) {
+			while (continueFlag) {
+				Data<Number, Number> data = series.getData().get(count);
+				if ((long) data.getXValue() < xAxis.getLowerBound() - 1000) {
 					if (removeList == null) {
 						removeList = new ArrayList<>();
 					}
 					removeList.add(data);
+				} else {
+					continueFlag = false;
 				}
+				count++;
 			}
 			if (removeList != null) {
 				series.getData().removeAll(removeList);
