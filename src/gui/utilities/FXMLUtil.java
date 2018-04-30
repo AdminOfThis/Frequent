@@ -26,6 +26,21 @@ public abstract class FXMLUtil {
 		return parent;
 	}
 
+	public static Parent loadFXML(final String string, Initializable controller) {
+		Parent parent = null;
+		try {
+			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
+			loader.setController(controller);
+			parent = loader.load();
+			controller = loader.getController();
+		}
+		catch (Exception e) {
+			LOG.error("Unable to load FXMLFile");
+			LOG.debug("", e);
+		}
+		return parent;
+	}
+
 	public static Initializable getController() {
 		return controller;
 	}

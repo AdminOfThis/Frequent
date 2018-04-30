@@ -1,6 +1,5 @@
 package gui.utilities.controller;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -10,11 +9,11 @@ import org.apache.log4j.Logger;
 import data.Channel;
 import data.Input;
 import gui.controller.FFTController;
+import gui.utilities.FXMLUtil;
 import gui.utilities.NegativeBackgroundAreaChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.chart.NumberAxis;
@@ -28,14 +27,13 @@ import javafx.util.Duration;
 public class ChannelCell extends TreeCell<Input> implements Initializable {
 
 	private static final Logger							LOG				= Logger.getLogger(ChannelCell.class);
-
-	private static final String							FXML_PATH		= "/gui/utilites/gui/ChannelCell.fxml";
-
+	private static final String							FXML_PATH		= "/gui/utilities/gui/ChannelCell.fxml";
 	private static final double							REFRESH_RATE	= 50.0;
 	// time for the chart in milliseconds
 	private static final double							TIME_RANGE		= 30000.0;
 	@FXML
 	private Label										label;
+	@FXML
 	private AnchorPane									chartPane;
 	private NegativeBackgroundAreaChart<Number, Number>	volumeChart;
 	private Timeline									line;
@@ -44,22 +42,18 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 
 	public ChannelCell() {
 		super();
-		FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
-		loader.setController(this);
-		Parent p;
-		try {
-			p = loader.load();
-
+		Parent p = FXMLUtil.loadFXML(FXML_PATH, this);
+		if (p != null) {
 			setGraphic(p);
-		} catch (IOException e) {
+		} else {
 			LOG.warn("Unable to load ChannelCell");
-			LOG.debug("", e);
 		}
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		initChart();
+		initTimeline();
 	}
 
 	private void initChart() {
@@ -161,10 +155,14 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 		series.getData().clear();
 		if (item == null) {
 			label.setText(null);
-			line.stop();
+			if (line != null) {
+				line.stop();
+			}
 		} else {
 			label.setText(item.getName());
-			line.playFromStart();
+			if (line != null) {
+				line.playFromStart();
+			}
 		}
 	}
 }
