@@ -39,10 +39,11 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 	private Channel				channel;
 	private Timeline			line;
 	private double				peak			= 0;
+	private Orientation			orientation;
 
 
 	public VuMeter(Channel channel, Orientation o) {
-
+		this.orientation = o;
 		this.channel = channel;
 		String path;
 		if (o.equals(Orientation.HORIZONTAL)) {
@@ -78,13 +79,23 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 			if (channel != null) {
 				double peakdB = Channel.percentToDB(channel.getLevel() * 1000.0);
 
-				vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
 				if (peak < peakdB) {
 					peak = peakdB;
 				}
 				vuPeakPane.setStyle("-fx-background-color: linear-gradient( to bottom, -fx-accent, derive(-fx-accent, -50%) );");
-				vuLastPeakPane
-					.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+				if (orientation == Orientation.VERTICAL) {
+					vuPeakPane
+						.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+					vuLastPeakPane
+						.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+				} else {
+					vuPeakPane
+						.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+					vuLastPeakPane
+						.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+
+				}
+
 				lblPeak.setText(Math.round(peakdB * 10.0) / 10.0 + "");
 				if (peakdB >= 0.99) {
 					clippingPane.setStyle("-fx-background-color: red");
