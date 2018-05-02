@@ -18,6 +18,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ValueAxis;
@@ -86,7 +87,7 @@ public class FFTController implements Initializable {
 	}
 
 	private void initVuMeter() {
-		meter = new VuMeter(null);
+		meter = new VuMeter(null, Orientation.VERTICAL);
 		chartRoot.getChildren().add(meter);
 	}
 
