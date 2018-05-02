@@ -1,10 +1,8 @@
 package gui.utilities.controller;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import control.ASIOController;
 import data.Channel;
 import data.LevelObserver;
 import gui.controller.FFTController;
@@ -13,10 +11,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.Parent;
-import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Data;
-import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -26,7 +22,8 @@ import javafx.util.Duration;
 public class VuMeter extends AnchorPane implements Initializable, LevelObserver {
 
 
-	private static final String	FXML_PATH		= "/gui/utilities/gui/VuMeter.fxml";
+	private static final String	FXML_VERTICAL	= "/gui/utilities/gui/VuMeterVertical.fxml";
+	private static final String	FXML_HORIZONTAL	= "/gui/utilities/gui/VuMeterHorizontal.fxml";
 	private static final int	REFRESH_RATE	= 25;
 
 
@@ -44,11 +41,16 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 	private double				peak			= 0;
 
 
-	public VuMeter(Channel channel) {
+	public VuMeter(Channel channel, Orientation o) {
 
 		this.channel = channel;
-
-		Parent p = FXMLUtil.loadFXML(FXML_PATH, this);
+		String path;
+		if (o.equals(Orientation.HORIZONTAL)) {
+			path = FXML_HORIZONTAL;
+		} else {
+			path = FXML_VERTICAL;
+		}
+		Parent p = FXMLUtil.loadFXML(path, this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, 0.0);
 		AnchorPane.setBottomAnchor(p, 0.0);
