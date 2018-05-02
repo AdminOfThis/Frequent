@@ -7,11 +7,11 @@ public class Channel extends Input {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long		serialVersionUID	= 1L;
 	private transient AsioChannel	channel;
-	private int						channelIndex	= -1;
+	private int						channelIndex		= -1;
 	private Group					group;
-	private float					level			= 0;
+	private float					level				= 0;
 	private LevelObserver			observer;
 
 	public Channel(AsioChannel channel) {
