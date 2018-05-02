@@ -6,10 +6,13 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import com.synthbot.jasiohost.AsioChannel;
+
 import control.ASIOController;
 import data.Channel;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeBackgroundAreaChart;
+import gui.utilities.controller.VuMeter;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -21,12 +24,8 @@ import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
 public class FFTController implements Initializable {
@@ -38,21 +37,17 @@ public class FFTController implements Initializable {
 	private static final int		REFRESH_RATE	= 25;
 	@FXML
 	private HBox					chartRoot;
-	@FXML
-	private StackPane				vuPane;
-	@FXML
-	private Pane					vuPeakPane, vuLastPeakPane;
-	@FXML
-	private Label					lblPeak;
-	@FXML
-	private AnchorPane				clippingPane;
+
 	private XYChart<Number, Number>	chart;
 	private Timeline				line;
 	private ASIOController			controller;
+	private VuMeter					meter;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
 		LOG.info("Loading FFT Chart");
+		initVuMeter();
 		initChart();
 		initTimeline();
 	}
@@ -61,20 +56,7 @@ public class FFTController implements Initializable {
 		line = new Timeline();
 		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
 			if (controller != null) {
-				double peakdB = Channel.percentToDB(controller.getPeak() * 1000.0);
-				vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFT_MIN)) / Math.abs(FFT_MIN));
-				double lastPeakdB = Channel.percentToDB(controller.getLastPeak() * 1000.0);
-				vuPeakPane.setStyle("-fx-background-color: linear-gradient( to bottom, -fx-accent, derive(-fx-accent, -50%) );");
-				vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (lastPeakdB + Math.abs(FFT_MIN)) / Math.abs(FFT_MIN));
-				lblPeak.setText(Math.round(peakdB * 10.0) / 10.0 + "");
-				if (controller.getPeak() >= 0.99) {
-					clippingPane.setStyle("-fx-background-color: red");
-				} else {
-					clippingPane.setStyle("");
-				}
 				double[][] map = controller.getSpectrumMap();
-				// long before = System.currentTimeMillis();
-				// System.out.println("Updating");
 				if (map != null) {
 					Series<Number, Number> series = null;
 					if (!chart.getData().isEmpty()) {
@@ -85,9 +67,6 @@ public class FFTController implements Initializable {
 						series = new XYChart.Series<>();
 						chart.getData().add(series);
 					}
-					// System.out.println("Displaying " + map[0].length + "
-					// frequencies");
-					// series.getData().add(new Data<Number, Number>(20, 0.0));
 					ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
 					for (int count = 0; count < map[0].length; count++) {
 						double frequency = map[0][count];
@@ -99,16 +78,16 @@ public class FFTController implements Initializable {
 						}
 					}
 					series.getData().addAll(dataList);
-					// series.getData().add(new Data<Number, Number>(X_MAX,
-					// 0.0));
 				}
-				// System.out.println("Finished updating");
-				// System.out.println(System.currentTimeMillis() - before + "
-				// ms");
 			}
 		});
 		line.getKeyFrames().add(frame);
 		line.setCycleCount(Timeline.INDEFINITE);
+	}
+
+	private void initVuMeter() {
+		meter = new VuMeter(null);
+		chartRoot.getChildren().add(meter);
 	}
 
 	private void initChart() {
@@ -127,16 +106,6 @@ public class FFTController implements Initializable {
 		chart.setHorizontalZeroLineVisible(false);
 		chartRoot.getChildren().add(chart);
 		HBox.setHgrow(chart, Priority.ALWAYS);
-		// chart.setPrefHeight(100.0);
-		// chart.setPrefWidth(200.0);
-		clippingPane.prefHeightProperty().bind(logAxis.heightProperty().add(12.0));
-		clippingPane.minHeightProperty().bind(logAxis.heightProperty().add(12.0));
-		// chart.addEventHandler(KeyEvent.ANY, e -> {
-		// if (e.getCode() == KeyCode.SPACE) {
-		// MainController.getInstance().toggleFFT(new ActionEvent());
-		// e.consume();
-		// }
-		// });
 	}
 
 	public void setDriver(ASIOController driver) {
@@ -153,5 +122,10 @@ public class FFTController implements Initializable {
 
 	public boolean isPlaying() {
 		return line.getStatus() == Animation.Status.RUNNING;
+	}
+
+	public void setChannel(Channel channel) {
+		meter.setChannel(channel);
+
 	}
 }

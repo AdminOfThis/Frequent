@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
+import org.controlsfx.control.ToggleSwitch;
 
 import control.ASIOController;
 import control.TimeKeeper;
@@ -82,6 +83,8 @@ public class MainController implements Initializable {
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
+	@FXML
+	private ToggleButton					toggleChannels;
 	/**************
 	 * contextmenu
 	 **************/
@@ -174,6 +177,8 @@ public class MainController implements Initializable {
 	}
 
 	private void initChannelList() {
+		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().visibleProperty());
+		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
 		channelList.setCellFactory(e -> new ChannelCell());
 		channelList.setRoot(new TreeItem<>());
 		channelList.setShowRoot(false);
@@ -186,6 +191,8 @@ public class MainController implements Initializable {
 				if (newValue.getValue() != null && newValue.getValue() instanceof Channel) {
 					Channel channel = (Channel) newValue.getValue();
 					controller.setActiveChannel(channel.getChannel());
+					fftController.setChannel(channel);
+
 					waveFormController.setChannel(channel);
 					LOG.info("Switching to channel " + channel.getName());
 				}

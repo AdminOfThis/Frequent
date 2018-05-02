@@ -69,6 +69,8 @@
             </MenuBar>
             <HBox alignment="CENTER_LEFT" spacing="5.0">
                <children>
+                  <ToggleButton fx:id="toggleChannels" mnemonicParsing="false" selected="true" text="Channels" />
+                  <Pane HBox.hgrow="ALWAYS" />
                   <ToggleButton fx:id="toggleFFT" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="50.0" text="FFT" />
                   <Pane HBox.hgrow="ALWAYS" />
                   <Button mnemonicParsing="false" onAction="#openDrumMonitor" text="Drum Monitor" />
