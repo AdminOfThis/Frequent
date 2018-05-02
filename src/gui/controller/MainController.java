@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
-import org.controlsfx.control.ToggleSwitch;
 
 import control.ASIOController;
 import control.TimeKeeper;
@@ -28,6 +27,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -66,7 +66,7 @@ public class MainController implements Initializable {
 	@FXML
 	private StackPane						stack;
 	@FXML
-	private ToggleButton					toggleFFT, toggleCue, toggleTuner;
+	private ToggleButton					toggleFFT, toggleCue, toggleTuner, toggleChannels;
 	@FXML
 	private BorderPane						root, sub;
 	@FXML
@@ -83,8 +83,7 @@ public class MainController implements Initializable {
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
-	@FXML
-	private ToggleButton					toggleChannels;
+
 	/**************
 	 * contextmenu
 	 **************/
@@ -106,6 +105,7 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
 		root.setStyle(Main.getStyle());
+
 		initWaveForm();
 		initMenu();
 		initChannelList();
