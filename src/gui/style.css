@@ -78,3 +78,12 @@
 .toggle-switch: selected .thumb-area{
 	-fx-background-color: -fx-accent;
 }
+
+.tree-view {
+    -fx-padding: 0em;
+}
+
+.tree-cell {
+    -fx-padding: 0em;
+}
+    

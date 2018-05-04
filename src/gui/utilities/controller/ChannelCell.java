@@ -10,6 +10,7 @@ import data.Input;
 import gui.utilities.FXMLUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -32,6 +33,7 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 
 	public ChannelCell() {
 		super();
+		setPadding(Insets.EMPTY);
 		Parent p = FXMLUtil.loadFXML(FXML_PATH, this);
 		if (p != null) {
 			setGraphic(p);
@@ -42,21 +44,18 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
 		initVuMeter();
 	}
 
-
 	private void initVuMeter() {
 		meter = new VuMeter(null, Orientation.HORIZONTAL);
-		meter.setRotate(90.0);
+		// meter.setRotate(90.0);
 		chartPane.getChildren().add(meter);
 		AnchorPane.setTopAnchor(meter, 0.0);
 		AnchorPane.setBottomAnchor(meter, 0.0);
-		AnchorPane.setLeftAnchor(meter, 0.0);
+		AnchorPane.setLeftAnchor(meter, -18.0);
 		AnchorPane.setRightAnchor(meter, 0.0);
 	}
-
 
 	@Override
 	protected void updateItem(Input item, boolean empty) {
@@ -79,10 +78,8 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 		}
 		if (item == null) {
 			label.setText(null);
-
 		} else {
 			label.setText(item.getName());
-
 		}
 	}
 }

@@ -6,8 +6,6 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import com.synthbot.jasiohost.AsioChannel;
-
 import control.ASIOController;
 import data.Channel;
 import gui.utilities.LogarithmicAxis;
@@ -38,7 +36,6 @@ public class FFTController implements Initializable {
 	private static final int		REFRESH_RATE	= 25;
 	@FXML
 	private HBox					chartRoot;
-
 	private XYChart<Number, Number>	chart;
 	private Timeline				line;
 	private ASIOController			controller;
@@ -46,7 +43,6 @@ public class FFTController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
 		LOG.info("Loading FFT Chart");
 		initVuMeter();
 		initChart();
@@ -88,6 +84,7 @@ public class FFTController implements Initializable {
 
 	private void initVuMeter() {
 		meter = new VuMeter(null, Orientation.VERTICAL);
+		meter.setPrefWidth(50.0);
 		chartRoot.getChildren().add(meter);
 	}
 
@@ -127,6 +124,5 @@ public class FFTController implements Initializable {
 
 	public void setChannel(Channel channel) {
 		meter.setChannel(channel);
-
 	}
 }
