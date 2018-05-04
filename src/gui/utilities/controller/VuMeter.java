@@ -106,6 +106,7 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 		});
 		line.getKeyFrames().add(frame);
 		line.setCycleCount(Timeline.INDEFINITE);
+		line.playFromStart();
 	}
 
 	public void setChannel(Channel channel) {
