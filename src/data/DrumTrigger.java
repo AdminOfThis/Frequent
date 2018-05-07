@@ -27,11 +27,11 @@ public class DrumTrigger implements LevelObserver {
 
 	public void setChannel(Channel channel) {
 		if (this.channel != null) {
-			channel.setObserver(null);
+			channel.removeObserver(this);
 		}
 		this.channel = channel;
 		if (this.channel != null) {
-			this.channel.setObserver(this);
+			this.channel.addObserver(this);
 		}
 	}
 

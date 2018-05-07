@@ -86,4 +86,15 @@
 .tree-cell {
     -fx-padding: 0em;
 }
-    
+
+.split-pane {
+    -fx-background-insets: 0;
+}
+
+.split-pane .split-pane-divider {
+ -fx-background-insets: 0;
+}
+
+.vuMeter-background {
+    -fx-background-color: derive(-fx-base, -10%);
+}

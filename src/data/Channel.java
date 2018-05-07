@@ -11,8 +11,6 @@ public class Channel extends Input {
 	private transient AsioChannel	channel;
 	private int						channelIndex		= -1;
 	private Group					group;
-	private float					level				= 0;
-	private LevelObserver			observer;
 
 	public Channel(AsioChannel channel) {
 		this(channel, channel.getChannelName());
@@ -37,17 +35,6 @@ public class Channel extends Input {
 		}
 	}
 
-	public float getLevel() {
-		return level;
-	}
-
-	public void setLevel(float level) {
-		this.level = level;
-		if (observer != null) {
-			observer.levelChanged(level);
-		}
-	}
-
 	public int getChannelIndex() {
 		return channelIndex;
 	}
@@ -63,14 +50,6 @@ public class Channel extends Input {
 		if (group != null && !group.getChannelList().contains(this)) {
 			group.addChannel(this);
 		}
-	}
-
-	public LevelObserver getObserver() {
-		return observer;
-	}
-
-	public void setObserver(LevelObserver observer) {
-		this.observer = observer;
 	}
 
 	public void resetName() {
