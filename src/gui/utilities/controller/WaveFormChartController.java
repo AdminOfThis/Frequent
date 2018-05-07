@@ -84,7 +84,7 @@ public class WaveFormChartController implements Initializable, LevelObserver {
 					try {
 						while (continueFlag) {
 							Data<Number, Number> data = series.getData().get(count);
-							if ((long) data.getXValue() < xAxis.getLowerBound() - 100) {
+							if ((long) data.getXValue() < xAxis.getLowerBound() - 10) {
 								if (removeList == null) {
 									removeList = new ArrayList<>();
 								}
