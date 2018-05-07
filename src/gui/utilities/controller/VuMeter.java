@@ -7,8 +7,7 @@ import data.Channel;
 import data.LevelObserver;
 import gui.controller.FFTController;
 import gui.utilities.FXMLUtil;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
@@ -17,13 +16,12 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.util.Duration;
 
 public class VuMeter extends AnchorPane implements Initializable, LevelObserver {
 
 	private static final String	FXML_VERTICAL	= "/gui/utilities/gui/VuMeterVertical.fxml";
 	private static final String	FXML_HORIZONTAL	= "/gui/utilities/gui/VuMeterHorizontal.fxml";
-	private static final int	REFRESH_RATE	= 50;
+	private static final double	DB_PEAK_FALLOFF	= 0.02;
 	@FXML
 	private StackPane			vuPane;
 	@FXML
@@ -33,7 +31,6 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 	@FXML
 	private AnchorPane			clippingPane;
 	private Channel				channel;
-	private Timeline			line;
 	private double				peak			= 0;
 	private Orientation			orientation;
 
@@ -55,56 +52,57 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 	}
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		initTimeline();
-	}
+	public void initialize(URL location, ResourceBundle resources) {}
 
 	@Override
-	public void levelChanged(double level) {}
+	public void levelChanged(double level) {
+		Platform.runLater(new Runnable() {
 
-	private void initTimeline() {
-		line = new Timeline();
-		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
-			if (channel != null) {
-				double peakdB = Channel.percentToDB(channel.getLevel() * 1000.0);
-				if (peak < peakdB) {
-					peak = peakdB;
+			@Override
+			public void run() {
+				if (channel != null) {
+					double peakdB = Channel.percentToDB(channel.getLevel() * 1000.0);
+					if (peak < peakdB) {
+						peak = peakdB;
+					}
+					if (orientation == Orientation.VERTICAL) {
+						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+						double height = vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN);
+						// System.out.println(peak);
+						vuLastPeakPane.setPrefHeight(height);
+					} else {
+						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+						vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+					}
+					if (peakdB >= FFTController.FFT_MIN) {
+						lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
+					} else {
+						lblPeak.setText("-\u221E");
+					}
+					if (peakdB >= -0.5) {
+						clippingPane.setStyle("-fx-background-color: red");
+					} else if (peakdB >= -2.0) {
+						clippingPane.setStyle("-fx-background-color: yellow");
+					} else {
+						clippingPane.setStyle("");
+					}
+					if (peak == 0.0) {
+						peak = -1.0;
+					}
+					peak = (1 + DB_PEAK_FALLOFF) * peak;
 				}
-				vuPeakPane.setStyle("-fx-background-color: linear-gradient( to bottom, -fx-accent, derive(-fx-accent, -50%) );");
-				if (orientation == Orientation.VERTICAL) {
-					vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
-					double height = vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN);
-// System.out.println(peak);
-					vuLastPeakPane.setPrefHeight(height);
-				} else {
-					vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
-					vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
-				}
-				if (peakdB >= FFTController.FFT_MIN) {
-					lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
-				} else {
-					lblPeak.setText("-\u221E");
-				}
-				if (peakdB >= -0.5) {
-					clippingPane.setStyle("-fx-background-color: red");
-				} else if (peakdB >= -2.0) {
-					clippingPane.setStyle("-fx-background-color: yellow");
-				} else {
-					clippingPane.setStyle("");
-				}
-				if (peak == 0.0) {
-					peak = -1.0;
-				}
-				peak = 1.2 * peak;
 			}
 		});
-		line.getKeyFrames().add(frame);
-		line.setCycleCount(Timeline.INDEFINITE);
-		line.playFromStart();
 	}
 
-	public void setChannel(Channel channel) {
-		this.channel = channel;
+	public void setChannel(Channel c) {
+		if (this.channel != null) {
+			this.channel.removeObserver(this);
+		}
+		this.channel = c;
+		if (c != null) {
+			c.addObserver(this);
+		}
 	}
 
 	public Channel getChannel() {

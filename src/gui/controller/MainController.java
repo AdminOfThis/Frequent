@@ -27,7 +27,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -83,7 +82,6 @@ public class MainController implements Initializable {
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
-
 	/**************
 	 * contextmenu
 	 **************/
@@ -105,7 +103,6 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
 		root.setStyle(Main.getStyle());
-
 		initWaveForm();
 		initMenu();
 		initChannelList();
@@ -121,10 +118,10 @@ public class MainController implements Initializable {
 		Parent p = FXMLUtil.loadFXML(WaveFormChartController.PATH);
 		waveFormController = (WaveFormChartController) FXMLUtil.getController();
 		waveFormPane.getChildren().add(p);
-		AnchorPane.setTopAnchor(waveFormPane, .0);
-		AnchorPane.setBottomAnchor(waveFormPane, .0);
-		AnchorPane.setLeftAnchor(waveFormPane, .0);
-		AnchorPane.setRightAnchor(waveFormPane, .0);
+		AnchorPane.setTopAnchor(p, .0);
+		AnchorPane.setBottomAnchor(p, .0);
+		AnchorPane.setLeftAnchor(p, .0);
+		AnchorPane.setRightAnchor(p, .0);
 	}
 
 	private void initStackPane() {
@@ -188,11 +185,10 @@ public class MainController implements Initializable {
 
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<Input>> observable, TreeItem<Input> oldValue, TreeItem<Input> newValue) {
-				if (newValue.getValue() != null && newValue.getValue() instanceof Channel) {
+				if (newValue != null && newValue.getValue() != null && newValue.getValue() instanceof Channel) {
 					Channel channel = (Channel) newValue.getValue();
 					controller.setActiveChannel(channel.getChannel());
 					fftController.setChannel(channel);
-
 					waveFormController.setChannel(channel);
 					LOG.info("Switching to channel " + channel.getName());
 				}
@@ -252,7 +248,29 @@ public class MainController implements Initializable {
 	}
 
 	public void setSelectedChannel(Channel channel) {
-		channelList.getSelectionModel().select(new TreeItem<Input>(channel));
+		findAndSelect(channelList.getRoot(), channel);
+	}
+
+	/**
+	 * rekursive slection in treeview
+	 * 
+	 * @param item,
+	 *            leaf which children get searched
+	 * @param channel,
+	 *            the channel to find
+	 * @return result, true if found to bubble upwards
+	 */
+	private boolean findAndSelect(TreeItem<Input> item, Channel channel) {
+		for (TreeItem<Input> i : item.getChildren()) {
+			if (i != null && i.getValue().equals(channel)) {
+				channelList.getSelectionModel().select(i);
+				return true;
+			}
+			if (!i.isLeaf()) {
+				if (findAndSelect(i, channel)) { return true; }
+			}
+		}
+		return false;
 	}
 
 	@FXML
