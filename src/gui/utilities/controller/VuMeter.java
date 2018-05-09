@@ -31,7 +31,7 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 	@FXML
 	private AnchorPane			clippingPane;
 	private Channel				channel;
-	private double				peak			= 0;
+	private double				peak			= FFTController.FFT_MIN;
 	private Orientation			orientation;
 
 	public VuMeter(Channel channel, Orientation o) {
@@ -52,7 +52,8 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 	}
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {}
+	public void initialize(URL location, ResourceBundle resources) {
+	}
 
 	@Override
 	public void levelChanged(double level) {
@@ -66,13 +67,16 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 						peak = peakdB;
 					}
 					if (orientation == Orientation.VERTICAL) {
-						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+						vuPeakPane.setPrefHeight(
+							vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
 						double height = vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN);
 						// System.out.println(peak);
 						vuLastPeakPane.setPrefHeight(height);
 					} else {
-						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
-						vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+						vuPeakPane
+							.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+						vuLastPeakPane
+							.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
 					}
 					if (peakdB >= FFTController.FFT_MIN) {
 						lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
