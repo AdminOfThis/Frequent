@@ -134,28 +134,32 @@ public class DrumController implements Initializable {
 		xAxis.setUpperBound(time);
 		// HashMap<Series, ArrayList<Data>> removeMap = new HashMap<>(6);
 		for (Series<Number, Number> series : drumChart.getData()) {
-			ArrayList<Data<Number, Number>> removeList = null;
-			boolean continueFlag = true;
-			int count = 0;
-			while (continueFlag) {
-				Data<Number, Number> data = series.getData().get(count);
-				StackPane stackPane = (StackPane) data.getNode();
-				if (stackPane != null) {
-					stackPane.setPrefWidth(CHART_SYMBOL_SIZE);
-					stackPane.setPrefHeight(CHART_SYMBOL_SIZE);
-				}
-				if (((long) data.getXValue()) < (time - DRUM_TIME_FRAME - 1000)) {
-					if (removeList == null) {
-						removeList = new ArrayList<>();
+			if (!series.getData().isEmpty()) {
+				ArrayList<Data<Number, Number>> removeList = null;
+				boolean continueFlag = true;
+				int count = 0;
+
+				while (continueFlag) {
+
+					Data<Number, Number> data = series.getData().get(count);
+					StackPane stackPane = (StackPane) data.getNode();
+					if (stackPane != null) {
+						stackPane.setPrefWidth(CHART_SYMBOL_SIZE);
+						stackPane.setPrefHeight(CHART_SYMBOL_SIZE);
 					}
-					removeList.add(data);
-				} else {
-					continueFlag = false;
+					if (((long) data.getXValue()) < (time - DRUM_TIME_FRAME - 1000)) {
+						if (removeList == null) {
+							removeList = new ArrayList<>();
+						}
+						removeList.add(data);
+					} else {
+						continueFlag = false;
+					}
+					count++;
 				}
-				count++;
-			}
-			if (removeList != null) {
-				series.getData().removeAll(removeList);
+				if (removeList != null) {
+					series.getData().removeAll(removeList);
+				}
 			}
 		}
 	}
@@ -197,16 +201,20 @@ public class DrumController implements Initializable {
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
+				} catch (Exception e) {
 				}
-				catch (Exception e) {}
-				if (trig != null) { return trig.getName(); }
+				if (trig != null) {
+					return trig.getName();
+				}
 				return null;
 			}
 
 			@Override
 			public Number fromString(String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
+					if (trig.getName().equals(string)) {
+						return triggerList.indexOf(trig);
+					}
 				}
 				return null;
 			}
