@@ -8,9 +8,6 @@ import org.apache.log4j.Logger;
 
 public abstract class Input implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long	serialVersionUID	= 1L;
 	private static final Logger	LOG					= Logger.getLogger(Input.class);
 	private String				name;
