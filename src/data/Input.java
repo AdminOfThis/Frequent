@@ -16,6 +16,7 @@ public abstract class Input implements Serializable {
 	private String				name;
 	private float				level				= 0;
 	private List<LevelObserver>	observerList		= new ArrayList<>();
+	private String				hexColor;
 
 	public String getName() {
 		return name;
@@ -59,5 +60,24 @@ public abstract class Input implements Serializable {
 	public void setLevel(float level) {
 		this.level = level;
 		notifyObservers();
+	}
+
+	public boolean setColor(String color) {
+		// trying to parsse string to make sure its a hex string
+		try {
+			if (color.startsWith("#")) {
+				color = color.substring(1);
+			}
+			Long.parseLong(color, 16);
+			hexColor = "#" + color;
+		}
+		catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+
+	public String getColor() {
+		return hexColor;
 	}
 }

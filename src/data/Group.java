@@ -9,8 +9,7 @@ public class Group extends Input {
 	 * 
 	 */
 	private static final long	serialVersionUID	= 1L;
-	private String				hexColor;
-	private List<Channel>		channelList			= new ArrayList<Channel>();
+	private List<Channel>		channelList			= new ArrayList<>();
 
 	public Group(String name) {
 		setName(name);
@@ -25,32 +24,10 @@ public class Group extends Input {
 		}
 	}
 
-
 	/*******************
 	 * GETTER AND SETTER
 	 ********************/
-
 	public List<Channel> getChannelList() {
 		return channelList;
 	}
-
-
-	public boolean setColor(String color) {
-		// trying to parsse string to make sure its a hex string
-		try {
-			if (color.startsWith("#")) {
-				color = color.substring(1);
-			}
-			Long.parseLong(color, 16);
-			hexColor = "#" + color;
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
-	}
-
-	public String getColor() {
-		return hexColor;
-	}
-
 }
