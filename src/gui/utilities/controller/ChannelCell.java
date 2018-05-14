@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 
 import data.Channel;
+import data.Group;
 import data.Input;
 import gui.utilities.FXMLUtil;
 import javafx.fxml.FXML;
@@ -73,8 +74,18 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 		if (item instanceof Channel) {
 			Channel c = (Channel) item;
 			meter.setChannel(c);
-		} else {
+			if (item == null || item.getColor() == null) {
+				this.setStyle("");
+			} else {
+				this.setStyle("-fx-accent: " + item.getColor());
+			}
+		} else if (item instanceof Group) {
 			meter.setChannel(null);
+			if (item == null || item.getColor() == null) {
+				this.setStyle("");
+			} else {
+				this.setStyle("-fx-background-color: " + item.getColor() + "; -fx-accent: " + item.getColor());
+			}
 		}
 		if (item == null) {
 			label.setText(null);

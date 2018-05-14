@@ -46,7 +46,6 @@ public class WaveFormChartController implements Initializable, LevelObserver {
 				series.getData().clear();
 				this.channel = c;
 				if (c != null) {
-					LOG.debug("WaveForm Channel set to " + c.getName());
 					c.addObserver(this);
 				}
 			}

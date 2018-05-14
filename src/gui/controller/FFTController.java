@@ -33,7 +33,7 @@ public class FFTController implements Initializable {
 	private static final Logger		LOG				= Logger.getLogger(FFTController.class);
 	private static final int		X_MIN			= 25;
 	private static final int		X_MAX			= 20000;
-	private static final int		REFRESH_RATE	= 25;
+	private static final int		REFRESH_RATE	= 50;
 	@FXML
 	private HBox					chartRoot;
 	private XYChart<Number, Number>	chart;

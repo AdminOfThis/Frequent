@@ -67,9 +67,7 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 					}
 					if (orientation == Orientation.VERTICAL) {
 						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
-						double height = vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN);
-						// System.out.println(peak);
-						vuLastPeakPane.setPrefHeight(height);
+						vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
 					} else {
 						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
 						vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
@@ -90,6 +88,14 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 						peak = -1.0;
 					}
 					peak = (1 + DB_PEAK_FALLOFF) * peak;
+				} else {
+					if (orientation == Orientation.VERTICAL) {
+						vuPeakPane.setPrefHeight(0);
+						vuLastPeakPane.setPrefHeight(0);
+					} else {
+						vuPeakPane.setPrefWidth(0);
+						vuLastPeakPane.setPrefWidth(0);
+					}
 				}
 			}
 		});

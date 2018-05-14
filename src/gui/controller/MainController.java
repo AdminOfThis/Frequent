@@ -27,12 +27,16 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
@@ -65,7 +69,7 @@ public class MainController implements Initializable {
 	@FXML
 	private StackPane						stack;
 	@FXML
-	private ToggleButton					toggleFFT, toggleCue, toggleTuner, toggleChannels;
+	private ToggleButton					toggleFFT, toggleCue, toggleTuner, toggleChannels, toggleGroupChannels;
 	@FXML
 	private BorderPane						root, sub;
 	@FXML
@@ -82,6 +86,8 @@ public class MainController implements Initializable {
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
+	@FXML
+	private ContextMenu						contextMenu;
 	/**************
 	 * contextmenu
 	 **************/
@@ -105,12 +111,58 @@ public class MainController implements Initializable {
 		root.setStyle(Main.getStyle());
 		initWaveForm();
 		initMenu();
+		initContextMenu();
 		initChannelList();
 		initFullScreen();
 		initTuner();
 		initTimekeeper();
 		initChart();
 		initStackPane();
+	}
+
+	private void initContextMenu() {
+		// adding colorPicker
+		ColorPicker picker = new ColorPicker();
+		picker.valueProperty().addListener(new ChangeListener<Color>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Color> observable, Color oldValue, Color newValue) {
+				TreeItem<Input> in = channelList.getSelectionModel().getSelectedItem();
+				if (in != null && in.getValue() != null && newValue != null) {
+					in.getValue().setColor(toRGBCode(newValue));
+					channelList.refresh();
+				}
+			}
+		});
+		MenuItem colorPicker = new MenuItem(null, picker);
+		contextMenu.getItems().add(0, colorPicker);
+		// on opening
+		contextMenu.setOnShowing(e -> {
+			try {
+				Input item = channelList.getSelectionModel().getSelectedItem().getValue();
+				if (item == null) {
+					contextMenu.hide();
+				} else {
+					if (item instanceof Channel) {
+						for (MenuItem g : groupMenu.getItems()) {
+							if (g instanceof RadioMenuItem) {
+								String text = ((Label) g.getGraphic()).getText();
+								Group group = ((Channel) item).getGroup();
+								if (group != null && text.equals(group.getName())) {
+									((RadioMenuItem) g).setSelected(true);
+									break;
+								} else {
+									((RadioMenuItem) g).setSelected(false);
+								}
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex) {
+				LOG.warn("Problems on opening context menu", ex);
+			}
+		});
 	}
 
 	private void initWaveForm() {
@@ -197,6 +249,40 @@ public class MainController implements Initializable {
 		});
 		// Edit channel list
 		channelList.setEditable(true);
+		//
+		toggleGroupChannels.selectedProperty().addListener(new ChangeListener<Boolean>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if (newValue == oldValue) { return; }
+				TreeItem<Input> root = new TreeItem<>();
+				channelList.setRoot(root);
+				if (newValue) {
+					for (Channel c : ASIOController.getInstance().getInputList()) {
+						if (c.getGroup() == null) {
+							root.getChildren().add(new TreeItem<>(c));
+						} else {
+							TreeItem<Input> groupItem = null;
+							for (TreeItem<Input> g : root.getChildren()) {
+								if (g.getValue() instanceof Group && g.getValue().equals(c.getGroup())) {
+									groupItem = g;
+									break;
+								}
+							}
+							if (groupItem == null) {
+								groupItem = new TreeItem<>(c.getGroup());
+								root.getChildren().add(groupItem);
+							}
+							groupItem.getChildren().add(new TreeItem<>(c));
+						}
+					}
+				} else {
+					for (Channel channel : ASIOController.getInstance().getInputList()) {
+						root.getChildren().add(new TreeItem<>(channel));
+					}
+				}
+			}
+		});
 	}
 
 	private void initMenu() {
@@ -381,8 +467,10 @@ public class MainController implements Initializable {
 			for (Channel c : controller.getInputList()) {
 				channelList.getRoot().getChildren().add(new TreeItem<Input>(c));
 			}
+			ToggleGroup group = new ToggleGroup();
 			for (Group g : controller.getGroupList()) {
-				MenuItem groupItem = new MenuItem(g.getName());
+				RadioMenuItem groupItem = new RadioMenuItem(null, new Label(g.getName()));
+				groupItem.setToggleGroup(group);
 				if (g.getColor() != null) {
 					Circle circle = new Circle();
 					circle.setStroke(null);
@@ -437,5 +525,9 @@ public class MainController implements Initializable {
 
 	protected void setDrumController(DrumController con) {
 		this.drumController = con;
+	}
+
+	public static String toRGBCode(Color color) {
+		return String.format("#%02X%02X%02X", (int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255));
 	}
 }
