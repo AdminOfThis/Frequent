@@ -31,7 +31,7 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver 
 	@FXML
 	private AnchorPane			clippingPane;
 	private Channel				channel;
-	private double				peak			= 0;
+	private double				peak			= FFTController.FFT_MIN;
 	private Orientation			orientation;
 
 	public VuMeter(Channel channel, Orientation o) {
