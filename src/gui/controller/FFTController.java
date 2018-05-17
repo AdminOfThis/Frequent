@@ -9,15 +9,17 @@ import org.apache.log4j.Logger;
 import control.ASIOController;
 import data.Channel;
 import gui.utilities.LogarithmicAxis;
-import gui.utilities.NegativeBackgroundAreaChart;
+import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeter;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
@@ -29,6 +31,7 @@ import javafx.util.Duration;
 
 public class FFTController implements Initializable {
 
+	private static final double		DECAY			= 1.02;
 	public static final double		FFT_MIN			= -80;
 	private static final Logger		LOG				= Logger.getLogger(FFTController.class);
 	private static final int		X_MIN			= 25;
@@ -40,6 +43,8 @@ public class FFTController implements Initializable {
 	private Timeline				line;
 	private ASIOController			controller;
 	private VuMeter					meter;
+	private Series<Number, Number>	series			= new Series<>();
+	private Series<Number, Number>	maxSeries		= new Series<>();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -55,15 +60,6 @@ public class FFTController implements Initializable {
 			if (controller != null) {
 				double[][] map = controller.getSpectrumMap();
 				if (map != null) {
-					Series<Number, Number> series = null;
-					if (!chart.getData().isEmpty()) {
-						series = chart.getData().get(0);
-						series.getData().clear();
-					}
-					if (series == null) {
-						series = new XYChart.Series<>();
-						chart.getData().add(series);
-					}
 					ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
 					for (int count = 0; count < map[0].length; count++) {
 						double frequency = map[0][count];
@@ -74,7 +70,22 @@ public class FFTController implements Initializable {
 							dataList.add(data);
 						}
 					}
-					series.getData().addAll(dataList);
+					// max
+					if (series.getData().size() != maxSeries.getData().size()) {
+						maxSeries.getData().setAll(FXCollections.observableArrayList(series.getData()));
+					} else {
+						for (int i = 0; i < maxSeries.getData().size(); i++) {
+							Data<Number, Number> maxData = maxSeries.getData().get(i);
+							Data<Number, Number> data = series.getData().get(i);
+							if (data.getYValue().doubleValue() > maxData.getYValue().doubleValue()) {
+								maxData.setYValue(data.getYValue());
+							} else {
+								maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
+							}
+						}
+					}
+// series.getData().clear();
+					series.getData().setAll(dataList);
 				}
 			}
 		});
@@ -95,10 +106,12 @@ public class FFTController implements Initializable {
 		// yaxis.setOpacity(0.0);
 		yaxis.setAnimated(true);
 		ValueAxis<Number> logAxis = new LogarithmicAxis(X_MIN, X_MAX);
-		chart = new NegativeBackgroundAreaChart<>(logAxis, yaxis);
+// chart = new NegativeBackgroundAreaChart<>(logAxis, yaxis);
+		chart = new NegativeAreaChart(logAxis, yaxis);
+		chart.getData().add(series);
+		chart.getData().add(maxSeries);
 		chart.setAnimated(false);
-		chart.getStyleClass().add("transparent");
-		((NegativeBackgroundAreaChart<Number, Number>) chart).setCreateSymbols(false);
+		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
 		chart.setLegendVisible(false);
 		chart.setLegendSide(Side.RIGHT);
 		chart.setHorizontalZeroLineVisible(false);
