@@ -27,8 +27,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
+<<<<<<< HEAD
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
+=======
+>>>>>>> branch 'master' of https://github.com/AdminOfThis/Frequent.git
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -86,8 +89,11 @@ public class MainController implements Initializable {
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
+<<<<<<< HEAD
 	@FXML
 	private ContextMenu						contextMenu;
+=======
+>>>>>>> branch 'master' of https://github.com/AdminOfThis/Frequent.git
 	/**************
 	 * contextmenu
 	 **************/
