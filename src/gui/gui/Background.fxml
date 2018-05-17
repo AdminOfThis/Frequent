@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.layout.TilePane?>
-
-
-<TilePane fx:id="flow" hgap="5.0" minHeight="400.0" minWidth="600.0" prefTileHeight="100.0" prefTileWidth="100.0" stylesheets="@../style.css" vgap="5.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.BackgroundController" />
