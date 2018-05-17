@@ -8,13 +8,12 @@ import org.apache.log4j.Logger;
 
 public abstract class Input implements Serializable {
 
-
-	private static final long	serialVersionUID	= 1L;
-	private static final Logger	LOG					= Logger.getLogger(Input.class);
-	private String				name;
-	private float				level				= 0;
-	private List<LevelObserver>	observerList		= new ArrayList<>();
-	private String				hexColor;
+	private static final long				serialVersionUID	= 1L;
+	private static final Logger				LOG					= Logger.getLogger(Input.class);
+	private String							name;
+	private float							level				= 0;
+	private transient List<LevelObserver>	observerList		= new ArrayList<>();
+	private String							hexColor;
 
 	public String getName() {
 		return name;
