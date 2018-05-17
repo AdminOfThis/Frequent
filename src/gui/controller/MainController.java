@@ -97,7 +97,6 @@ public class MainController implements Initializable {
 	private FFTController					fftController;
 	private TimeKeeperController			timeKeeperController;
 	private TunerController					tunerController;
-	private BackgroundController			backgroundController;
 	private DrumController					drumController;
 	private WaveFormChartController			waveFormController;
 
@@ -117,7 +116,6 @@ public class MainController implements Initializable {
 		initTuner();
 		initTimekeeper();
 		initChart();
-		initStackPane();
 	}
 
 	private void initContextMenu() {
@@ -174,18 +172,6 @@ public class MainController implements Initializable {
 		AnchorPane.setBottomAnchor(p, .0);
 		AnchorPane.setLeftAnchor(p, .0);
 		AnchorPane.setRightAnchor(p, .0);
-	}
-
-	private void initStackPane() {
-		if (Main.isFUI()) {
-			Parent p = FXMLUtil.loadFXML(BACKGROUND_PATH);
-			if (p != null) {
-				backgroundController = (BackgroundController) FXMLUtil.getController();
-				stack.getChildren().add(0, p);
-			} else {
-				LOG.warn("Unable to load Background");
-			}
-		}
 	}
 
 	private void initChart() {

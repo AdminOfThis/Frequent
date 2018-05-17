@@ -22,12 +22,8 @@ public class Main extends Application {
 	private static final String	VERSION			= "0.0.3";
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
 	private static final String	GUI_IO_CHOOSER	= "/gui/gui/IOChooser.fxml";
-
 	private static String		style			= "";
-
-	private static boolean		debug			= false;
-	private static boolean		fuiStyle		= false;
-
+	private static boolean		debug			= false, fast = false;
 
 	public static void main(String[] args) {
 		initLogger();
@@ -36,8 +32,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * checks the start parameters for debug keyword and sets the debug flag to
-	 * true if found
+	 * checks the start parameters for debug keyword and sets the debug flag to true if found
 	 * 
 	 * @param args
 	 */
@@ -47,9 +42,9 @@ public class Main extends Application {
 				debug = true;
 				LOG.info("Enabling debug settings");
 				FileIO.setCurrentDir(new File("."));
-			} else if (arg.equalsIgnoreCase("-fui")) {
-				LOG.info("Enabling futuristic interface");
-				fuiStyle = true;
+			} else if (arg.equalsIgnoreCase("-fast")) {
+				LOG.info("Enabling fast UI elements");
+				fast = true;
 			} else if (arg.toLowerCase().startsWith("-style=")) {
 				LOG.info("Loading custom style");
 				try {
@@ -78,11 +73,11 @@ public class Main extends Application {
 						a = args[index];
 					}
 					LOG.info("Loaded style as: " + style);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					LOG.warn("Unable to load style from commandline");
 					LOG.debug("", e);
 				}
-
 			}
 		}
 	}
@@ -95,7 +90,8 @@ public class Main extends Application {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
 			LOG = Logger.getLogger(Main.class);
 			LOG.info("=== Starting Frequent ===");
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.fatal("Unexpected error while initializing logging", e);
 		}
 	}
@@ -135,11 +131,11 @@ public class Main extends Application {
 		return debug;
 	}
 
-	public static boolean isFUI() {
-		return fuiStyle;
-	}
-
 	public static String getStyle() {
 		return style;
+	}
+
+	public static boolean isFast() {
+		return fast;
 	}
 }
