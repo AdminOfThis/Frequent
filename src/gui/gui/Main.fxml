@@ -122,21 +122,12 @@
          <children>
             <SplitPane dividerPositions="0.8" orientation="VERTICAL" VBox.vgrow="ALWAYS">
                <items>
-<<<<<<< HEAD
                   <VBox spacing="5.0">
                      <children>
                         <ToggleButton fx:id="toggleGroupChannels" mnemonicParsing="false" text="Group" />
                         <TreeView fx:id="channelList" VBox.vgrow="ALWAYS">
                            <contextMenu>
                               <ContextMenu fx:id="contextMenu">
-=======
-                  <TreeView fx:id="channelList">
-                     <contextMenu>
-                        <ContextMenu>
-                          <items>
-                              <MenuItem fx:id="cxtResetName" mnemonicParsing="false" onAction="#resetName" text="Reset Name" />
-                              <Menu fx:id="groupMenu" mnemonicParsing="false" text="Group">
->>>>>>> branch 'master' of https://github.com/AdminOfThis/Frequent.git
                                 <items>
                                     <MenuItem fx:id="cxtResetName" mnemonicParsing="false" onAction="#resetName">
                                        <graphic>
@@ -162,19 +153,11 @@
                                        </graphic>
                                     </Menu>
                                 </items>
-<<<<<<< HEAD
                               </ContextMenu>
                            </contextMenu>
                         </TreeView>
                      </children>
                   </VBox>
-=======
-                              </Menu>
-                          </items>
-                        </ContextMenu>
-                     </contextMenu>
-                  </TreeView>
->>>>>>> branch 'master' of https://github.com/AdminOfThis/Frequent.git
                   <AnchorPane fx:id="waveFormPane" SplitPane.resizableWithParent="false" />
                </items>
             </SplitPane>
