@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import data.Channel;
 import data.DrumTrigger;
 import gui.utilities.FXMLUtil;
-import gui.utilities.NegativeBackgroundAreaChart;
+import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.DrumTriggerItemController;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -19,6 +19,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Parent;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.ValueAxis;
@@ -138,9 +139,7 @@ public class DrumController implements Initializable {
 				ArrayList<Data<Number, Number>> removeList = null;
 				boolean continueFlag = true;
 				int count = 0;
-
 				while (continueFlag) {
-
 					Data<Number, Number> data = series.getData().get(count);
 					StackPane stackPane = (StackPane) data.getNode();
 					if (stackPane != null) {
@@ -175,10 +174,10 @@ public class DrumController implements Initializable {
 		timeAxis.setAutoRanging(false);
 		timeAxis.setTickUnit(5000);
 		timeAxis.setOpacity(0.0);
-		chart = new NegativeBackgroundAreaChart<>(timeAxis, yaxis);
+		chart = new NegativeAreaChart(timeAxis, yaxis);
 		chart.setAnimated(false);
 		chart.getStyleClass().add("transparent");
-		((NegativeBackgroundAreaChart<Number, Number>) chart).setCreateSymbols(false);
+		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
 		chart.setLegendVisible(false);
 		chart.setLegendSide(Side.RIGHT);
 		chart.setHorizontalZeroLineVisible(false);
@@ -201,20 +200,16 @@ public class DrumController implements Initializable {
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
-				} catch (Exception e) {
 				}
-				if (trig != null) {
-					return trig.getName();
-				}
+				catch (Exception e) {}
+				if (trig != null) { return trig.getName(); }
 				return null;
 			}
 
 			@Override
 			public Number fromString(String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) {
-						return triggerList.indexOf(trig);
-					}
+					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
 				}
 				return null;
 			}

@@ -12,7 +12,7 @@
          <children>
             <HBox alignment="CENTER_LEFT">
                <children>
-                  <Pane fx:id="vuPeakPane" prefWidth="0.0" style="-fx-background-color: linear-gradient( to left, -fx-accent, derive(-fx-accent, -50%) );" stylesheets="@../../style.css" />
+                  <Pane fx:id="vuPeakPane" prefWidth="0.0" styleClass="vuMeter-meter-horizontal" stylesheets="@../../style.css" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT">

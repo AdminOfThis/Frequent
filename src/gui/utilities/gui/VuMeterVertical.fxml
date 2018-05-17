@@ -12,7 +12,7 @@
          <children>
             <VBox alignment="BOTTOM_CENTER">
                <children>
-                  <Pane fx:id="vuPeakPane" prefHeight="0.0" style="-fx-background-color: linear-gradient( to bottom, -fx-accent, derive(-fx-accent, -50%) );;" />
+                  <Pane fx:id="vuPeakPane" prefHeight="0.0" styleClass="vuMeter-meter-vertical" />
                </children>
             </VBox>
             <VBox alignment="BOTTOM_CENTER">
