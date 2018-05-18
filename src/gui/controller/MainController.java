@@ -156,8 +156,7 @@ public class MainController implements Initializable {
 						}
 					}
 				}
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				LOG.warn("Problems on opening context menu", ex);
 			}
 		});
@@ -240,31 +239,36 @@ public class MainController implements Initializable {
 
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				if (newValue == oldValue) { return; }
+				if (newValue == oldValue) {
+					return;
+				}
 				TreeItem<Input> root = new TreeItem<>();
 				channelList.setRoot(root);
-				if (newValue) {
-					for (Channel c : ASIOController.getInstance().getInputList()) {
-						if (c.getGroup() == null) {
-							root.getChildren().add(new TreeItem<>(c));
-						} else {
-							TreeItem<Input> groupItem = null;
-							for (TreeItem<Input> g : root.getChildren()) {
-								if (g.getValue() instanceof Group && g.getValue().equals(c.getGroup())) {
-									groupItem = g;
-									break;
+				if (ASIOController.getInstance() != null) {
+
+					if (newValue) {
+						for (Channel c : ASIOController.getInstance().getInputList()) {
+							if (c.getGroup() == null) {
+								root.getChildren().add(new TreeItem<>(c));
+							} else {
+								TreeItem<Input> groupItem = null;
+								for (TreeItem<Input> g : root.getChildren()) {
+									if (g.getValue() instanceof Group && g.getValue().equals(c.getGroup())) {
+										groupItem = g;
+										break;
+									}
 								}
+								if (groupItem == null) {
+									groupItem = new TreeItem<>(c.getGroup());
+									root.getChildren().add(groupItem);
+								}
+								groupItem.getChildren().add(new TreeItem<>(c));
 							}
-							if (groupItem == null) {
-								groupItem = new TreeItem<>(c.getGroup());
-								root.getChildren().add(groupItem);
-							}
-							groupItem.getChildren().add(new TreeItem<>(c));
 						}
-					}
-				} else {
-					for (Channel channel : ASIOController.getInstance().getInputList()) {
-						root.getChildren().add(new TreeItem<>(channel));
+					} else {
+						for (Channel channel : ASIOController.getInstance().getInputList()) {
+							root.getChildren().add(new TreeItem<>(channel));
+						}
 					}
 				}
 			}
@@ -339,7 +343,9 @@ public class MainController implements Initializable {
 				return true;
 			}
 			if (!i.isLeaf()) {
-				if (findAndSelect(i, channel)) { return true; }
+				if (findAndSelect(i, channel)) {
+					return true;
+				}
 			}
 		}
 		return false;
