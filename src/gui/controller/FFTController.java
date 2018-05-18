@@ -31,7 +31,7 @@ import javafx.util.Duration;
 
 public class FFTController implements Initializable {
 
-	private static final double		DECAY			= 1.02;
+	private static final double		DECAY			= 1.01;
 	public static final double		FFT_MIN			= -80;
 	private static final Logger		LOG				= Logger.getLogger(FFTController.class);
 	private static final int		X_MIN			= 25;
@@ -77,7 +77,7 @@ public class FFTController implements Initializable {
 						for (int i = 0; i < maxSeries.getData().size(); i++) {
 							Data<Number, Number> maxData = maxSeries.getData().get(i);
 							Data<Number, Number> data = series.getData().get(i);
-							if (data.getYValue().doubleValue() > maxData.getYValue().doubleValue()) {
+							if (data.getYValue().doubleValue() >= maxData.getYValue().doubleValue()) {
 								maxData.setYValue(data.getYValue());
 							} else {
 								maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
