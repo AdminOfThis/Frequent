@@ -62,7 +62,8 @@ public class MainController implements Initializable {
 	private static final String				BACKGROUND_PATH	= "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH		= "/gui/gui/Drum.fxml";
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File",
+	        "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private AnchorPane						waveFormPane;
@@ -177,7 +178,6 @@ public class MainController implements Initializable {
 		Parent p = FXMLUtil.loadFXML(FFT_PATH);
 		if (p != null) {
 			fftController = (FFTController) FXMLUtil.getController();
-			fftController.setDriver(controller);
 			contentPane.getItems().add(0, p);
 		} else {
 			LOG.warn("Unable to load FFT Chart");
@@ -300,7 +300,6 @@ public class MainController implements Initializable {
 
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);
-		fftController.setDriver(controller);
 		timeKeeperController.setChannels(controller.getInputList());
 		setChannelList(controller.getInputList());
 		lblDriver.setText(ioName);
@@ -520,6 +519,7 @@ public class MainController implements Initializable {
 	}
 
 	public static String toRGBCode(Color color) {
-		return String.format("#%02X%02X%02X", (int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255));
+		return String.format("#%02X%02X%02X", (int) (color.getRed() * 255), (int) (color.getGreen() * 255),
+		        (int) (color.getBlue() * 255));
 	}
 }
