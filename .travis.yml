@@ -1,2 +1,8 @@
 language: java
+jdk:
+	- oraclejdk8
+	
+os:
+	- windows
+	
 install: ant
