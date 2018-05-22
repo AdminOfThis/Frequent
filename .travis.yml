@@ -1,8 +1,11 @@
 language: java
+
+sudo: false
+
 jdk:
-	- oraclejdk8
-	
+ - oraclejdk8
+
 os:
-	- windows
-	
-install: ant
+ - windows
+
+ install: ant
