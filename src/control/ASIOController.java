@@ -279,7 +279,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	}
 
 	// taken from https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19,
-	// author Andreas Kühntopf
+	// author Andreas Kuehntopf
 	private float getFrequencyForIndex(int index, int size, int rate) {
 		return (float) index * (float) rate / size;
 	}
