@@ -15,6 +15,7 @@ import com.synthbot.jasiohost.AsioDriverListener;
 import com.synthbot.jasiohost.AsioException;
 
 import data.Channel;
+import data.FFTListener;
 import data.FileIO;
 import data.Group;
 import main.Main;
@@ -41,6 +42,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	private double[][]				spectrumMap;
 	private List<Channel>			channelList;
 	private List<Group>				groupList		= new ArrayList<>();
+	private List<FFTListener>		fftListeners	= new ArrayList<>();
 
 	public static List<String> getInputDevices() {
 		return AsioDriver.getDriverNames();
@@ -68,8 +70,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		}
-		catch (AsioException e) {
+		} catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -115,7 +116,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
+		if (asioDriver != null) {
+			return asioDriver.getNumChannelsInput();
+		}
 		return -1;
 	}
 
@@ -193,8 +196,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 							c.setLevel(max);
 						}
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -210,6 +212,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 				index[j]++;
 			}
 		}
+		// TODO IST DAS RICHTIG???
 		for (int i = 0; i < bufferCount; i++) {
 			if (index[i] == fftBufferSize) {
 				fftBuffer[i] = applyHannWindow(fftBuffer[i]);
@@ -224,6 +227,16 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 				spectrumMap = getSpectrum(fftData);
 				// controller.updateText(baseFrequency);
 				index[i] = 0;
+			}
+		}
+		for (FFTListener l : fftListeners) {
+			if (l != null) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						l.newFFT(spectrumMap);
+					}
+				}).start();
 			}
 		}
 	}
@@ -385,5 +398,15 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 			LOG.info("Group " + group.getName() + " added");
 			groupList.add(group);
 		}
+	}
+
+	public void addFFTListener(FFTListener l) {
+		if (!fftListeners.contains(l)) {
+			fftListeners.add(l);
+		}
+	}
+
+	public void removeFFTListener(FFTListener l) {
+		fftListeners.remove(l);
 	}
 }

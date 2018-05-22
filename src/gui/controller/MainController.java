@@ -177,7 +177,6 @@ public class MainController implements Initializable {
 		Parent p = FXMLUtil.loadFXML(FFT_PATH);
 		if (p != null) {
 			fftController = (FFTController) FXMLUtil.getController();
-			fftController.setDriver(controller);
 			contentPane.getItems().add(0, p);
 		} else {
 			LOG.warn("Unable to load FFT Chart");
@@ -300,7 +299,6 @@ public class MainController implements Initializable {
 
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);
-		fftController.setDriver(controller);
 		timeKeeperController.setChannels(controller.getInputList());
 		setChannelList(controller.getInputList());
 		lblDriver.setText(ioName);
@@ -520,6 +518,10 @@ public class MainController implements Initializable {
 	}
 
 	public static String toRGBCode(Color color) {
-		return String.format("#%02X%02X%02X", (int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255));
+		int red = (int) (color.getRed() * 255);
+		int green = (int) (color.getGreen() * 255);
+		int blue = (int) (color.getBlue() * 255);
+		return String.format("#%02X%02X%02X", red, green, blue);
+
 	}
 }

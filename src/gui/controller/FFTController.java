@@ -8,12 +8,11 @@ import org.apache.log4j.Logger;
 
 import control.ASIOController;
 import data.Channel;
+import data.FFTListener;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeter;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,39 +26,77 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.util.Duration;
 
-public class FFTController implements Initializable {
+public class FFTController implements Initializable, FFTListener {
 
-	private static final double		DECAY			= 1.02;
-	public static final double		FFT_MIN			= -80;
-	private static final Logger		LOG				= Logger.getLogger(FFTController.class);
-	private static final int		X_MIN			= 25;
-	private static final int		X_MAX			= 20000;
-	private static final int		REFRESH_RATE	= 50;
+	private static final double		DECAY		= 1.01;
+	public static final double		FFT_MIN		= -80;
+	private static final Logger		LOG			= Logger.getLogger(FFTController.class);
+	private static final int		X_MIN		= 25;
+	private static final int		X_MAX		= 20000;
 	@FXML
 	private HBox					chartRoot;
 	private XYChart<Number, Number>	chart;
-	private Timeline				line;
-	private ASIOController			controller;
 	private VuMeter					meter;
-	private Series<Number, Number>	series			= new Series<>();
-	private Series<Number, Number>	maxSeries		= new Series<>();
+	private boolean					playing;
+	private Series<Number, Number>	series		= new Series<>();
+	private Series<Number, Number>	maxSeries	= new Series<>();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		LOG.info("Loading FFT Chart");
 		initVuMeter();
 		initChart();
-		initTimeline();
+		if (ASIOController.getInstance() != null) {
+			ASIOController.getInstance().addFFTListener(this);
+		}
 	}
 
-	private void initTimeline() {
-		line = new Timeline();
-		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
-			if (controller != null) {
-				double[][] map = controller.getSpectrumMap();
-				if (map != null) {
+	private void initVuMeter() {
+		meter = new VuMeter(null, Orientation.VERTICAL);
+		meter.setPrefWidth(50.0);
+		chartRoot.getChildren().add(meter);
+	}
+
+	private void initChart() {
+		ValueAxis<Number> yaxis = new NumberAxis(FFT_MIN, 0, 6);
+		yaxis.setPrefWidth(20.0);
+		// yaxis.setAutoRanging(true);
+		// yaxis.setOpacity(0.0);
+		yaxis.setAnimated(true);
+		ValueAxis<Number> logAxis = new LogarithmicAxis(X_MIN, X_MAX);
+		// chart = new NegativeBackgroundAreaChart<>(logAxis, yaxis);
+		chart = new NegativeAreaChart(logAxis, yaxis);
+		chart.getData().add(series);
+		chart.getData().add(maxSeries);
+		chart.setAnimated(false);
+		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
+		chart.setLegendVisible(false);
+		chart.setLegendSide(Side.RIGHT);
+		chart.setHorizontalZeroLineVisible(false);
+		chartRoot.getChildren().add(chart);
+		HBox.setHgrow(chart, Priority.ALWAYS);
+	}
+
+	public void play(boolean play) {
+		playing = !play;
+	}
+
+	public boolean isPlaying() {
+		return playing;
+	}
+
+	public void setChannel(Channel channel) {
+		meter.setChannel(channel);
+	}
+
+	@Override
+	public void newFFT(double[][] map) {
+		if (map != null && playing) {
+			Platform.runLater(new Runnable() {
+
+				@Override
+				public void run() {
 					ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
 					for (int count = 0; count < map[0].length; count++) {
 						double frequency = map[0][count];
@@ -77,65 +114,18 @@ public class FFTController implements Initializable {
 						for (int i = 0; i < maxSeries.getData().size(); i++) {
 							Data<Number, Number> maxData = maxSeries.getData().get(i);
 							Data<Number, Number> data = series.getData().get(i);
-							if (data.getYValue().doubleValue() > maxData.getYValue().doubleValue()) {
+							if (data.getYValue().doubleValue() >= maxData.getYValue().doubleValue()) {
 								maxData.setYValue(data.getYValue());
 							} else {
 								maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
 							}
 						}
 					}
-// series.getData().clear();
+					// series.getData().clear();
 					series.getData().setAll(dataList);
 				}
-			}
-		});
-		line.getKeyFrames().add(frame);
-		line.setCycleCount(Timeline.INDEFINITE);
-	}
+			});
 
-	private void initVuMeter() {
-		meter = new VuMeter(null, Orientation.VERTICAL);
-		meter.setPrefWidth(50.0);
-		chartRoot.getChildren().add(meter);
-	}
-
-	private void initChart() {
-		ValueAxis<Number> yaxis = new NumberAxis(FFT_MIN, 0, 6);
-		yaxis.setPrefWidth(20.0);
-		// yaxis.setAutoRanging(true);
-		// yaxis.setOpacity(0.0);
-		yaxis.setAnimated(true);
-		ValueAxis<Number> logAxis = new LogarithmicAxis(X_MIN, X_MAX);
-// chart = new NegativeBackgroundAreaChart<>(logAxis, yaxis);
-		chart = new NegativeAreaChart(logAxis, yaxis);
-		chart.getData().add(series);
-		chart.getData().add(maxSeries);
-		chart.setAnimated(false);
-		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
-		chart.setLegendVisible(false);
-		chart.setLegendSide(Side.RIGHT);
-		chart.setHorizontalZeroLineVisible(false);
-		chartRoot.getChildren().add(chart);
-		HBox.setHgrow(chart, Priority.ALWAYS);
-	}
-
-	public void setDriver(ASIOController driver) {
-		this.controller = driver;
-	}
-
-	public void play(boolean play) {
-		if (play) {
-			line.playFromStart();
-		} else {
-			line.pause();
 		}
-	}
-
-	public boolean isPlaying() {
-		return line.getStatus() == Animation.Status.RUNNING;
-	}
-
-	public void setChannel(Channel channel) {
-		meter.setChannel(channel);
 	}
 }
