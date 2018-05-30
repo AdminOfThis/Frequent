@@ -54,7 +54,6 @@ public class GroupController implements Initializable {
 			VBox meterBox = new VBox(meter, new Label("Group #" + i));
 			meterBox.setAlignment(Pos.TOP_CENTER);
 			meterBox.setMinWidth(40.0);
-			meterBox.setMaxWidth(40.0);
 			VBox.setVgrow(meter, Priority.ALWAYS);
 			vuPane.getChildren().add(meterBox);
 			HBox.setHgrow(meterBox, Priority.ALWAYS);
