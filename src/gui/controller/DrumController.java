@@ -69,7 +69,7 @@ public class DrumController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		LOG.info("Loading DrumController");
-		MainController.getInstance().setDrumController(this);
+		// MainController.getInstance().setDrumController(this);
 		sidePane.visibleProperty().bind(btnSetup.selectedProperty());
 		sidePane.managedProperty().bind(btnSetup.selectedProperty());
 		initData();
@@ -200,16 +200,20 @@ public class DrumController implements Initializable {
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
+				} catch (Exception e) {
 				}
-				catch (Exception e) {}
-				if (trig != null) { return trig.getName(); }
+				if (trig != null) {
+					return trig.getName();
+				}
 				return null;
 			}
 
 			@Override
 			public Number fromString(String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
+					if (trig.getName().equals(string)) {
+						return triggerList.indexOf(trig);
+					}
 				}
 				return null;
 			}

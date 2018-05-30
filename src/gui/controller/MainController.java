@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -24,8 +25,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
@@ -47,6 +48,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
@@ -56,20 +58,25 @@ import main.Main;
 
 public class MainController implements Initializable {
 
-	private static final String				FFT_PATH		= "/gui/gui/FFT.fxml";
-	private static final String				TIMEKEEPER_PATH	= "/gui/gui/TimeKeeper.fxml";
-	private static final String				TUNER_PATH		= "/gui/gui/Tuner.fxml";
-	private static final String				BACKGROUND_PATH	= "/gui/gui/Background.fxml";
-	private static final String				DRUM_PATH		= "/gui/gui/Drum.fxml";
-	private static final Logger				LOG				= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
+	private static final String				FFT_PATH			= "/gui/gui/FFT.fxml";
+	private static final String				TIMEKEEPER_PATH		= "/gui/gui/TimeKeeper.fxml";
+	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
+	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
+	private static final String				DRUM_PATH			= "/gui/gui/Drum.fxml";
+	private static final Logger				LOG					= Logger.getLogger(MainController.class);
+	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private AnchorPane						waveFormPane;
 	@FXML
 	private StackPane						stack;
+	/**
+	 * Buttons for cues, get mapped with content to contentMap
+	 */
 	@FXML
-	private ToggleButton					toggleFFT, toggleCue, toggleTuner, toggleChannels, toggleGroupChannels;
+	private ToggleButton					toggleFFTView, toggleDrumView;
+	@FXML
+	private ToggleButton					toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
 	@FXML
 	private BorderPane						root, sub;
 	@FXML
@@ -88,16 +95,23 @@ public class MainController implements Initializable {
 	private Label							lblDriver, lblLatency;
 	@FXML
 	private ContextMenu						contextMenu;
+	@FXML
+	private SplitPane						channelPane;
 	/**************
 	 * contextmenu
 	 **************/
 	@FXML
 	private MenuItem						cxtResetName, cxtUngroup;
+
+	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
+
+	private double							channelSplitRatio	= 0.8;
+
 	private ASIOController					controller;
 	private FFTController					fftController;
 	private TimeKeeperController			timeKeeperController;
-	private TunerController					tunerController;
-	private DrumController					drumController;
+	// private TunerController tunerController;
+	// private DrumController drumController;
 	private WaveFormChartController			waveFormController;
 
 	public static MainController getInstance() {
@@ -113,9 +127,30 @@ public class MainController implements Initializable {
 		initContextMenu();
 		initChannelList();
 		initFullScreen();
-		initTuner();
+		// initTuner();
 		initTimekeeper();
 		initChart();
+		initDrumMonitor();
+		initListener();
+	}
+
+	private void initListener() {
+		for (ToggleButton b : contentMap.keySet()) {
+			b.setOnAction(e -> {
+				if (b.getToggleGroup().getSelectedToggle() == null) {
+					contentPane.getItems().remove(0);
+				} else if (b.isSelected()) {
+					Node n = contentMap.get(b);
+					if (contentPane.getItems().size() < 1) {
+
+						contentPane.getItems().add(0, n);
+					} else {
+						contentPane.getItems().set(0, n);
+					}
+				}
+			});
+		}
+
 	}
 
 	private void initContextMenu() {
@@ -177,7 +212,7 @@ public class MainController implements Initializable {
 		Parent p = FXMLUtil.loadFXML(FFT_PATH);
 		if (p != null) {
 			fftController = (FFTController) FXMLUtil.getController();
-			contentPane.getItems().add(0, p);
+			contentMap.put(toggleFFTView, p);
 		} else {
 			LOG.warn("Unable to load FFT Chart");
 		}
@@ -212,6 +247,24 @@ public class MainController implements Initializable {
 	private void initChannelList() {
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().visibleProperty());
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
+
+		toggleWaveForm.selectedProperty().addListener(new ChangeListener<Boolean>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if (newValue) {
+					if (!channelPane.getItems().contains(waveFormPane)) {
+						channelPane.getItems().add(waveFormPane);
+						channelPane.setDividerPosition(0, channelSplitRatio);
+					}
+				} else {
+					channelSplitRatio = channelPane.getDividerPositions()[0];
+					channelPane.getItems().remove(waveFormPane);
+				}
+
+			}
+		});
+
 		channelList.setCellFactory(e -> new ChannelCell());
 		channelList.setRoot(new TreeItem<>());
 		channelList.setShowRoot(false);
@@ -276,9 +329,9 @@ public class MainController implements Initializable {
 
 	private void initMenu() {
 		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-		toggleFFT.selectedProperty().bindBidirectional(menuStartFFT.selectedProperty());
+		toggleFFTView.selectedProperty().bindBidirectional(menuStartFFT.selectedProperty());
 		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
-		toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
+		// toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
 		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
 		// Close Button
 		closeMenu.setOnAction(e -> {
@@ -287,15 +340,15 @@ public class MainController implements Initializable {
 		enableContextMenu(false);
 	}
 
-	private void initTuner() {
-		Parent p = FXMLUtil.loadFXML(TUNER_PATH);
-		tunerController = (TunerController) FXMLUtil.getController();
-		sub.setBottom(p);
-		toggleTuner.selectedProperty().addListener(e -> {
-			tunerController.show(toggleTuner.isSelected());
-		});
-		tunerController.show(false);
-	}
+	// private void initTuner() {
+	// Parent p = FXMLUtil.loadFXML(TUNER_PATH);
+	// tunerController = (TunerController) FXMLUtil.getController();
+	// sub.setBottom(p);
+	// toggleTuner.selectedProperty().addListener(e -> {
+	// tunerController.show(toggleTuner.isSelected());
+	// });
+	// tunerController.show(false);
+	// }
 
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);
@@ -318,7 +371,7 @@ public class MainController implements Initializable {
 	@FXML
 	private void toggleFFT(ActionEvent e) {
 		fftController.play(!fftController.isPlaying());
-		toggleFFT.setSelected(fftController.isPlaying());
+		toggleFFTView.setSelected(fftController.isPlaying());
 	}
 
 	public void setSelectedChannel(Channel channel) {
@@ -493,29 +546,12 @@ public class MainController implements Initializable {
 		cxtUngroup.setDisable(!value);
 	}
 
-	@FXML
-	private void openDrumMonitor(ActionEvent e) {
-		if (drumController == null) {
-			Parent p = FXMLUtil.loadFXML(DRUM_PATH);
-			drumController = (DrumController) FXMLUtil.getController();
-			Stage secondStage = new Stage();
-			secondStage.setOnCloseRequest(ev -> {
-				LOG.info("Closing DrumStage");
-				secondStage.hide();
-			});
-			secondStage.setScene(new Scene(p));
-			secondStage.centerOnScreen();
-			secondStage.setWidth(1280);
-			secondStage.setHeight(960);
-			secondStage.show();
-		} else {
-			drumController.show();
-		}
+	private void initDrumMonitor() {
+		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
+		// drumController = (DrumController) FXMLUtil.getController();
+		contentMap.put(toggleDrumView, p);
 	}
 
-	protected void setDrumController(DrumController con) {
-		this.drumController = con;
-	}
 
 	public static String toRGBCode(Color color) {
 		int red = (int) (color.getRed() * 255);
