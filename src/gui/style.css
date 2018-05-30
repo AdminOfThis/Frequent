@@ -1,7 +1,7 @@
 .root {
-     -fx-base: rgba(30, 33, 35, 255); // dark
-	-fx-accent: #7dff2f;
-	-fx-focus-color: derive(-fx-accent, 50%);
+    -fx-base: rgba(30, 33, 35, 255); // dark
+	-fx-accent: #7DFF2F;
+	-fx-focus-color: #ADFF7B;
 }
 
 .toggle-button: selected{

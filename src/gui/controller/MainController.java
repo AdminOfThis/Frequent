@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
+import org.controlsfx.control.PropertySheet.Item;
 
 import control.ASIOController;
 import control.TimeKeeper;
@@ -48,7 +49,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
@@ -60,6 +60,7 @@ public class MainController implements Initializable {
 
 	private static final String				FFT_PATH			= "/gui/gui/FFT.fxml";
 	private static final String				TIMEKEEPER_PATH		= "/gui/gui/TimeKeeper.fxml";
+	private static final String				GROUP_PATH			= "/gui/gui/Groups.fxml";
 	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
 	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH			= "/gui/gui/Drum.fxml";
@@ -74,7 +75,7 @@ public class MainController implements Initializable {
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
 	@FXML
-	private ToggleButton					toggleFFTView, toggleDrumView;
+	private ToggleButton					toggleFFTView, toggleDrumView, toggleGroupsView;
 	@FXML
 	private ToggleButton					toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
 	@FXML
@@ -93,15 +94,9 @@ public class MainController implements Initializable {
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
-	@FXML
-	private ContextMenu						contextMenu;
+
 	@FXML
 	private SplitPane						channelPane;
-	/**************
-	 * contextmenu
-	 **************/
-	@FXML
-	private MenuItem						cxtResetName, cxtUngroup;
 
 	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
 
@@ -124,14 +119,23 @@ public class MainController implements Initializable {
 		root.setStyle(Main.getStyle());
 		initWaveForm();
 		initMenu();
-		initContextMenu();
 		initChannelList();
 		initFullScreen();
 		// initTuner();
 		initTimekeeper();
 		initChart();
 		initDrumMonitor();
+		initGroups();
 		initListener();
+	}
+
+	private void initGroups() {
+		Parent p = FXMLUtil.loadFXML(GROUP_PATH);
+		if (p != null) {
+			contentMap.put(toggleGroupsView, p);
+		} else {
+			LOG.warn("Unable to load FFT Chart");
+		}
 	}
 
 	private void initListener() {
@@ -141,6 +145,10 @@ public class MainController implements Initializable {
 					contentPane.getItems().remove(0);
 				} else if (b.isSelected()) {
 					Node n = contentMap.get(b);
+					if (b.equals(toggleGroupsView)) {
+						GroupController.getInstance().refresh();
+					}
+
 					if (contentPane.getItems().size() < 1) {
 
 						contentPane.getItems().add(0, n);
@@ -153,49 +161,53 @@ public class MainController implements Initializable {
 
 	}
 
-	private void initContextMenu() {
-		// adding colorPicker
-		ColorPicker picker = new ColorPicker();
-		picker.valueProperty().addListener(new ChangeListener<Color>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Color> observable, Color oldValue, Color newValue) {
-				TreeItem<Input> in = channelList.getSelectionModel().getSelectedItem();
-				if (in != null && in.getValue() != null && newValue != null) {
-					in.getValue().setColor(toRGBCode(newValue));
-					channelList.refresh();
-				}
-			}
-		});
-		MenuItem colorPicker = new MenuItem(null, picker);
-		contextMenu.getItems().add(0, colorPicker);
-		// on opening
-		contextMenu.setOnShowing(e -> {
-			try {
-				Input item = channelList.getSelectionModel().getSelectedItem().getValue();
-				if (item == null) {
-					contextMenu.hide();
-				} else {
-					if (item instanceof Channel) {
-						for (MenuItem g : groupMenu.getItems()) {
-							if (g instanceof RadioMenuItem) {
-								String text = ((Label) g.getGraphic()).getText();
-								Group group = ((Channel) item).getGroup();
-								if (group != null && text.equals(group.getName())) {
-									((RadioMenuItem) g).setSelected(true);
-									break;
-								} else {
-									((RadioMenuItem) g).setSelected(false);
-								}
-							}
-						}
-					}
-				}
-			} catch (Exception ex) {
-				LOG.warn("Problems on opening context menu", ex);
-			}
-		});
-	}
+	// private void initContextMenu() {
+	// // adding colorPicker
+	// ColorPicker picker = new ColorPicker();
+	// picker.valueProperty().addListener(new ChangeListener<Color>() {
+	//
+	// @Override
+	// public void changed(ObservableValue<? extends Color> observable, Color
+	// oldValue, Color newValue) {
+	// TreeItem<Input> in = channelList.getSelectionModel().getSelectedItem();
+	// if (in != null && in.getValue() != null && newValue != null) {
+	// in.getValue().setColor(toRGBCode(newValue));
+	// channelList.refresh();
+	// }
+	// }
+	// });
+	// MenuItem colorPicker = new MenuItem(null, picker);
+	// contextMenu.getItems().add(0, colorPicker);
+	// // on opening
+	// contextMenu.setOnShowing(e -> {
+	// try {
+	// TreeItem<Input> guiItem =
+	// channelList.getSelectionModel().getSelectedItem();
+	// if (guiItem == null || guiItem.getValue() == null) {
+	// contextMenu.hide();
+	// e.consume();
+	// } else {
+	// Input item = guiItem.getValue();
+	// if (item instanceof Channel) {
+	// for (MenuItem g : groupMenu.getItems()) {
+	// if (g instanceof RadioMenuItem) {
+	// String text = ((Label) g.getGraphic()).getText();
+	// Group group = ((Channel) item).getGroup();
+	// if (group != null && text.equals(group.getName())) {
+	// ((RadioMenuItem) g).setSelected(true);
+	// break;
+	// } else {
+	// ((RadioMenuItem) g).setSelected(false);
+	// }
+	// }
+	// }
+	// }
+	// }
+	// } catch (Exception ex) {
+	// LOG.warn("Problems on opening context menu", ex);
+	// }
+	// });
+	// }
 
 	private void initWaveForm() {
 		LOG.info("Loading WaveForm");
@@ -281,7 +293,6 @@ public class MainController implements Initializable {
 					waveFormController.setChannel(channel);
 					LOG.info("Switching to channel " + channel.getName());
 				}
-				enableContextMenu(newValue != null);
 			}
 		});
 		// Edit channel list
@@ -337,7 +348,6 @@ public class MainController implements Initializable {
 		closeMenu.setOnAction(e -> {
 			Main.close();
 		});
-		enableContextMenu(false);
 	}
 
 	// private void initTuner() {
@@ -541,15 +551,14 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private void enableContextMenu(boolean value) {
-		cxtResetName.setDisable(!value);
-		cxtUngroup.setDisable(!value);
-	}
 
 	private void initDrumMonitor() {
 		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
-		// drumController = (DrumController) FXMLUtil.getController();
-		contentMap.put(toggleDrumView, p);
+		if (p != null) {
+			contentMap.put(toggleDrumView, p);
+		} else {
+			LOG.warn("Unable to load FFT Chart");
+		}
 	}
 
 
