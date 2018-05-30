@@ -84,7 +84,8 @@ public class GroupController implements Initializable {
 
 			for (int j = groupBox.getChildren().size(); j < maxChannels; j++) {
 				Pane pane = new Pane();
-				pane.minWidthProperty().bind(first.widthProperty());
+				pane.setMinWidth(40.0);
+				HBox.setHgrow(pane, Priority.ALWAYS);
 				groupBox.getChildren().add(pane);
 			}
 		}
