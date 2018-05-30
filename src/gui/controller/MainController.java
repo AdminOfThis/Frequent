@@ -60,7 +60,7 @@ public class MainController implements Initializable {
 
 	private static final String				FFT_PATH			= "/gui/gui/FFT.fxml";
 	private static final String				TIMEKEEPER_PATH		= "/gui/gui/TimeKeeper.fxml";
-	private static final String				GROUP_PATH			= "/gui/gui/Groups.fxml";
+	private static final String				GROUP_PATH			= "/gui/gui/Group.fxml";
 	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
 	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH			= "/gui/gui/Drum.fxml";
