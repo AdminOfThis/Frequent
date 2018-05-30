@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.CheckMenuItem?>
-<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -75,11 +74,12 @@
                   <Separator orientation="VERTICAL" />
                   <Pane HBox.hgrow="ALWAYS" />
                   <Separator orientation="VERTICAL" />
-                  <ToggleButton fx:id="toggleFFTView" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="50.0" text="FFT">
+                  <ToggleButton fx:id="toggleFFTView" mnemonicParsing="false" onAction="#toggleFFT" prefWidth="70.0" text="Spectrum">
                      <toggleGroup>
                         <ToggleGroup fx:id="viewGroup" />
                      </toggleGroup></ToggleButton>
-                  <ToggleButton fx:id="toggleDrumView" mnemonicParsing="false" prefWidth="50.0" text="Drum" toggleGroup="$viewGroup" />
+                  <ToggleButton fx:id="toggleDrumView" mnemonicParsing="false" prefWidth="70.0" text="Drum" toggleGroup="$viewGroup" />
+                  <ToggleButton fx:id="toggleGroupsView" mnemonicParsing="false" prefWidth="70.0" text="Groups" toggleGroup="$viewGroup" />
                </children>
                <VBox.margin>
                   <Insets />
@@ -133,37 +133,7 @@
                               <ToggleButton fx:id="toggleGroupChannels" mnemonicParsing="false" prefWidth="65.0" text="Group" />
                            </children>
                         </HBox>
-                        <TreeView fx:id="channelList" VBox.vgrow="ALWAYS">
-                           <contextMenu>
-                              <ContextMenu fx:id="contextMenu">
-                                <items>
-                                    <MenuItem fx:id="cxtResetName" mnemonicParsing="false" onAction="#resetName">
-                                       <graphic>
-                                          <Label text="Reset Name" />
-                                       </graphic>
-                                    </MenuItem>
-                                    <Menu fx:id="groupMenu" mnemonicParsing="false">
-                                      <items>
-                                        <MenuItem mnemonicParsing="false" onAction="#newGroup">
-                                             <graphic>
-                                                <Label text="New Group" />
-                                             </graphic>
-                                          </MenuItem>
-                                          <MenuItem fx:id="cxtUngroup" mnemonicParsing="false">
-                                             <graphic>
-                                                <Label text="Ungroup" />
-                                             </graphic>
-                                          </MenuItem>
-                                          <SeparatorMenuItem mnemonicParsing="false" />
-                                      </items>
-                                       <graphic>
-                                          <Label text="Group" />
-                                       </graphic>
-                                    </Menu>
-                                </items>
-                              </ContextMenu>
-                           </contextMenu>
-                        </TreeView>
+                        <TreeView fx:id="channelList" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
                   <AnchorPane fx:id="waveFormPane" SplitPane.resizableWithParent="false" />

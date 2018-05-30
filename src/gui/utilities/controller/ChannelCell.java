@@ -14,7 +14,11 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Parent;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TreeCell;
 import javafx.scene.layout.AnchorPane;
 
@@ -32,6 +36,8 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 	private Input				input;
 	private VuMeter				meter;
 
+	private ContextMenu			contextMenu		= new ContextMenu();
+
 	public ChannelCell() {
 		super();
 		setPadding(Insets.EMPTY);
@@ -41,6 +47,55 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 		} else {
 			LOG.warn("Unable to load ChannelCell");
 		}
+
+		// context Menu
+
+		initContextMenu();
+		emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
+			if (isNowEmpty) {
+				this.setContextMenu(null);
+			} else {
+				this.setContextMenu(contextMenu);
+			}
+		});
+	}
+
+	private void initContextMenu() {
+		// adding colorPicker
+		// ColorPicker picker = new ColorPicker();
+		// picker.valueProperty().addListener(new ChangeListener<Color>() {
+		//
+		// @Override
+		// public void changed(ObservableValue<? extends Color> observable,
+		// Color oldValue, Color newValue) {
+		// if (getValue() != null && newValue != null) {
+		// in.getValue().setColor(toRGBCode(newValue));
+		// channelList.refresh();
+		// }
+		// }
+		// });
+		// MenuItem colorPicker = new MenuItem(null, picker);
+		// contextMenu.getItems().add(0, colorPicker);
+		// on opening
+		Menu groupMenu = new Menu();
+		Input item = this.getItem();
+
+		if (item != null && item instanceof Channel) {
+			for (MenuItem g : groupMenu.getItems()) {
+				if (g instanceof RadioMenuItem) {
+					String text = ((Label) g.getGraphic()).getText();
+					Group group = ((Channel) item).getGroup();
+					if (group != null && text.equals(group.getName())) {
+						((RadioMenuItem) g).setSelected(true);
+						break;
+					} else {
+						((RadioMenuItem) g).setSelected(false);
+					}
+				}
+			}
+		}
+		contextMenu.getItems().add(groupMenu);
+
 	}
 
 	@Override
