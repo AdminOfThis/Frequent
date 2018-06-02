@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
-import org.controlsfx.control.PropertySheet.Item;
 
 import control.ASIOController;
 import control.TimeKeeper;
@@ -29,8 +28,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -94,14 +91,10 @@ public class MainController implements Initializable {
 	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
-
 	@FXML
 	private SplitPane						channelPane;
-
 	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
-
 	private double							channelSplitRatio	= 0.8;
-
 	private ASIOController					controller;
 	private FFTController					fftController;
 	private TimeKeeperController			timeKeeperController;
@@ -148,17 +141,16 @@ public class MainController implements Initializable {
 					if (b.equals(toggleGroupsView)) {
 						GroupController.getInstance().refresh();
 					}
-
 					if (contentPane.getItems().size() < 1) {
-
 						contentPane.getItems().add(0, n);
 					} else {
 						contentPane.getItems().set(0, n);
 					}
 				}
+				fftController.pause(!toggleFFTView.isSelected());
+				GroupController.getInstance().pause(!toggleGroupsView.isSelected());
 			});
 		}
-
 	}
 
 	// private void initContextMenu() {
@@ -208,7 +200,6 @@ public class MainController implements Initializable {
 	// }
 	// });
 	// }
-
 	private void initWaveForm() {
 		LOG.info("Loading WaveForm");
 		Parent p = FXMLUtil.loadFXML(WaveFormChartController.PATH);
@@ -259,7 +250,6 @@ public class MainController implements Initializable {
 	private void initChannelList() {
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().visibleProperty());
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
-
 		toggleWaveForm.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
 			@Override
@@ -273,10 +263,8 @@ public class MainController implements Initializable {
 					channelSplitRatio = channelPane.getDividerPositions()[0];
 					channelPane.getItems().remove(waveFormPane);
 				}
-
 			}
 		});
-
 		channelList.setCellFactory(e -> new ChannelCell());
 		channelList.setRoot(new TreeItem<>());
 		channelList.setShowRoot(false);
@@ -302,13 +290,10 @@ public class MainController implements Initializable {
 
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				if (newValue == oldValue) {
-					return;
-				}
+				if (newValue == oldValue) { return; }
 				TreeItem<Input> root = new TreeItem<>();
 				channelList.setRoot(root);
 				if (ASIOController.getInstance() != null) {
-
 					if (newValue) {
 						for (Channel c : ASIOController.getInstance().getInputList()) {
 							if (c.getGroup() == null) {
@@ -359,9 +344,9 @@ public class MainController implements Initializable {
 	// });
 	// tunerController.show(false);
 	// }
-
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);
+		controller.addFFTListener(fftController);
 		timeKeeperController.setChannels(controller.getInputList());
 		setChannelList(controller.getInputList());
 		lblDriver.setText(ioName);
@@ -376,12 +361,6 @@ public class MainController implements Initializable {
 		for (Channel c : list) {
 			channelList.getRoot().getChildren().add(new TreeItem<Input>(c));
 		}
-	}
-
-	@FXML
-	private void toggleFFT(ActionEvent e) {
-		fftController.play(!fftController.isPlaying());
-		toggleFFTView.setSelected(fftController.isPlaying());
 	}
 
 	public void setSelectedChannel(Channel channel) {
@@ -404,9 +383,7 @@ public class MainController implements Initializable {
 				return true;
 			}
 			if (!i.isLeaf()) {
-				if (findAndSelect(i, channel)) {
-					return true;
-				}
+				if (findAndSelect(i, channel)) { return true; }
 			}
 		}
 		return false;
@@ -551,7 +528,6 @@ public class MainController implements Initializable {
 		}
 	}
 
-
 	private void initDrumMonitor() {
 		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
 		if (p != null) {
@@ -561,12 +537,10 @@ public class MainController implements Initializable {
 		}
 	}
 
-
 	public static String toRGBCode(Color color) {
 		int red = (int) (color.getRed() * 255);
 		int green = (int) (color.getGreen() * 255);
 		int blue = (int) (color.getBlue() * 255);
 		return String.format("#%02X%02X%02X", red, green, blue);
-
 	}
 }

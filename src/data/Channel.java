@@ -1,5 +1,7 @@
 package data;
 
+import java.util.Comparator;
+
 import com.synthbot.jasiohost.AsioChannel;
 
 public class Channel extends Input {
@@ -7,10 +9,18 @@ public class Channel extends Input {
 	/**
 	 * 
 	 */
-	private static final long		serialVersionUID	= 1L;
-	private transient AsioChannel	channel;
-	private int						channelIndex		= -1;
-	private Group					group;
+	private static final long				serialVersionUID	= 1L;
+	public static final Comparator<Channel>	COMPARATOR			= new Comparator<Channel>() {
+
+																	@Override
+																	public int compare(Channel o1, Channel o2) {
+																		// TODO Auto-generated method stub
+																		return o1.getChannelIndex() - o2.getChannelIndex();
+																	}
+																};
+	private transient AsioChannel			channel;
+	private int								channelIndex		= -1;
+	private Group							group;
 
 	public Channel(AsioChannel channel) {
 		this(channel, channel.getChannelName());

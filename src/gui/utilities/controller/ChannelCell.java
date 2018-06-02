@@ -1,14 +1,21 @@
 package gui.utilities.controller;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import control.ASIOController;
 import data.Channel;
 import data.Group;
 import data.Input;
+import gui.controller.GroupController;
 import gui.utilities.FXMLUtil;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -19,6 +26,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeCell;
 import javafx.scene.layout.AnchorPane;
 
@@ -35,7 +45,6 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 	private AnchorPane			chartPane;
 	private Input				input;
 	private VuMeter				meter;
-
 	private ContextMenu			contextMenu		= new ContextMenu();
 
 	public ChannelCell() {
@@ -47,9 +56,7 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 		} else {
 			LOG.warn("Unable to load ChannelCell");
 		}
-
 		// context Menu
-
 		initContextMenu();
 		emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
 			if (isNowEmpty) {
@@ -77,26 +84,66 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 		// MenuItem colorPicker = new MenuItem(null, picker);
 		// contextMenu.getItems().add(0, colorPicker);
 		// on opening
-		Menu groupMenu = new Menu();
-		Input item = this.getItem();
+		Menu groupMenu = new Menu("Groups");
+		MenuItem newGroupMenu = new MenuItem("New Group");
+		newGroupMenu.setOnAction(newGroup);
+		// groups
+		contextMenu.getItems().add(groupMenu);
+		contextMenu.setOnShowing(e -> {
+			groupMenu.getItems().clear();
+			groupMenu.getItems().add(newGroupMenu);
+			groupMenu.getItems().add(new SeparatorMenuItem());
+			ToggleGroup toggle = new ToggleGroup();
+			for (Group g : ASIOController.getInstance().getGroupList()) {
+				RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
+				groupMenuItem.setToggleGroup(toggle);
+				groupMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
-		if (item != null && item instanceof Channel) {
-			for (MenuItem g : groupMenu.getItems()) {
-				if (g instanceof RadioMenuItem) {
-					String text = ((Label) g.getGraphic()).getText();
-					Group group = ((Channel) item).getGroup();
-					if (group != null && text.equals(group.getName())) {
-						((RadioMenuItem) g).setSelected(true);
-						break;
-					} else {
-						((RadioMenuItem) g).setSelected(false);
+					@Override
+					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+						if (getItem() != null && getItem() instanceof Channel) {
+							Channel channel = (Channel) getItem();
+							if (newValue) {
+								g.addChannel(channel);
+							} else {
+								g.removeChannel(channel);
+							}
+							GroupController.getInstance().refresh();
+						}
+					}
+				});
+				groupMenu.getItems().add(groupMenuItem);
+			}
+			Input item = this.getItem();
+			if (item != null && item instanceof Channel) {
+				for (MenuItem g : groupMenu.getItems()) {
+					if (g instanceof RadioMenuItem) {
+						String text = g.getText();
+						Group group = ((Channel) item).getGroup();
+						if (group != null && text.equals(group.getName())) {
+							((RadioMenuItem) g).setSelected(true);
+							break;
+						} else {
+							((RadioMenuItem) g).setSelected(false);
+						}
 					}
 				}
 			}
-		}
-		contextMenu.getItems().add(groupMenu);
-
+		});
 	}
+
+	private EventHandler<ActionEvent> newGroup = new EventHandler<ActionEvent>() {
+
+		@Override
+		public void handle(ActionEvent event) {
+			TextInputDialog newGroupDialog = new TextInputDialog();
+			Optional<String> result = newGroupDialog.showAndWait();
+			if (result.isPresent()) {
+				ASIOController.getInstance().addGroup(new Group(result.get()));
+				GroupController.getInstance().refresh();
+			}
+		}
+	};
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -126,21 +173,11 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 	}
 
 	private void update(Input item) {
-		if (item instanceof Channel) {
-			Channel c = (Channel) item;
-			meter.setChannel(c);
-			if (item == null || item.getColor() == null) {
-				this.setStyle("");
-			} else {
-				this.setStyle("-fx-accent: " + item.getColor());
-			}
-		} else if (item instanceof Group) {
-			meter.setChannel(null);
-			if (item == null || item.getColor() == null) {
-				this.setStyle("");
-			} else {
-				this.setStyle("-fx-background-color: " + item.getColor() + "; -fx-accent: " + item.getColor());
-			}
+		meter.setChannel(item);
+		if (item == null || item.getColor() == null) {
+			this.setStyle("");
+		} else {
+			this.setStyle("-fx-accent: " + item.getColor());
 		}
 		if (item == null) {
 			label.setText(null);
