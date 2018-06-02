@@ -70,7 +70,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		} catch (AsioException e) {
+		}
+		catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -101,7 +102,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	private void initFFT() {
 		bufferCount = 1;
 		// fftBufferSize = 16384;
-		fftBufferSize = 2048;
+		fftBufferSize = bufferSize;
 		// fft = new DoubleFFT_1D(fftBufferSize);
 		fft = new DoubleDCT_1D(fftBufferSize);
 		fftBuffer = new double[bufferCount][fftBufferSize];
@@ -116,9 +117,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) {
-			return asioDriver.getNumChannelsInput();
-		}
+		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
 		return -1;
 	}
 
@@ -196,7 +195,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 							c.setLevel(max);
 						}
 					}
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -232,6 +232,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 		for (FFTListener l : fftListeners) {
 			if (l != null) {
 				new Thread(new Runnable() {
+
 					@Override
 					public void run() {
 						l.newFFT(spectrumMap);

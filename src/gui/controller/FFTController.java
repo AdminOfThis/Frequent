@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import control.ASIOController;
 import data.Channel;
 import data.FFTListener;
 import gui.utilities.LogarithmicAxis;
@@ -27,7 +26,7 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
-public class FFTController implements Initializable, FFTListener {
+public class FFTController implements Initializable, FFTListener, Pausable {
 
 	private static final double		DECAY		= 1.01;
 	public static final double		FFT_MIN		= -80;
@@ -38,7 +37,7 @@ public class FFTController implements Initializable, FFTListener {
 	private HBox					chartRoot;
 	private XYChart<Number, Number>	chart;
 	private VuMeter					meter;
-	private boolean					playing;
+	private boolean					pause		= true;
 	private Series<Number, Number>	series		= new Series<>();
 	private Series<Number, Number>	maxSeries	= new Series<>();
 
@@ -47,13 +46,11 @@ public class FFTController implements Initializable, FFTListener {
 		LOG.info("Loading FFT Chart");
 		initVuMeter();
 		initChart();
-		if (ASIOController.getInstance() != null) {
-			ASIOController.getInstance().addFFTListener(this);
-		}
 	}
 
 	private void initVuMeter() {
 		meter = new VuMeter(null, Orientation.VERTICAL);
+		meter.setParentPausable(this);
 		meter.setPrefWidth(50.0);
 		chartRoot.getChildren().add(meter);
 	}
@@ -78,21 +75,13 @@ public class FFTController implements Initializable, FFTListener {
 		HBox.setHgrow(chart, Priority.ALWAYS);
 	}
 
-	public void play(boolean play) {
-		playing = !play;
-	}
-
-	public boolean isPlaying() {
-		return playing;
-	}
-
 	public void setChannel(Channel channel) {
 		meter.setChannel(channel);
 	}
 
 	@Override
 	public void newFFT(double[][] map) {
-		if (map != null && playing) {
+		if (map != null && !pause) {
 			Platform.runLater(new Runnable() {
 
 				@Override
@@ -125,7 +114,22 @@ public class FFTController implements Initializable, FFTListener {
 					series.getData().setAll(dataList);
 				}
 			});
-
 		}
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		this.pause = pause;
+		LOG.info("Playing animations for spectrum view");
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause;
+	}
+
+	@Override
+	public void setParentPausable(Pausable parent) {
+		LOG.error("Uninplemented method called: addParentPausable");
 	}
 }
