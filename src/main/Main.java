@@ -13,6 +13,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -22,6 +23,7 @@ public class Main extends Application {
 	private static final String	VERSION			= "0.0.5";
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
 	private static final String	GUI_IO_CHOOSER	= "/gui/gui/IOChooser.fxml";
+	private static final String	LOGO			= "./../lib/logo_26.png";
 	private static String		style			= "";
 	private static boolean		debug			= false, fast = false;
 
@@ -105,6 +107,12 @@ public class Main extends Application {
 		primaryStage.setOnCloseRequest(e -> Main.close());
 		primaryStage.setTitle(TITLE + " " + VERSION);
 		primaryStage.setResizable(false);
+		try {
+			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO)));
+		}
+		catch (Exception e) {
+			LOG.error("Unable to load logo", e);
+		}
 		primaryStage.setOnShowing(e -> {
 			if (Main.isDebug()) {
 				controller.startDebug();
