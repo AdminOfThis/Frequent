@@ -14,8 +14,7 @@
       <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
             <ToggleButton fx:id="toggleSlowCurve" mnemonicParsing="false" prefWidth="70.0" text="Slow" />
-            <ToggleButton fx:id="toggleAutoSize" mnemonicParsing="false" prefWidth="70.0" text="Auto Size" />
-         </children>
+        </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="4.0" top="5.0" />
          </padding>

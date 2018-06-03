@@ -37,7 +37,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	@FXML
 	private HBox					chartRoot;
 	@FXML
-	private ToggleButton			toggleSlowCurve, toggleAutoSize;
+	private ToggleButton			toggleSlowCurve;
 	private XYChart<Number, Number>	chart;
 	private VuMeter					meter;
 	private boolean					pause		= true;
@@ -60,15 +60,6 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 				}
 			} else {
 				chart.getData().remove(maxSeries);
-			}
-		});
-		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
-		yAxis.setForceZeroInRange(false);
-		toggleAutoSize.selectedProperty().bindBidirectional(yAxis.autoRangingProperty());
-		toggleAutoSize.selectedProperty().addListener(e -> {
-			if (!toggleAutoSize.isSelected()) {
-				yAxis.setLowerBound(FFT_MIN);
-				yAxis.setUpperBound(0.0);
 			}
 		});
 	}
