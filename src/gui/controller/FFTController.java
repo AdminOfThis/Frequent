@@ -23,6 +23,7 @@ import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
@@ -35,6 +36,8 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	private static final int		X_MAX		= 20000;
 	@FXML
 	private HBox					chartRoot;
+	@FXML
+	private ToggleButton			toggleSlowCurve, toggleAutoSize;
 	private XYChart<Number, Number>	chart;
 	private VuMeter					meter;
 	private boolean					pause		= true;
@@ -46,6 +49,28 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		LOG.info("Loading FFT Chart");
 		initVuMeter();
 		initChart();
+		initButtons();
+	}
+
+	private void initButtons() {
+		toggleSlowCurve.selectedProperty().addListener(e -> {
+			if (toggleSlowCurve.isSelected()) {
+				if (!chart.getData().contains(maxSeries)) {
+					chart.getData().add(maxSeries);
+				}
+			} else {
+				chart.getData().remove(maxSeries);
+			}
+		});
+		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
+		yAxis.setForceZeroInRange(false);
+		toggleAutoSize.selectedProperty().bindBidirectional(yAxis.autoRangingProperty());
+		toggleAutoSize.selectedProperty().addListener(e -> {
+			if (!toggleAutoSize.isSelected()) {
+				yAxis.setLowerBound(FFT_MIN);
+				yAxis.setUpperBound(0.0);
+			}
+		});
 	}
 
 	private void initVuMeter() {
@@ -65,7 +90,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		// chart = new NegativeBackgroundAreaChart<>(logAxis, yaxis);
 		chart = new NegativeAreaChart(logAxis, yaxis);
 		chart.getData().add(series);
-		chart.getData().add(maxSeries);
+// chart.getData().add(maxSeries);
 		chart.setAnimated(false);
 		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
 		chart.setLegendVisible(false);

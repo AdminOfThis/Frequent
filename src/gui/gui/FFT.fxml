@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox fx:id="chartRoot" minHeight="200.0" minWidth="300.0" style="-fx-border-style: none;" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.FFTController" />
+
+<BorderPane prefHeight="200.0" prefWidth="200.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.FFTController">
+   <center>
+   <HBox fx:id="chartRoot" />
+   </center>
+   <top>
+      <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
+         <children>
+            <ToggleButton fx:id="toggleSlowCurve" mnemonicParsing="false" prefWidth="70.0" text="Slow" />
+            <ToggleButton fx:id="toggleAutoSize" mnemonicParsing="false" prefWidth="70.0" text="Auto Size" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="4.0" top="5.0" />
+         </padding>
+      </HBox>
+   </top>
+</BorderPane>

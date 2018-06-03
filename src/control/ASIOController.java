@@ -2,6 +2,7 @@ package control;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -168,38 +169,41 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	@Override
 	public void bufferSwitch(long sampleTime, long samplePosition, Set<AsioChannel> channels) {
 		for (AsioChannel channel : channels) {
-			if (channel.isInput() && channel.isActive()) {
-				try {
-					if (activeChannel != null) {
-						if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
-							channel.read(output);
-							calculatePeaks(output);
-							fftThis();
-						} else {
-							channel.read(output);
-						}
-						float max = 0;
-						for (float f : output) {
-							if (f > max) {
-								max = f;
+			try {
+				if (channel.isInput() && channel.isActive()) {
+					try {
+						if (activeChannel != null) {
+							if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
+								channel.read(output);
+								calculatePeaks(output);
+								fftThis();
+							} else {
+								channel.read(output);
 							}
-						}
-						Channel c = null;
-						for (Channel cTemp : channelList) {
-							if (cTemp.getChannel().equals(channel)) {
-								c = cTemp;
-								break;
+							float max = 0;
+							for (float f : output) {
+								if (f > max) {
+									max = f;
+								}
 							}
-						}
-						if (c != null) {
-							c.setLevel(max);
+							Channel c = null;
+							for (Channel cTemp : channelList) {
+								if (cTemp.getChannel().equals(channel)) {
+									c = cTemp;
+									break;
+								}
+							}
+							if (c != null) {
+								c.setLevel(max);
+							}
 						}
 					}
-				}
-				catch (Exception e) {
-					e.printStackTrace();
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
+			catch (ConcurrentModificationException e) {}
 		}
 	}
 
