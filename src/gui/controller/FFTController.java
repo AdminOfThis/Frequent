@@ -37,7 +37,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	@FXML
 	private HBox					chartRoot;
 	@FXML
-	private ToggleButton			toggleSlowCurve;
+	private ToggleButton			toggleSlowCurve, toggleVPad;
 	private XYChart<Number, Number>	chart;
 	private VuMeter					meter;
 	private boolean					pause		= true;
@@ -60,6 +60,14 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 				}
 			} else {
 				chart.getData().remove(maxSeries);
+			}
+		});
+		toggleVPad.selectedProperty().addListener(e -> {
+			NumberAxis yAxis = (NumberAxis) chart.getYAxis();
+			if (toggleVPad.isSelected()) {
+				yAxis.setUpperBound(-30.0);
+			} else {
+				yAxis.setUpperBound(0.0);
 			}
 		});
 	}
@@ -136,7 +144,11 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	@Override
 	public void pause(boolean pause) {
 		this.pause = pause;
-		LOG.info("Playing animations for spectrum view");
+		if (pause) {
+			LOG.info(FFTController.class.getSimpleName() + "; playing animations");
+		} else {
+			LOG.info(FFTController.class.getSimpleName() + "; pausing animations");
+		}
 	}
 
 	@Override
