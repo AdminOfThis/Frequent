@@ -5,7 +5,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-
 <BorderPane prefHeight="200.0" prefWidth="200.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.FFTController">
    <center>
    <HBox fx:id="chartRoot" />
@@ -14,6 +13,7 @@
       <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
             <ToggleButton fx:id="toggleSlowCurve" mnemonicParsing="false" prefWidth="70.0" text="Slow" />
+            <ToggleButton fx:id="toggleVPad" mnemonicParsing="false" prefWidth="70.0" text="VPad" />
         </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="4.0" top="5.0" />

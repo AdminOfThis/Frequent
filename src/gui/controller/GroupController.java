@@ -106,7 +106,11 @@ public class GroupController implements Initializable, Pausable {
 	@Override
 	public void pause(boolean pause) {
 		this.pause = pause;
-		LOG.info("Playing animations for group view");
+		if (pause) {
+			LOG.info(FFTController.class.getSimpleName() + "; playing animations");
+		} else {
+			LOG.info(FFTController.class.getSimpleName() + "; pausing animations");
+		}
 	}
 
 	@Override

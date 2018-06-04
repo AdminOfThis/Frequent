@@ -115,7 +115,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	public void shutdown() {
-		asioDriver.shutdownAndUnloadDriver();
+		if (asioDriver != null) {
+			asioDriver.shutdownAndUnloadDriver();
+		}
 	}
 
 	public int getNoOfInputs() {
