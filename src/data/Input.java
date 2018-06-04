@@ -24,6 +24,9 @@ public abstract class Input implements Serializable {
 	}
 
 	public void addObserver(LevelObserver obs) {
+		if (observerList == null) {
+			observerList = new ArrayList<>();
+		}
 		if (!observerList.contains(obs)) {
 			observerList.add(obs);
 		}
@@ -34,6 +37,9 @@ public abstract class Input implements Serializable {
 	}
 
 	protected void notifyObservers() {
+		if (observerList == null) {
+			observerList = new ArrayList<>();
+		}
 		for (LevelObserver obs : observerList) {
 // new Thread(new Runnable() {
 //
@@ -67,6 +73,12 @@ public abstract class Input implements Serializable {
 			}
 			Long.parseLong(color, 16);
 			hexColor = "#" + color;
+			if (this instanceof Group) {
+				Group g = (Group) this;
+				for (Channel c : g.getChannelList()) {
+					c.setColor(hexColor);
+				}
+			}
 		}
 		catch (Exception e) {
 			return false;

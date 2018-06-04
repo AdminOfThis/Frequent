@@ -24,6 +24,9 @@ public class Group extends Input implements LevelObserver {
 			}
 			if (channel.getGroup() != this && channel != null) {
 				channel.setGroup(this);
+				if (this.getColor() != null && !this.getColor().isEmpty() && (channel.getColor() == null || channel.getColor().isEmpty())) {
+					channel.setColor(getColor());
+				}
 			}
 			channelList.sort(Channel.COMPARATOR);
 		}

@@ -11,7 +11,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -60,18 +62,33 @@ public abstract class FileIO {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void handleResult(List<Serializable> result) {
+		ArrayList<Group> groupList = new ArrayList<>();
+		HashMap<Class, Integer> counterMap = new HashMap<>();
 		for (Object o : result) {
+			if (counterMap.get(o.getClass()) == null) {
+				counterMap.put(o.getClass(), 0);
+			}
+			counterMap.put(o.getClass(), counterMap.get(o.getClass()) + 1);
 			// finding right controller
 			DataHolder holder = null;
 			if (o instanceof Cue) {
 				holder = TimeKeeper.getInstance();
 			} else if (o instanceof Channel) {
 				holder = ASIOController.getInstance();
+			} else if (o instanceof Group) {
+				groupList.add((Group) o);
 			}
 			// adding
 			if (holder != null) {
 				holder.add(o);
 			}
+		}
+		for (Group g : groupList) {
+			ASIOController.getInstance().add(g);
+		}
+		LOG.info("= Loading statistics: ");
+		for (Entry<Class, Integer> o : counterMap.entrySet()) {
+			LOG.info("    " + o.getKey().getSimpleName() + ": " + o.getValue());
 		}
 	}
 
