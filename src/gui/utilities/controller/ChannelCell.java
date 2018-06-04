@@ -11,6 +11,7 @@ import data.Channel;
 import data.Group;
 import data.Input;
 import gui.controller.GroupController;
+import gui.controller.MainController;
 import gui.utilities.FXMLUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -31,21 +32,21 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeCell;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 public class ChannelCell extends TreeCell<Input> implements Initializable {
 
-	private static final Logger	LOG				= Logger.getLogger(ChannelCell.class);
-	private static final String	FXML_PATH		= "/gui/utilities/gui/ChannelCell.fxml";
-	private static final double	REFRESH_RATE	= 100.0;
-	// time for the chart in milliseconds
-	private static final double	TIME_RANGE		= 30000.0;
+	private static final Logger	LOG			= Logger.getLogger(ChannelCell.class);
+	private static final String	FXML_PATH	= "/gui/utilities/gui/ChannelCell.fxml";
+	private static final int	COLORS		= 8;
 	@FXML
 	private Label				label;
 	@FXML
 	private AnchorPane			chartPane;
 	private Input				input;
 	private VuMeter				meter;
-	private ContextMenu			contextMenu		= new ContextMenu();
+	private ContextMenu			contextMenu	= new ContextMenu();
 
 	public ChannelCell() {
 		super();
@@ -69,21 +70,24 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 
 	private void initContextMenu() {
 		// adding colorPicker
-		// ColorPicker picker = new ColorPicker();
-		// picker.valueProperty().addListener(new ChangeListener<Color>() {
-		//
-		// @Override
-		// public void changed(ObservableValue<? extends Color> observable,
-		// Color oldValue, Color newValue) {
-		// if (getValue() != null && newValue != null) {
-		// in.getValue().setColor(toRGBCode(newValue));
-		// channelList.refresh();
-		// }
-		// }
-		// });
-		// MenuItem colorPicker = new MenuItem(null, picker);
-		// contextMenu.getItems().add(0, colorPicker);
-		// on opening
+		Menu colorMenu = new Menu("Color");
+		contextMenu.getItems().add(colorMenu);
+		for (int i = 0; i < COLORS; i++) {
+			double hue = (360.0 / COLORS) * i;
+			Color color = Color.hsb(hue, 1.0, 1.0);
+			Circle circle = new Circle(5.0);
+			String colorHex = toRGBCode(color);
+			circle.setStyle("-fx-fill: " + colorHex);
+			MenuItem item = new MenuItem("Color #" + i);
+			item.setGraphic(circle);
+			colorMenu.getItems().add(item);
+			item.setOnAction(e -> {
+				LOG.info("Changing color of " + getItem().getName() + " to " + colorHex);
+				getItem().setColor(colorHex);
+				MainController.getInstance().refresh();
+				GroupController.getInstance().refresh();
+			});
+		}
 		Menu groupMenu = new Menu("Groups");
 		MenuItem newGroupMenu = new MenuItem("New Group");
 		newGroupMenu.setOnAction(newGroup);
@@ -108,6 +112,7 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 							} else {
 								g.removeChannel(channel);
 							}
+							MainController.getInstance().refresh();
 							GroupController.getInstance().refresh();
 						}
 					}
@@ -184,5 +189,12 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 		} else {
 			label.setText(item.getName());
 		}
+	}
+
+	public static String toRGBCode(Color color) {
+		int red = (int) (color.getRed() * 255);
+		int green = (int) (color.getGreen() * 255);
+		int blue = (int) (color.getBlue() * 255);
+		return String.format("#%02X%02X%02X", red, green, blue);
 	}
 }

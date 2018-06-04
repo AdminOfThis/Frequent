@@ -114,6 +114,11 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver,
 		this.channel = c;
 		if (c != null) {
 			c.addObserver(this);
+			if (c.getColor() != null && !c.getColor().isEmpty()) {
+				this.setStyle("-fx-accent: " + c.getColor());
+			} else {
+				this.setStyle("");
+			}
 		}
 	}
 

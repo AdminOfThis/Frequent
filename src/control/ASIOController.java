@@ -19,9 +19,10 @@ import data.Channel;
 import data.FFTListener;
 import data.FileIO;
 import data.Group;
+import data.Input;
 import main.Main;
 
-public class ASIOController implements AsioDriverListener, DataHolder<Serializable> {
+public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	private static ASIOController	instance;
 	private static final Logger		LOG				= Logger.getLogger(ASIOController.class);
@@ -339,7 +340,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	}
 
 	@Override
-	public void set(List<Serializable> list) {
+	public void set(List<Input> list) {
 		for (Serializable s : list) {
 			if (s instanceof Channel) {
 				channelList.add((Channel) s);
@@ -350,8 +351,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	}
 
 	@Override
-	public List<Serializable> getData() {
-		ArrayList<Serializable> result = new ArrayList<>();
+	public List<Input> getData() {
+		ArrayList<Input> result = new ArrayList<>();
 		result.addAll(getInputList());
 		result.addAll(getGroupList());
 		return result;
@@ -364,7 +365,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 	}
 
 	@Override
-	public void add(Serializable t) {
+	public void add(Input t) {
 		if (t instanceof Channel) {
 			Channel channel = (Channel) t;
 			if (!channelList.contains(channel)) {
@@ -386,6 +387,12 @@ public class ASIOController implements AsioDriverListener, DataHolder<Serializab
 			Group g = (Group) t;
 			if (!groupList.contains(g)) {
 				groupList.add(g);
+			}
+			for (Channel c : channelList) {
+				if (c.getGroup() != null && c.getGroup().getName().equals(g.getName())) {
+					c.setGroup(g);
+					c.addObserver(g);
+				}
 			}
 		}
 	}

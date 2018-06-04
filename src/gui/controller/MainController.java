@@ -31,11 +31,9 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
@@ -46,8 +44,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -83,8 +79,6 @@ public class MainController implements Initializable {
 	private Menu							driverMenu;
 	@FXML
 	private MenuItem						closeMenu, menuSave;
-	@FXML
-	private Menu							groupMenu;
 	@FXML
 	private TreeView<Input>					channelList;
 	@FXML
@@ -153,53 +147,6 @@ public class MainController implements Initializable {
 		}
 	}
 
-	// private void initContextMenu() {
-	// // adding colorPicker
-	// ColorPicker picker = new ColorPicker();
-	// picker.valueProperty().addListener(new ChangeListener<Color>() {
-	//
-	// @Override
-	// public void changed(ObservableValue<? extends Color> observable, Color
-	// oldValue, Color newValue) {
-	// TreeItem<Input> in = channelList.getSelectionModel().getSelectedItem();
-	// if (in != null && in.getValue() != null && newValue != null) {
-	// in.getValue().setColor(toRGBCode(newValue));
-	// channelList.refresh();
-	// }
-	// }
-	// });
-	// MenuItem colorPicker = new MenuItem(null, picker);
-	// contextMenu.getItems().add(0, colorPicker);
-	// // on opening
-	// contextMenu.setOnShowing(e -> {
-	// try {
-	// TreeItem<Input> guiItem =
-	// channelList.getSelectionModel().getSelectedItem();
-	// if (guiItem == null || guiItem.getValue() == null) {
-	// contextMenu.hide();
-	// e.consume();
-	// } else {
-	// Input item = guiItem.getValue();
-	// if (item instanceof Channel) {
-	// for (MenuItem g : groupMenu.getItems()) {
-	// if (g instanceof RadioMenuItem) {
-	// String text = ((Label) g.getGraphic()).getText();
-	// Group group = ((Channel) item).getGroup();
-	// if (group != null && text.equals(group.getName())) {
-	// ((RadioMenuItem) g).setSelected(true);
-	// break;
-	// } else {
-	// ((RadioMenuItem) g).setSelected(false);
-	// }
-	// }
-	// }
-	// }
-	// }
-	// } catch (Exception ex) {
-	// LOG.warn("Problems on opening context menu", ex);
-	// }
-	// });
-	// }
 	private void initWaveForm() {
 		LOG.info("Loading WaveForm");
 		Parent p = FXMLUtil.loadFXML(WaveFormChartController.PATH);
@@ -274,12 +221,14 @@ public class MainController implements Initializable {
 
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<Input>> observable, TreeItem<Input> oldValue, TreeItem<Input> newValue) {
-				if (newValue != null && newValue.getValue() != null && newValue.getValue() instanceof Channel) {
-					Channel channel = (Channel) newValue.getValue();
-					controller.setActiveChannel(channel.getChannel());
-					fftController.setChannel(channel);
-					waveFormController.setChannel(channel);
-					LOG.info("Switching to channel " + channel.getName());
+				if (newValue != null && newValue.getValue() != null) {
+					if (newValue.getValue() instanceof Channel) {
+						Channel channel = (Channel) newValue.getValue();
+						controller.setActiveChannel(channel.getChannel());
+						fftController.setChannel(channel);
+						LOG.info("Switching to channel " + channel.getName());
+					}
+					waveFormController.setChannel(newValue.getValue());
 				}
 			}
 		});
@@ -291,36 +240,42 @@ public class MainController implements Initializable {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				if (newValue == oldValue) { return; }
-				TreeItem<Input> root = new TreeItem<>();
-				channelList.setRoot(root);
-				if (ASIOController.getInstance() != null) {
-					if (newValue) {
-						for (Channel c : ASIOController.getInstance().getInputList()) {
-							if (c.getGroup() == null) {
-								root.getChildren().add(new TreeItem<>(c));
-							} else {
-								TreeItem<Input> groupItem = null;
-								for (TreeItem<Input> g : root.getChildren()) {
-									if (g.getValue() instanceof Group && g.getValue().equals(c.getGroup())) {
-										groupItem = g;
-										break;
-									}
-								}
-								if (groupItem == null) {
-									groupItem = new TreeItem<>(c.getGroup());
-									root.getChildren().add(groupItem);
-								}
-								groupItem.getChildren().add(new TreeItem<>(c));
-							}
-						}
-					} else {
-						for (Channel channel : ASIOController.getInstance().getInputList()) {
-							root.getChildren().add(new TreeItem<>(channel));
-						}
-					}
-				}
+				refreshInputs();
 			}
 		});
+	}
+
+	private void refreshInputs() {
+		TreeItem<Input> root = new TreeItem<>();
+		channelList.setRoot(root);
+		if (ASIOController.getInstance() != null) {
+			if (toggleGroupChannels.isSelected()) {
+				for (Channel c : ASIOController.getInstance().getInputList()) {
+					if (c.getGroup() == null) {
+						root.getChildren().add(new TreeItem<>(c));
+					} else {
+						TreeItem<Input> groupItem = null;
+						for (TreeItem<Input> g : root.getChildren()) {
+							if (g.getValue() instanceof Group && g.getValue().equals(c.getGroup())) {
+								groupItem = g;
+								break;
+							}
+						}
+						if (groupItem == null) {
+							groupItem = new TreeItem<>(c.getGroup());
+							root.getChildren().add(groupItem);
+							groupItem.setExpanded(true);
+						}
+						groupItem.getChildren().add(new TreeItem<>(c));
+					}
+				}
+			} else {
+				for (Channel channel : ASIOController.getInstance().getInputList()) {
+					root.getChildren().add(new TreeItem<>(channel));
+				}
+			}
+		}
+		root.setExpanded(true);
 	}
 
 	private void initMenu() {
@@ -493,28 +448,7 @@ public class MainController implements Initializable {
 
 	public void refresh() {
 		if (controller != null) {
-			channelList.getRoot().getChildren().clear();
-			for (Channel c : controller.getInputList()) {
-				channelList.getRoot().getChildren().add(new TreeItem<Input>(c));
-			}
-			ToggleGroup group = new ToggleGroup();
-			for (Group g : controller.getGroupList()) {
-				RadioMenuItem groupItem = new RadioMenuItem(null, new Label(g.getName()));
-				groupItem.setToggleGroup(group);
-				if (g.getColor() != null) {
-					Circle circle = new Circle();
-					circle.setStroke(null);
-					circle.setFill(Color.valueOf(g.getColor()));
-					groupItem.setGraphic(circle);
-				}
-				groupItem.setOnAction(e -> {
-					if (channelList.getSelectionModel().getSelectedItem().getValue() instanceof Channel) {
-						Channel c = (Channel) channelList.getSelectionModel().getSelectedItem().getValue();
-						c.setGroup(g);
-					}
-				});
-				groupMenu.getItems().add(groupItem);
-			}
+			refreshInputs();
 		}
 		timeKeeperController.refresh();
 	}
@@ -535,12 +469,5 @@ public class MainController implements Initializable {
 		} else {
 			LOG.warn("Unable to load FFT Chart");
 		}
-	}
-
-	public static String toRGBCode(Color color) {
-		int red = (int) (color.getRed() * 255);
-		int green = (int) (color.getGreen() * 255);
-		int blue = (int) (color.getBlue() * 255);
-		return String.format("#%02X%02X%02X", red, green, blue);
 	}
 }

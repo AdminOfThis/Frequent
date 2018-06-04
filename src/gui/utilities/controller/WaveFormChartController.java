@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import data.Channel;
+import data.Input;
 import data.LevelObserver;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -18,17 +18,15 @@ import javafx.scene.chart.XYChart.Series;
 
 public class WaveFormChartController implements Initializable, LevelObserver {
 
-	public static final String			PATH			= "/gui/utilities/gui/WaveFormChart.fxml";
-	private static final Logger			LOG				= Logger.getLogger(WaveFormChartController.class);
-	private static final double			STARTUP_TIME	= 5500;
-	private static final long			TIME_FRAME		= 5000;
-	private static final long			REFRESH_RATE	= 9;
+	public static final String			PATH		= "/gui/utilities/gui/WaveFormChart.fxml";
+	private static final Logger			LOG			= Logger.getLogger(WaveFormChartController.class);
+	private static final long			TIME_FRAME	= 5000;
 	@FXML
 	private LineChart<Number, Number>	chart;
-	private Series<Number, Number>		series			= new Series<>();
-	private Channel						channel;
-	private double						value			= 1;
-	private boolean						negative		= false;
+	private Series<Number, Number>		series		= new Series<>();
+	private Input						channel;
+	private double						value		= 1;
+	private boolean						negative	= false;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -37,7 +35,7 @@ public class WaveFormChartController implements Initializable, LevelObserver {
 		chart.getData().add(series);
 	}
 
-	public void setChannel(Channel c) {
+	public void setChannel(Input c) {
 		try {
 			if (!c.equals(channel)) {
 				if (channel != null) {
