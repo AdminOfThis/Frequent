@@ -49,7 +49,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import main.Main;
 
-public class MainController implements Initializable {
+public class MainController implements Initializable, Pausable {
 
 	private static final String				FFT_PATH			= "/gui/gui/FFT.fxml";
 	private static final String				TIMEKEEPER_PATH		= "/gui/gui/TimeKeeper.fxml";
@@ -87,6 +87,7 @@ public class MainController implements Initializable {
 	private Label							lblDriver, lblLatency;
 	@FXML
 	private SplitPane						channelPane;
+	private boolean							pause				= false;
 	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
 	private double							channelSplitRatio	= 0.8;
 	private ASIOController					controller;
@@ -151,6 +152,7 @@ public class MainController implements Initializable {
 		LOG.info("Loading WaveForm");
 		Parent p = FXMLUtil.loadFXML(WaveFormChartController.PATH);
 		waveFormController = (WaveFormChartController) FXMLUtil.getController();
+		waveFormController.setParentPausable(this);
 		waveFormPane.getChildren().add(p);
 		AnchorPane.setTopAnchor(p, .0);
 		AnchorPane.setBottomAnchor(p, .0);
@@ -196,11 +198,19 @@ public class MainController implements Initializable {
 
 	private void initChannelList() {
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().visibleProperty());
+
+
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
+		toggleChannels.selectedProperty().addListener(e -> {
+			pause(toggleChannels.isSelected());
+		});
+
 		toggleWaveForm.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+
+				waveFormController.pause(newValue);
 				if (newValue) {
 					if (!channelPane.getItems().contains(waveFormPane)) {
 						channelPane.getItems().add(waveFormPane);
@@ -239,7 +249,9 @@ public class MainController implements Initializable {
 
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				if (newValue == oldValue) { return; }
+				if (newValue == oldValue) {
+					return;
+				}
 				refreshInputs();
 			}
 		});
@@ -338,7 +350,9 @@ public class MainController implements Initializable {
 				return true;
 			}
 			if (!i.isLeaf()) {
-				if (findAndSelect(i, channel)) { return true; }
+				if (findAndSelect(i, channel)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -469,5 +483,25 @@ public class MainController implements Initializable {
 		} else {
 			LOG.warn("Unable to load FFT Chart");
 		}
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		this.pause = pause;
+		if (pause) {
+			LOG.info(getClass().getSimpleName() + "; playing animations");
+		} else {
+			LOG.info(getClass().getSimpleName() + "; pausing animations");
+		}
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause;
+	}
+
+	@Override
+	public void setParentPausable(Pausable parent) {
+		LOG.error("Uninplemented method called: addParentPausable");
 	}
 }
