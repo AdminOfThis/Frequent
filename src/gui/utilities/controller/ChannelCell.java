@@ -22,12 +22,14 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Parent;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeCell;
@@ -169,11 +171,21 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 	protected void updateItem(Input item, boolean empty) {
 		super.updateItem(item, empty);
 		if (empty) {
+
+
 			update(null);
 			input = null;
 		} else if (input != item) {
 			update(item);
 			input = item;
+		} else if (isEditing()) {
+			TextField field = new TextField();
+			this.setGraphic(field);
+			field.setOnAction(e -> {
+				getItem().setName(field.getText());
+				setText(field.getText());
+				setContentDisplay(ContentDisplay.TEXT_ONLY);
+			});
 		}
 	}
 
