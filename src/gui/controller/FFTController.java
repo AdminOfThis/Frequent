@@ -6,8 +6,8 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import control.FFTListener;
 import data.Channel;
-import data.FFTListener;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeter;

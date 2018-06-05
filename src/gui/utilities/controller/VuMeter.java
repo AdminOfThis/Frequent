@@ -3,9 +3,9 @@ package gui.utilities.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import control.LevelObserver;
 import data.Channel;
 import data.Input;
-import data.LevelObserver;
 import gui.controller.FFTController;
 import gui.controller.Pausable;
 import gui.utilities.FXMLUtil;

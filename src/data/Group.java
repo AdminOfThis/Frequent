@@ -3,6 +3,8 @@ package data;
 import java.util.ArrayList;
 import java.util.List;
 
+import control.LevelObserver;
+
 public class Group extends Input implements LevelObserver {
 
 	/**
