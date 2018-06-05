@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import control.LevelObserver;
 import data.Input;
+import gui.controller.Pausable;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,7 +17,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 
-public class WaveFormChartController implements Initializable, LevelObserver {
+public class WaveFormChartController implements Initializable, LevelObserver, Pausable {
 
 	public static final String			PATH		= "/gui/utilities/gui/WaveFormChart.fxml";
 	private static final Logger			LOG			= Logger.getLogger(WaveFormChartController.class);
@@ -27,6 +28,8 @@ public class WaveFormChartController implements Initializable, LevelObserver {
 	private Input						channel;
 	private double						value		= 1;
 	private boolean						negative	= false;
+	private boolean						pause		= false;
+	private Pausable					pausableParent;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -47,62 +50,82 @@ public class WaveFormChartController implements Initializable, LevelObserver {
 					c.addObserver(this);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}
 
 	@Override
 	public void levelChanged(double level) {
-		Platform.runLater(new Runnable() {
+		if (!pause) {
+			Platform.runLater(new Runnable() {
 
-			@Override
-			public void run() {
-				try {
-					NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-					value = 0;
-					if (channel != null) {
-						value = channel.getLevel();
-					}
-					if (negative) {
-						value = -value;
-					}
-					negative = !negative;
-					Data<Number, Number> newData = new Data<>(System.currentTimeMillis(), value);
-					series.getData().add(newData);
-					long time = System.currentTimeMillis();
-					// axis
-					xAxis.setLowerBound(time - TIME_FRAME);
-					xAxis.setUpperBound(time);
-					boolean continueFlag = true;
-					int count = 0;
-					ArrayList<Data<Number, Number>> removeList = null;
+				@Override
+				public void run() {
 					try {
-						while (continueFlag) {
-							Data<Number, Number> data = series.getData().get(count);
-							if ((long) data.getXValue() < xAxis.getLowerBound() - 10) {
-								if (removeList == null) {
-									removeList = new ArrayList<>();
-								}
-								removeList.add(data);
-							} else {
-								continueFlag = false;
-							}
-							count++;
+						NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+						value = 0;
+						if (channel != null) {
+							value = channel.getLevel();
 						}
-					}
-					catch (Exception e) {
-						LOG.error("", e);
-					}
-					if (removeList != null) {
-						series.getData().removeAll(removeList);
+						if (negative) {
+							value = -value;
+						}
+						negative = !negative;
+						Data<Number, Number> newData = new Data<>(System.currentTimeMillis(), value);
+						series.getData().add(newData);
+						long time = System.currentTimeMillis();
+						// axis
+						xAxis.setLowerBound(time - TIME_FRAME);
+						xAxis.setUpperBound(time);
+						boolean continueFlag = true;
+						int count = 0;
+						ArrayList<Data<Number, Number>> removeList = null;
+						try {
+							while (continueFlag) {
+								Data<Number, Number> data = series.getData().get(count);
+								if ((long) data.getXValue() < xAxis.getLowerBound() - 10) {
+									if (removeList == null) {
+										removeList = new ArrayList<>();
+									}
+									removeList.add(data);
+								} else {
+									continueFlag = false;
+								}
+								count++;
+							}
+						} catch (Exception e) {
+							LOG.error("", e);
+						}
+						if (removeList != null) {
+							series.getData().removeAll(removeList);
+						}
+					} catch (Exception e) {
+						LOG.warn("", e);
 					}
 				}
-				catch (Exception e) {
-					LOG.warn("", e);
-				}
-			}
-		});
+			});
+		}
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		this.pause = pause;
+		if (pause) {
+			LOG.info(getClass().getSimpleName() + "; playing animations");
+		} else {
+			LOG.info(getClass().getSimpleName() + "; pausing animations");
+		}
+
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause || (pausableParent != null && pausableParent.isPaused());
+	}
+
+	@Override
+	public void setParentPausable(Pausable parent) {
+		pausableParent = parent;
 	}
 }
