@@ -6,8 +6,8 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import control.LevelObserver;
 import data.Input;
-import data.LevelObserver;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

@@ -16,7 +16,6 @@ import com.synthbot.jasiohost.AsioDriverListener;
 import com.synthbot.jasiohost.AsioException;
 
 import data.Channel;
-import data.FFTListener;
 import data.FileIO;
 import data.Group;
 import data.Input;

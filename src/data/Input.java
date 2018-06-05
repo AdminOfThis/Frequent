@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import control.LevelObserver;
+
 public abstract class Input implements Serializable {
 
 	private static final long				serialVersionUID	= 1L;

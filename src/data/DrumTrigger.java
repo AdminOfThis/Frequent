@@ -1,5 +1,7 @@
 package data;
 
+import control.LevelObserver;
+
 public class DrumTrigger implements LevelObserver {
 
 	public static final String[]	DEFAULT_NAMES	= new String[] { "Base", "Snare", "Tom1", "Tom2" };
