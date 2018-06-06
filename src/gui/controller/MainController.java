@@ -31,6 +31,7 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
@@ -87,6 +88,10 @@ public class MainController implements Initializable, Pausable {
 	private Label							lblDriver, lblLatency;
 	@FXML
 	private SplitPane						channelPane;
+	@FXML
+	private Label							lblStatus;
+	@FXML
+	private ProgressBar						progStatus;
 	private boolean							pause				= false;
 	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
 	private double							channelSplitRatio	= 0.8;
@@ -104,6 +109,7 @@ public class MainController implements Initializable, Pausable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
+		setStatus("Loading GUI", -1);
 		root.setStyle(Main.getStyle());
 		initWaveForm();
 		initMenu();
@@ -115,6 +121,7 @@ public class MainController implements Initializable, Pausable {
 		initDrumMonitor();
 		initGroups();
 		initListener();
+		resetStatus();
 	}
 
 	private void initGroups() {
@@ -290,7 +297,6 @@ public class MainController implements Initializable, Pausable {
 
 	private void initMenu() {
 		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-		toggleFFTView.selectedProperty().bindBidirectional(menuStartFFT.selectedProperty());
 		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
 		// toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
 		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
@@ -369,6 +375,7 @@ public class MainController implements Initializable, Pausable {
 
 	@FXML
 	private void saveCues(ActionEvent e) {
+		setStatus("Saving cues", -1);
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Save cues");
 		chooser.setInitialDirectory(FileIO.getCurrentDir());
@@ -380,10 +387,12 @@ public class MainController implements Initializable, Pausable {
 				FileIO.save(new ArrayList<Serializable>(TimeKeeper.getInstance().getData()), result);
 			}
 		}
+		resetStatus();
 	}
 
 	@FXML
 	private void saveChannels(ActionEvent e) {
+		setStatus("Saving channels", -1);
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Save channels");
 		chooser.setInitialDirectory(FileIO.getCurrentDir());
@@ -395,15 +404,18 @@ public class MainController implements Initializable, Pausable {
 				FileIO.save(new ArrayList<>(ASIOController.getInstance().getData()), result);
 			}
 		}
+		resetStatus();
 	}
 
 	@FXML
 	private void save(ActionEvent e) {
+		setStatus("Saving", -1);
 		if (FileIO.getCurrentFile() != null) {
 			FileIO.save(FileIO.getCurrentFile());
 		} else {
 			saveAs(e);
 		}
+		resetStatus();
 	}
 
 	@FXML
@@ -435,9 +447,11 @@ public class MainController implements Initializable, Pausable {
 	@FXML
 	public void dragDropped(DragEvent e) {
 		if (e.getDragboard().hasFiles()) {
+			setStatus("Loading file", -1);
 			for (File f : e.getDragboard().getFiles()) {
 				FileIO.open(f);
 			}
+			resetStatus();
 		}
 	}
 
@@ -503,5 +517,27 @@ public class MainController implements Initializable, Pausable {
 	@Override
 	public void setParentPausable(Pausable parent) {
 		LOG.error("Uninplemented method called: addParentPausable");
+	}
+
+	public void setStatus(String text) {
+		lblStatus.setText(text);
+	}
+
+	public void setStatus(double value) {
+		progStatus.setProgress(value);
+		if (progStatus.getProgress() == 0) {
+			progStatus.setVisible(false);
+		} else {
+			progStatus.setVisible(true);
+		}
+	}
+
+	public void setStatus(String text, double value) {
+		setStatus(text);
+		setStatus(value);
+	}
+
+	public void resetStatus() {
+		setStatus("", 0);
 	}
 }
