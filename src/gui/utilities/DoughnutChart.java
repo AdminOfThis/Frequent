@@ -5,7 +5,6 @@ import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class DoughnutChart extends PieChart {
