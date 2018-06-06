@@ -89,7 +89,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		// chart = new NegativeBackgroundAreaChart<>(logAxis, yaxis);
 		chart = new NegativeAreaChart(logAxis, yaxis);
 		chart.getData().add(series);
-// chart.getData().add(maxSeries);
+		// chart.getData().add(maxSeries);
 		chart.setAnimated(false);
 		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
 		chart.setLegendVisible(false);
@@ -143,11 +143,13 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 
 	@Override
 	public void pause(boolean pause) {
-		this.pause = pause;
-		if (pause) {
-			LOG.info(getClass().getSimpleName() + "; playing animations");
-		} else {
-			LOG.info(getClass().getSimpleName() + "; pausing animations");
+		if (this.pause != pause) {
+			this.pause = pause;
+			if (pause) {
+				LOG.info(getClass().getSimpleName() + "; pausing animations");
+			} else {
+				LOG.info(getClass().getSimpleName() + "; playing animations");
+			}
 		}
 	}
 

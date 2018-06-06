@@ -201,9 +201,7 @@ public class MainController implements Initializable, Pausable {
 
 
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
-		toggleChannels.selectedProperty().addListener(e -> {
-			pause(toggleChannels.isSelected());
-		});
+		toggleChannels.selectedProperty().addListener(e -> pause(!toggleChannels.isSelected()));
 
 		toggleWaveForm.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
@@ -487,11 +485,13 @@ public class MainController implements Initializable, Pausable {
 
 	@Override
 	public void pause(boolean pause) {
-		this.pause = pause;
-		if (pause) {
-			LOG.info(getClass().getSimpleName() + "; playing animations");
-		} else {
-			LOG.info(getClass().getSimpleName() + "; pausing animations");
+		if (this.pause != pause) {
+			this.pause = pause;
+			if (pause) {
+				LOG.info(getClass().getSimpleName() + "; pausing animations");
+			} else {
+				LOG.info(getClass().getSimpleName() + "; playing animations");
+			}
 		}
 	}
 
