@@ -105,11 +105,13 @@ public class GroupController implements Initializable, Pausable {
 
 	@Override
 	public void pause(boolean pause) {
-		this.pause = pause;
-		if (pause) {
-			LOG.info(getClass().getSimpleName() + "; playing animations");
-		} else {
-			LOG.info(getClass().getSimpleName() + "; pausing animations");
+		if (this.pause != pause) {
+			this.pause = pause;
+			if (pause) {
+				LOG.info(getClass().getSimpleName() + "; pausing animations");
+			} else {
+				LOG.info(getClass().getSimpleName() + "; playing animations");
+			}
 		}
 	}
 
