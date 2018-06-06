@@ -12,6 +12,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -61,8 +62,14 @@
             </MenuBar>
             <HBox alignment="CENTER_LEFT" spacing="5.0">
                <children>
-                  <ToggleButton fx:id="toggleChannels" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Channels" />
-                  <ToggleButton fx:id="toggleCue" mnemonicParsing="false" prefWidth="65.0" text="Cues" />
+                  <ToggleButton fx:id="toggleChannels" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Channels">
+                     <tooltip>
+                        <Tooltip text="SHows/hides the channellist" />
+                     </tooltip></ToggleButton>
+                  <ToggleButton fx:id="toggleCue" mnemonicParsing="false" prefWidth="65.0" text="Cues">
+                     <tooltip>
+                        <Tooltip text="Shows/hides the cue manager" />
+                     </tooltip></ToggleButton>
                   <Separator orientation="VERTICAL" />
                   <Pane HBox.hgrow="ALWAYS" />
                   <Separator orientation="VERTICAL" />
@@ -123,8 +130,14 @@
                      <children>
                         <HBox spacing="5.0">
                            <children>
-                              <ToggleButton fx:id="toggleWaveForm" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Wave" />
-                              <ToggleButton fx:id="toggleGroupChannels" mnemonicParsing="false" prefWidth="65.0" text="Group" />
+                              <ToggleButton fx:id="toggleWaveForm" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Wave">
+                                 <tooltip>
+                                    <Tooltip text="Hides/shows WaveForm for selected channel" />
+                                 </tooltip></ToggleButton>
+                              <ToggleButton fx:id="toggleGroupChannels" mnemonicParsing="false" prefWidth="65.0" text="Group">
+                                 <tooltip>
+                                    <Tooltip text="Groups the channels by groups if selected" />
+                                 </tooltip></ToggleButton>
                            </children>
                         </HBox>
                         <TreeView fx:id="channelList" VBox.vgrow="ALWAYS" />
