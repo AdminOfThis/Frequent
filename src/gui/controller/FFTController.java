@@ -23,9 +23,12 @@ import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 public class FFTController implements Initializable, FFTListener, Pausable {
 
@@ -35,9 +38,13 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	private static final int		X_MIN		= 25;
 	private static final int		X_MAX		= 20000;
 	@FXML
-	private HBox					chartRoot;
+	private SplitPane				chartRoot;
+	@FXML
+	private HBox					root;
 	@FXML
 	private ToggleButton			toggleSlowCurve, toggleVPad;
+	@FXML
+	private VBox					spectrum;
 	private XYChart<Number, Number>	chart;
 	private VuMeter					meter;
 	private boolean					pause		= true;
@@ -76,7 +83,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		meter = new VuMeter(null, Orientation.VERTICAL);
 		meter.setParentPausable(this);
 		meter.setPrefWidth(50.0);
-		chartRoot.getChildren().add(meter);
+		root.getChildren().add(0,meter);
 	}
 
 	private void initChart() {
@@ -95,7 +102,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		chart.setLegendVisible(false);
 		chart.setLegendSide(Side.RIGHT);
 		chart.setHorizontalZeroLineVisible(false);
-		chartRoot.getChildren().add(chart);
+		chartRoot.getItems().add(chart);
 		HBox.setHgrow(chart, Priority.ALWAYS);
 	}
 
@@ -106,39 +113,73 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	@Override
 	public void newFFT(double[][] map) {
 		if (map != null && !pause) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
-					for (int count = 0; count < map[0].length; count++) {
-						double frequency = map[0][count];
-						if (frequency >= 20 && frequency <= X_MAX) {
-							double level = Math.abs(map[1][count]);
-							level = Channel.percentToDB(level);
-							Data<Number, Number> data = new XYChart.Data<>(frequency, level);
-							dataList.add(data);
-						}
-					}
-					// max
-					if (series.getData().size() != maxSeries.getData().size()) {
-						maxSeries.getData().setAll(FXCollections.observableArrayList(series.getData()));
-					} else {
-						for (int i = 0; i < maxSeries.getData().size(); i++) {
-							Data<Number, Number> maxData = maxSeries.getData().get(i);
-							Data<Number, Number> data = series.getData().get(i);
-							if (data.getYValue().doubleValue() >= maxData.getYValue().doubleValue()) {
-								maxData.setYValue(data.getYValue());
-							} else {
-								maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
-							}
-						}
-					}
-					// series.getData().clear();
-					series.getData().setAll(dataList);
-				}
-			});
+			updateChart(map);
+			updateSpectrum(map);
 		}
+	}
+
+	private void updateSpectrum(double[][] map) {
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				HBox box = new HBox();
+				for (int i = 0; i < map[0].length; i++) {
+					Pane p = new Pane();
+					p.prefHeightProperty().bind(p.widthProperty());
+
+					double vol = map[1][i];
+					// double volPercent = vol * 255.0;
+
+					p.setStyle("-fx-opacity: " + vol + "%");
+
+					box.getChildren().add(p);
+					HBox.setHgrow(p, Priority.SOMETIMES);
+				}
+
+
+				spectrum.getChildren().add(box);
+
+				while (spectrum.getChildren().size() > 100) {
+					spectrum.getChildren().remove(0);
+				}
+			}
+		});
+	}
+
+	private void updateChart(double[][] map) {
+		Platform.runLater(new Runnable() {
+
+			@Override
+			public void run() {
+				ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
+				for (int count = 0; count < map[0].length; count++) {
+					double frequency = map[0][count];
+					if (frequency >= 20 && frequency <= X_MAX) {
+						double level = Math.abs(map[1][count]);
+						level = Channel.percentToDB(level);
+						Data<Number, Number> data = new XYChart.Data<>(frequency, level);
+						dataList.add(data);
+					}
+				}
+				// max
+				if (series.getData().size() != maxSeries.getData().size()) {
+					maxSeries.getData().setAll(FXCollections.observableArrayList(series.getData()));
+				} else {
+					for (int i = 0; i < maxSeries.getData().size(); i++) {
+						Data<Number, Number> maxData = maxSeries.getData().get(i);
+						Data<Number, Number> data = series.getData().get(i);
+						if (data.getYValue().doubleValue() >= maxData.getYValue().doubleValue()) {
+							maxData.setYValue(data.getYValue());
+						} else {
+							maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
+						}
+					}
+				}
+				// series.getData().clear();
+				series.getData().setAll(dataList);
+			}
+		});
 	}
 
 	@Override
