@@ -262,7 +262,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		return result;
 	}
 
-	@SuppressWarnings("unused")
 	private int getBaseFrequencyIndex(double[] spectrum) {
 		double maxVal = Double.NEGATIVE_INFINITY;
 		int maxInd = 0;
