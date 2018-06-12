@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.GroupController">
+<BorderPane stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.GroupController">
    <center>
       <SplitPane fx:id="root" dividerPositions="0.5" orientation="VERTICAL">
          <items>
@@ -18,9 +18,9 @@
                   <SplitPane fx:id="groupPane" orientation="VERTICAL" prefHeight="200.0" prefWidth="200.0" />
                </items>
             </SplitPane>
-            <LineChart fx:id="chart" horizontalZeroLineVisible="false" legendSide="RIGHT" verticalZeroLineVisible="false">
+            <LineChart fx:id="chart" animated="false" createSymbols="false" horizontalZeroLineVisible="false" legendSide="RIGHT" verticalZeroLineVisible="false">
               <xAxis>
-                <NumberAxis side="BOTTOM" />
+                <NumberAxis autoRanging="false" forceZeroInRange="false" side="BOTTOM" tickLabelsVisible="false" tickUnit="5000.0" />
               </xAxis>
               <yAxis>
                 <NumberAxis autoRanging="false" lowerBound="-80.0" side="LEFT" tickUnit="12.0" upperBound="0.0" />
@@ -32,7 +32,7 @@
    <top>
       <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <ToggleButton fx:id="tglTimed" mnemonicParsing="false" prefWidth="75.0" text="Timed" />
+            <ToggleButton fx:id="tglTimed" mnemonicParsing="false" prefWidth="70.0" text="Timed" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
