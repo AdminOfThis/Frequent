@@ -30,6 +30,7 @@ public class WaveFormChartController implements Initializable, LevelObserver, Pa
 	private boolean						negative	= false;
 	private boolean						pause		= false;
 	private Pausable					pausableParent;
+	private boolean						styleSet	= false;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -50,7 +51,8 @@ public class WaveFormChartController implements Initializable, LevelObserver, Pa
 					c.addObserver(this);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}
@@ -63,6 +65,10 @@ public class WaveFormChartController implements Initializable, LevelObserver, Pa
 				@Override
 				public void run() {
 					try {
+						if (!styleSet) {
+							series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
+							styleSet = true;
+						}
 						NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 						value = 0;
 						if (channel != null) {
@@ -94,13 +100,15 @@ public class WaveFormChartController implements Initializable, LevelObserver, Pa
 								}
 								count++;
 							}
-						} catch (Exception e) {
+						}
+						catch (Exception e) {
 							LOG.error("", e);
 						}
 						if (removeList != null) {
 							series.getData().removeAll(removeList);
 						}
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						LOG.warn("", e);
 					}
 				}
@@ -116,7 +124,6 @@ public class WaveFormChartController implements Initializable, LevelObserver, Pa
 		} else {
 			LOG.info(getClass().getSimpleName() + "; pausing animations");
 		}
-
 	}
 
 	@Override

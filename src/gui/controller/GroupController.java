@@ -5,11 +5,15 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import com.sun.javafx.charts.Legend;
+import com.sun.javafx.charts.Legend.LegendItem;
+
 import control.ASIOController;
 import control.LevelObserver;
 import data.Channel;
 import data.Group;
 import gui.utilities.controller.VuMeter;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -28,6 +32,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class GroupController implements Initializable, Pausable {
 
@@ -50,8 +56,6 @@ public class GroupController implements Initializable, Pausable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
-
-
 		initChart();
 	}
 
@@ -66,15 +70,12 @@ public class GroupController implements Initializable, Pausable {
 				} else {
 					root.getItems().remove(chart);
 				}
-
 			}
 		});
-
 		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
 		yAxis.setAutoRanging(false);
 		yAxis.setUpperBound(0.0);
 		yAxis.setLowerBound(FFTController.FFT_MIN);
-
 	}
 
 	public static GroupController getInstance() {
@@ -84,7 +85,25 @@ public class GroupController implements Initializable, Pausable {
 	public void refresh() {
 		vuPane.getChildren().clear();
 		groupPane.getItems().clear();
-		chart.getData().clear();
+		boolean redrawChart = ASIOController.getInstance().getGroupList().size() != chart.getData().size();
+		if (!redrawChart) {
+			for (Group g : ASIOController.getInstance().getGroupList()) {
+				boolean found = false;
+				for (Series<Number, Number> s : chart.getData()) {
+					if (s.getName().equals(g.getName())) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					redrawChart = true;
+					break;
+				}
+			}
+		}
+		if (redrawChart) {
+			chart.getData().clear();
+		}
 		if (ASIOController.getInstance() != null) {
 			// TODO
 			int maxChannels = 0;
@@ -131,26 +150,59 @@ public class GroupController implements Initializable, Pausable {
 					HBox.setHgrow(pane, Priority.ALWAYS);
 					groupBox.getChildren().add(pane);
 				}
-
 				// adding chart series
-				Series<Number, Number> series = new Series<>();
-				series.setName(g.getName());
-				series.getNode().setStyle("-fx-accent: " + g.getColor());
-				chart.getData().add(series);
-				// adding observer to group for chart
-				g.addObserver(new LevelObserver() {
-
-					@Override
-					public void levelChanged(double level) {
-						series.getData().add(new Data<Number, Number>(System.currentTimeMillis(), level));
-
-						// removing old data
-						while (series.getData().size() > 500) {
-							series.getData().remove(series.getData().size() - 1);
+				if (redrawChart) {
+					Series<Number, Number> series = new Series<>();
+					series.setName(g.getName());
+					chart.getData().add(series);
+					Legend legend = (Legend) chart.lookup(".chart-legend");
+					for (LegendItem i : legend.getItems()) {
+						if (i.getText().equals(g.getName())) {
+							if (g.getColor() == null) {
+								i.setSymbol(new Rectangle(10, 4));
+								i.getSymbol().setStyle("-fx-fill: -fx-accent");
+							} else {
+								i.setSymbol(new Rectangle(10, 4, Color.web(g.getColor())));
+							}
 						}
-
 					}
-				});
+					NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+					// adding observer to group for chart
+					g.addObserver(new LevelObserver() {
+
+						@Override
+						public void levelChanged(double level) {
+							Platform.runLater(new Runnable() {
+
+								@Override
+								public void run() {
+									if (!series.getNode().getStyle().equals("-fx-stroke: " + g.getColor())) {
+										String color = g.getColor();
+										if (color == null) {
+											color = "-fx-accent";
+										}
+										series.getNode().setStyle("-fx-stroke: " + color);
+										for (LegendItem i : legend.getItems()) {
+											if (i.getText().equals(g.getName())) {
+												i.setSymbol(new Rectangle(10, 4));
+												i.getSymbol().setStyle("-fx-fill: " + color);
+											}
+										}
+									}
+									double leveldB = Channel.percentToDB(level * 1000.0);
+									long time = System.currentTimeMillis();
+									series.getData().add(new Data<Number, Number>(time, leveldB));
+									// removing old data
+									while (series.getData().size() > 500) {
+										series.getData().remove(0);
+									}
+									xAxis.setUpperBound(time + 100);
+									xAxis.setLowerBound((long) series.getData().get(0).getXValue());
+								}
+							});
+						}
+					});
+				}
 			}
 			// smoothing out splitPane
 			int divCount = groupPane.getDividerPositions().length;

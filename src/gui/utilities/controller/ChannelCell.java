@@ -146,7 +146,13 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 			TextInputDialog newGroupDialog = new TextInputDialog();
 			Optional<String> result = newGroupDialog.showAndWait();
 			if (result.isPresent()) {
-				ASIOController.getInstance().addGroup(new Group(result.get()));
+				Group g = new Group(result.get());
+				LOG.info("Created new group: " + g.getName());
+				ASIOController.getInstance().addGroup(g);
+				Input in = ChannelCell.this.getItem();
+				if (in != null && in instanceof Channel) {
+					((Channel) in).setGroup(g);
+				}
 				GroupController.getInstance().refresh();
 			}
 		}
@@ -171,8 +177,6 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 	protected void updateItem(Input item, boolean empty) {
 		super.updateItem(item, empty);
 		if (empty) {
-
-
 			update(null);
 			input = null;
 		} else if (input != item) {

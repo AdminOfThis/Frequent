@@ -17,16 +17,10 @@
 
 .default-color0.chart-series-area-line { -fx-stroke: -fx-accent }
 //.default-color0.chart-series-area-fill { -fx-fill: linear-gradient( to bottom, -fx-accent, transparent); }
-.default-color0.chart-series-area-fill { -fx-fill: ladder(derive(-fx-accent, 80%) , -fx-accent 70%, transparent 100%); }
+.default-color0.chart-series-area-fill { -fx-fill: ladder(derive(-fx-accent, 80%) , -fx-accent 90%, transparent 100%); }
 	
 .default-color1.chart-series-area-line { -fx-stroke: white }
-.default-color1.chart-series-area-fill { -fx-fill: #FFFFFF10 }
-	    
-    
-.default-color0.chart-series-line { 
-	-fx-stroke: -fx-accent;
-	-fx-stroke-width: 1px;
-	}
+.default-color1.chart-series-area-fill { -fx-fill: transparent }
 
 .default-color0.chart-pie { -fx-pie-color: -fx-accent }
 .default-color1.chart-pie { -fx-pie-color: derive(-fx-accent, -25%) }

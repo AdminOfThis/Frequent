@@ -23,12 +23,9 @@ import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 
 public class FFTController implements Initializable, FFTListener, Pausable {
 
@@ -38,13 +35,10 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	private static final int		X_MIN		= 25;
 	private static final int		X_MAX		= 20000;
 	@FXML
-	private SplitPane				chartRoot;
-	@FXML
 	private HBox					root;
 	@FXML
 	private ToggleButton			toggleSlowCurve, toggleVPad;
 	@FXML
-	private VBox					spectrum;
 	private XYChart<Number, Number>	chart;
 	private VuMeter					meter;
 	private boolean					pause		= true;
@@ -83,7 +77,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		meter = new VuMeter(null, Orientation.VERTICAL);
 		meter.setParentPausable(this);
 		meter.setPrefWidth(50.0);
-		root.getChildren().add(0,meter);
+		root.getChildren().add(0, meter);
 	}
 
 	private void initChart() {
@@ -102,7 +96,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		chart.setLegendVisible(false);
 		chart.setLegendSide(Side.RIGHT);
 		chart.setHorizontalZeroLineVisible(false);
-		chartRoot.getItems().add(chart);
+		root.getChildren().add(1, chart);
 		HBox.setHgrow(chart, Priority.ALWAYS);
 	}
 
@@ -114,37 +108,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	public void newFFT(double[][] map) {
 		if (map != null && !pause) {
 			updateChart(map);
-			updateSpectrum(map);
 		}
-	}
-
-	private void updateSpectrum(double[][] map) {
-		Platform.runLater(new Runnable() {
-
-			@Override
-			public void run() {
-				HBox box = new HBox();
-				for (int i = 0; i < map[0].length; i++) {
-					Pane p = new Pane();
-					p.prefHeightProperty().bind(p.widthProperty());
-
-					double vol = map[1][i];
-					// double volPercent = vol * 255.0;
-
-					p.setStyle("-fx-opacity: " + vol + "%");
-
-					box.getChildren().add(p);
-					HBox.setHgrow(p, Priority.SOMETIMES);
-				}
-
-
-				spectrum.getChildren().add(box);
-
-				while (spectrum.getChildren().size() > 100) {
-					spectrum.getChildren().remove(0);
-				}
-			}
-		});
 	}
 
 	private void updateChart(double[][] map) {
