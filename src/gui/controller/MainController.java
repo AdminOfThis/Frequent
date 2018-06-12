@@ -156,7 +156,7 @@ public class MainController implements Initializable, Pausable {
 	}
 
 	private void initWaveForm() {
-		LOG.info("Loading WaveForm");
+		LOG.debug("Loading WaveForm");
 		Parent p = FXMLUtil.loadFXML(WaveFormChartController.PATH);
 		waveFormController = (WaveFormChartController) FXMLUtil.getController();
 		waveFormController.setParentPausable(this);

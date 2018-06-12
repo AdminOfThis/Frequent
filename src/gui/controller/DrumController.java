@@ -68,7 +68,7 @@ public class DrumController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		LOG.info("Loading DrumController");
+		LOG.debug("Loading DrumController");
 		// MainController.getInstance().setDrumController(this);
 		sidePane.visibleProperty().bind(btnSetup.selectedProperty());
 		sidePane.managedProperty().bind(btnSetup.selectedProperty());

@@ -53,7 +53,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		LOG.info("Loading FFT Chart");
+		LOG.debug("Loading FFT Chart");
 		initVuMeter();
 		initChart();
 		initButtons();
