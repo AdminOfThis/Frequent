@@ -83,7 +83,7 @@ public class TimeKeeperController implements Initializable {
 	}
 
 	private void initTimeKeeper() {
-		LOG.info("Loading TimeKeeper");
+		LOG.debug("Loading TimeKeeper");
 		piePane.getChildren().clear();
 		timeChart = new DoughnutChart(FXCollections.observableArrayList());
 		piePane.getChildren().add(timeChart);
