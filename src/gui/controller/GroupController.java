@@ -6,16 +6,24 @@ import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
+import control.LevelObserver;
 import data.Channel;
 import data.Group;
 import gui.utilities.controller.VuMeter;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -23,19 +31,50 @@ import javafx.scene.layout.VBox;
 
 public class GroupController implements Initializable, Pausable {
 
-	private static final Logger		LOG		= Logger.getLogger(GroupController.class);
+	private static final Logger			LOG		= Logger.getLogger(GroupController.class);
 	@FXML
-	private SplitPane				root;
+	private SplitPane					root;
 	@FXML
-	private SplitPane				groupPane;
+	private SplitPane					rootSplit;
 	@FXML
-	private HBox					vuPane;
-	private boolean					pause	= true;
-	private static GroupController	instance;
+	private SplitPane					groupPane;
+	@FXML
+	private HBox						vuPane;
+	@FXML
+	private LineChart<Number, Number>	chart;
+	@FXML
+	private ToggleButton				tglTimed;
+	private boolean						pause	= true;
+	private static GroupController		instance;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
+
+
+		initChart();
+	}
+
+	private void initChart() {
+		root.getItems().remove(chart);
+		tglTimed.selectedProperty().addListener(new ChangeListener<Boolean>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if (newValue) {
+					root.getItems().add(chart);
+				} else {
+					root.getItems().remove(chart);
+				}
+
+			}
+		});
+
+		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
+		yAxis.setAutoRanging(false);
+		yAxis.setUpperBound(0.0);
+		yAxis.setLowerBound(FFTController.FFT_MIN);
+
 	}
 
 	public static GroupController getInstance() {
@@ -45,6 +84,7 @@ public class GroupController implements Initializable, Pausable {
 	public void refresh() {
 		vuPane.getChildren().clear();
 		groupPane.getItems().clear();
+		chart.getData().clear();
 		if (ASIOController.getInstance() != null) {
 			// TODO
 			int maxChannels = 0;
@@ -91,6 +131,19 @@ public class GroupController implements Initializable, Pausable {
 					HBox.setHgrow(pane, Priority.ALWAYS);
 					groupBox.getChildren().add(pane);
 				}
+
+				// adding chart series
+				Series<Number, Number> series = new Series<>();
+				series.setName(g.getName());
+				series.getNode().setStyle("-fx-accent: " + g.getColor());
+				chart.getData().add(series);
+				g.addObserver(new LevelObserver() {
+
+					@Override
+					public void levelChanged(double level) {
+						series.getData().add(new Data<Number, Number>(System.currentTimeMillis(), level));
+					}
+				});
 			}
 			// smoothing out splitPane
 			int divCount = groupPane.getDividerPositions().length;
