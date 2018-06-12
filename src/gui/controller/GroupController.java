@@ -137,11 +137,18 @@ public class GroupController implements Initializable, Pausable {
 				series.setName(g.getName());
 				series.getNode().setStyle("-fx-accent: " + g.getColor());
 				chart.getData().add(series);
+				// adding observer to group for chart
 				g.addObserver(new LevelObserver() {
 
 					@Override
 					public void levelChanged(double level) {
 						series.getData().add(new Data<Number, Number>(System.currentTimeMillis(), level));
+
+						// removing old data
+						while (series.getData().size() > 500) {
+							series.getData().remove(series.getData().size() - 1);
+						}
+
 					}
 				});
 			}
