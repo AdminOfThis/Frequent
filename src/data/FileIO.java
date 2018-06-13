@@ -84,7 +84,9 @@ public abstract class FileIO {
 			}
 		}
 		for (Group g : groupList) {
-			ASIOController.getInstance().add(g);
+			if (ASIOController.getInstance() != null) {
+				ASIOController.getInstance().add(g);
+			}
 		}
 		LOG.info("= Loading statistics: ");
 		for (Entry<Class, Integer> o : counterMap.entrySet()) {
@@ -103,25 +105,20 @@ public abstract class FileIO {
 					result.add((Serializable) o);
 				}
 			}
-		}
-		catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			LOG.warn("File not found");
 			LOG.debug("", e);
-		}
-		catch (EOFException e) {}
-		catch (IOException e) {
+		} catch (EOFException e) {
+		} catch (IOException e) {
 			LOG.warn("Unable to read file");
 			LOG.debug("", e);
-		}
-		catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			LOG.warn("Class not found");
 			LOG.debug("", e);
-		}
-		finally {
+		} finally {
 			try {
 				stream.close();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				LOG.error("Unable to close file stream");
 				LOG.debug("", e);
 			}
@@ -165,17 +162,14 @@ public abstract class FileIO {
 			for (Serializable o : objects) {
 				stream.writeObject(o);
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			LOG.warn("Unable to write file");
 			LOG.debug("", e);
 			result = false;
-		}
-		finally {
+		} finally {
 			try {
 				stream.close();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				LOG.error("Unable to close file stream");
 				LOG.debug("", e);
 			}
