@@ -18,7 +18,7 @@ import data.FileIO;
 import data.Group;
 import data.Input;
 import gui.utilities.FXMLUtil;
-import gui.utilities.controller.ChannelCell;
+import gui.utilities.controller.InputCell;
 import gui.utilities.controller.WaveFormChartController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -227,7 +227,7 @@ public class MainController implements Initializable, Pausable {
 				}
 			}
 		});
-		channelList.setCellFactory(e -> new ChannelCell());
+		channelList.setCellFactory(e -> new InputCell());
 		channelList.setRoot(new TreeItem<>());
 		channelList.setShowRoot(false);
 		// channelList.setOnEditCommit(e ->
