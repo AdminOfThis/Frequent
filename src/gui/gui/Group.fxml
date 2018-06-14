@@ -8,11 +8,11 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.GroupController">
+<BorderPane stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.GroupController">
    <center>
       <SplitPane fx:id="root" dividerPositions="0.5" orientation="VERTICAL">
          <items>
-            <SplitPane fx:id="rootSplit" dividerPositions="0.5" minHeight="200.0" minWidth="200.0">
+            <SplitPane fx:id="rootSplit" dividerPositions="0.3" minHeight="200.0" minWidth="200.0">
                <items>
                   <HBox fx:id="vuPane" alignment="CENTER" spacing="5.0" SplitPane.resizableWithParent="false" />
                   <SplitPane fx:id="groupPane" orientation="VERTICAL" prefHeight="200.0" prefWidth="200.0" />
