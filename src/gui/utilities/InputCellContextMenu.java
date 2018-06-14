@@ -4,9 +4,13 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
+import control.ASIOController;
+import data.Channel;
+import data.Group;
 import data.Input;
 import gui.controller.GroupController;
 import gui.controller.MainController;
+import gui.utilities.controller.InputCell;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
@@ -22,7 +26,9 @@ public abstract class InputCellContextMenu extends ContextMenu {
 	private static final int	COLORS		= 8;
 
 	private MenuItem			name		= new MenuItem("Rename");
+	private MenuItem			newGroup	= new MenuItem("New Group");
 	private Menu				colorMenu	= new Menu("Color");
+
 
 	private Input				input;
 
@@ -32,7 +38,7 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		if (input != null) {
 			// NAME
 			name.setOnAction(e -> {
-				Dialog<String> dialog = new TextInputDialog();
+				TextInputDialog dialog = new TextInputDialog();
 				Optional<String> result = dialog.showAndWait();
 				if (result.isPresent()) {
 					input.setName(result.get());
@@ -56,8 +62,23 @@ public abstract class InputCellContextMenu extends ContextMenu {
 				});
 			}
 
+			newGroup.setOnAction(e -> {
+				TextInputDialog newGroupDialog = new TextInputDialog();
+				Optional<String> result = newGroupDialog.showAndWait();
+				if (result.isPresent()) {
+					Group g = new Group(result.get());
+					LOG.info("Created new group: " + g.getName());
+					ASIOController.getInstance().addGroup(g);
+					if (input != null && input instanceof Channel) {
+						((Channel) in).setGroup(g);
+					}
+					GroupController.getInstance().refresh();
+				}
+			});
+
 			getItems().add(name);
 			getItems().add(colorMenu);
+			getItems().add(newGroup);
 		}
 	}
 
