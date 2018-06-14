@@ -71,8 +71,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		}
-		catch (AsioException e) {
+		} catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -120,7 +119,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
+		if (asioDriver != null) {
+			return asioDriver.getNumChannelsInput();
+		}
 		return -1;
 	}
 
@@ -199,13 +200,12 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 								c.setLevel(max);
 							}
 						}
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
+			} catch (ConcurrentModificationException e) {
 			}
-			catch (ConcurrentModificationException e) {}
 		}
 	}
 
@@ -420,5 +420,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	public void removeFFTListener(FFTListener l) {
 		fftListeners.remove(l);
+	}
+
+	public void removeGroup(Group group) {
+		groupList.remove(group);
 	}
 }

@@ -3,6 +3,9 @@ package data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import control.ASIOController;
 import control.LevelObserver;
 
 public class Group extends Input implements LevelObserver {
@@ -11,6 +14,7 @@ public class Group extends Input implements LevelObserver {
 	 * 
 	 */
 	private static final long	serialVersionUID	= 1L;
+	private static final Logger	LOG					= Logger.getLogger(Group.class);
 	private List<Channel>		channelList			= new ArrayList<>();
 	private ArrayList<Double>	channelLevel		= new ArrayList<>();
 
@@ -61,5 +65,13 @@ public class Group extends Input implements LevelObserver {
 			channelLevel.clear();
 			this.setLevel((float) median);
 		}
+	}
+
+	public void delete() {
+		LOG.info("Deleting group " + getName());
+		for (Channel c : channelList) {
+			removeChannel(c);
+		}
+		ASIOController.getInstance().removeGroup(this);
 	}
 }
