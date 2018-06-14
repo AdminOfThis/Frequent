@@ -83,29 +83,29 @@ public class GroupController implements Initializable, Pausable {
 	}
 
 	public void refresh() {
-		vuPane.getChildren().clear();
-		groupPane.getItems().clear();
-		boolean redrawChart = ASIOController.getInstance().getGroupList().size() != chart.getData().size();
-		if (!redrawChart) {
-			for (Group g : ASIOController.getInstance().getGroupList()) {
-				boolean found = false;
-				for (Series<Number, Number> s : chart.getData()) {
-					if (s.getName().equals(g.getName())) {
-						found = true;
+		if (ASIOController.getInstance() != null) {
+			vuPane.getChildren().clear();
+			groupPane.getItems().clear();
+			boolean redrawChart = ASIOController.getInstance().getGroupList().size() != chart.getData().size();
+			if (!redrawChart) {
+				for (Group g : ASIOController.getInstance().getGroupList()) {
+					boolean found = false;
+					for (Series<Number, Number> s : chart.getData()) {
+						if (s.getName().equals(g.getName())) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						redrawChart = true;
 						break;
 					}
 				}
-				if (!found) {
-					redrawChart = true;
-					break;
-				}
 			}
-		}
-		if (redrawChart) {
-			chart.getData().clear();
-		}
-		if (ASIOController.getInstance() != null) {
-			// TODO
+			if (redrawChart) {
+				chart.getData().clear();
+			}
+
 			int maxChannels = 0;
 			for (Group g : ASIOController.getInstance().getGroupList()) {
 				if (g.getChannelList().size() > maxChannels) {
