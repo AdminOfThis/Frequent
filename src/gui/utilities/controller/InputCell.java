@@ -37,9 +37,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-public class ChannelCell extends TreeCell<Input> implements Initializable {
+public class InputCell extends TreeCell<Input> implements Initializable {
 
-	private static final Logger	LOG			= Logger.getLogger(ChannelCell.class);
+	private static final Logger	LOG			= Logger.getLogger(InputCell.class);
 	private static final String	FXML_PATH	= "/gui/utilities/gui/ChannelCell.fxml";
 	private static final int	COLORS		= 8;
 	@FXML
@@ -50,7 +50,7 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 	private VuMeter				meter;
 	private ContextMenu			contextMenu	= new ContextMenu();
 
-	public ChannelCell() {
+	public InputCell() {
 		super();
 		setPadding(Insets.EMPTY);
 		Parent p = FXMLUtil.loadFXML(FXML_PATH, this);
@@ -149,7 +149,7 @@ public class ChannelCell extends TreeCell<Input> implements Initializable {
 				Group g = new Group(result.get());
 				LOG.info("Created new group: " + g.getName());
 				ASIOController.getInstance().addGroup(g);
-				Input in = ChannelCell.this.getItem();
+				Input in = InputCell.this.getItem();
 				if (in != null && in instanceof Channel) {
 					((Channel) in).setGroup(g);
 				}
