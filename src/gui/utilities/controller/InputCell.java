@@ -12,7 +12,9 @@ import data.Group;
 import data.Input;
 import gui.controller.GroupController;
 import gui.controller.MainController;
+import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.FXMLUtil;
+import gui.utilities.GroupCellContextMenu;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -65,7 +67,12 @@ public class InputCell extends TreeCell<Input> implements Initializable {
 			if (isNowEmpty) {
 				this.setContextMenu(null);
 			} else {
-				this.setContextMenu(contextMenu);
+				if (getItem() instanceof Channel) {
+					this.setContextMenu(new ChannelCellContextMenu((Channel) getItem()));
+				} else if (getItem() instanceof Group) {
+					this.setContextMenu(new GroupCellContextMenu((Group) getItem()));
+				}
+				// this.setContextMenu(contextMenu);
 			}
 		});
 	}
