@@ -39,5 +39,5 @@ Thumbs.db
 # AdminOfThis #
 ###############
 /dist/
-/bin/
+#/bin/
 /.settings/
