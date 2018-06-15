@@ -39,9 +39,11 @@ public class DrumTriggerItemController implements Initializable, DrumTriggerObse
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		group.getToggles().add(view);
-		if (ASIOController.getInstance() != null) {
-			combo.getItems().setAll(ASIOController.getInstance().getInputList());
-		}
+		combo.setOnShowing(e -> {
+			if (ASIOController.getInstance() != null) {
+				combo.getItems().setAll(ASIOController.getInstance().getInputList());
+			}
+		});
 		combo.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Channel>() {
 
 			@Override
