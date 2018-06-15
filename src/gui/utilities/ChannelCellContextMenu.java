@@ -25,33 +25,33 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 			getItems().add(1, resetName);
 
 			Menu groupMenu = new Menu("Groups");
+
 			// groups
 			getItems().add(groupMenu);
 
 			ToggleGroup toggle = new ToggleGroup();
-			setOnShowing(e -> {
-				for (Group g : ASIOController.getInstance().getGroupList()) {
-					RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
-					groupMenuItem.setToggleGroup(toggle);
-					groupMenuItem.setSelected(g.getChannelList().contains(channel));
-					groupMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			for (Group g : ASIOController.getInstance().getGroupList()) {
+				RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
+				groupMenuItem.setToggleGroup(toggle);
+				groupMenuItem.setSelected(g.getChannelList().contains(channel));
+				groupMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
-						@Override
-						public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-							if (channel != null && channel instanceof Channel) {
-								if (newValue) {
-									g.addChannel(channel);
-								} else {
-									g.removeChannel(channel);
-								}
-								MainController.getInstance().refresh();
-								GroupController.getInstance().refresh();
+					@Override
+					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+						if (channel != null && channel instanceof Channel) {
+							if (newValue) {
+								g.addChannel(channel);
+							} else {
+								g.removeChannel(channel);
 							}
+							MainController.getInstance().refresh();
+							GroupController.getInstance().refresh();
 						}
-					});
-					groupMenu.getItems().add(groupMenuItem);
-				}
-			});
+					}
+				});
+				groupMenu.getItems().add(groupMenuItem);
+			}
+
 		}
 	}
 }

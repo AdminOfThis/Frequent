@@ -29,7 +29,7 @@ public class Main extends Application {
 
 	public static void main(String[] args) {
 		initLogger();
-		pasrseArgs(args);
+		parseArgs(args);
 		launch(args);
 	}
 
@@ -38,7 +38,7 @@ public class Main extends Application {
 	 * 
 	 * @param args
 	 */
-	private static void pasrseArgs(String[] args) {
+	private static void parseArgs(String[] args) {
 		for (String arg : args) {
 			if (arg.equalsIgnoreCase("-debug")) {
 				debug = true;
