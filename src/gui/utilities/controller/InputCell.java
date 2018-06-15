@@ -63,8 +63,8 @@ public class InputCell extends TreeCell<Input> implements Initializable {
 		}
 		// context Menu
 		initContextMenu();
-		emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
-			if (isNowEmpty) {
+		itemProperty().addListener((obs, oldItem, newItem) -> {
+			if ( newItem == null) {
 				this.setContextMenu(null);
 			} else {
 				if (getItem() instanceof Channel) {
@@ -72,7 +72,6 @@ public class InputCell extends TreeCell<Input> implements Initializable {
 				} else if (getItem() instanceof Group) {
 					this.setContextMenu(new GroupCellContextMenu((Group) getItem()));
 				}
-				// this.setContextMenu(contextMenu);
 			}
 		});
 	}
