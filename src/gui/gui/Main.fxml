@@ -51,9 +51,21 @@
                 </Menu>
                   <Menu mnemonicParsing="false" text="View">
                     <items>
+                        <Menu mnemonicParsing="false" text="View">
+                          <items>
+							  <CheckMenuItem fx:id="menuSpectrumView" mnemonicParsing="false" text="Spectrum" />
+                              <CheckMenuItem fx:id="menuDrumView" mnemonicParsing="false" text="Drum" />
+                              <CheckMenuItem fx:id="menuGroupsView" mnemonicParsing="false" text="Groups" />
+                          </items>
+                        </Menu>
+                        <CheckMenuItem fx:id="menuShowChannels" mnemonicParsing="false" text="Show ChannelList">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="DIGIT1" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </CheckMenuItem>
                         <CheckMenuItem fx:id="menuShowCue" mnemonicParsing="false" text="Show CueList">
                            <accelerator>
-                              <KeyCodeCombination alt="UP" code="C" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                              <KeyCodeCombination alt="UP" code="DIGIT2" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </CheckMenuItem>
                     </items>

@@ -78,7 +78,7 @@ public class IOChooserController implements Initializable {
 	}
 
 	private void loadMain(String ioName) {
-		LOG.info("Loading from: " + GUI_MAIN_PATH);
+		LOG.debug("Loading from: " + GUI_MAIN_PATH);
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
 		try {
 			Parent p = loader.load();
