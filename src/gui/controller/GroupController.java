@@ -190,6 +190,7 @@ public class GroupController implements Initializable, Pausable {
 										}
 									}
 									double leveldB = Channel.percentToDB(level * 1000.0);
+									leveldB = Math.max(leveldB, FFTController.FFT_MIN);
 									long time = System.currentTimeMillis();
 									series.getData().add(new Data<Number, Number>(time, leveldB));
 									// removing old data
