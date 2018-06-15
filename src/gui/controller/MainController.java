@@ -59,7 +59,8 @@ public class MainController implements Initializable, Pausable {
 	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH			= "/gui/gui/Drum.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.TITLE + " File",
+	        "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private AnchorPane						waveFormPane;
@@ -138,7 +139,7 @@ public class MainController implements Initializable, Pausable {
 	private void initListener() {
 		for (ToggleButton b : contentMap.keySet()) {
 			b.setOnAction(e -> {
-				if (b.getToggleGroup().getSelectedToggle() == null) {
+				if (b.getToggleGroup().getSelectedToggle() == null && contentPane.getItems().size() > 0) {
 					contentPane.getItems().remove(0);
 				} else if (b.isSelected()) {
 					Node n = contentMap.get(b);
@@ -207,7 +208,6 @@ public class MainController implements Initializable, Pausable {
 
 	private void initChannelList() {
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().visibleProperty());
-
 
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
 		toggleChannels.selectedProperty().addListener(e -> pause(!toggleChannels.isSelected()));
@@ -298,7 +298,6 @@ public class MainController implements Initializable, Pausable {
 	}
 
 	private void initMenu() {
-
 
 		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 
