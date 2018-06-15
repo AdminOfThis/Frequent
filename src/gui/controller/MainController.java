@@ -71,6 +71,8 @@ public class MainController implements Initializable, Pausable {
 	@FXML
 	private ToggleButton					toggleFFTView, toggleDrumView, toggleGroupsView;
 	@FXML
+	private CheckMenuItem					menuSpectrumView, menuDrumView, menuGroupsView;
+	@FXML
 	private ToggleButton					toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
 	@FXML
 	private BorderPane						root, sub;
@@ -83,7 +85,7 @@ public class MainController implements Initializable, Pausable {
 	@FXML
 	private TreeView<Input>					channelList;
 	@FXML
-	private CheckMenuItem					menuShowCue, menuStartFFT, menuShowTuner;
+	private CheckMenuItem					menuShowCue, menuShowChannels, menuStartFFT, menuShowTuner;
 	@FXML
 	private Label							lblDriver, lblLatency;
 	@FXML
@@ -296,8 +298,16 @@ public class MainController implements Initializable, Pausable {
 	}
 
 	private void initMenu() {
+
+
 		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+
+		menuSpectrumView.selectedProperty().bindBidirectional(toggleFFTView.selectedProperty());
+		menuGroupsView.selectedProperty().bindBidirectional(toggleGroupsView.selectedProperty());
+		menuDrumView.selectedProperty().bindBidirectional(toggleDrumView.selectedProperty());
+
 		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
+		toggleChannels.selectedProperty().bindBidirectional(menuShowChannels.selectedProperty());
 		// toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
 		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
 		// Close Button
@@ -502,9 +512,9 @@ public class MainController implements Initializable, Pausable {
 		if (this.pause != pause) {
 			this.pause = pause;
 			if (pause) {
-				LOG.info(getClass().getSimpleName() + "; pausing animations");
+				LOG.debug(getClass().getSimpleName() + "; pausing animations");
 			} else {
-				LOG.info(getClass().getSimpleName() + "; playing animations");
+				LOG.debug(getClass().getSimpleName() + "; playing animations");
 			}
 		}
 	}
