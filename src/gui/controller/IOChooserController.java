@@ -36,7 +36,7 @@ public class IOChooserController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		root.setStyle(Main.getStyle());
-		Collection<String> ioList = ASIOController.getInputDevices();
+		Collection<String> ioList = ASIOController.getPossibleDrivers();
 		LOG.info("Loaded " + ioList.size() + " possible drivers");
 		label.setText(ioList.size() + " Driver(s)");
 		listIO.getItems().setAll(ioList);
@@ -48,6 +48,8 @@ public class IOChooserController implements Initializable {
 		btnStart.disableProperty().bind(listIO.getSelectionModel().selectedItemProperty().isNull());
 		// Debug
 	}
+	
+	
 
 	@FXML
 	private void start(ActionEvent e) {
