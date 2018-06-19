@@ -119,6 +119,7 @@ public class TimeKeeperController implements Initializable {
 					TimeKeeper.getInstance().addCue(new Cue(txtCue.getText().trim()));
 					cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
 					txtCue.clear();
+					event.consume();
 				}
 			}
 		});
@@ -289,6 +290,14 @@ public class TimeKeeperController implements Initializable {
 			MainController.getInstance()
 			        .setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
 		}
+	}
+
+	ToggleButton getStartButton() {
+		return btnStart;
+	}
+
+	Button getRoundButton() {
+		return btnTime;
 	}
 
 	@FXML
