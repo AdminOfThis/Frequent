@@ -272,24 +272,8 @@ public class MainController implements Initializable, Pausable {
 		channelList.setRoot(root);
 		if (ASIOController.getInstance() != null) {
 			if (toggleGroupChannels.isSelected()) {
-				for (Channel c : ASIOController.getInstance().getInputList()) {
-					if (c.getGroup() == null) {
-						root.getChildren().add(new TreeItem<>(c));
-					} else {
-						TreeItem<Input> groupItem = null;
-						for (TreeItem<Input> g : root.getChildren()) {
-							if (g.getValue() instanceof Group && g.getValue().equals(c.getGroup())) {
-								groupItem = g;
-								break;
-							}
-						}
-						if (groupItem == null) {
-							groupItem = new TreeItem<>(c.getGroup());
-							root.getChildren().add(groupItem);
-							groupItem.setExpanded(true);
-						}
-						groupItem.getChildren().add(new TreeItem<>(c));
-					}
+				for (Group g : ASIOController.getInstance().getGroupList()) {
+					root.getChildren().add(new TreeItem<Input>(g));
 				}
 			} else {
 				for (Channel channel : ASIOController.getInstance().getInputList()) {
@@ -304,9 +288,10 @@ public class MainController implements Initializable, Pausable {
 
 		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 
-		menuSpectrumView.selectedProperty().bindBidirectional(toggleFFTView.selectedProperty());
-		menuGroupsView.selectedProperty().bindBidirectional(toggleGroupsView.selectedProperty());
-		menuDrumView.selectedProperty().bindBidirectional(toggleDrumView.selectedProperty());
+		bindCheckMenuToToggleButton(menuSpectrumView, toggleFFTView);
+		bindCheckMenuToToggleButton(menuGroupsView, toggleGroupsView);
+		bindCheckMenuToToggleButton(menuDrumView, toggleDrumView);
+
 
 		menuTimerStart.setOnAction(e -> TimeKeeperController.getInstance().toggleTimer());
 		menuTimerNext.setOnAction(e -> TimeKeeperController.getInstance().round());
@@ -322,6 +307,13 @@ public class MainController implements Initializable, Pausable {
 		closeMenu.setOnAction(e -> Main.close());
 
 
+	}
+
+	private void bindCheckMenuToToggleButton(CheckMenuItem menu, ToggleButton button) {
+		menu.setOnAction(e -> button.fire());
+		button.selectedProperty().addListener((obs, oldVal, newVal) -> {
+			menu.setSelected(newVal);
+		});
 	}
 
 	// private void initTuner() {
