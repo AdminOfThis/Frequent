@@ -117,11 +117,11 @@ public class MainController implements Initializable, Pausable {
 		setStatus("Loading GUI", -1);
 		root.setStyle(Main.getStyle());
 		initWaveForm();
+		initTimekeeper();
 		initMenu();
 		initChannelList();
 		initFullScreen();
 		// initTuner();
-		initTimekeeper();
 		initChart();
 		initDrumMonitor();
 		initGroups();
@@ -309,6 +309,9 @@ public class MainController implements Initializable, Pausable {
 
 		menuTimerStart.setOnAction(e -> TimeKeeperController.getInstance().toggleTimer());
 		menuTimerNext.setOnAction(e -> TimeKeeperController.getInstance().round());
+
+		menuTimerStart.disableProperty().bind(TimeKeeperController.getInstance().getStartButton().disabledProperty());
+		menuTimerNext.disableProperty().bind(TimeKeeperController.getInstance().getRoundButton().disabledProperty());
 
 		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
 		toggleChannels.selectedProperty().bindBidirectional(menuShowChannels.selectedProperty());
