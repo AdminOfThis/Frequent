@@ -45,8 +45,27 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private List<Group>				groupList		= new ArrayList<>();
 	private List<FFTListener>		fftListeners	= new ArrayList<>();
 
-	public static List<String> getInputDevices() {
-		return AsioDriver.getDriverNames();
+	public static List<String> getPossibleDrivers() {
+		List<String> preList = AsioDriver.getDriverNames();
+		ArrayList<String> result = new ArrayList<>();
+		// checking if connected
+		for (String possibleDriver : preList) {
+			AsioDriver tempDriver = null;
+			try {
+				tempDriver = AsioDriver.getDriver(possibleDriver);
+				//adding if inputs avaliable
+				if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
+					result.add(possibleDriver);
+				}
+			} catch (Exception e) {
+				LOG.debug(possibleDriver + " is unavailable");
+			} finally {
+				if (tempDriver != null) {
+					tempDriver.shutdownAndUnloadDriver();
+				}
+			}
+		}
+		return result;
 	}
 
 	public static ASIOController getInstance() {
