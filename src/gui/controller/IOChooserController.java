@@ -48,8 +48,7 @@ public class IOChooserController implements Initializable {
 		btnStart.disableProperty().bind(listIO.getSelectionModel().selectedItemProperty().isNull());
 		// Debug
 	}
-	
-	
+
 
 	@FXML
 	private void start(ActionEvent e) {

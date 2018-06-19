@@ -55,15 +55,15 @@
                           <items>
 							  <CheckMenuItem fx:id="menuSpectrumView" mnemonicParsing="false" text="Spectrum">
                                  <accelerator>
-                                    <KeyCodeCombination alt="UP" code="F1" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                                    <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                  </accelerator></CheckMenuItem>
                               <CheckMenuItem fx:id="menuDrumView" mnemonicParsing="false" text="Drum">
                                  <accelerator>
-                                    <KeyCodeCombination alt="UP" code="F2" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                                    <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                  </accelerator></CheckMenuItem>
                               <CheckMenuItem fx:id="menuGroupsView" mnemonicParsing="false" text="Groups">
                                  <accelerator>
-                                    <KeyCodeCombination alt="UP" code="F3" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                                    <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                  </accelerator></CheckMenuItem>
                           </items>
                         </Menu>
