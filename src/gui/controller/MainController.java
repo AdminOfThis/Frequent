@@ -84,6 +84,8 @@ public class MainController implements Initializable, Pausable {
 	@FXML
 	private MenuItem						closeMenu, menuSave;
 	@FXML
+	private MenuItem						menuTimerStart, menuTimerNext;
+	@FXML
 	private TreeView<Input>					channelList;
 	@FXML
 	private CheckMenuItem					menuShowCue, menuShowChannels, menuStartFFT, menuShowTuner;
@@ -304,6 +306,9 @@ public class MainController implements Initializable, Pausable {
 		menuSpectrumView.selectedProperty().bindBidirectional(toggleFFTView.selectedProperty());
 		menuGroupsView.selectedProperty().bindBidirectional(toggleGroupsView.selectedProperty());
 		menuDrumView.selectedProperty().bindBidirectional(toggleDrumView.selectedProperty());
+
+		menuTimerStart.setOnAction(e -> TimeKeeperController.getInstance().toggleTimer());
+		menuTimerNext.setOnAction(e -> TimeKeeperController.getInstance().round());
 
 		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
 		toggleChannels.selectedProperty().bindBidirectional(menuShowChannels.selectedProperty());
