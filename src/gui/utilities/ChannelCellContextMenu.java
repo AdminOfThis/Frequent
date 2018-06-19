@@ -14,45 +14,46 @@ import javafx.scene.control.ToggleGroup;
 
 public class ChannelCellContextMenu extends InputCellContextMenu {
 
-	private MenuItem resetName = new MenuItem("Reset Name");
+	private MenuItem	resetName	= new MenuItem("Reset Name");
+	private Menu		groupMenu	= new Menu("Groups");
+
 
 	public ChannelCellContextMenu(Channel in) {
 		super(in);
 		if (in != null) {
-			Channel channel = (Channel) in;
 			resetName.setOnAction(e -> in.setName(((Channel) in).getChannel().getChannelName()));
 			getItems().add(1, resetName);
-
-			Menu groupMenu = new Menu("Groups");
-
 			// groups
 			getItems().add(groupMenu);
+			setOnShowing(e -> refreshGroupList(in));
+		}
+	}
 
-			ToggleGroup toggle = new ToggleGroup();
-			setOnShowing(e -> {
-				groupMenu.getItems().clear();
-				for (Group g : ASIOController.getInstance().getGroupList()) {
-					RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
-					groupMenuItem.setToggleGroup(toggle);
-					groupMenuItem.setSelected(g.getChannelList().contains(channel));
-					groupMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
+	private void refreshGroupList(Channel channel) {
+		ToggleGroup toggle = new ToggleGroup();
+		toggle.getToggles().clear();
+		groupMenu.getItems().clear();
+		for (Group g : ASIOController.getInstance().getGroupList()) {
+			RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
+			groupMenuItem.setToggleGroup(toggle);
+			groupMenuItem.setSelected(g.getChannelList().contains(channel));
+			groupMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
-						@Override
-						public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-							if (channel != null && channel instanceof Channel) {
-								if (newValue) {
-									g.addChannel(channel);
-								} else {
-									g.removeChannel(channel);
-								}
-								MainController.getInstance().refresh();
-								GroupController.getInstance().refresh();
-							}
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+					if (channel != null && channel instanceof Channel) {
+						if (newValue) {
+							g.addChannel(channel);
+						} else {
+							g.removeChannel(channel);
 						}
-					});
-					groupMenu.getItems().add(groupMenuItem);
+						MainController.getInstance().refresh();
+						GroupController.getInstance().refresh();
+					}
 				}
 			});
+			groupMenu.getItems().add(groupMenuItem);
 		}
+
 	}
 }
