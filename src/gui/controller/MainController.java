@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javax.lang.model.element.Modifier;
+
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
@@ -59,8 +61,7 @@ public class MainController implements Initializable, Pausable {
 	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH			= "/gui/gui/Drum.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.TITLE + " File",
-	        "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private AnchorPane						waveFormPane;
@@ -318,9 +319,9 @@ public class MainController implements Initializable, Pausable {
 		// toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
 		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
 		// Close Button
-		closeMenu.setOnAction(e -> {
-			Main.close();
-		});
+		closeMenu.setOnAction(e -> Main.close());
+
+
 	}
 
 	// private void initTuner() {
