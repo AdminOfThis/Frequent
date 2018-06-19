@@ -10,7 +10,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 
 public class ChannelCellContextMenu extends InputCellContextMenu {
@@ -30,28 +29,30 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 			getItems().add(groupMenu);
 
 			ToggleGroup toggle = new ToggleGroup();
-			for (Group g : ASIOController.getInstance().getGroupList()) {
-				RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
-				groupMenuItem.setToggleGroup(toggle);
-				groupMenuItem.setSelected(g.getChannelList().contains(channel));
-				groupMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			setOnShowing(e -> {
+				groupMenu.getItems().clear();
+				for (Group g : ASIOController.getInstance().getGroupList()) {
+					RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
+					groupMenuItem.setToggleGroup(toggle);
+					groupMenuItem.setSelected(g.getChannelList().contains(channel));
+					groupMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
-					@Override
-					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-						if (channel != null && channel instanceof Channel) {
-							if (newValue) {
-								g.addChannel(channel);
-							} else {
-								g.removeChannel(channel);
+						@Override
+						public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+							if (channel != null && channel instanceof Channel) {
+								if (newValue) {
+									g.addChannel(channel);
+								} else {
+									g.removeChannel(channel);
+								}
+								MainController.getInstance().refresh();
+								GroupController.getInstance().refresh();
 							}
-							MainController.getInstance().refresh();
-							GroupController.getInstance().refresh();
 						}
-					}
-				});
-				groupMenu.getItems().add(groupMenuItem);
-			}
-
+					});
+					groupMenu.getItems().add(groupMenuItem);
+				}
+			});
 		}
 	}
 }

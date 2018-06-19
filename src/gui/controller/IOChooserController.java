@@ -51,7 +51,11 @@ public class IOChooserController implements Initializable {
 
 	@FXML
 	private void start(ActionEvent e) {
-		String selectedIO = listIO.getSelectionModel().getSelectedItem();
+		String selectedIO = null;
+		if (!Main.isDebug()) {
+			selectedIO = listIO.getSelectionModel().getSelectedItem();
+
+		}
 		LOG.info("Loading Main-Window with selected Driver \"" + selectedIO + "\"");
 		loadMain(selectedIO);
 		// }
@@ -67,12 +71,8 @@ public class IOChooserController implements Initializable {
 
 	public void startDebug() {
 		// if (!listIO.getItems().isEmpty()) {
-		listIO.getSelectionModel().select(0);
-		if (!listIO.getItems().isEmpty()) {
-			LOG.info("DEBUG, Starting with index 0: " + listIO.getItems().get(0));
-		} else {
-			LOG.warn("Starting without selected driver, for DEBUG purposes only!");
-		}
+		LOG.warn("Starting without selected driver, for DEBUG purposes only!");
+
 		start(new ActionEvent());
 		// }
 	}

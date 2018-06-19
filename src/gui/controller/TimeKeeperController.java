@@ -79,6 +79,13 @@ public class TimeKeeperController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initTimeKeeper();
+		cueTable.setOnKeyPressed(e -> {
+			if(e.getCode() == KeyCode.SPACE) {
+				btnTime.fire();
+			} else if(e.getCode() == KeyCode.ENTER) {
+				
+			}
+		});
 		enableContextMenu(false);
 	}
 

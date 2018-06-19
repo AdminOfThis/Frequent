@@ -5,15 +5,19 @@ import java.util.ResourceBundle;
 
 import control.LevelObserver;
 import data.Channel;
+import data.Group;
 import data.Input;
 import gui.controller.FFTController;
 import gui.controller.Pausable;
+import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.FXMLUtil;
+import gui.utilities.GroupCellContextMenu;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.Parent;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -56,7 +60,8 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver,
 	}
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {}
+	public void initialize(URL location, ResourceBundle resources) {
+	}
 
 	@Override
 	public void levelChanged(double level) {
@@ -71,11 +76,15 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver,
 							peak = peakdB;
 						}
 						if (orientation == Orientation.VERTICAL) {
-							vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
-							vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+							vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN))
+							        / Math.abs(FFTController.FFT_MIN));
+							vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN))
+							        / Math.abs(FFTController.FFT_MIN));
 						} else {
-							vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
-							vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+							vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN))
+							        / Math.abs(FFTController.FFT_MIN));
+							vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN))
+							        / Math.abs(FFTController.FFT_MIN));
 						}
 						if (peakdB >= FFTController.FFT_MIN) {
 							lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
@@ -119,6 +128,19 @@ public class VuMeter extends AnchorPane implements Initializable, LevelObserver,
 			} else {
 				this.setStyle("");
 			}
+			setOnContextMenuRequested(e -> {
+				ContextMenu menu = null;
+				if (c instanceof Channel) {
+					menu = new ChannelCellContextMenu((Channel) c);
+				} else if (c instanceof Group) {
+					menu = new GroupCellContextMenu((Group) c);
+				}
+				menu.show(vuPane, e.getScreenX(), e.getScreenY());
+
+			});
+
+		} else {
+			setOnContextMenuRequested(null);
 		}
 	}
 
