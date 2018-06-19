@@ -79,6 +79,20 @@
                         </CheckMenuItem>
                     </items>
                   </Menu>
+                  <Menu mnemonicParsing="false" text="Timer">
+                    <items>
+                      <MenuItem fx:id="menuTimerStart" mnemonicParsing="false" text="Start/Stop">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="ENTER" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="menuTimerNext" mnemonicParsing="false" text="Next">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="SPACE" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                    </items>
+                  </Menu>
               </menus>
             </MenuBar>
             <HBox alignment="CENTER_LEFT" spacing="5.0">
