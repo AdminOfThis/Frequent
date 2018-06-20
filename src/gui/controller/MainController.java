@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import javax.lang.model.element.Modifier;
-
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
@@ -110,6 +108,15 @@ public class MainController implements Initializable, Pausable {
 
 	public static MainController getInstance() {
 		return instance;
+	}
+
+	public void setTitle(String title) {
+		Stage stage = (Stage) channelList.getScene().getWindow();
+		String finalTitle = Main.TITLE + " " + Main.VERSION;
+		if (title != null && !title.isEmpty()) {
+			finalTitle += " - " + title;
+		}
+		stage.setTitle(finalTitle);
 	}
 
 	@Override
