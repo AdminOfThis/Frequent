@@ -37,27 +37,30 @@ public abstract class FileIO {
 		}
 	}
 
-	public static void open(File file) {
+	public static boolean open(File file) {
 		if (file != null) {
 			if (!file.getName().endsWith(ENDING)) {
 				LOG.warn("Unable to load file " + file.getName());
-				return;
-			}
-			currentFile = file;
-			List<Serializable> result = null;
-			currentDir = file.getParentFile();
-			LOG.info("Trying to open file " + file.getName());
-			result = openFile(file);
-			if (result != null && !result.isEmpty()) {
-				for (DataHolder<?> h : holderList) {
-					h.clear();
-				}
-				handleResult(result);
-				MainController.getInstance().refresh();
 			} else {
-				LOG.warn("Nothing loaded");
+				currentFile = file;
+				List<Serializable> result = null;
+				currentDir = file.getParentFile();
+				LOG.info("Trying to open file " + file.getName());
+				result = openFile(file);
+				if (result != null && !result.isEmpty()) {
+					for (DataHolder<?> h : holderList) {
+						h.clear();
+					}
+					handleResult(result);
+					MainController.getInstance().refresh();
+					MainController.getInstance().setTitle(file.getName());
+					return true;
+				} else {
+					LOG.warn("Nothing loaded");
+				}
 			}
 		}
+		return false;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
