@@ -310,7 +310,7 @@ public class MainController implements Initializable, Pausable {
 	}
 
 	private void bindCheckMenuToToggleButton(CheckMenuItem menu, ToggleButton button) {
-		
+
 		menu.setOnAction(e -> button.fire());
 		button.selectedProperty().addListener((obs, oldVal, newVal) -> {
 			menu.setSelected(newVal);

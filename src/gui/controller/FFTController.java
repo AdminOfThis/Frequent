@@ -151,9 +151,9 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		if (this.pause != pause) {
 			this.pause = pause;
 			if (pause) {
-				LOG.info(getClass().getSimpleName() + "; pausing animations");
+				LOG.debug(getClass().getSimpleName() + "; pausing animations");
 			} else {
-				LOG.info(getClass().getSimpleName() + "; playing animations");
+				LOG.debug(getClass().getSimpleName() + "; playing animations");
 			}
 		}
 	}
