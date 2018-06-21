@@ -59,16 +59,16 @@
                                  </accelerator></CheckMenuItem>
                               <CheckMenuItem fx:id="menuRTAView" mnemonicParsing="false" text="RTA">
                                  <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                    <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                  </accelerator>
                               </CheckMenuItem>
                               <CheckMenuItem fx:id="menuDrumView" mnemonicParsing="false" text="Drum">
                                  <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                    <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                  </accelerator></CheckMenuItem>
                               <CheckMenuItem fx:id="menuGroupsView" mnemonicParsing="false" text="Groups">
                                  <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                    <KeyCodeCombination alt="UP" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                  </accelerator></CheckMenuItem>
                           </items>
                         </Menu>
@@ -117,11 +117,7 @@
                      <toggleGroup>
                         <ToggleGroup fx:id="viewGroup" />
                      </toggleGroup></ToggleButton>
-                  <ToggleButton fx:id="toggleRTAView" mnemonicParsing="false" prefWidth="70.0" text="RTA">
-                     <toggleGroup>
-                        <ToggleGroup fx:id="viewGroup1" />
-                     </toggleGroup>
-                  </ToggleButton>
+                  <ToggleButton fx:id="toggleRTAView" mnemonicParsing="false" prefWidth="70.0" text="RTA" toggleGroup="$viewGroup" />
                   <ToggleButton fx:id="toggleDrumView" mnemonicParsing="false" prefWidth="70.0" text="Drum" toggleGroup="$viewGroup" />
                   <ToggleButton fx:id="toggleGroupsView" mnemonicParsing="false" prefWidth="70.0" text="Groups" toggleGroup="$viewGroup" />
                </children>
