@@ -33,20 +33,11 @@
     -fx-border-width: 5px;
 }
 
-.chart-vertical-grid-lines {
+.chart-vertical-grid-lines, .chart-horizontal-grid-lines  {
     -fx-stroke: derive(-fx-base, 80%);
 }
 
-.chart-horizontal-grid-lines {
-    -fx-stroke: derive(-fx-base, 50%);
-}
-
-.transparent {
-	-fx-background-color: transparent;
-	-fx-fill: transparent;
-}
-
-.transparent > *{
+.transparent, .transparent > * {
 	-fx-background-color: transparent;
 	-fx-fill: transparent;
 }
