@@ -53,6 +53,7 @@ import main.Main;
 public class MainController implements Initializable, Pausable {
 
 	private static final String				FFT_PATH			= "/gui/gui/FFT.fxml";
+	private static final String				RTA_PATH			= "/gui/gui/SpectrumTime.fxml";
 	private static final String				TIMEKEEPER_PATH		= "/gui/gui/TimeKeeper.fxml";
 	private static final String				GROUP_PATH			= "/gui/gui/Group.fxml";
 	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
@@ -69,9 +70,9 @@ public class MainController implements Initializable, Pausable {
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
 	@FXML
-	private ToggleButton					toggleFFTView, toggleDrumView, toggleGroupsView;
+	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView;
 	@FXML
-	private CheckMenuItem					menuSpectrumView, menuDrumView, menuGroupsView;
+	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView;
 	@FXML
 	private ToggleButton					toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
 	@FXML
@@ -131,6 +132,7 @@ public class MainController implements Initializable, Pausable {
 		initFullScreen();
 		// initTuner();
 		initChart();
+		initRTA();
 		initDrumMonitor();
 		initGroups();
 		initListener();
@@ -185,6 +187,15 @@ public class MainController implements Initializable, Pausable {
 		if (p != null) {
 			fftController = (FFTController) FXMLUtil.getController();
 			contentMap.put(toggleFFTView, p);
+		} else {
+			LOG.warn("Unable to load FFT Chart");
+		}
+	}
+
+	private void initRTA() {
+		Parent p = FXMLUtil.loadFXML(RTA_PATH);
+		if (p != null) {
+			contentMap.put(toggleRTAView, p);
 		} else {
 			LOG.warn("Unable to load FFT Chart");
 		}
@@ -296,6 +307,7 @@ public class MainController implements Initializable, Pausable {
 		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 
 		bindCheckMenuToToggleButton(menuSpectrumView, toggleFFTView);
+		bindCheckMenuToToggleButton(menuRTAView, toggleRTAView);
 		bindCheckMenuToToggleButton(menuGroupsView, toggleGroupsView);
 		bindCheckMenuToToggleButton(menuDrumView, toggleDrumView);
 

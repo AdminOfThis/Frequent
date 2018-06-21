@@ -34,7 +34,8 @@ public class Main extends Application {
 	}
 
 	/**
-	 * checks the start parameters for debug keyword and sets the debug flag to true if found
+	 * checks the start parameters for keywords and sets the debug flag to
+	 * true if found
 	 * 
 	 * @param args
 	 */
@@ -75,8 +76,7 @@ public class Main extends Application {
 						a = args[index];
 					}
 					LOG.info("Loaded style as: " + style);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOG.warn("Unable to load style from commandline");
 					LOG.debug("", e);
 				}
@@ -92,8 +92,7 @@ public class Main extends Application {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
 			LOG = Logger.getLogger(Main.class);
 			LOG.info("=== Starting Frequent ===");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.fatal("Unexpected error while initializing logging", e);
 		}
 	}
@@ -109,8 +108,7 @@ public class Main extends Application {
 		primaryStage.setResizable(false);
 		try {
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO)));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.error("Unable to load logo", e);
 		}
 		primaryStage.setOnShowing(e -> {

@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public class SpectrumTimeController implements Initializable, Pausable, FFTListener {
@@ -30,11 +31,13 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 	@Override
 	public void newFFT(double[][] map) {
 		HBox box = new HBox();
+		box.setPrefHeight(10.0);
 		ArrayList<Pane> paneList = new ArrayList<>();
 		for (double[] entry : map) {
 			double frequency = entry[0];
 			double level = entry[1];
 			Pane pane = new Pane(new Label(Math.round(level) + ""));
+			HBox.setHgrow(pane, Priority.ALWAYS);
 			paneList.add(pane);
 		}
 		box.getChildren().addAll(paneList);
