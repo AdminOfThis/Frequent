@@ -4,11 +4,6 @@
 	-fx-focus-color: #ADFF7B;
 }
 
-.toggle-button: selected{
-	-fx-text-fill: -fx-accent;
-}
-
-
 .default-color0.chart-symbol { -fx-background-color: derive(-fx-accent, -50%); }
 .default-color1.chart-symbol { -fx-background-color: derive(-fx-accent, -75%) }
 .default-color2.chart-symbol { -fx-background-color: derive(-fx-accent, 50%) }
@@ -38,6 +33,14 @@
     -fx-border-width: 5px;
 }
 
+.chart-vertical-grid-lines {
+    -fx-stroke: derive(-fx-base, 80%);
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: derive(-fx-base, 50%);
+}
+
 .transparent {
 	-fx-background-color: transparent;
 	-fx-fill: transparent;
@@ -59,6 +62,10 @@
 
 .progress-indicator .determinate-indicator .indicator{
 	-fx-background-color: transparent;
+}
+
+.toggle-button: selected{
+	-fx-text-fill: -fx-accent;
 }
 
 .toggle-switch: selected .thumb-area{
