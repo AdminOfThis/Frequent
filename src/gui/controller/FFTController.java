@@ -91,10 +91,11 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		chart = new NegativeAreaChart(logAxis, yaxis);
 		chart.getData().add(series);
 		// chart.getData().add(maxSeries);
+
 		chart.setAnimated(false);
 		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
+		chart.setTitleSide(Side.TOP);
 		chart.setLegendVisible(false);
-		chart.setLegendSide(Side.RIGHT);
 		chart.setHorizontalZeroLineVisible(false);
 		root.getChildren().add(1, chart);
 		HBox.setHgrow(chart, Priority.ALWAYS);
@@ -102,6 +103,11 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 
 	public void setChannel(Channel channel) {
 		meter.setChannel(channel);
+		if (channel == null) {
+			chart.setTitle(null);
+		} else {
+			chart.setTitle(channel.getName());
+		}
 	}
 
 	@Override
