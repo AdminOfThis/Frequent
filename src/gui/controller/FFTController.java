@@ -23,6 +23,7 @@ import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -38,6 +39,8 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	private HBox					root;
 	@FXML
 	private ToggleButton			toggleSlowCurve, toggleVPad;
+	@FXML
+	private Slider					sliderPad;
 	@FXML
 	private XYChart<Number, Number>	chart;
 	private VuMeter					meter;
@@ -63,12 +66,20 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 				chart.getData().remove(maxSeries);
 			}
 		});
+		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
+
 		toggleVPad.selectedProperty().addListener(e -> {
-			NumberAxis yAxis = (NumberAxis) chart.getYAxis();
 			if (toggleVPad.isSelected()) {
-				yAxis.setUpperBound(-30.0);
+				yAxis.setUpperBound(Math.round(sliderPad.getValue()));
 			} else {
 				yAxis.setUpperBound(0.0);
+			}
+		});
+
+		sliderPad.valueProperty().addListener(e -> {
+			toggleVPad.setText( Math.round(sliderPad.getValue()) + " dB");
+			if (toggleVPad.isSelected()) {
+				yAxis.setUpperBound(Math.round(sliderPad.getValue()));
 			}
 		});
 	}
