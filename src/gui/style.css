@@ -35,6 +35,9 @@
 	-fx-stroke: derive(-fx-accent, -60%);
 }
 
+.chart .chart-title .text {
+	-fx-font-size: 20px;
+}
 
 .chart-pie .data{
     -fx-border-color: -fx-background;
