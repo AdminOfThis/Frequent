@@ -7,29 +7,42 @@ import gui.controller.GroupController;
 import gui.controller.MainController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 
 public class ChannelCellContextMenu extends InputCellContextMenu {
 
-	private MenuItem	resetName	= new MenuItem("Reset Name");
-	private Menu		groupMenu	= new Menu("Groups");
+	private MenuItem		resetName	= new MenuItem("Reset Name");
+	private CheckMenuItem	hide		= new CheckMenuItem("Hide");
+	private CheckMenuItem	showHidden	= new CheckMenuItem("Show Hidden");
+	private Menu			groupMenu	= new Menu("Groups");
 
 
 	public ChannelCellContextMenu(Channel in) {
 		super(in);
 		if (in != null) {
 			resetName.setOnAction(e -> in.setName(((Channel) in).getChannel().getChannelName()));
-			getItems().add(1, resetName);
+			hide.setOnAction(e -> in.setHidden(hide.isSelected()));
+			showHidden.setOnAction(e -> MainController.getInstance().setShowHidden(showHidden.isSelected()));
+
+			getItems().add(resetName);
+			getItems().add(new SeparatorMenuItem());
+			getItems().add(hide);
+			getItems().add(showHidden);
+			getItems().add(new SeparatorMenuItem());
 			// groups
 			getItems().add(groupMenu);
-			setOnShowing(e -> refreshGroupList(in));
+			setOnShowing(e -> refreshData(in));
 		}
 	}
 
-	private void refreshGroupList(Channel channel) {
+	private void refreshData(Channel channel) {
+
+		showHidden.setSelected(MainController.getInstance().isShowHidden());
 		ToggleGroup toggle = new ToggleGroup();
 		toggle.getToggles().clear();
 		groupMenu.getItems().clear();

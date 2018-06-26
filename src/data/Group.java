@@ -1,6 +1,7 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -34,7 +35,7 @@ public class Group extends Input implements LevelObserver {
 					channel.setColor(getColor());
 				}
 			}
-			channelList.sort(Channel.COMPARATOR);
+			Collections.sort(channelList);
 		}
 	}
 
