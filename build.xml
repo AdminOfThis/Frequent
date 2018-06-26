@@ -7,15 +7,29 @@
 	<property name="build" location="build" />
 	<property name="dist" location="dist" />
 	<property name="lib" value="lib" />
+	
+	<property name="lib.extern" value="lib"/>
 	<!-- Manifest options -->
 	<property name="manifest.mainclass" value="main.Main" />
 
-	<path id="project.class.path">
+	<path id="build.classpath">
 		<fileset dir="${lib}">
-			<include name="**/*" />
+		    <include name="**/*.jar" />
 		</fileset>
 	</path>
 
+	
+	<!-- converter of lib paths--> 
+	<pathconvert property="manifest.classpath" pathsep=" ">
+	  <path refid="build.classpath"/>
+	  <mapper>
+	    <chainedmapper>
+	       <flattenmapper/>
+	       <globmapper from="*.jar" to="${lib.extern}/*.jar"/>
+	    </chainedmapper>
+	  </mapper>
+	</pathconvert>
+	
 	<target name="init" depends="clean">
 		<echo message="starting ant build" level="info" />
 		<!-- Create the time stamp -->
@@ -28,18 +42,28 @@
 		<!-- Compile the Java code from ${src} into ${build} -->
 		<echo message="starting compilation" level="info" />
 		<javac includeantruntime="false" srcdir="${src}" destdir="${build}" target="1.8" source="1.8">
-			<classpath refid="project.class.path" />
+			<classpath refid="build.classpath"/>
 		</javac>
 	</target>
 
-	<target name="dist" depends="compile" description="generate the distribution">
+	<target name="copy_additional_resources" depends="compile" description="kopiert alle zusaetzlichen Files aus Source">
+			<!-- Copy over none Java-Files -->
+			<copy todir="${build}">
+				<fileset dir="${src}">
+					<exclude name="**/*.java" />
+				</fileset>
+			</copy>
+		</target>
+	
+	<target name="dist" depends="copy_additional_resources" description="generate the distribution">
 		<!-- Create the distribution directory -->
+		
 		<mkdir dir="${dist}" />
 
 		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-		<jar jarfile="${dist}/frequent-${DSTAMP}.jar" basedir="${build}">
+		<jar destfile="${dist}/frequent-${DSTAMP}.jar" basedir="${build}">
 			<manifest>
-				 <attribute name="Class-Path" value="${lib}/*.jar" />
+				<attribute name="Class-Path" value="${manifest.classpath}"/>
 				<attribute name="Main-Class" value="${manifest.mainclass}" />
 			</manifest>
 		</jar>
