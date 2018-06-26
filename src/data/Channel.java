@@ -4,23 +4,19 @@ import java.util.Comparator;
 
 import com.synthbot.jasiohost.AsioChannel;
 
-public class Channel extends Input {
+public class Channel extends Input implements Comparable<Channel>, Comparator<Channel> {
 
 	/**
 	 * 
 	 */
-	private static final long				serialVersionUID	= 1L;
-	public static final Comparator<Channel>	COMPARATOR			= new Comparator<Channel>() {
-
-																	@Override
-																	public int compare(Channel o1, Channel o2) {
-																		// TODO Auto-generated method stub
-																		return o1.getChannelIndex() - o2.getChannelIndex();
-																	}
-																};
-	private transient AsioChannel			channel;
-	private int								channelIndex		= -1;
-	private Group							group;
+	private static final long		serialVersionUID	= 1L;
+	/**
+	 * 
+	 */
+	private transient AsioChannel	channel;
+	private int						channelIndex		= -1;
+	private Group					group;
+	private boolean					hide				= false;
 
 	public Channel(AsioChannel channel) {
 		this(channel, channel.getChannelName());
@@ -68,7 +64,25 @@ public class Channel extends Input {
 		}
 	}
 
+	public boolean isHidden() {
+		return hide;
+	}
+
+	public void setHidden(boolean hide) {
+		this.hide = hide;
+	}
+
 	public static double percentToDB(double level) {
 		return 20.0 * Math.log10(level / 1000.0);
+	}
+
+	@Override
+	public int compareTo(Channel o) {
+		return this.getChannelIndex() - o.getChannelIndex();
+	}
+
+	@Override
+	public int compare(Channel o1, Channel o2) {
+		return o1.getChannelIndex() - o2.getChannelIndex();
 	}
 }

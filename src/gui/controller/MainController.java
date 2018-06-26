@@ -97,6 +97,7 @@ public class MainController implements Initializable, Pausable {
 	private Label							lblStatus;
 	@FXML
 	private ProgressBar						progStatus;
+	private boolean							showHidden			= false;
 	private boolean							pause				= false;
 	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
 	private double							channelSplitRatio	= 0.8;
@@ -295,7 +296,9 @@ public class MainController implements Initializable, Pausable {
 				}
 			} else {
 				for (Channel channel : ASIOController.getInstance().getInputList()) {
-					root.getChildren().add(new TreeItem<>(channel));
+					if (!channel.isHidden() || showHidden) {
+						root.getChildren().add(new TreeItem<>(channel));
+					}
 				}
 			}
 		}
@@ -569,5 +572,13 @@ public class MainController implements Initializable, Pausable {
 
 	public void resetStatus() {
 		setStatus("", 0);
+	}
+
+	public boolean isShowHidden() {
+		return showHidden;
+	}
+
+	public void setShowHidden(boolean showHidden) {
+		this.showHidden = showHidden;
 	}
 }
