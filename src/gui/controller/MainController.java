@@ -32,6 +32,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
@@ -230,10 +231,8 @@ public class MainController implements Initializable, Pausable {
 
 	private void initChannelList() {
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().visibleProperty());
-
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
 		toggleChannels.selectedProperty().addListener(e -> pause(!toggleChannels.isSelected()));
-
 		toggleWaveForm.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
 			@Override
@@ -251,6 +250,8 @@ public class MainController implements Initializable, Pausable {
 				}
 			}
 		});
+
+		channelList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		channelList.setCellFactory(e -> new InputCell());
 		channelList.setRoot(new TreeItem<>());
 		channelList.setShowRoot(false);

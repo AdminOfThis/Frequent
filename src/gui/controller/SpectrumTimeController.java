@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import control.ASIOController;
 import control.FFTListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,7 +26,9 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		if (ASIOController.getInstance() != null) {
+			ASIOController.getInstance().addFFTListener(this);
+		}
 	}
 
 	@Override
@@ -47,9 +50,6 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 		dataPane.getChildren().add(box);
 	}
 
-	public void setChannel() {
-
-	}
 
 	@Override
 	public void pause(boolean pause) {
