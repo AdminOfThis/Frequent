@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import control.ASIOController;
 import control.FFTListener;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -33,21 +34,29 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 
 	@Override
 	public void newFFT(double[][] map) {
+		Platform.runLater(new Runnable() {
 
-		HBox box = new HBox();
-		box.setPrefHeight(10.0);
-		if (!pause) {
-			ArrayList<Pane> paneList = new ArrayList<>();
-			for (double[] entry : map) {
-				double frequency = entry[0];
-				double level = entry[1];
-				Pane pane = new Pane(new Label(Math.round(level) + ""));
-				HBox.setHgrow(pane, Priority.ALWAYS);
-				paneList.add(pane);
+			@Override
+			public void run() {
+				HBox box = new HBox();
+				box.setPrefHeight(10.0);
+				if (!pause) {
+					ArrayList<Pane> paneList = new ArrayList<>();
+					for (double[] entry : map) {
+						double frequency = entry[0];
+						double level = entry[1];
+						Pane pane = new Pane(new Label(Math.round(level) + ""));
+						HBox.setHgrow(pane, Priority.ALWAYS);
+						paneList.add(pane);
+					}
+					box.getChildren().addAll(paneList);
+				}
+				dataPane.getChildren().add(box);
+
 			}
-			box.getChildren().addAll(paneList);
-		}
-		dataPane.getChildren().add(box);
+
+		});
+
 	}
 
 
