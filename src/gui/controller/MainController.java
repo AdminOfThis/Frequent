@@ -340,15 +340,6 @@ public class MainController implements Initializable, Pausable {
 		});
 	}
 
-	// private void initTuner() {
-	// Parent p = FXMLUtil.loadFXML(TUNER_PATH);
-	// tunerController = (TunerController) FXMLUtil.getController();
-	// sub.setBottom(p);
-	// toggleTuner.selectedProperty().addListener(e -> {
-	// tunerController.show(toggleTuner.isSelected());
-	// });
-	// tunerController.show(false);
-	// }
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);
 		controller.addFFTListener(fftController);
@@ -581,5 +572,43 @@ public class MainController implements Initializable, Pausable {
 
 	public void setShowHidden(boolean showHidden) {
 		this.showHidden = showHidden;
+	}
+
+	/**
+	 * toggles hide for all selected items
+	 */
+	public void hideAllSelected() {
+		try {
+			TreeItem<Input> first = channelList.getSelectionModel().getSelectedItems().get(0);
+			if (first != null) {
+				if (first.getValue() instanceof Channel) {
+					Channel channel = (Channel) first.getValue();
+					boolean hide = !channel.isHidden();
+					for (TreeItem<Input> item : channelList.getSelectionModel().getSelectedItems()) {
+						if (item.getValue() instanceof Channel) {
+							((Channel) item.getValue()).setHidden(hide);
+						}
+					}
+				}
+			}
+			refresh();
+		} catch (Exception e) {
+			LOG.warn("Error while hiding items");
+			LOG.debug("", e);
+		}
+	}
+
+	public void groupAllSelected(Group g) {
+		try {
+			for (TreeItem<Input> item : channelList.getSelectionModel().getSelectedItems()) {
+				if (item.getValue() instanceof Channel) {
+					((Channel) item.getValue()).setGroup(g);
+				}
+			}
+			refresh();
+		} catch (Exception e) {
+			LOG.warn("Error while grouping items");
+			LOG.debug("", e);
+		}
 	}
 }
