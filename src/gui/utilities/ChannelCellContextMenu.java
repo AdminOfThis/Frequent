@@ -26,7 +26,7 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 		super(in);
 		if (in != null) {
 			resetName.setOnAction(e -> in.setName(((Channel) in).getChannel().getChannelName()));
-			hide.setOnAction(e -> in.setHidden(hide.isSelected()));
+			hide.setOnAction(e -> MainController.getInstance().hideAllSelected());
 			showHidden.setOnAction(e -> MainController.getInstance().setShowHidden(showHidden.isSelected()));
 
 			getItems().add(resetName);
@@ -54,15 +54,10 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-					if (channel != null && channel instanceof Channel) {
-						if (newValue) {
-							g.addChannel(channel);
-						} else {
-							g.removeChannel(channel);
-						}
-						MainController.getInstance().refresh();
-						GroupController.getInstance().refresh();
-					}
+					MainController.getInstance().groupAllSelected(g);
+					MainController.getInstance().refresh();
+					GroupController.getInstance().refresh();
+
 				}
 			});
 			groupMenu.getItems().add(groupMenuItem);
