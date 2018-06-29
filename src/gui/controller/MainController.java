@@ -57,7 +57,7 @@ public class MainController implements Initializable, Pausable {
 	private static final String				RTA_PATH			= "/gui/gui/SpectrumTime.fxml";
 	private static final String				TIMEKEEPER_PATH		= "/gui/gui/TimeKeeper.fxml";
 	private static final String				GROUP_PATH			= "/gui/gui/Group.fxml";
-	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
+	private static final String				TUNER_PATH			= "/gui/gui/Tuner.fxml";
 	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH			= "/gui/gui/Drum.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
@@ -105,7 +105,7 @@ public class MainController implements Initializable, Pausable {
 	private ASIOController					controller;
 	private FFTController					fftController;
 	private TimeKeeperController			timeKeeperController;
-	// private TunerController tunerController;
+	private TunerController					tunerController;
 	// private DrumController drumController;
 	private WaveFormChartController			waveFormController;
 
@@ -132,7 +132,7 @@ public class MainController implements Initializable, Pausable {
 		initMenu();
 		initChannelList();
 		initFullScreen();
-		// initTuner();
+		initTuner();
 		initChart();
 		initRTA();
 		initDrumMonitor();
@@ -274,17 +274,12 @@ public class MainController implements Initializable, Pausable {
 		});
 		// Edit channel list
 		channelList.setEditable(true);
-		//
-		toggleGroupChannels.selectedProperty().addListener(new ChangeListener<Boolean>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				if (newValue == oldValue) {
-					return;
-				}
+		toggleGroupChannels.selectedProperty().addListener((obs, oldV, newV) -> {
+			if (oldV != newV) {
 				refreshInputs();
 			}
 		});
+
 	}
 
 	private void refreshInputs() {
@@ -338,6 +333,16 @@ public class MainController implements Initializable, Pausable {
 		button.selectedProperty().addListener((obs, oldVal, newVal) -> {
 			menu.setSelected(newVal);
 		});
+	}
+
+	private void initTuner() {
+		Parent p = FXMLUtil.loadFXML(TUNER_PATH);
+		tunerController = (TunerController) FXMLUtil.getController();
+		sub.setTop(p);
+		// toggleTuner.selectedProperty().addListener(e -> {
+		// tunerController.show(toggleTuner.isSelected());
+		// });
+		tunerController.show(true);
 	}
 
 	public void initIO(String ioName) {
