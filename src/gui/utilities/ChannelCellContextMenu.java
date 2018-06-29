@@ -55,13 +55,10 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 					MainController.getInstance().groupAllSelected(g);
-					MainController.getInstance().refresh();
 					GroupController.getInstance().refresh();
-
 				}
 			});
 			groupMenu.getItems().add(groupMenuItem);
 		}
-
 	}
 }
