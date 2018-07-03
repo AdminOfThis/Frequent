@@ -115,3 +115,12 @@
     -fx-background-color: derive(-fx-base, 50%);
     -fx-text-fill: white;
 }
+
+.flat-progress > * {
+		-fx-background-radius: 0;
+		-fx-background-insets: 0;
+}
+
+.flat-progress .bar {
+	-fx-background-insets: 2;
+}

@@ -16,13 +16,10 @@
             <Label fx:id="status" />
             <AnchorPane>
                <children>
-                  <ProgressBar fx:id="progress" progress="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                  <ProgressBar fx:id="progress" progress="0.0" style="-fx-border-radius: 0;" styleClass="flat-progress" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                </children>
             </AnchorPane>
          </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
       </VBox>
    </bottom>
    <center>
