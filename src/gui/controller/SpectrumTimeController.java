@@ -8,25 +8,34 @@ import org.apache.log4j.Logger;
 
 import control.ASIOController;
 import control.FFTListener;
+import gui.utilities.ResizableCanvas;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 
 public class SpectrumTimeController implements Initializable, Pausable, FFTListener {
 
 	private static final Logger	LOG		= Logger.getLogger(SpectrumTimeController.class);
 	@FXML
-	private VBox				dataPane;
+	private AnchorPane			canvasParent;
 
 	private boolean				pause	= true;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		ResizableCanvas can = new ResizableCanvas();
+		canvasParent.getChildren().add(can);
+		AnchorPane.setBottomAnchor(can, 0.0);
+		AnchorPane.setTopAnchor(can, 0.0);
+		AnchorPane.setLeftAnchor(can, 0.0);
+		AnchorPane.setRightAnchor(can, 0.0);
+		can.widthProperty().bind(canvasParent.widthProperty());
+		can.heightProperty().bind(canvasParent.heightProperty());
 		if (ASIOController.getInstance() != null) {
 			ASIOController.getInstance().addFFTListener(this);
 		}
@@ -51,14 +60,13 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 					}
 					box.getChildren().addAll(paneList);
 				}
-				dataPane.getChildren().add(box);
+				canvasParent.getChildren().add(box);
 
 			}
 
 		});
 
 	}
-
 
 	@Override
 	public void pause(boolean pause) {
