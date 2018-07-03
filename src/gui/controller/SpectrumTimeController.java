@@ -1,7 +1,6 @@
 package gui.controller;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -12,12 +11,7 @@ import gui.utilities.ResizableCanvas;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 
 public class SpectrumTimeController implements Initializable, Pausable, FFTListener {
 
@@ -27,11 +21,12 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 
 	private boolean				pause	= true;
 
+	private ResizableCanvas		canvas;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		ResizableCanvas can = new ResizableCanvas(canvasParent);
-		canvasParent.setContent(can);
-		can.widthProperty().bind(canvasParent.widthProperty());
+		canvas = new ResizableCanvas(canvasParent);
+		canvasParent.setContent(canvas);
 
 		if (ASIOController.getInstance() != null) {
 			ASIOController.getInstance().addFFTListener(this);
@@ -44,24 +39,9 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 
 			@Override
 			public void run() {
-				HBox box = new HBox();
-				box.setPrefHeight(10.0);
-				if (!pause) {
-					ArrayList<Pane> paneList = new ArrayList<>();
-					for (double[] entry : map) {
-						double level = entry[1];
-						Pane pane = new Pane(new Label(Math.round(level) + ""));
-						HBox.setHgrow(pane, Priority.ALWAYS);
-						paneList.add(pane);
-					}
-					box.getChildren().addAll(paneList);
-				}
-				// canvasParent.getChildren().add(box);
-
+				canvas.addLine(map);
 			}
-
 		});
-
 	}
 
 	@Override
