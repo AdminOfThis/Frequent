@@ -31,6 +31,8 @@ public class PreLoader extends Preloader implements Initializable {
 	private Label				status;
 	@FXML
 	private BorderPane			root;
+	@FXML
+	private Label				title, version;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -87,5 +89,7 @@ public class PreLoader extends Preloader implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		status.setText("Starting ...");
+		title.setText(Main.TITLE);
+		version.setText(Main.VERSION);
 	}
 }
