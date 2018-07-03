@@ -1,67 +1,36 @@
 package gui.utilities;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.css.CssMetaData;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
 public class ResizableCanvas extends Canvas {
 	int							count		= 0;
 	private static final int	POINTS		= 1024;
 
 	private boolean				autoscroll	= true;
-	private String				accent = "#FF0000";
+	private String				accent		= "#FF0000";
+	private GraphicsContext		content;
+	private ScrollPane			parent;
 
 	public ResizableCanvas(ScrollPane parent) {
+		this.parent = parent;
+		widthProperty().bind(parent.widthProperty());
 		accent = FXMLUtil.getStyleValue("-fx-accent");
-		GraphicsContext content = getGraphicsContext2D();
+		content = getGraphicsContext2D();
 		widthProperty().addListener(e -> reset());
-		Timeline line = new Timeline();
-
 		setHeight(10.0);
-		line.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
-			// long before = System.currentTimeMillis();
-			double size = (getWidth() / POINTS);
-			if (getHeight() < size * count + size) {
-				setHeight(getHeight() + size);
+		parent.vvalueProperty().addListener((obs, oldV, newV) -> {
+			if ((double) newV > 0.9 * parent.getVmax() || (double) newV == 0.0) {
+				autoscroll = true;
+			} else {
+				autoscroll = false;
 			}
-			for (int i = 0; i < POINTS; i++) {
-				String r = Integer.toHexString((int) Math.round(Math.random() * 255.0));
-				if (r.length() < 2) {
-					r = "0" + r;
-				}
-				content.setFill(Color.web(makeColorTransparent(accent, Math.random())));
-				content.fillRect(size * i, size * count, size, size);
-			}
-			count++;
-			if (count > 5000) {
-				reset();
-			}
-
-			parent.vvalueProperty().addListener((obs, oldV, newV) -> {
-				if ((double) newV > 0.9 * parent.getVmax() || (double) newV == 0.0) {
-					autoscroll = true;
-				} else {
-					autoscroll = false;
-				}
-			});
-			if (autoscroll) {
-				parent.setVvalue(parent.getVmax());
-			}
-			// long after = System.currentTimeMillis();
-			// System.out.println(after - before);
-		}));
-		line.setCycleCount(Timeline.INDEFINITE);
-		line.playFromStart();
+		});
 	}
 
 	private void reset() {
-		GraphicsContext content = getGraphicsContext2D();
 		content.clearRect(0, 0, getWidth(), getHeight());
 		count = 0;
 		setHeight(10);
@@ -90,5 +59,38 @@ public class ResizableCanvas extends Canvas {
 	@Override
 	public double prefHeight(double width) {
 		return getHeight();
+	}
+
+	public void addLine(double[][] map) {
+		// long before = System.currentTimeMillis();
+
+		double size = (getWidth() / POINTS);
+
+		if (getHeight() < size * count + size) {
+			setHeight(getHeight() + size);
+		}
+		// adding points
+		int pointCount = 0;
+		for (double[] entry : map) {
+			String r = Integer.toHexString((int) Math.round(Math.random() * 255.0));
+			if (r.length() < 2) {
+				r = "0" + r;
+			}
+			content.setFill(Color.web(makeColorTransparent(accent, entry[1])));
+			content.fillRect(size * pointCount, size * count, size, size);
+			pointCount++;
+		}
+		//
+
+		count++;
+		if (count > 5000) {
+			reset();
+		}
+
+		if (autoscroll) {
+			parent.setVvalue(parent.getVmax());
+		}
+		// long after = System.currentTimeMillis();
+		// System.out.println(after - before);
 	}
 }
