@@ -22,8 +22,7 @@ import main.Main;
 
 public class IOChooserController implements Initializable {
 
-	private static final String	GUI_MAIN_PATH	= "/gui/gui/Main.fxml";
-	private static final Logger	LOG				= Logger.getLogger(IOChooserController.class);
+	private static final Logger	LOG	= Logger.getLogger(IOChooserController.class);
 	@FXML
 	private Parent				root;
 	@FXML
@@ -32,6 +31,7 @@ public class IOChooserController implements Initializable {
 	private Button				btnStart, btnQuit;
 	@FXML
 	private Label				label;
+	private Scene				mainScene;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -58,7 +58,7 @@ public class IOChooserController implements Initializable {
 
 		}
 		LOG.info("Loading Main-Window with selected Driver \"" + selectedIO + "\"");
-		loadMain(selectedIO);
+		launchMain(selectedIO);
 		// }
 		Stage stage = null;
 		try {
@@ -70,6 +70,16 @@ public class IOChooserController implements Initializable {
 		}
 	}
 
+	private void launchMain(String selectedIO) {
+		if (selectedIO != null && !selectedIO.isEmpty()) {
+			new ASIOController(selectedIO);
+		}
+		Stage stage = (Stage) listIO.getScene().getWindow();
+		stage.setScene(mainScene);
+		stage.setResizable(true);
+	}
+
+
 	public void startDebug() {
 		// if (!listIO.getItems().isEmpty()) {
 		LOG.warn("Starting without selected driver, for DEBUG purposes only!");
@@ -78,29 +88,7 @@ public class IOChooserController implements Initializable {
 		// }
 	}
 
-	private void loadMain(String ioName) {
-		LOG.debug("Loading from: " + GUI_MAIN_PATH);
-		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
-		try {
-			Parent p = loader.load();
-			MainController controller = loader.getController();
-			if (ioName != null) {
-				controller.initIO(ioName);
-			}
-			Stage stage;
-			try {
-				stage = (Stage) listIO.getScene().getWindow();
-			} catch (Exception e) {
-				stage = new Stage();
-			}
-			stage.setResizable(true);
-			stage.setScene(new Scene(p));
-			stage.centerOnScreen();
-			stage.show();
-			LOG.info("Main Window loaded");
-		} catch (IOException e) {
-			LOG.error("Unable to load Main GUI", e);
-			Main.close();
-		}
+	public void setMainScene(Scene scene) {
+		mainScene = scene;
 	}
 }
