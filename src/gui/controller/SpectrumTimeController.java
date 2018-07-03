@@ -13,6 +13,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -22,20 +23,16 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 
 	private static final Logger	LOG		= Logger.getLogger(SpectrumTimeController.class);
 	@FXML
-	private AnchorPane			canvasParent;
+	private ScrollPane			canvasParent;
 
 	private boolean				pause	= true;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		ResizableCanvas can = new ResizableCanvas();
-		canvasParent.getChildren().add(can);
-		AnchorPane.setBottomAnchor(can, 0.0);
-		AnchorPane.setTopAnchor(can, 0.0);
-		AnchorPane.setLeftAnchor(can, 0.0);
-		AnchorPane.setRightAnchor(can, 0.0);
+		ResizableCanvas can = new ResizableCanvas(canvasParent);
+		canvasParent.setContent(can);
 		can.widthProperty().bind(canvasParent.widthProperty());
-		can.heightProperty().bind(canvasParent.heightProperty());
+
 		if (ASIOController.getInstance() != null) {
 			ASIOController.getInstance().addFFTListener(this);
 		}
@@ -52,7 +49,6 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 				if (!pause) {
 					ArrayList<Pane> paneList = new ArrayList<>();
 					for (double[] entry : map) {
-						double frequency = entry[0];
 						double level = entry[1];
 						Pane pane = new Pane(new Label(Math.round(level) + ""));
 						HBox.setHgrow(pane, Priority.ALWAYS);
@@ -60,7 +56,7 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 					}
 					box.getChildren().addAll(paneList);
 				}
-				canvasParent.getChildren().add(box);
+				// canvasParent.getChildren().add(box);
 
 			}
 
