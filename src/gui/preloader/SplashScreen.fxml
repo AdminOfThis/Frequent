@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <bottom>
       <VBox alignment="CENTER" spacing="5.0" BorderPane.alignment="CENTER">
@@ -27,10 +26,26 @@
       </VBox>
    </bottom>
    <center>
-      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+      <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
          <image>
             <Image url="@../../res/logo_512.png" />
          </image>
       </ImageView>
    </center>
+   <top>
+      <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="title" style="-fx-font-size: 35; -fx-font-family: Calibri;" text="Frequent">
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+            </Label>
+            <Label fx:id="version" style="-fx-font-size: 20; -fx-font-family: Calibri;" text="x.x.x">
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+            </Label>
+         </children>
+      </VBox>
+   </top>
 </BorderPane>
