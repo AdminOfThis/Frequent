@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import control.FFTListener;
 import data.Channel;
+import gui.utilities.FXMLUtil;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeter;
@@ -17,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
+import javafx.scene.Parent;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ValueAxis;
@@ -33,6 +35,8 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	private static final double		DECAY		= 1.01;
 	public static final double		FFT_MIN		= -80;
 	private static final Logger		LOG			= Logger.getLogger(FFTController.class);
+	private static final String		TUNER_PATH	= "/gui/gui/Tuner.fxml";
+
 	private static final int		X_MIN		= 25;
 	private static final int		X_MAX		= 20000;
 	@FXML
@@ -43,7 +47,11 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	private Slider					sliderPad;
 	@FXML
 	private XYChart<Number, Number>	chart;
+	@FXML
+	private HBox					topPane, topRight, topLeft;
+
 	private VuMeter					meter;
+
 	private boolean					pause		= true;
 	private Series<Number, Number>	series		= new Series<>();
 	private Series<Number, Number>	maxSeries	= new Series<>();
@@ -51,9 +59,19 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		LOG.debug("Loading FFT Chart");
+		topLeft.prefWidthProperty().bind(topRight.widthProperty());
 		initVuMeter();
 		initChart();
 		initButtons();
+		initTuner();
+	}
+
+	private void initTuner() {
+		Parent p = FXMLUtil.loadFXML(TUNER_PATH);
+		TunerController tunerController = (TunerController) FXMLUtil.getController();
+		topPane.getChildren().add(1, p);
+		HBox.setHgrow(p, Priority.ALWAYS);
+		tunerController.show(true);
 	}
 
 	private void initButtons() {
@@ -77,7 +95,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		});
 
 		sliderPad.valueProperty().addListener(e -> {
-			toggleVPad.setText( Math.round(sliderPad.getValue()) + " dB");
+			toggleVPad.setText(Math.round(sliderPad.getValue()) + " dB");
 			if (toggleVPad.isSelected()) {
 				yAxis.setUpperBound(Math.round(sliderPad.getValue()));
 			}
