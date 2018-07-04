@@ -1,6 +1,5 @@
 package gui.controller;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -10,7 +9,6 @@ import org.apache.log4j.Logger;
 import control.ASIOController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -49,7 +47,6 @@ public class IOChooserController implements Initializable {
 		// Debug
 	}
 
-
 	@FXML
 	private void start(ActionEvent e) {
 		String selectedIO = null;
@@ -78,7 +75,6 @@ public class IOChooserController implements Initializable {
 		stage.setScene(mainScene);
 		stage.setResizable(true);
 	}
-
 
 	public void startDebug() {
 		// if (!listIO.getItems().isEmpty()) {
