@@ -57,7 +57,6 @@ public class MainController implements Initializable, Pausable {
 	private static final String				RTA_PATH			= "/gui/gui/SpectrumTime.fxml";
 	private static final String				TIMEKEEPER_PATH		= "/gui/gui/TimeKeeper.fxml";
 	private static final String				GROUP_PATH			= "/gui/gui/Group.fxml";
-	private static final String				TUNER_PATH			= "/gui/gui/Tuner.fxml";
 	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH			= "/gui/gui/Drum.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
@@ -105,7 +104,6 @@ public class MainController implements Initializable, Pausable {
 	private ASIOController					controller;
 	private FFTController					fftController;
 	private TimeKeeperController			timeKeeperController;
-	private TunerController					tunerController;
 	// private DrumController drumController;
 	private WaveFormChartController			waveFormController;
 
@@ -132,7 +130,6 @@ public class MainController implements Initializable, Pausable {
 		initMenu();
 		initChannelList();
 		initFullScreen();
-		initTuner();
 		initChart();
 		initRTA();
 		initDrumMonitor();
@@ -151,13 +148,19 @@ public class MainController implements Initializable, Pausable {
 	}
 
 	private void initListener() {
-		for (ToggleButton b : contentMap.keySet()) {
-			b.setOnAction(e -> {
-				if (b.getToggleGroup().getSelectedToggle() == null && contentPane.getItems().size() > 0) {
+		for (ToggleButton toggleButton : contentMap.keySet()) {
+			toggleButton.setOnAction(e -> {
+				if (!toggleButton.isSelected()) {
+					toggleButton.setSelected(true);
+					e.consume();
+					return;
+				}
+
+				if (toggleButton.getToggleGroup().getSelectedToggle() == null && contentPane.getItems().size() > 0) {
 					contentPane.getItems().remove(0);
-				} else if (b.isSelected()) {
-					Node n = contentMap.get(b);
-					if (b.equals(toggleGroupsView)) {
+				} else if (toggleButton.isSelected()) {
+					Node n = contentMap.get(toggleButton);
+					if (toggleButton.equals(toggleGroupsView)) {
 						GroupController.getInstance().refresh();
 					}
 					if (contentPane.getItems().size() < 1) {
@@ -335,15 +338,7 @@ public class MainController implements Initializable, Pausable {
 		});
 	}
 
-	private void initTuner() {
-		Parent p = FXMLUtil.loadFXML(TUNER_PATH);
-		tunerController = (TunerController) FXMLUtil.getController();
-		sub.setTop(p);
-		// toggleTuner.selectedProperty().addListener(e -> {
-		// tunerController.show(toggleTuner.isSelected());
-		// });
-		tunerController.show(true);
-	}
+	
 
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);

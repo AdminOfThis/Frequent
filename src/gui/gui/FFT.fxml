@@ -12,21 +12,28 @@
    <HBox fx:id="root" />
    </center>
    <top>
-      <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
+      <HBox fx:id="topPane" alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
-            <Slider fx:id="sliderPad" blockIncrement="3.0" majorTickUnit="12.0" max="0.0" min="-60.0" prefWidth="145.0" showTickMarks="true" snapToTicks="true" value="-12.0" />
-            <ToggleButton fx:id="toggleVPad" mnemonicParsing="false" prefWidth="70.0" text="-12 dB">
-               <tooltip>
-                  <Tooltip text="Virtual Pad (-30dB) for Spectrum analyzer. Does only apply to the chart" />
-               </tooltip></ToggleButton>
-            <ToggleButton fx:id="toggleSlowCurve" mnemonicParsing="false" prefWidth="70.0" text="Slow">
-               <tooltip>
-                  <Tooltip text="Adds a slower responding curve to the chart" />
-               </tooltip></ToggleButton>
-        </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="4.0" top="5.0" />
-         </padding>
+            <HBox fx:id="topLeft" />
+            <HBox fx:id="topRight" alignment="TOP_RIGHT" spacing="5.0">
+               <children>
+                  <Slider fx:id="sliderPad" blockIncrement="3.0" majorTickUnit="12.0" max="0.0" min="-60.0" prefWidth="145.0" showTickMarks="true" snapToTicks="true" value="-12.0" />
+                  <ToggleButton fx:id="toggleVPad" mnemonicParsing="false" prefWidth="70.0" text="-12 dB">
+                     <tooltip>
+                        <Tooltip text="Virtual Pad (-30dB) for Spectrum analyzer. Does only apply to the chart" />
+                     </tooltip>
+                  </ToggleButton>
+                  <ToggleButton fx:id="toggleSlowCurve" mnemonicParsing="false" prefWidth="70.0" text="Slow">
+                     <tooltip>
+                        <Tooltip text="Adds a slower responding curve to the chart" />
+                     </tooltip>
+                  </ToggleButton>
+              </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="4.0" top="5.0" />
+               </padding>
+            </HBox>
+         </children>
       </HBox>
    </top>
 </BorderPane>
