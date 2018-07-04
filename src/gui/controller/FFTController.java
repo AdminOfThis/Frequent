@@ -1,5 +1,6 @@
 package gui.controller;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -14,6 +15,7 @@ import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeter;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
@@ -29,6 +31,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.stage.FileChooser;
 
 public class FFTController implements Initializable, FFTListener, Pausable {
 
@@ -202,4 +205,6 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	public void setParentPausable(Pausable parent) {
 		LOG.error("Uninplemented method called: addParentPausable");
 	}
+	
+	
 }

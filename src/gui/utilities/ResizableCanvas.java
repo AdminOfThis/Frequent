@@ -1,11 +1,28 @@
 package gui.utilities;
 
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import org.apache.log4j.Logger;
+
+import gui.controller.Pausable;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
-public class ResizableCanvas extends Canvas {
+public class ResizableCanvas extends Canvas implements Pausable {
+
+	private static final Logger	LOG			= Logger.getLogger(ResizableCanvas.class);
 	int							count		= 0;
 	private static final int	POINTS		= 1024;
 
@@ -13,6 +30,7 @@ public class ResizableCanvas extends Canvas {
 	private String				accent		= "#FF0000";
 	private GraphicsContext		content;
 	private ScrollPane			parent;
+	private boolean				pause		= true;
 
 	public ResizableCanvas(ScrollPane parent) {
 		this.parent = parent;
@@ -20,14 +38,45 @@ public class ResizableCanvas extends Canvas {
 		accent = FXMLUtil.getStyleValue("-fx-accent");
 		content = getGraphicsContext2D();
 		widthProperty().addListener(e -> reset());
+		Timeline line = new Timeline();
+
 		setHeight(10.0);
-		parent.vvalueProperty().addListener((obs, oldV, newV) -> {
-			if ((double) newV > 0.9 * parent.getVmax() || (double) newV == 0.0) {
-				autoscroll = true;
-			} else {
-				autoscroll = false;
+		line.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
+			if (!pause) {
+				// long before = System.currentTimeMillis();
+				double size = (getWidth() / POINTS);
+				if (getHeight() < size * count + size) {
+					setHeight(getHeight() + size);
+				}
+				for (int i = 0; i < POINTS; i++) {
+					String r = Integer.toHexString((int) Math.round(Math.random() * 255.0));
+					if (r.length() < 2) {
+						r = "0" + r;
+					}
+					content.setFill(Color.web(makeColorTransparent(accent, Math.random())));
+					content.fillRect(size * i, size * count, size, size);
+				}
+				count++;
+				if (count > 5000) {
+					reset();
+				}
+
+				parent.vvalueProperty().addListener((obs, oldV, newV) -> {
+					if ((double) newV > 0.9 * parent.getVmax() || (double) newV == 0.0) {
+						autoscroll = true;
+					} else {
+						autoscroll = false;
+					}
+				});
+				if (autoscroll) {
+					parent.setVvalue(parent.getVmax());
+				}
+				// long after = System.currentTimeMillis();
+				// System.out.println(after - before);
 			}
-		});
+		}));
+		line.setCycleCount(Timeline.INDEFINITE);
+		line.playFromStart();
 	}
 
 	private void reset() {
@@ -62,35 +111,71 @@ public class ResizableCanvas extends Canvas {
 	}
 
 	public void addLine(double[][] map) {
-		// long before = System.currentTimeMillis();
 
-		double size = (getWidth() / POINTS);
+		if (!pause) {
+			// long before = System.currentTimeMillis();
 
-		if (getHeight() < size * count + size) {
-			setHeight(getHeight() + size);
-		}
-		// adding points
-		int pointCount = 0;
-		for (double[] entry : map) {
-			String r = Integer.toHexString((int) Math.round(Math.random() * 255.0));
-			if (r.length() < 2) {
-				r = "0" + r;
+			double size = (getWidth() / POINTS);
+
+			if (getHeight() < size * count + size) {
+				setHeight(getHeight() + size);
 			}
-			content.setFill(Color.web(makeColorTransparent(accent, entry[1])));
-			content.fillRect(size * pointCount, size * count, size, size);
-			pointCount++;
-		}
-		//
+			// adding points
+			int pointCount = 0;
+			for (double[] entry : map) {
+				String r = Integer.toHexString((int) Math.round(Math.random() * 255.0));
+				if (r.length() < 2) {
+					r = "0" + r;
+				}
+				content.setFill(Color.web(makeColorTransparent(accent, entry[1])));
+				content.fillRect(size * pointCount, size * count, size, size);
+				pointCount++;
+			}
+			//
 
-		count++;
-		if (count > 5000) {
-			reset();
+			count++;
+			// if (count > 5000) {
+			// reset();
+			// }
+
+			if (autoscroll) {
+				parent.setVvalue(parent.getVmax());
+			}
+			// long after = System.currentTimeMillis();
+			// System.out.println(after - before);
+		}
+	}
+
+	public void save(File file) {
+		try {
+			SnapshotParameters params = new SnapshotParameters();
+			params.setFill(Color.web(FXMLUtil.getStyleValue("-fx-base")));
+			WritableImage image = snapshot(params, null);
+			RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
+			ImageIO.write(renderedImage, "png", file);
+		} catch (IOException ex) {
+			LOG.warn("Unable to export image", ex);
 		}
 
-		if (autoscroll) {
-			parent.setVvalue(parent.getVmax());
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		if (this.pause != pause) {
+			this.pause = pause;
+			if (!pause) {
+				reset();
+			}
 		}
-		// long after = System.currentTimeMillis();
-		// System.out.println(after - before);
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause;
+	}
+
+	@Override
+	public void setParentPausable(Pausable parent) {
+		LOG.error("Uninplemented method called: addParentPausable");
 	}
 }
