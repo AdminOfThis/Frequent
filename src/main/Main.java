@@ -10,6 +10,7 @@ import com.sun.javafx.application.LauncherImpl;
 
 import control.ASIOController;
 import data.FileIO;
+import data.RTAIO;
 import gui.controller.IOChooserController;
 import gui.controller.MainController;
 import gui.preloader.PreLoader;
@@ -154,6 +155,8 @@ public class Main extends Application {
 			LOG.info("Stopping AudioDriver");
 			ASIOController.getInstance().shutdown();
 		}
+		LOG.info("Deleting RTA file");
+		RTAIO.deleteFile();
 		LOG.info("Bye");
 		System.exit(0);
 	}
@@ -163,12 +166,10 @@ public class Main extends Application {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
 		try {
 			Parent p = loader.load();
-			MainController controller = loader.getController();
+//			MainController controller = loader.getController();
 			// if (ioName != null) {
 			// controller.initIO(ioName);
 			// }
-
-
 			LOG.info("Main Window loaded");
 			return new Scene(p);
 		} catch (IOException e) {
