@@ -6,12 +6,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
 public abstract class RTAIO {
+
 	private static final File		tempFile	= new File("rta.temp");
 	private static final Logger		LOG			= Logger.getLogger(RTAIO.class);
 	public static final String		SEPARATOR	= ";";
@@ -25,7 +25,8 @@ public abstract class RTAIO {
 			try {
 				writer.write(freqToString(freq));
 				writer.flush();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				LOG.warn("Unable to write rta temp");
 				LOG.debug("", e);
 			}
@@ -37,7 +38,8 @@ public abstract class RTAIO {
 			try {
 				writer.flush();
 				writer.close();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.error("Problem closing the rta temp file", e);
 			}
 			writer = null;
@@ -53,19 +55,26 @@ public abstract class RTAIO {
 		ArrayList<double[]> result = new ArrayList<>();
 		BufferedReader reader = null;
 		try {
-			 reader = new BufferedReader(new FileReader(tempFile));
+			reader = new BufferedReader(new FileReader(tempFile));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				double[] entry = parseLine(line);
 				result.add(entry);
 			}
-			
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to reread rta file");
 			LOG.debug("", e);
-		} finally {
-			if(reader != null) {
-				reader.close();
+		}
+		finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				}
+				catch (Exception e) {
+					LOG.error("Unable to close reader");
+					LOG.debug("", e);
+				}
 			}
 		}
 		return result;
@@ -78,12 +87,12 @@ public abstract class RTAIO {
 			try {
 				double d = Double.parseDouble(s);
 				result.add(d);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.debug("Data unparseable");
 				LOG.trace("", e);
 			}
 		}
-
 		double[] array = new double[result.size()];
 		int count = 0;
 		for (Double d : result) {
@@ -108,7 +117,8 @@ public abstract class RTAIO {
 		BufferedWriter w = null;
 		try {
 			w = new BufferedWriter(new FileWriter(tempFile, true));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to create new writer for temp rta file");
 			LOG.debug("", e);
 		}
