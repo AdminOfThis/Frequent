@@ -9,8 +9,6 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 
 import gui.controller.Pausable;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -18,7 +16,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
 public class ResizableCanvas extends Canvas implements Pausable {
 
@@ -38,45 +35,7 @@ public class ResizableCanvas extends Canvas implements Pausable {
 		accent = FXMLUtil.getStyleValue("-fx-accent");
 		content = getGraphicsContext2D();
 		widthProperty().addListener(e -> reset());
-		Timeline line = new Timeline();
-
 		setHeight(10.0);
-		line.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
-			if (!pause) {
-				// long before = System.currentTimeMillis();
-				double size = (getWidth() / POINTS);
-				if (getHeight() < size * count + size) {
-					setHeight(getHeight() + size);
-				}
-				for (int i = 0; i < POINTS; i++) {
-					String r = Integer.toHexString((int) Math.round(Math.random() * 255.0));
-					if (r.length() < 2) {
-						r = "0" + r;
-					}
-					content.setFill(Color.web(makeColorTransparent(accent, Math.random())));
-					content.fillRect(size * i, size * count, size, size);
-				}
-				count++;
-				if (count > 5000) {
-					reset();
-				}
-
-				parent.vvalueProperty().addListener((obs, oldV, newV) -> {
-					if ((double) newV > 0.9 * parent.getVmax() || (double) newV == 0.0) {
-						autoscroll = true;
-					} else {
-						autoscroll = false;
-					}
-				});
-				if (autoscroll) {
-					parent.setVvalue(parent.getVmax());
-				}
-				// long after = System.currentTimeMillis();
-				// System.out.println(after - before);
-			}
-		}));
-		line.setCycleCount(Timeline.INDEFINITE);
-		line.playFromStart();
 	}
 
 	private void reset() {
