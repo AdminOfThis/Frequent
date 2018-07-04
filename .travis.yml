@@ -5,3 +5,7 @@ os: windows
 addons:
     apt:
       update: true
+notifications:
+  slack:
+    on_success: change
+    on_failure: change
