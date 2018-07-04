@@ -7,15 +7,15 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane prefHeight="200.0" prefWidth="400.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.FFTController">
+<BorderPane prefHeight="200.0" prefWidth="400.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.FFTController">
    <center>
    <HBox fx:id="root" />
    </center>
    <top>
       <HBox fx:id="topPane" alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
-            <HBox fx:id="topLeft" />
-            <HBox fx:id="topRight" alignment="TOP_RIGHT" spacing="5.0">
+            <HBox fx:id="topLeft" HBox.hgrow="ALWAYS" />
+            <HBox fx:id="topRight" alignment="TOP_RIGHT" maxWidth="-Infinity" spacing="5.0" HBox.hgrow="ALWAYS">
                <children>
                   <Slider fx:id="sliderPad" blockIncrement="3.0" majorTickUnit="12.0" max="0.0" min="-60.0" prefWidth="145.0" showTickMarks="true" snapToTicks="true" value="-12.0" />
                   <ToggleButton fx:id="toggleVPad" mnemonicParsing="false" prefWidth="70.0" text="-12 dB">
