@@ -41,3 +41,4 @@ Thumbs.db
 /dist/
 /bin/
 /.settings/
+/workdir/*.png
