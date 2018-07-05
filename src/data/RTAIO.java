@@ -18,19 +18,26 @@ public abstract class RTAIO {
 	private static BufferedWriter	writer;
 
 	public static void writeToFile(double[][] freq) {
-		if (writer == null) {
-			writer = createWriter();
-		}
-		if (writer != null) {
-			try {
-				writer.write(freqToString(freq));
-				writer.flush();
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (writer == null) {
+					writer = createWriter();
+				}
+				if (writer != null) {
+					try {
+						writer.write(freqToString(freq));
+						writer.flush();
+					}
+					catch (IOException e) {
+						LOG.warn("Unable to write rta temp");
+						LOG.debug("", e);
+					}
+				}
 			}
-			catch (IOException e) {
-				LOG.warn("Unable to write rta temp");
-				LOG.debug("", e);
-			}
-		}
+		}).start();
+		
 	}
 
 	public static void closeFile() {
@@ -51,14 +58,14 @@ public abstract class RTAIO {
 		tempFile.delete();
 	}
 
-	public ArrayList<double[]> readFile() {
-		ArrayList<double[]> result = new ArrayList<>();
+	public static ArrayList<double[][]> readFile() {
+		ArrayList<double[][]> result = new ArrayList<>();
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(tempFile));
 			String line;
 			while ((line = reader.readLine()) != null) {
-				double[] entry = parseLine(line);
+				double[][] entry = parseLine(line);
 				result.add(entry);
 			}
 		}
@@ -80,7 +87,7 @@ public abstract class RTAIO {
 		return result;
 	}
 
-	private double[] parseLine(String line) {
+	private static double[][] parseLine(String line) {
 		ArrayList<Double> result = new ArrayList<>();
 		String[] split = line.split(SEPARATOR);
 		for (String s : split) {
@@ -93,10 +100,10 @@ public abstract class RTAIO {
 				LOG.trace("", e);
 			}
 		}
-		double[] array = new double[result.size()];
+		double[][] array = new double[2][result.size()];
 		int count = 0;
 		for (Double d : result) {
-			array[count] = d;
+			array[1][count] = d;
 			count++;
 		}
 		return array;
@@ -104,8 +111,8 @@ public abstract class RTAIO {
 
 	private static String freqToString(double[][] freq) {
 		String result = "";
-		for (double[] entry : freq) {
-			result += Double.toString(Math.round(entry[1] * 100.0) / 100.0);
+		for (int i = 0;i<freq[0].length;i++) {
+			result += Double.toString(Math.round(freq[1][i]*100.0) / 100.0);
 			result += SEPARATOR;
 		}
 		// removes to last separator
@@ -114,6 +121,7 @@ public abstract class RTAIO {
 	}
 
 	private static BufferedWriter createWriter() {
+		deleteFile();
 		BufferedWriter w = null;
 		try {
 			w = new BufferedWriter(new FileWriter(tempFile, true));

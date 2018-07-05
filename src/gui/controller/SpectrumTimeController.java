@@ -69,6 +69,7 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 
 	@FXML
 	private void export(ActionEvent e) {
+		//pausing 
 		if (tglPlay.isSelected()) {
 			tglPlay.fire();
 		}

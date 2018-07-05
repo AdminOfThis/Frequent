@@ -3,12 +3,16 @@ package gui.utilities;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
+import data.RTAIO;
 import gui.controller.Pausable;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -16,6 +20,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 public class ResizableCanvas extends Canvas implements Pausable {
 
@@ -36,12 +41,23 @@ public class ResizableCanvas extends Canvas implements Pausable {
 		content = getGraphicsContext2D();
 		widthProperty().addListener(e -> reset());
 		setHeight(10.0);
+		Timeline line = new Timeline();
+		line.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
+			double[][] map = new double[2][POINTS];
+			for(int i=0;i<map[1].length-1;i++) {
+				map[1][i] = Math.random();
+			}
+			addLine(map);
+		}));
+		line.setCycleCount(Timeline.INDEFINITE);
+		line.playFromStart();
 	}
 
 	private void reset() {
 		content.clearRect(0, 0, getWidth(), getHeight());
 		count = 0;
 		setHeight(10);
+
 	}
 
 	public static String makeColorTransparent(String color, double percent) {
@@ -68,10 +84,16 @@ public class ResizableCanvas extends Canvas implements Pausable {
 	public double prefHeight(double width) {
 		return getHeight();
 	}
-
+	
 	public void addLine(double[][] map) {
+		addLine(map, false);
+	}
 
-		if (!pause) {
+	private void addLine(double[][] map, boolean toExport) {
+
+		if (!pause|| toExport) {
+			
+			RTAIO.writeToFile(map);
 			// long before = System.currentTimeMillis();
 
 			double size = (getWidth() / POINTS);
@@ -80,22 +102,17 @@ public class ResizableCanvas extends Canvas implements Pausable {
 				setHeight(getHeight() + size);
 			}
 			// adding points
-			int pointCount = 0;
-			for (double[] entry : map) {
-				String r = Integer.toHexString((int) Math.round(Math.random() * 255.0));
-				if (r.length() < 2) {
-					r = "0" + r;
-				}
-				content.setFill(Color.web(makeColorTransparent(accent, entry[1])));
+			for (int pointCount = 0; pointCount < map[0].length; pointCount++) {
+				
+				content.setFill(Color.web(makeColorTransparent(accent, map[1][pointCount])));
 				content.fillRect(size * pointCount, size * count, size, size);
-				pointCount++;
 			}
 			//
 
 			count++;
-			// if (count > 5000) {
-			// reset();
-			// }
+			if (count > 500 && !toExport) {
+			 reset();
+			 }
 
 			if (autoscroll) {
 				parent.setVvalue(parent.getVmax());
@@ -106,6 +123,7 @@ public class ResizableCanvas extends Canvas implements Pausable {
 	}
 
 	public void save(File file) {
+		recreateCanvas();
 		try {
 			SnapshotParameters params = new SnapshotParameters();
 			params.setFill(Color.web(FXMLUtil.getStyleValue("-fx-base")));
@@ -118,12 +136,23 @@ public class ResizableCanvas extends Canvas implements Pausable {
 
 	}
 
+	private void recreateCanvas() {
+		reset();
+		ArrayList<double[][]> list = RTAIO.readFile();
+		for(double[][] entry : list) {
+			addLine(entry, true);
+		}
+
+	}
+
 	@Override
 	public void pause(boolean pause) {
 		if (this.pause != pause) {
 			this.pause = pause;
 			if (!pause) {
 				reset();
+				RTAIO.deleteFile();
+			} else {
 			}
 		}
 	}
