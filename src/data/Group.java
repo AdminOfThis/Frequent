@@ -7,9 +7,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
-import control.LevelObserver;
+import control.LevelListener;
 
-public class Group extends Input implements LevelObserver {
+public class Group extends Input implements LevelListener {
 
 	/**
 	 * 

@@ -4,15 +4,19 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
 
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
 import data.RTAIO;
+import gui.controller.MainController;
 import gui.controller.Pausable;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -33,24 +37,37 @@ public class ResizableCanvas extends Canvas implements Pausable {
 	private GraphicsContext		content;
 	private ScrollPane			parent;
 	private boolean				pause		= true;
+	private boolean				exporting	= false;
 
-	public ResizableCanvas(ScrollPane parent) {
-		this.parent = parent;
-		widthProperty().bind(parent.widthProperty());
+	private ResizableCanvas(double width, double heigth) {
+		this();
+		setWidth(width);
+		setHeight(heigth);
+	}
+
+	private ResizableCanvas() {
 		accent = FXMLUtil.getStyleValue("-fx-accent");
 		content = getGraphicsContext2D();
+	}
+
+	public ResizableCanvas(ScrollPane parent) {
+		this();
+		this.parent = parent;
+		widthProperty().bind(parent.widthProperty());
 		widthProperty().addListener(e -> reset());
 		setHeight(10.0);
 		Timeline line = new Timeline();
 		line.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
 			double[][] map = new double[2][POINTS];
-			for(int i=0;i<map[1].length-1;i++) {
+			for (int i = 0; i < map[1].length - 1; i++) {
 				map[1][i] = Math.random();
 			}
 			addLine(map);
 		}));
 		line.setCycleCount(Timeline.INDEFINITE);
 		line.playFromStart();
+
+
 	}
 
 	private void reset() {
@@ -84,16 +101,19 @@ public class ResizableCanvas extends Canvas implements Pausable {
 	public double prefHeight(double width) {
 		return getHeight();
 	}
-	
+
 	public void addLine(double[][] map) {
-		addLine(map, false);
+		if (!exporting) {
+			addLine(map, false);
+		}
 	}
 
 	private void addLine(double[][] map, boolean toExport) {
 
-		if (!pause|| toExport) {
-			
-			RTAIO.writeToFile(map);
+		if (!pause || toExport) {
+			if (!toExport) {
+				RTAIO.writeToFile(map);
+			}
 			// long before = System.currentTimeMillis();
 
 			double size = (getWidth() / POINTS);
@@ -103,46 +123,75 @@ public class ResizableCanvas extends Canvas implements Pausable {
 			}
 			// adding points
 			for (int pointCount = 0; pointCount < map[0].length; pointCount++) {
-				
+
 				content.setFill(Color.web(makeColorTransparent(accent, map[1][pointCount])));
 				content.fillRect(size * pointCount, size * count, size, size);
 			}
 			//
 
 			count++;
-			if (count > 500 && !toExport) {
-			 reset();
-			 }
+			if (count > 5000 && !toExport) {
+				reset();
+			}
 
-			if (autoscroll) {
+			if (autoscroll && parent != null) {
 				parent.setVvalue(parent.getVmax());
 			}
+
 			// long after = System.currentTimeMillis();
 			// System.out.println(after - before);
 		}
+
 	}
 
 	public void save(File file) {
-		recreateCanvas();
-		try {
-			SnapshotParameters params = new SnapshotParameters();
-			params.setFill(Color.web(FXMLUtil.getStyleValue("-fx-base")));
-			WritableImage image = snapshot(params, null);
-			RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
-			ImageIO.write(renderedImage, "png", file);
-		} catch (IOException ex) {
-			LOG.warn("Unable to export image", ex);
-		}
 
+		final Task<Boolean> task = new Task<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				MainController.getInstance().setStatus("Exporting RTA");
+				try {
+					ResizableCanvas canvas = recreateCanvas();
+					SnapshotParameters params = new SnapshotParameters();
+					params.setFill(Color.web(FXMLUtil.getStyleValue("-fx-base")));
+					Platform.runLater(new Runnable() {
+
+						@Override
+						public void run() {
+							try {
+								WritableImage image = canvas.snapshot(params, null);
+								RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
+								ImageIO.write(renderedImage, "png", file);
+							} catch (Exception e) {
+								LOG.warn("Unable to export image", e);
+							} finally {
+								MainController.getInstance().resetStatus();
+							}
+						}
+					});
+
+				} catch (Exception ex) {
+					LOG.warn("Unable to export image", ex);
+					MainController.getInstance().resetStatus();
+				}
+				return true;
+
+			}
+		};
+
+		Thread th = new Thread(task);
+		th.setDaemon(true);
+		th.start();
 	}
 
-	private void recreateCanvas() {
+	private ResizableCanvas recreateCanvas() {
+		ResizableCanvas printCanvas = new ResizableCanvas(getWidth(), getHeight());
 		reset();
 		ArrayList<double[][]> list = RTAIO.readFile();
-		for(double[][] entry : list) {
-			addLine(entry, true);
+		for (double[][] entry : list) {
+			printCanvas.addLine(entry, true);
 		}
-
+		return printCanvas;
 	}
 
 	@Override

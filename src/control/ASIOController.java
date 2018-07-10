@@ -53,7 +53,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 			AsioDriver tempDriver = null;
 			try {
 				tempDriver = AsioDriver.getDriver(possibleDriver);
-				//adding if inputs avaliable
+				// adding if inputs avaliable
 				if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
 					result.add(possibleDriver);
 				}
@@ -260,7 +260,12 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 					@Override
 					public void run() {
-						l.newFFT(spectrumMap);
+						try {
+							l.newFFT(spectrumMap);
+						} catch (Exception e) {
+							LOG.warn("Unable to notify FFTListener");
+							LOG.debug("", e);
+						}
 					}
 				}).start();
 			}

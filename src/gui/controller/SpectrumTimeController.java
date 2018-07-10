@@ -80,7 +80,9 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 		chooser.setSelectedExtensionFilter(chooser.getExtensionFilters().get(0));
 		File file = chooser.showSaveDialog(canvasParent.getScene().getWindow());
 		if (file != null) {
+			MainController.getInstance().setStatus("Saving");
 			canvas.save(file);
+			MainController.getInstance().resetStatus();
 		}
 	}
 

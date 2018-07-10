@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import control.LevelObserver;
+import control.LevelListener;
 
 public abstract class Input implements Serializable {
 
@@ -14,7 +14,7 @@ public abstract class Input implements Serializable {
 	private static final Logger				LOG					= Logger.getLogger(Input.class);
 	private String							name;
 	private float							level				= 0;
-	private transient List<LevelObserver>	observerList		= new ArrayList<>();
+	private transient List<LevelListener>	observerList		= new ArrayList<>();
 	private String							hexColor;
 
 	public String getName() {
@@ -25,7 +25,7 @@ public abstract class Input implements Serializable {
 		this.name = name;
 	}
 
-	public void addObserver(LevelObserver obs) {
+	public void addObserver(LevelListener obs) {
 		if (observerList == null) {
 			observerList = new ArrayList<>();
 		}
@@ -34,7 +34,7 @@ public abstract class Input implements Serializable {
 		}
 	}
 
-	public void removeObserver(LevelObserver obs) {
+	public void removeObserver(LevelListener obs) {
 		observerList.remove(obs);
 	}
 
@@ -42,19 +42,19 @@ public abstract class Input implements Serializable {
 		if (observerList == null) {
 			observerList = new ArrayList<>();
 		}
-		for (LevelObserver obs : observerList) {
-// new Thread(new Runnable() {
-//
-// @Override
-// public void run() {
+		for (LevelListener obs : observerList) {
+			// new Thread(new Runnable() {
+			//
+			// @Override
+			// public void run() {
 			try {
 				obs.levelChanged(level);
-			}
-			catch (Exception e) {
-				LOG.warn("", e);
+			} catch (Exception e) {
+				LOG.warn("Unable to notify Level Listener");
+				LOG.debug("", e);
 			}
 			// }
-// }).start();
+			// }).start();
 		}
 	}
 
@@ -81,8 +81,7 @@ public abstract class Input implements Serializable {
 					c.setColor(hexColor);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 		return true;
