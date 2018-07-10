@@ -56,16 +56,16 @@ public class ResizableCanvas extends Canvas implements Pausable {
 		widthProperty().bind(parent.widthProperty());
 		widthProperty().addListener(e -> reset());
 		setHeight(10.0);
-		Timeline line = new Timeline();
-		line.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
-			double[][] map = new double[2][POINTS];
-			for (int i = 0; i < map[1].length - 1; i++) {
-				map[1][i] = Math.random();
-			}
-			addLine(map);
-		}));
-		line.setCycleCount(Timeline.INDEFINITE);
-		line.playFromStart();
+//		Timeline line = new Timeline();
+//		line.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
+//			double[][] map = new double[2][POINTS];
+//			for (int i = 0; i < map[1].length - 1; i++) {
+//				map[1][i] = Math.random();
+//			}
+//			addLine(map);
+//		}));
+//		line.setCycleCount(Timeline.INDEFINITE);
+//		line.playFromStart();
 
 
 	}
