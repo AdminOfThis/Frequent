@@ -9,3 +9,11 @@ notifications:
   email:
     on_success: change
     on_failure: always
+	
+deploy:
+  provider: releases
+  api_key: "4f755239af54d727f5b69dfdb1df734d6f61c266"
+  file: "./dist/*.jar"
+  skip_cleanup: true
+  on:
+    tags: true
