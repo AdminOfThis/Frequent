@@ -38,6 +38,7 @@ Thumbs.db
 
 # AdminOfThis #
 ###############
+/dist/
 /bin/
 /.settings/
 /workdir/*.png

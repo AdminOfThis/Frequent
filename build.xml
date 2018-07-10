@@ -67,6 +67,9 @@
 				<attribute name="Main-Class" value="${manifest.mainclass}" />
 			</manifest>
 		</jar>
+		<copy todir=".">
+			<fileset dir="${dist}" />
+		</copy>
 		<antcall target="cleanPost" />
 	</target>
 
