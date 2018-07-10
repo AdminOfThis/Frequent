@@ -30,7 +30,15 @@
 		</mapper>
 	</pathconvert>
 
-	<target name="init" depends="clean">
+	<target name="cleanPre" description="clean up">
+			<echo message="cleaning up" level="info" />
+			<!-- Delete the ${build} and ${dist} directory trees -->
+			<delete dir="${build}" />
+			<delete dir="${dist}" />
+			<echo message="clean up done" level="info" />
+		</target>
+	
+	<target name="init" depends="cleanPre">
 		<echo message="starting ant build" level="info" />
 		<!-- Create the time stamp -->
 		<tstamp />
@@ -59,7 +67,6 @@
 		<!-- Create the distribution directory -->
 
 		<mkdir dir="${dist}" />
-
 		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
 		<jar destfile="${dist}/Frequent.jar" basedir="${build}">
 			<manifest>
@@ -71,14 +78,6 @@
 			<fileset dir="${dist}" />
 		</copy>
 		<antcall target="cleanPost" />
-	</target>
-
-	<target name="clean" description="clean up">
-		<echo message="cleaning up" level="info" />
-		<!-- Delete the ${build} and ${dist} directory trees -->
-		<delete dir="${build}" />
-		<delete dir="${dist}" />
-		<echo message="clean up done" level="info" />
 	</target>
 
 	<target name="cleanPost" description="clean up after the build">
