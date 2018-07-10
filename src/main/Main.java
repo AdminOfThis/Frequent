@@ -28,7 +28,7 @@ public class Main extends Application {
 
 	private static Logger		LOG;
 	public static final String	TITLE			= "Frequent";
-	public static final String	VERSION			= "0.2.2";
+	public static final String	VERSION			= "0.2.3";
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
 	private static final String	GUI_IO_CHOOSER	= "/gui/gui/IOChooser.fxml";
 	private static final String	GUI_MAIN_PATH	= "/gui/gui/Main.fxml";
