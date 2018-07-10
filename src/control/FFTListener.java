@@ -2,6 +2,6 @@ package control;
 
 public interface FFTListener {
 
-	public void newFFT(double [][] map);
-	
+	public void newFFT(double[][] map) throws Exception;
+
 }

@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import control.LevelObserver;
+import control.LevelListener;
 import data.Input;
 import gui.controller.Pausable;
 import javafx.application.Platform;
@@ -17,7 +17,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 
-public class WaveFormChartController implements Initializable, LevelObserver, Pausable {
+public class WaveFormChartController implements Initializable, LevelListener, Pausable {
 
 	public static final String			PATH		= "/gui/utilities/gui/WaveFormChart.fxml";
 	private static final Logger			LOG			= Logger.getLogger(WaveFormChartController.class);

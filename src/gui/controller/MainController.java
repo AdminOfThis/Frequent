@@ -20,6 +20,7 @@ import data.Input;
 import gui.utilities.FXMLUtil;
 import gui.utilities.controller.InputCell;
 import gui.utilities.controller.WaveFormChartController;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -338,7 +339,6 @@ public class MainController implements Initializable, Pausable {
 		});
 	}
 
-	
 
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);
@@ -545,16 +545,29 @@ public class MainController implements Initializable, Pausable {
 	}
 
 	public void setStatus(String text) {
-		lblStatus.setText(text);
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				lblStatus.setText(text);
+				progStatus.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+				progStatus.setVisible(true);
+			}
+		});
+
 	}
 
 	public void setStatus(double value) {
-		progStatus.setProgress(value);
-		if (progStatus.getProgress() == 0) {
-			progStatus.setVisible(false);
-		} else {
-			progStatus.setVisible(true);
-		}
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				progStatus.setProgress(value);
+				if (progStatus.getProgress() == 0) {
+					progStatus.setVisible(false);
+				} else {
+					progStatus.setVisible(true);
+				}
+			}
+		});
 	}
 
 	public void setStatus(String text, double value) {
