@@ -27,7 +27,7 @@ public class VuMeter extends AnchorPane implements Initializable, LevelListener,
 
 	private static final String	FXML_VERTICAL	= "/gui/utilities/gui/VuMeterVertical.fxml";
 	private static final String	FXML_HORIZONTAL	= "/gui/utilities/gui/VuMeterHorizontal.fxml";
-	private static final double	DB_PEAK_FALLOFF	= 0.02;
+	private static final double	DB_PEAK_FALLOFF	= 0.015;
 	@FXML
 	private StackPane			vuPane;
 	@FXML
