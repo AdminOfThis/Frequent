@@ -16,3 +16,4 @@ deploy:
   file: dist/*.jar
   on:
     repo: AdminOfThis/Frequent
+	tags: true
