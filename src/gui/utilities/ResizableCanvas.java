@@ -2,9 +2,7 @@ package gui.utilities;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
 
 import javax.imageio.ImageIO;
 
@@ -13,8 +11,6 @@ import org.apache.log4j.Logger;
 import data.RTAIO;
 import gui.controller.MainController;
 import gui.controller.Pausable;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
@@ -24,7 +20,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
 public class ResizableCanvas extends Canvas implements Pausable {
 
@@ -56,17 +51,16 @@ public class ResizableCanvas extends Canvas implements Pausable {
 		widthProperty().bind(parent.widthProperty());
 		widthProperty().addListener(e -> reset());
 		setHeight(10.0);
-//		Timeline line = new Timeline();
-//		line.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
-//			double[][] map = new double[2][POINTS];
-//			for (int i = 0; i < map[1].length - 1; i++) {
-//				map[1][i] = Math.random();
-//			}
-//			addLine(map);
-//		}));
-//		line.setCycleCount(Timeline.INDEFINITE);
-//		line.playFromStart();
-
+		// Timeline line = new Timeline();
+		// line.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
+		// double[][] map = new double[2][POINTS];
+		// for (int i = 0; i < map[1].length - 1; i++) {
+		// map[1][i] = Math.random();
+		// }
+		// addLine(map);
+		// }));
+		// line.setCycleCount(Timeline.INDEFINITE);
+		// line.playFromStart();
 
 	}
 
