@@ -12,8 +12,9 @@ notifications:
 	
 deploy:
   provider: releases
-  api_key: "4f755239af54d727f5b69dfdb1df734d6f61c266"
-  file: "./dist/*.jar"
+  api_key: 4f755239af54d727f5b69dfdb1df734d6f61c266
+  file_glob: true
+  file: dist/*
   skip_cleanup: true
   on:
     tags: true
