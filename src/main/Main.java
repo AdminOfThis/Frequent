@@ -2,6 +2,9 @@ package main;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.jar.Manifest;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -26,8 +29,8 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
 	private static Logger		LOG;
-	public static final String	TITLE			= "Frequent";
-	public static final String	VERSION			= "0.2.3";
+	private static final String VERSION_KEY = "Implementation-Version";
+	private static final String TITLE_KEY = "Implementation-Title";
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
 	private static final String	GUI_IO_CHOOSER	= "/gui/gui/IOChooser.fxml";
 	private static final String	GUI_MAIN_PATH	= "/gui/gui/Main.fxml";
@@ -35,13 +38,19 @@ public class Main extends Application {
 	private static final String	LOGO			= "/res/logo_64.png";
 	private static String		style			= "";
 	private static boolean		debug			= false, fast = false;
-
+	private static String version, title;
+	
 	private Scene				loginScene;
 	private IOChooserController	loginController;
 
 	public static void main(String[] args) {
 		initLogger();
+		title = getFromManifest(TITLE_KEY);
+		version = getFromManifest(VERSION_KEY);
+		LOG.info(" === " + getTitle() +" ===");
 		parseArgs(args);
+		Class c = Main.class;
+		
 		LauncherImpl.launchApplication(Main.class, PreLoader.class, args);
 	}
 
@@ -191,6 +200,35 @@ public class Main extends Application {
 	}
 
 	public static String getTitle() {
-		return TITLE + " " + VERSION;
+		return title + " " + version;
+	}
+
+	public static String getOnlyTitle() {
+		return title;
+	}
+	
+	public static String getFromManifest(String key) {
+		try {
+		Enumeration<URL> resources = Main.class.getClassLoader()
+				  .getResources("META-INF/MANIFEST.MF");
+				while (resources.hasMoreElements()) {
+				    try {
+				      Manifest manifest = new Manifest(resources.nextElement().openStream());
+				      // check that this is your manifest and do what you need or get the next one
+				      return manifest.getMainAttributes().getValue(key);
+				    } catch (IOException E) {
+				    	LOG.warn(E);
+				    }
+				}
+		} catch(Exception e) {
+			LOG.warn("Unable to read version from manifest");
+			LOG.debug("", e);
+		}
+
+		return "x.x.x";
+	}
+
+	public static String getVersion() {
+		return version;
 	}
 }
