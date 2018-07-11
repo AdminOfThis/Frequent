@@ -77,7 +77,6 @@ public class PreLoader extends Preloader implements Initializable {
 		}
 	}
 
-
 	@Override
 	public void handleApplicationNotification(PreloaderNotification arg0) {
 		if (arg0 instanceof ProgressNotification) {
@@ -89,7 +88,7 @@ public class PreLoader extends Preloader implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		status.setText("Starting ...");
-		title.setText(Main.TITLE);
-		version.setText(Main.VERSION);
+		title.setText(Main.getOnlyTitle());
+		version.setText(Main.getVersion());
 	}
 }
