@@ -45,11 +45,10 @@ public class Main extends Application {
 
 	public static void main(String[] args) {
 		initLogger();
-		title = getFromManifest(TITLE_KEY);
-		version = getFromManifest(VERSION_KEY);
+		title = getFromManifest(TITLE_KEY, "Frequent");
+		version = getFromManifest(VERSION_KEY, "LOCAL");
 		LOG.info(" === " + getTitle() +" ===");
 		parseArgs(args);
-		Class c = Main.class;
 		
 		LauncherImpl.launchApplication(Main.class, PreLoader.class, args);
 	}
@@ -207,7 +206,7 @@ public class Main extends Application {
 		return title;
 	}
 	
-	public static String getFromManifest(String key) {
+	public static String getFromManifest(String key, String def) {
 		try {
 		Enumeration<URL> resources = Main.class.getClassLoader()
 				  .getResources("META-INF/MANIFEST.MF");
@@ -225,7 +224,7 @@ public class Main extends Application {
 			LOG.debug("", e);
 		}
 
-		return "x.x.x";
+		return def;
 	}
 
 	public static String getVersion() {
