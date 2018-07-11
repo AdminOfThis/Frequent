@@ -93,6 +93,7 @@
 		<echo message="cleaning up post build" level="info" />
 		<!-- Delete the ${build} and ${dist} directory trees -->
 		<delete dir="${build}" />
+		<delete file="${manifest.release}"/>
 		<echo message="clean up done" level="info" />
 	</target>
 </project>
