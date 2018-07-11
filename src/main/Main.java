@@ -12,7 +12,6 @@ import control.ASIOController;
 import data.FileIO;
 import data.RTAIO;
 import gui.controller.IOChooserController;
-import gui.controller.MainController;
 import gui.preloader.PreLoader;
 import gui.utilities.FXMLUtil;
 import javafx.application.Application;

@@ -1,8 +1,8 @@
 package gui.utilities;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 
@@ -12,11 +12,9 @@ import javafx.scene.Parent;
 
 public abstract class FXMLUtil {
 
-
 	private static final Logger		LOG			= Logger.getLogger(FXMLUtil.class);
 	private static final String		STYLE_SHEET	= "/gui/style.css";
 	private static Initializable	controller;
-
 
 	public static Parent loadFXML(final String string) {
 		Parent parent = null;
@@ -53,7 +51,7 @@ public abstract class FXMLUtil {
 		String result = "";
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new FileReader(FXMLUtil.class.getResource(STYLE_SHEET).getFile()));
+			reader = new BufferedReader(new InputStreamReader(FXMLUtil.class.getResourceAsStream(STYLE_SHEET)));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				if (line.contains(value)) {
