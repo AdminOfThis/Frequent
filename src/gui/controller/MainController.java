@@ -61,7 +61,7 @@ public class MainController implements Initializable, Pausable {
 	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH			= "/gui/gui/Drum.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.TITLE + " File", "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private AnchorPane						waveFormPane;
@@ -114,7 +114,7 @@ public class MainController implements Initializable, Pausable {
 
 	public void setTitle(String title) {
 		Stage stage = (Stage) channelList.getScene().getWindow();
-		String finalTitle = Main.TITLE + " " + Main.VERSION;
+		String finalTitle = Main.getTitle();
 		if (title != null && !title.isEmpty()) {
 			finalTitle += " - " + title;
 		}
