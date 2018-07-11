@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Created-By: AdminOfThis
+Built-By: ${builder}
+
+Name: common
+Specification-Title: Frequent
+Specification-Version: ${build.number}
+Specification-Vendor: AdminOfThis
+Implementation-Title: Frequent
+Implementation-Version: ${version} ${TODAY}
+Implementation-Vendor: AdminOfThis
