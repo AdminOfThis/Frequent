@@ -1,7 +1,5 @@
 <project name="Frequent" default="dist" basedir=".">
-	<description>
-    simple example build file
-  </description>
+	<description>    simple example build file  </description>
 	<!-- set global properties for this build -->
 	<property name="src" location="src" />
 	<property name="build" location="build" />
@@ -84,6 +82,7 @@
 		<echo message="cleaning up post build" level="info" />
 		<!-- Delete the ${build} and ${dist} directory trees -->
 		<delete dir="${build}" />
+		<delete dir="${dist}" />
 		<echo message="clean up done" level="info" />
 	</target>
 </project>
