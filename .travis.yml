@@ -18,7 +18,7 @@ deploy:
   api_key:
     secure: SpYg6TM1B2GuiV4Fitq/GjpMbEMRSk/1UWmc+0GTGH9XAsrgx6K5PhAD9bmUxDX0sBmi3PkmkpFKRZ/5PzcTvJvTad3HfC8qg84l+KTJ/1CIJQRy8Ov5a7Pej9pq3wowMdyYFMpRfe43uZkV/6hmhrUohuW1vZNsYp8rd3D1n+4LtpDNlIZfnnrvw4XEKxoQ1AT6e4+FOVL55qEBoVQxaZOTin/SBrAULMrv9p4w21Ijj1Rj/2UzaW96LCTKk6+nmMY3rapCRAXB0I2jkjOLR0UjfDrfs9seCYImk943jOvut9KIed/KY5cBI6zwUj498VL8DcLfr6iUqQZg+ca6sCEGRMd0Gu5OSb7DuzmkLT9yy3wq7lqQGmv18pSvX+FRt2vcUqmacmsBzOiuerk8rgDQrhST/+tknetHBYHgDM/7Q/7auWEq59hueH4T2x0eaZfEWdl4ik8j1UxIfQFr+WhlqwmxAsTd5Hft6SuZkjHVq3fYLnunAhbZ4MSPA81wAxCfJXRZDTCd5GdF1rHxPCUfy6iThm02r8xACWZWPnsFgZbl7n/fUHRsc/j0YewmWoFqjYXzhSEs6Wk9iDDS/6JwbeUeBi0wO2Twz00Fk1r7b1QZ9vxVHom0LKAKOUMnzyDNR+EAhd/kMMFkhjDLOu99uj2I2gJfjuT+sKdhcTY=
   file_glob: true
-  file: build/*.jar
+  file: *.jar
   on:
     repo: AdminOfThis/Frequent
     tags: true
