@@ -1,6 +1,6 @@
 language: java
 install: ant
-script: ant -file build.xml
+script: ant -file build/build.xml
 os: windows
 addons:
   apt:
