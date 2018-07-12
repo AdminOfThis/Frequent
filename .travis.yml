@@ -1,6 +1,8 @@
 language: java
 install: ant
-script:  sh -c 'cd build && ant -file build.xml'
+script: 
+	- cd build
+	- ant -file build.xml
 os: windows
 addons:
   apt:
