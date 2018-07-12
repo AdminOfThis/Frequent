@@ -2,24 +2,31 @@
 	<description>    simple example build file  </description>
 	<!-- set global properties for this build -->
 
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="../lib/ant-contrib-0.6.jar" />
+		</classpath>
+	</taskdef>
+
 	<property environment="env" />
 	<property name="name" value="Frequent" />
 	<property name="src" location="../src" />
 	<property name="lib" location="../lib" />
 	<property name="build" location="build" />
-	
+
 	<property name="lib.extern" value="lib" />
 	<!-- Manifest options -->
 	<property name="manifest.mainclass" value="main.Main" />
 	<property name="manifest.src" value="MANIFEST.MF" />
 	<property name="manifest.release" location="MANIFEST_RELEASE.MF" />
-	<property name="version" value="1.0"/>
-	<property name="builder" value="LOCAL"/>
-	
-	
+	<property name="version.clean" value="LOCAL" />
+
+
+
 	<path id="build.classpath">
 		<fileset dir="${lib}">
 			<include name="**/*.jar" />
+			<exclude name="ant*.jar" />
 		</fileset>
 	</path>
 
@@ -34,22 +41,41 @@
 		</mapper>
 	</pathconvert>
 
-	
-	
-	
+
+	<!-- this target is only run if the 'version' property is undefined -->
+	<target name="update-version-string" depends="-timestamp" unless="version">
+		<!-- get a new version string using git describe if possible -->
+		<echo message="Updating version string..." level="info" />
+		<exec executable="git" outputproperty="version" failifexecutionfails="false">
+			<arg value="describe" />
+		</exec>
+		<!--	<propertyregex property="versionclean" input="version" regexp="((\d{1}\.){2}\d{1})\-([a-zA-Z0-9]{5,10})" select="((\d{1}\.){2}\d{1})" casesensitive="false" />-->
+		<propertyregex property="version.clean" input="${version}" override="true" regexp="((\d{1,5}\.){2}\d{1,5})-(.{5,20})" global="true" select="\1" casesensitive="false" defaultValue="LOCAL" />
+
+		<!-- ensure version is defined even if git was not available -->
+	</target>
+
+	<target name="-timestamp" depends="cleanPre">
+		<tstamp>
+			<format property="timestamp" pattern="yyyy-MM-dd' 'HH:mm" />
+			<format property="build.date" pattern="yyyy-MM-dd" />
+		</tstamp>
+	</target>
+
 	<target name="cleanPre" description="clean up">
 		<echo message="cleaning up" level="info" />
 		<!-- Delete the ${build} and ${dist} directory trees -->
 		<delete dir="${build}" />
+		<delete file="${manifest.release}" />
 		<echo message="clean up done" level="info" />
 	</target>
 
-	<target name="init" depends="cleanPre">
+	<target name="init" depends="update-version-string">
 		<echo message="starting ant build" level="info" />
 		<!-- Create the time stamp -->
 		<tstamp />
-		<buildnumber />
-		
+		<echo message="version=${version}" level="info"/>
+		<echo message="version=${version.clean}" />
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${build}" />
 	</target>
@@ -75,17 +101,16 @@
 		<!-- Create the distribution directory -->
 
 		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-		<echo message="Creating new Manifest" level="info"/>
-		<copy file = "${manifest.src}" tofile="${manifest.release}"/>
+		<echo message="Creating new Manifest" level="info" />
+		<copy file="${manifest.src}" tofile="${manifest.release}" />
 		<manifest file="${manifest.release}" mode="update" flattenAttributes="true">
-			<section name="common">
-				<attribute name="Main-Class" value="${manifest.mainclass}" />
-				<attribute name="Class-Path" value="${manifest.classpath}" />
-			</section>
-		</manifest>
-		<jar destfile="./${name}.jar" basedir="${build}" manifest="${manifest.release}">
+			<attribute name="Main-Class" value="${manifest.mainclass}" />
+			<attribute name="Class-Path" value="${manifest.classpath}" />
+			<attribute name="Implementation-Version" value="${version} ${timestamp}" />
+			<attribute name="Specification-Version" value="${version.clean}" />
 
-		</jar>
+		</manifest>
+		<jar destfile="./${name}.jar" basedir="${build}" manifest="${manifest.release}" />
 		<antcall target="cleanPost" />
 	</target>
 
