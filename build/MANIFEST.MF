@@ -1,10 +1,7 @@
 Manifest-Version: 1.0
-Created-By: AdminOfThis
-Built-By: ${builder}
-
-Specification-Title: Frequent
-Specification-Version: ${build.number}
+Specification-Title: frequent
+Specification-Version: 1.0
 Specification-Vendor: AdminOfThis
 Implementation-Title: Frequent
-Implementation-Version: ${version} ${TODAY}
+Implementation-Version: 0.2.5
 Implementation-Vendor: AdminOfThis

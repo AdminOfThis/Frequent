@@ -214,8 +214,7 @@ public class Main extends Application {
 				    try {
 				      Manifest manifest = new Manifest(resources.nextElement().openStream());
 				      // check that this is your manifest and do what you need or get the next one
-				      if("Frequent".equalsIgnoreCase(manifest.getMainAttributes().getValue(TITLE_KEY))) {
-				      return manifest.getMainAttributes().getValue(key);}
+				      return manifest.getMainAttributes().getValue(key);
 				    } catch (IOException E) {
 				    	LOG.warn(E);
 				    }
