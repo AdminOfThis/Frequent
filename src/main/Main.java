@@ -213,6 +213,7 @@ public class Main extends Application {
 				while (resources.hasMoreElements()) {
 				    try {
 				      Manifest manifest = new Manifest(resources.nextElement().openStream());
+				      if("Frequent".equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Version")))
 				      // check that this is your manifest and do what you need or get the next one
 				      return manifest.getMainAttributes().getValue(key);
 				    } catch (IOException E) {
