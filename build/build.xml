@@ -50,7 +50,7 @@
 			<arg value="describe" />
 		</exec>
 		<!--	<propertyregex property="versionclean" input="version" regexp="((\d{1}\.){2}\d{1})\-([a-zA-Z0-9]{5,10})" select="((\d{1}\.){2}\d{1})" casesensitive="false" />-->
-		<!--<propertyregex property="version.clean" input="${version}" override="true" regexp="((\d{1,5}\.){2}\d{1,5})-(.{5,20})" global="true" select="\1" casesensitive="false" defaultValue="LOCAL" />-->
+		<propertyregex property="version.clean" input="${version}" override="true" regexp="((\d{1,5}\.){2}\d{1,5})-(.{5,20})" global="true" select="\1" casesensitive="false" defaultValue="LOCAL" />
 
 		<!-- ensure version is defined even if git was not available -->
 	</target>
@@ -107,7 +107,7 @@
 			<attribute name="Main-Class" value="${manifest.mainclass}" />
 			<attribute name="Class-Path" value="${manifest.classpath}" />
 			<attribute name="Implementation-Version" value="${version} ${timestamp}" />
-			<attribute name="Specification-Version" value="${version}" />
+			<attribute name="Specification-Version" value="${version.clean}" />
 
 		</manifest>
 		<jar destfile="./${name}.jar" basedir="${build}" manifest="${manifest.release}" />
