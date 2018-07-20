@@ -8,7 +8,9 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
+import data.Channel;
 import data.RTAIO;
+import gui.controller.FFTController;
 import gui.controller.MainController;
 import gui.controller.Pausable;
 import javafx.application.Platform;
@@ -33,6 +35,7 @@ public class ResizableCanvas extends Canvas implements Pausable {
 	private ScrollPane			parent;
 	private boolean				pause		= true;
 	private boolean				exporting	= false;
+	private Pausable			pausableParent;
 
 	private ResizableCanvas(double width, double heigth) {
 		this();
@@ -71,7 +74,9 @@ public class ResizableCanvas extends Canvas implements Pausable {
 
 	}
 
-	public static String makeColorTransparent(String color, double percent) {
+	public static String makeColorTransparent(String color, double db) {
+		double percent = 1 -Math.abs(Math.max(FFTController.FFT_MIN, db))/Math.abs(FFTController.FFT_MIN);
+//		percent = percent *10;
 
 		String transparency = Integer.toHexString((int) Math.floor(percent * 255.0));
 		if (transparency.length() < 2) {
@@ -103,7 +108,6 @@ public class ResizableCanvas extends Canvas implements Pausable {
 	}
 
 	private void addLine(double[][] map, boolean toExport) {
-
 		if (!pause || toExport) {
 			if (!toExport) {
 				RTAIO.writeToFile(map);
@@ -117,10 +121,11 @@ public class ResizableCanvas extends Canvas implements Pausable {
 			}
 			// adding points
 			for (int pointCount = 0; pointCount < map[0].length; pointCount++) {
-
-				content.setFill(Color.web(makeColorTransparent(accent, map[1][pointCount])));
+//System.out.println(map[1][pointCount]);
+				content.setFill(Color.web(makeColorTransparent(accent, Channel.percentToDB(map[1][pointCount]))));
 				content.fillRect(size * pointCount, size * count, size, size);
 			}
+			System.out.println("\r\n\r\n");
 			//
 
 			count++;
@@ -202,11 +207,11 @@ public class ResizableCanvas extends Canvas implements Pausable {
 
 	@Override
 	public boolean isPaused() {
-		return pause;
+		return pause || (pausableParent != null && pausableParent.isPaused());
 	}
 
 	@Override
 	public void setParentPausable(Pausable parent) {
-		LOG.error("Uninplemented method called: addParentPausable");
+		pausableParent = parent;
 	}
 }

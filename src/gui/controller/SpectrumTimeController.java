@@ -34,11 +34,12 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		canvas = new ResizableCanvas(canvasParent);
+		canvas.setParentPausable(this);
 		canvasParent.setContent(canvas);
 
-		if (ASIOController.getInstance() != null) {
-			ASIOController.getInstance().addFFTListener(this);
-		}
+//		if (ASIOController.getInstance() != null) {
+//			ASIOController.getInstance().addFFTListener(this);
+//		}
 	}
 
 	@Override
@@ -55,6 +56,7 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 	@Override
 	public void pause(boolean pause) {
 		this.pause = pause;
+		canvas.pause(pause);
 	}
 
 	@Override

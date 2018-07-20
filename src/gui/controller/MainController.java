@@ -104,6 +104,7 @@ public class MainController implements Initializable, Pausable {
 	private double							channelSplitRatio	= 0.8;
 	private ASIOController					controller;
 	private FFTController					fftController;
+	private SpectrumTimeController rtaController;
 	private TimeKeeperController			timeKeeperController;
 	// private DrumController drumController;
 	private WaveFormChartController			waveFormController;
@@ -171,6 +172,7 @@ public class MainController implements Initializable, Pausable {
 					}
 				}
 				fftController.pause(!toggleFFTView.isSelected());
+				rtaController.pause(!toggleRTAView.isSelected());
 				GroupController.getInstance().pause(!toggleGroupsView.isSelected());
 			});
 		}
@@ -200,6 +202,7 @@ public class MainController implements Initializable, Pausable {
 
 	private void initRTA() {
 		Parent p = FXMLUtil.loadFXML(RTA_PATH);
+		rtaController = (SpectrumTimeController) FXMLUtil.getController();
 		if (p != null) {
 			contentMap.put(toggleRTAView, p);
 		} else {
@@ -343,6 +346,7 @@ public class MainController implements Initializable, Pausable {
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);
 		controller.addFFTListener(fftController);
+		controller.addFFTListener(rtaController);
 		timeKeeperController.setChannels(controller.getInputList());
 		setChannelList(controller.getInputList());
 		lblDriver.setText(ioName);
