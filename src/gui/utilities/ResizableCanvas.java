@@ -75,8 +75,8 @@ public class ResizableCanvas extends Canvas implements Pausable {
 	}
 
 	public static String makeColorTransparent(String color, double db) {
-		double percent = 1 -Math.abs(Math.max(FFTController.FFT_MIN, db))/Math.abs(FFTController.FFT_MIN);
-//		percent = percent *10;
+		double percent = 1 - Math.abs(Math.max(FFTController.FFT_MIN, db)) / Math.abs(FFTController.FFT_MIN);
+		// percent = percent *10;
 
 		String transparency = Integer.toHexString((int) Math.floor(percent * 255.0));
 		if (transparency.length() < 2) {
@@ -121,11 +121,18 @@ public class ResizableCanvas extends Canvas implements Pausable {
 			}
 			// adding points
 			for (int pointCount = 0; pointCount < map[0].length; pointCount++) {
-//System.out.println(map[1][pointCount]);
+				// System.out.println(map[1][pointCount]);
 				content.setFill(Color.web(makeColorTransparent(accent, Channel.percentToDB(map[1][pointCount]))));
-				content.fillRect(size * pointCount, size * count, size, size);
+				double startPoint = 20000.0/getWidth() + map[0][pointCount];
+//				System.out.println(startPoint);
+				double endpoint;
+				if(pointCount <map[0].length-1) {
+					endpoint = 20000.0/getWidth() + map[0][pointCount+1];
+				} else {
+					endpoint = getWidth();
+				}
+				content.fillRect(startPoint, size * count, endpoint - startPoint, size);
 			}
-			System.out.println("\r\n\r\n");
 			//
 
 			count++;
