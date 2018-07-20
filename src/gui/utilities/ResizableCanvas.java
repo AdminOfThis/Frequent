@@ -123,11 +123,11 @@ public class ResizableCanvas extends Canvas implements Pausable {
 			for (int pointCount = 0; pointCount < map[0].length; pointCount++) {
 				// System.out.println(map[1][pointCount]);
 				content.setFill(Color.web(makeColorTransparent(accent, Channel.percentToDB(map[1][pointCount]))));
-				double startPoint = 20000.0/getWidth() + map[0][pointCount];
+				double startPoint = getWidth()/2000.0 * map[0][pointCount];
 //				System.out.println(startPoint);
 				double endpoint;
 				if(pointCount <map[0].length-1) {
-					endpoint = 20000.0/getWidth() + map[0][pointCount+1];
+					endpoint = getWidth()/2000.0 * map[0][pointCount+1];
 				} else {
 					endpoint = getWidth();
 				}
