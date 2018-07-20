@@ -52,7 +52,8 @@ public class IOChooserController implements Initializable {
 		String selectedIO = null;
 		if (!Main.isDebug()) {
 			selectedIO = listIO.getSelectionModel().getSelectedItem();
-
+		} else if(!listIO.getItems().isEmpty()) {
+			selectedIO = listIO.getItems().get(0);
 		}
 		LOG.info("Loading Main-Window with selected Driver \"" + selectedIO + "\"");
 		launchMain(selectedIO);
@@ -69,7 +70,7 @@ public class IOChooserController implements Initializable {
 
 	private void launchMain(String selectedIO) {
 		if (selectedIO != null && !selectedIO.isEmpty()) {
-			new ASIOController(selectedIO);
+			MainController.getInstance().initIO(selectedIO);
 		}
 		Stage stage = (Stage) listIO.getScene().getWindow();
 		stage.setScene(mainScene);
