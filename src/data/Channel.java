@@ -49,13 +49,8 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		return group;
 	}
 
-	public void setGroup(Group group) {
-		if (this.group != group) {
-			this.group = group;
-		}
-		if (group != null && !group.getChannelList().contains(this)) {
-			group.addChannel(this);
-		}
+	protected void setGroup(Group group) {
+		this.group = group;
 	}
 
 	public void resetName() {

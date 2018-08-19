@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 
 import control.FFTListener;
 import data.Channel;
-import gui.utilities.FXMLUtil;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeter;
@@ -18,7 +17,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
-import javafx.scene.Parent;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ValueAxis;
@@ -35,7 +33,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	private static final double		DECAY		= 1.01;
 	public static final double		FFT_MIN		= -80;
 	private static final Logger		LOG			= Logger.getLogger(FFTController.class);
-	private static final String		TUNER_PATH	= "/gui/gui/Tuner.fxml";
+//	private static final String		TUNER_PATH	= "/gui/gui/Tuner.fxml";
 
 	private static final int		X_MIN		= 25;
 	private static final int		X_MAX		= 20000;
@@ -55,6 +53,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	private boolean					pause		= true;
 	private Series<Number, Number>	series		= new Series<>();
 	private Series<Number, Number>	maxSeries	= new Series<>();
+	private Channel					channel;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -63,16 +62,16 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		initVuMeter();
 		initChart();
 		initButtons();
-		initTuner();
+		// initTuner();
 	}
 
-	private void initTuner() {
-		Parent p = FXMLUtil.loadFXML(TUNER_PATH);
-		TunerController tunerController = (TunerController) FXMLUtil.getController();
-		topPane.getChildren().add(1, p);
-		HBox.setHgrow(p, Priority.ALWAYS);
-		tunerController.show(true);
-	}
+	// private void initTuner() {
+	// Parent p = FXMLUtil.loadFXML(TUNER_PATH);
+	// TunerController tunerController = (TunerController) FXMLUtil.getController();
+	// topPane.getChildren().add(1, p);
+	// HBox.setHgrow(p, Priority.ALWAYS);
+	// tunerController.show(true);
+	// }
 
 	private void initButtons() {
 		toggleSlowCurve.selectedProperty().addListener(e -> {
@@ -131,6 +130,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	}
 
 	public void setChannel(Channel channel) {
+		this.channel = channel;
 		meter.setChannel(channel);
 		if (channel == null) {
 			chart.setTitle(null);
@@ -202,6 +202,9 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	public void setParentPausable(Pausable parent) {
 		LOG.error("Uninplemented method called: addParentPausable");
 	}
-	
-	
+
+	protected void refresh() {
+		chart.setTitle(channel.getName());
+	}
+
 }

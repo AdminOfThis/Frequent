@@ -10,7 +10,6 @@ import control.ASIOController;
 import data.Channel;
 import data.Group;
 import data.Input;
-import gui.controller.GroupController;
 import gui.controller.MainController;
 import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.FXMLUtil;
@@ -64,7 +63,7 @@ public class InputCell extends TreeCell<Input> implements Initializable {
 		// context Menu
 		initContextMenu();
 		itemProperty().addListener((obs, oldItem, newItem) -> {
-			if ( newItem == null) {
+			if (newItem == null) {
 				this.setContextMenu(null);
 			} else {
 				if (getItem() instanceof Channel) {
@@ -93,7 +92,6 @@ public class InputCell extends TreeCell<Input> implements Initializable {
 				LOG.info("Changing color of " + getItem().getName() + " to " + colorHex);
 				getItem().setColor(colorHex);
 				MainController.getInstance().refresh();
-				GroupController.getInstance().refresh();
 			});
 		}
 		Menu groupMenu = new Menu("Groups");
@@ -121,7 +119,6 @@ public class InputCell extends TreeCell<Input> implements Initializable {
 								g.removeChannel(channel);
 							}
 							MainController.getInstance().refresh();
-							GroupController.getInstance().refresh();
 						}
 					}
 				});
@@ -157,9 +154,9 @@ public class InputCell extends TreeCell<Input> implements Initializable {
 				ASIOController.getInstance().addGroup(g);
 				Input in = InputCell.this.getItem();
 				if (in != null && in instanceof Channel) {
-					((Channel) in).setGroup(g);
+					g.addChannel((Channel) in);
 				}
-				GroupController.getInstance().refresh();
+				MainController.getInstance().refresh();
 			}
 		}
 	};

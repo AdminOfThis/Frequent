@@ -3,7 +3,6 @@ package gui.utilities;
 import control.ASIOController;
 import data.Channel;
 import data.Group;
-import gui.controller.GroupController;
 import gui.controller.MainController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,7 +11,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.ToggleGroup;
 
 public class ChannelCellContextMenu extends InputCellContextMenu {
 
@@ -20,7 +18,6 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 	private CheckMenuItem	hide		= new CheckMenuItem("Hide");
 	private CheckMenuItem	showHidden	= new CheckMenuItem("Show Hidden");
 	private Menu			groupMenu	= new Menu("Groups");
-
 
 	public ChannelCellContextMenu(Channel in) {
 		super(in);
@@ -43,20 +40,20 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 	private void refreshData(Channel channel) {
 
 		showHidden.setSelected(MainController.getInstance().isShowHidden());
-		ToggleGroup toggle = new ToggleGroup();
-		toggle.getToggles().clear();
 		groupMenu.getItems().clear();
 		for (Group g : ASIOController.getInstance().getGroupList()) {
 			RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
-			groupMenuItem.setToggleGroup(toggle);
 			groupMenuItem.setSelected(g.getChannelList().contains(channel));
 			groupMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-					channel.setGroup(g);
-//					MainController.getInstance().groupAllSelected(g);
-					GroupController.getInstance().refresh();
+					if (newValue) {
+						g.addChannel(channel);
+					} else {
+						g.removeChannel(channel);
+					}
+					MainController.getInstance().refresh();
 				}
 			});
 			groupMenu.getItems().add(groupMenuItem);
