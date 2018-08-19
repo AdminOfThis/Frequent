@@ -8,7 +8,6 @@ import control.ASIOController;
 import data.Channel;
 import data.Group;
 import data.Input;
-import gui.controller.GroupController;
 import gui.controller.MainController;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -26,7 +25,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 	private MenuItem			name		= new MenuItem("Rename");
 	private MenuItem			newGroup	= new MenuItem("New Group");
 	private Menu				colorMenu	= new Menu("Color");
-
 
 	private Input				input;
 
@@ -56,7 +54,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 					LOG.info("Changing color of " + input.getName() + " to " + colorHex);
 					input.setColor(colorHex);
 					MainController.getInstance().refresh();
-					GroupController.getInstance().refresh();
 				});
 			}
 
@@ -68,9 +65,9 @@ public abstract class InputCellContextMenu extends ContextMenu {
 					LOG.info("Created new group: " + g.getName());
 					ASIOController.getInstance().addGroup(g);
 					if (input != null && input instanceof Channel) {
-						((Channel) in).setGroup(g);
+						g.addChannel((Channel) in);
 					}
-					GroupController.getInstance().refresh();
+					MainController.getInstance().refresh();
 				}
 			});
 

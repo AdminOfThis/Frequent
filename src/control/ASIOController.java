@@ -44,6 +44,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private List<Channel>			channelList;
 	private List<Group>				groupList		= new ArrayList<>();
 	private List<FFTListener>		fftListeners	= new ArrayList<>();
+	private double[][][]			bufferingBuffer	= new double[2][2][1024];
 
 	public static List<String> getPossibleDrivers() {
 		List<String> preList = AsioDriver.getDriverNames();
@@ -254,6 +255,12 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 				index[i] = 0;
 			}
 		}
+		bufferingBuffer[1] = bufferingBuffer[0];
+		bufferingBuffer[0] = spectrumMap;
+		for (int i = 0; i < spectrumMap[0].length - 1; i++) {
+			spectrumMap[1][i] = (bufferingBuffer[0][1][i] + bufferingBuffer[1][1][i]) / 2.0;
+		}
+
 		for (FFTListener l : fftListeners) {
 			if (l != null) {
 				new Thread(new Runnable() {
@@ -414,7 +421,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 			}
 			for (Channel c : channelList) {
 				if (c.getGroup() != null && c.getGroup().getName().equals(g.getName())) {
-					c.setGroup(g);
+					g.addChannel(c);
 					c.addObserver(g);
 				}
 			}

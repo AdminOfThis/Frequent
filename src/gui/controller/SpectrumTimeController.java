@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import control.ASIOController;
 import control.FFTListener;
 import gui.utilities.ResizableCanvas;
 import javafx.application.Platform;

@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox minHeight="10.0" minWidth="10.0" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+<VBox minHeight="10.0" minWidth="10.0" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <StackPane fx:id="vuPane" styleClass="vuMeter-background" VBox.vgrow="ALWAYS">
          <children>
@@ -23,7 +23,7 @@
             </VBox>
          </children>
       </StackPane>
-      <AnchorPane fx:id="clippingPane" prefHeight="40.0">
+      <AnchorPane fx:id="clippingPane">
          <children>
             <Label fx:id="lblPeak" alignment="CENTER" style="-fx-font-size: 12;" text="dB" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
          </children>

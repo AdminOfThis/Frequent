@@ -1,7 +1,7 @@
 package gui.utilities;
 
 import data.Group;
-import gui.controller.GroupController;
+import gui.controller.MainController;
 import javafx.scene.control.MenuItem;
 
 public class GroupCellContextMenu extends InputCellContextMenu {
@@ -15,7 +15,7 @@ public class GroupCellContextMenu extends InputCellContextMenu {
 			Group group = (Group) in;
 			deleteGroup.setOnAction(e -> {
 				group.delete();
-				GroupController.getInstance().refresh();
+				MainController.getInstance().refresh();
 			});
 			getItems().add(deleteGroup);
 		}

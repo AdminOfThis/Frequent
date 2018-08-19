@@ -29,8 +29,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -82,7 +82,7 @@ public class GroupController implements Initializable, Pausable {
 		return instance;
 	}
 
-	public void refresh() {
+	protected void refresh() {
 		if (ASIOController.getInstance() != null) {
 			vuPane.getChildren().clear();
 			groupPane.getItems().clear();
@@ -106,12 +106,6 @@ public class GroupController implements Initializable, Pausable {
 				chart.getData().clear();
 			}
 
-			int maxChannels = 0;
-			for (Group g : ASIOController.getInstance().getGroupList()) {
-				if (g.getChannelList().size() > maxChannels) {
-					maxChannels = g.getChannelList().size();
-				}
-			}
 			for (Group g : ASIOController.getInstance().getGroupList()) {
 				// groups
 				VuMeter meter = new VuMeter(g, Orientation.VERTICAL);
@@ -130,11 +124,14 @@ public class GroupController implements Initializable, Pausable {
 				scroll.setFitToWidth(true);
 				groupPane.getItems().add(scroll);
 				SplitPane.setResizableWithParent(scroll, false);
-				VBox first = null;
+				StackPane first = null;
 				for (Channel c : g.getChannelList()) {
 					VuMeter meter2 = new VuMeter(c, Orientation.VERTICAL);
 					meter2.setParentPausable(this);
-					VBox meter2Box = new VBox(meter2, new Label(c.getName()));
+					Label label = new Label(c.getName());
+					StackPane meter2Box = new StackPane(meter2, label);
+					StackPane.setAlignment(label, Pos.TOP_CENTER);
+					StackPane.setAlignment(meter2, Pos.CENTER);
 					if (first == null) {
 						first = meter2Box;
 					}
@@ -144,12 +141,7 @@ public class GroupController implements Initializable, Pausable {
 					groupBox.getChildren().add(meter2Box);
 					HBox.setHgrow(meter2Box, Priority.ALWAYS);
 				}
-				for (int j = groupBox.getChildren().size(); j < maxChannels; j++) {
-					Pane pane = new Pane();
-					pane.setMinWidth(40.0);
-					HBox.setHgrow(pane, Priority.ALWAYS);
-					groupBox.getChildren().add(pane);
-				}
+
 				// adding chart series
 				if (redrawChart) {
 					Series<Number, Number> series = new Series<>();
