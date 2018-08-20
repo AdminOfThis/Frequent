@@ -25,7 +25,6 @@ import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -43,8 +42,6 @@ public class InputCell extends TreeCell<Input> implements Initializable {
 	private static final Logger	LOG			= Logger.getLogger(InputCell.class);
 	private static final String	FXML_PATH	= "/gui/utilities/gui/ChannelCell.fxml";
 	private static final int	COLORS		= 8;
-	@FXML
-	private Label				label;
 	@FXML
 	private AnchorPane			chartPane;
 	private Input				input;
@@ -204,9 +201,9 @@ public class InputCell extends TreeCell<Input> implements Initializable {
 			this.setStyle("-fx-accent: " + item.getColor());
 		}
 		if (item == null) {
-			label.setText(null);
+			meter.setTitle(null);
 		} else {
-			label.setText(item.getName());
+			meter.setTitle(item.getName());
 		}
 	}
 

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox minHeight="10.0" minWidth="10.0" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<VBox minHeight="10.0" minWidth="10.0" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <StackPane fx:id="vuPane" styleClass="vuMeter-background" VBox.vgrow="ALWAYS">
+      <StackPane fx:id="vuPane" prefHeight="200.0" styleClass="vuMeter-background" VBox.vgrow="ALWAYS">
          <children>
             <VBox alignment="BOTTOM_CENTER">
                <children>
@@ -21,12 +20,9 @@
                   <Pane fx:id="vuLastPeakPane" prefHeight="0.0" />
                </children>
             </VBox>
+            <Label fx:id="lblPeak" alignment="CENTER" style="-fx-font-size: 12;" text="dB" StackPane.alignment="TOP_CENTER" />
+            <Label fx:id="lblTitle" alignment="CENTER" style="-fx-font-size: 12;" text="Title" StackPane.alignment="BOTTOM_CENTER" />
          </children>
       </StackPane>
-      <AnchorPane fx:id="clippingPane">
-         <children>
-            <Label fx:id="lblPeak" alignment="CENTER" style="-fx-font-size: 12;" text="dB" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
-         </children>
-      </AnchorPane>
    </children>
 </VBox>
