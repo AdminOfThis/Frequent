@@ -33,9 +33,7 @@ public class VuMeter extends AnchorPane implements Initializable, LevelListener,
 	@FXML
 	private Pane				vuPeakPane, vuLastPeakPane;
 	@FXML
-	private Label				lblPeak;
-	@FXML
-	private AnchorPane			clippingPane;
+	private Label				lblPeak, lblTitle;
 	private Input				channel;
 	private double				peak			= FFTController.FFT_MIN;
 	private Orientation			orientation;
@@ -59,8 +57,19 @@ public class VuMeter extends AnchorPane implements Initializable, LevelListener,
 		AnchorPane.setRightAnchor(p, 0.0);
 	}
 
+	public void setTitle(String title) {
+		lblTitle.setText(title);
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		lblTitle.prefWidthProperty().addListener(e -> {
+			if(lblTitle.prefHeightProperty().get()> this.prefWidthProperty().get()) {
+				lblTitle.setRotate(90.0);
+			} else {
+				lblTitle.setRotate(0.0);
+			}
+		});
 	}
 
 	@Override
@@ -76,15 +85,15 @@ public class VuMeter extends AnchorPane implements Initializable, LevelListener,
 							peak = peakdB;
 						}
 						if (orientation == Orientation.VERTICAL) {
-							vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN))
-							        / Math.abs(FFTController.FFT_MIN));
-							vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN))
-							        / Math.abs(FFTController.FFT_MIN));
+							vuPeakPane.setPrefHeight(
+								vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+							vuLastPeakPane.setPrefHeight(
+								vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
 						} else {
-							vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN))
-							        / Math.abs(FFTController.FFT_MIN));
-							vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN))
-							        / Math.abs(FFTController.FFT_MIN));
+							vuPeakPane.setPrefWidth(
+								vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+							vuLastPeakPane.setPrefWidth(
+								vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
 						}
 						if (peakdB >= FFTController.FFT_MIN) {
 							lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
@@ -92,11 +101,11 @@ public class VuMeter extends AnchorPane implements Initializable, LevelListener,
 							lblPeak.setText("-\u221E");
 						}
 						if (peakdB >= -0.5) {
-							clippingPane.setStyle("-fx-background-color: red");
+							vuPane.setStyle("-fx-background-color: red");
 						} else if (peakdB >= -2.0) {
-							clippingPane.setStyle("-fx-background-color: yellow");
+							vuPane.setStyle("-fx-background-color: yellow");
 						} else {
-							clippingPane.setStyle("");
+							vuPane.setStyle("");
 						}
 						if (peak == 0.0) {
 							peak = -1.0;

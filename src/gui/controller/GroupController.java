@@ -111,6 +111,7 @@ public class GroupController implements Initializable, Pausable {
 				VuMeter meter = new VuMeter(g, Orientation.VERTICAL);
 				meter.setParentPausable(this);
 				VBox meterBox = new VBox(meter, new Label(g.getName()));
+				meterBox.prefWidthProperty().bind(meter.prefWidthProperty());
 				meterBox.setAlignment(Pos.TOP_CENTER);
 				meterBox.setMinWidth(40.0);
 				VBox.setVgrow(meter, Priority.ALWAYS);
