@@ -64,12 +64,13 @@ public class VuMeter extends AnchorPane implements Initializable, LevelListener,
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		lblTitle.prefWidthProperty().addListener(e -> {
-			if(lblTitle.prefHeightProperty().get()> this.prefWidthProperty().get()) {
+			if (lblTitle.prefHeightProperty().get() > this.prefWidthProperty().get()) {
 				lblTitle.setRotate(90.0);
 			} else {
 				lblTitle.setRotate(0.0);
 			}
 		});
+		lblPeak.setText("");
 	}
 
 	@Override
@@ -150,6 +151,12 @@ public class VuMeter extends AnchorPane implements Initializable, LevelListener,
 
 		} else {
 			setOnContextMenuRequested(null);
+			if (lblPeak != null) {
+				lblPeak.setText("");
+			}
+			if (lblTitle != null) {
+				lblTitle.setText("");
+			}
 		}
 	}
 

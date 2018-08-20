@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.GroupController">
+<BorderPane stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.GroupController">
    <center>
       <SplitPane fx:id="root" dividerPositions="0.5" orientation="VERTICAL">
          <items>
@@ -25,6 +25,9 @@
               <yAxis>
                 <NumberAxis autoRanging="false" lowerBound="-80.0" side="LEFT" tickUnit="12.0" upperBound="0.0" />
               </yAxis>
+               <padding>
+                  <Insets bottom="-10.0" />
+               </padding>
             </LineChart>
          </items>
       </SplitPane>
