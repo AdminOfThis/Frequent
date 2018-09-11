@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import control.LevelListener;
+import control.InputListener;
 
 public abstract class Input implements Serializable {
 
@@ -14,7 +14,7 @@ public abstract class Input implements Serializable {
 	private static final Logger				LOG					= Logger.getLogger(Input.class);
 	private String							name;
 	private float							level				= 0;
-	private transient List<LevelListener>	observerList		= new ArrayList<>();
+	private transient List<InputListener>	observerList		= new ArrayList<>();
 	private String							hexColor;
 
 	public String getName() {
@@ -25,7 +25,7 @@ public abstract class Input implements Serializable {
 		this.name = name;
 	}
 
-	public void addObserver(LevelListener obs) {
+	public void addObserver(InputListener obs) {
 		if (observerList == null) {
 			observerList = new ArrayList<>();
 		}
@@ -34,7 +34,7 @@ public abstract class Input implements Serializable {
 		}
 	}
 
-	public void removeObserver(LevelListener obs) {
+	public void removeObserver(InputListener obs) {
 		observerList.remove(obs);
 	}
 
@@ -42,7 +42,7 @@ public abstract class Input implements Serializable {
 		if (observerList == null) {
 			observerList = new ArrayList<>();
 		}
-		for (LevelListener obs : observerList) {
+		for (InputListener obs : observerList) {
 			// new Thread(new Runnable() {
 			//
 			// @Override
@@ -56,6 +56,10 @@ public abstract class Input implements Serializable {
 			// }
 			// }).start();
 		}
+	}
+
+	protected List<InputListener> getObserverList() {
+		return observerList;
 	}
 
 	public float getLevel() {

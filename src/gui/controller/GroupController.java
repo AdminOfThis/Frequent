@@ -9,7 +9,7 @@ import com.sun.javafx.charts.Legend;
 import com.sun.javafx.charts.Legend.LegendItem;
 
 import control.ASIOController;
-import control.LevelListener;
+import control.InputListener;
 import data.Channel;
 import data.Group;
 import gui.utilities.controller.VuMeter;
@@ -161,7 +161,7 @@ public class GroupController implements Initializable, Pausable {
 					}
 					NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 					// adding observer to group for chart
-					g.addObserver(new LevelListener() {
+					g.addObserver(new InputListener() {
 
 						@Override
 						public void levelChanged(double level) {
