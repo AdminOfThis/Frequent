@@ -218,6 +218,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 							}
 							if (c != null) {
 								c.setLevel(max);
+								c.setBuffer(output);
 							}
 						}
 					} catch (Exception e) {

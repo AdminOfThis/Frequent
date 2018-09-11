@@ -60,9 +60,9 @@ public class MainController implements Initializable, Pausable {
 	private static final String				GROUP_PATH			= "/gui/gui/Group.fxml";
 	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
 	private static final String				DRUM_PATH			= "/gui/gui/Drum.fxml";
+	private static final String				PHASE_PATH			= "/gui/utilities/gui/Vectorscope.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File",
-	        "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private AnchorPane						waveFormPane;
@@ -72,7 +72,7 @@ public class MainController implements Initializable, Pausable {
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
 	@FXML
-	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView;
+	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView;
 	@FXML
 	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView;
 	@FXML
@@ -136,6 +136,7 @@ public class MainController implements Initializable, Pausable {
 		initChart();
 		initRTA();
 		initDrumMonitor();
+		initPhaseMonitor();
 		initGroups();
 		initListener();
 		resetStatus();
@@ -521,6 +522,15 @@ public class MainController implements Initializable, Pausable {
 		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
 		if (p != null) {
 			contentMap.put(toggleDrumView, p);
+		} else {
+			LOG.warn("Unable to load FFT Chart");
+		}
+	}
+
+	private void initPhaseMonitor() {
+		Parent p = FXMLUtil.loadFXML(PHASE_PATH);
+		if (p != null) {
+			contentMap.put(togglePhaseView, p);
 		} else {
 			LOG.warn("Unable to load FFT Chart");
 		}

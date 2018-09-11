@@ -1,8 +1,9 @@
 package data;
 
-import control.LevelListener;
+import control.InputListener;
+import gui.utilities.DrumTriggerObserver;
 
-public class DrumTrigger implements LevelListener {
+public class DrumTrigger implements InputListener {
 
 	public static final String[]	DEFAULT_NAMES	= new String[] { "Base", "Snare", "Tom1", "Tom2" };
 	private String					name;

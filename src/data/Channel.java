@@ -4,6 +4,9 @@ import java.util.Comparator;
 
 import com.synthbot.jasiohost.AsioChannel;
 
+import control.ChannelListener;
+import control.InputListener;
+
 public class Channel extends Input implements Comparable<Channel>, Comparator<Channel> {
 
 	/**
@@ -17,6 +20,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	private int						channelIndex		= -1;
 	private Group					group;
 	private boolean					hide				= false;
+	private float[]					buffer;
 
 	public Channel(AsioChannel channel) {
 		this(channel, channel.getChannelName());
@@ -79,5 +83,24 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	@Override
 	public int compare(Channel o1, Channel o2) {
 		return o1.getChannelIndex() - o2.getChannelIndex();
+	}
+
+	public float[] getBuffer() {
+		return buffer;
+	}
+
+	public void setBuffer(float[] buffer) {
+		this.buffer = buffer;
+		for (InputListener l : getObserverList()) {
+			if (l instanceof ChannelListener) {
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						((ChannelListener) l).newBuffer(buffer);
+					}
+				}).start();
+			}
+		}
 	}
 }

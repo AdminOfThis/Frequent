@@ -3,7 +3,7 @@ package gui.utilities.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import control.LevelListener;
+import control.InputListener;
 import data.Channel;
 import data.Group;
 import data.Input;
@@ -23,7 +23,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
-public class VuMeter extends AnchorPane implements Initializable, LevelListener, Pausable {
+public class VuMeter extends AnchorPane implements Initializable, InputListener, Pausable {
 
 	private static final String	FXML_VERTICAL	= "/gui/utilities/gui/VuMeterVertical.fxml";
 	private static final String	FXML_HORIZONTAL	= "/gui/utilities/gui/VuMeterHorizontal.fxml";
@@ -103,7 +103,7 @@ public class VuMeter extends AnchorPane implements Initializable, LevelListener,
 						}
 						if (peakdB >= -0.5) {
 							vuPane.setStyle("-fx-background-color: red");
-						} else if (peakdB >= -2.0) {
+						} else if (peakdB >= -5.0) {
 							vuPane.setStyle("-fx-background-color: yellow");
 						} else {
 							vuPane.setStyle("");

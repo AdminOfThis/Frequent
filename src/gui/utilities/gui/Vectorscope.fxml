@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.ScatterChart?>
+<?import javafx.scene.layout.HBox?>
+
+<HBox fx:id="chartParent" alignment="CENTER" fillHeight="false" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.VectorscopeController">
+   <children>
+      <ScatterChart fx:id="chart" alternativeColumnFillVisible="true" animated="false" legendVisible="false" rotate="-45.0">
+         <xAxis>
+            <NumberAxis animated="false" autoRanging="false" lowerBound="-1.0" minorTickCount="0" minorTickLength="0.5" minorTickVisible="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" tickUnit="0.25" upperBound="1.0" />
+         </xAxis>
+         <yAxis>
+            <NumberAxis animated="false" autoRanging="false" lowerBound="-1.0" minorTickCount="0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" tickUnit="0.25" upperBound="1.0" />
+         </yAxis>
+      </ScatterChart>
+   </children>
+</HBox>
