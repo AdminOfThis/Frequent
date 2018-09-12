@@ -4,7 +4,7 @@
 <?import javafx.scene.chart.ScatterChart?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox fx:id="chartParent" alignment="CENTER" fillHeight="false" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.VectorscopeController">
+<HBox fx:id="chartParent" alignment="CENTER" fillHeight="false" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ScatterChart fx:id="chart" alternativeColumnFillVisible="true" animated="false" legendVisible="false" rotate="-45.0">
          <xAxis>

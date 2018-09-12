@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import data.Channel;
 import data.DrumTrigger;
+import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.DrumTriggerItemController;
@@ -18,6 +19,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
@@ -38,9 +40,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
-public class DrumController implements Initializable {
+public class DrumViewController implements Initializable, PausableView {
 
-	private static final Logger										LOG					= Logger.getLogger(DrumController.class);
+	private static final Logger										LOG					= Logger.getLogger(DrumViewController.class);
 	private static final String										DRUM_ITEM_PATH		= "/gui/utilities/gui/DrumTriggerItem.fxml";
 	private static final int										REFRESH_RATE		= 10;
 	private static final double										TIME_FRAME			= 7500;
@@ -65,6 +67,7 @@ public class DrumController implements Initializable {
 	private DrumTrigger												activeChartChannel;
 	private ArrayList<DrumTrigger>									triggerList			= new ArrayList<>();
 	private HashMap<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap			= new HashMap<>();
+	private boolean													paused				= false;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -200,20 +203,16 @@ public class DrumController implements Initializable {
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
-				} catch (Exception e) {
 				}
-				if (trig != null) {
-					return trig.getName();
-				}
+				catch (Exception e) {}
+				if (trig != null) { return trig.getName(); }
 				return null;
 			}
 
 			@Override
 			public Number fromString(String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) {
-						return triggerList.indexOf(trig);
-					}
+					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
 				}
 				return null;
 			}
@@ -277,5 +276,20 @@ public class DrumController implements Initializable {
 			stage.show();
 			stage.requestFocus();
 		}
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		paused = pause;
+	}
+
+	@Override
+	public boolean isPaused() {
+		return paused;
+	}
+
+	@Override
+	public ArrayList<Node> getHeader() {
+		return null;
 	}
 }

@@ -27,7 +27,7 @@ public class Group extends Input implements InputListener {
 		if (channel != null) {
 			if (!channelList.contains(channel)) {
 				channelList.add(channel);
-				channel.addObserver(this);
+				channel.addListener(this);
 			}
 			if (channel.getGroup() != this && channel != null) {
 				channel.setGroup(this);
@@ -49,7 +49,7 @@ public class Group extends Input implements InputListener {
 	public void removeChannel(Channel channel) {
 		if (channel != null) {
 			channel.setGroup(null);
-			channel.removeObserver(this);
+			channel.removeListener(this);
 			channelList.remove(channel);
 		}
 	}

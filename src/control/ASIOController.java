@@ -423,7 +423,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 			for (Channel c : channelList) {
 				if (c.getGroup() != null && c.getGroup().getName().equals(g.getName())) {
 					g.addChannel(c);
-					c.addObserver(g);
+					c.addListener(g);
 				}
 			}
 		}

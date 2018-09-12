@@ -7,8 +7,9 @@ import control.InputListener;
 import data.Channel;
 import data.Group;
 import data.Input;
-import gui.controller.FFTController;
-import gui.controller.Pausable;
+import gui.controller.RTAViewController;
+import gui.gui.PausableComponent;
+import gui.pausable.Pausable;
 import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.FXMLUtil;
 import gui.utilities.GroupCellContextMenu;
@@ -23,7 +24,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
-public class VuMeter extends AnchorPane implements Initializable, InputListener, Pausable {
+public class VuMeter extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
 	private static final String	FXML_VERTICAL	= "/gui/utilities/gui/VuMeterVertical.fxml";
 	private static final String	FXML_HORIZONTAL	= "/gui/utilities/gui/VuMeterHorizontal.fxml";
@@ -35,7 +36,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 	@FXML
 	private Label				lblPeak, lblTitle;
 	private Input				channel;
-	private double				peak			= FFTController.FFT_MIN;
+	private double				peak			= RTAViewController.FFT_MIN;
 	private Orientation			orientation;
 	private boolean				pause			= false;
 	private Pausable			parentPausable;
@@ -71,6 +72,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 			}
 		});
 		lblPeak.setText("");
+		lblTitle.setText("");
 	}
 
 	@Override
@@ -86,17 +88,13 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 							peak = peakdB;
 						}
 						if (orientation == Orientation.VERTICAL) {
-							vuPeakPane.setPrefHeight(
-								vuPane.getHeight() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
-							vuLastPeakPane.setPrefHeight(
-								vuPane.getHeight() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+							vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+							vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
 						} else {
-							vuPeakPane.setPrefWidth(
-								vuPane.getWidth() * (peakdB + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
-							vuLastPeakPane.setPrefWidth(
-								vuPane.getWidth() * (peak + Math.abs(FFTController.FFT_MIN)) / Math.abs(FFTController.FFT_MIN));
+							vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+							vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
 						}
-						if (peakdB >= FFTController.FFT_MIN) {
+						if (peakdB >= RTAViewController.FFT_MIN) {
 							lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
 						} else {
 							lblPeak.setText("-\u221E");
@@ -128,11 +126,11 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 
 	public void setChannel(Input c) {
 		if (this.channel != null) {
-			this.channel.removeObserver(this);
+			this.channel.removeListener(this);
 		}
 		this.channel = c;
 		if (c != null) {
-			c.addObserver(this);
+			c.addListener(this);
 			if (c.getColor() != null && !c.getColor().isEmpty()) {
 				this.setStyle("-fx-accent: " + c.getColor());
 			} else {
@@ -146,9 +144,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 					menu = new GroupCellContextMenu((Group) c);
 				}
 				menu.show(vuPane, e.getScreenX(), e.getScreenY());
-
 			});
-
 		} else {
 			setOnContextMenuRequested(null);
 			if (lblPeak != null) {

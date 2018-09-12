@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import control.FFTListener;
 import data.Channel;
+import gui.pausable.PausableView;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeter;
@@ -17,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ValueAxis;
@@ -28,13 +30,12 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
-public class FFTController implements Initializable, FFTListener, Pausable {
+public class RTAViewController implements Initializable, FFTListener, PausableView {
 
 	private static final double		DECAY		= 1.01;
 	public static final double		FFT_MIN		= -80;
-	private static final Logger		LOG			= Logger.getLogger(FFTController.class);
-//	private static final String		TUNER_PATH	= "/gui/gui/Tuner.fxml";
-
+	private static final Logger		LOG			= Logger.getLogger(RTAViewController.class);
+// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
 	private static final int		X_MIN		= 25;
 	private static final int		X_MAX		= 20000;
 	@FXML
@@ -47,9 +48,7 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	private XYChart<Number, Number>	chart;
 	@FXML
 	private HBox					topPane, topRight, topLeft;
-
 	private VuMeter					meter;
-
 	private boolean					pause		= true;
 	private Series<Number, Number>	series		= new Series<>();
 	private Series<Number, Number>	maxSeries	= new Series<>();
@@ -72,7 +71,6 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 	// HBox.setHgrow(p, Priority.ALWAYS);
 	// tunerController.show(true);
 	// }
-
 	private void initButtons() {
 		toggleSlowCurve.selectedProperty().addListener(e -> {
 			if (toggleSlowCurve.isSelected()) {
@@ -84,7 +82,6 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 			}
 		});
 		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
-
 		toggleVPad.selectedProperty().addListener(e -> {
 			if (toggleVPad.isSelected()) {
 				yAxis.setUpperBound(Math.round(sliderPad.getValue()));
@@ -92,7 +89,6 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 				yAxis.setUpperBound(0.0);
 			}
 		});
-
 		sliderPad.valueProperty().addListener(e -> {
 			toggleVPad.setText(Math.round(sliderPad.getValue()) + " dB");
 			if (toggleVPad.isSelected()) {
@@ -119,7 +115,6 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		chart = new NegativeAreaChart(logAxis, yaxis);
 		chart.getData().add(series);
 		// chart.getData().add(maxSeries);
-
 		chart.setAnimated(false);
 		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
 		chart.setTitleSide(Side.TOP);
@@ -198,13 +193,12 @@ public class FFTController implements Initializable, FFTListener, Pausable {
 		return pause;
 	}
 
-	@Override
-	public void setParentPausable(Pausable parent) {
-		LOG.error("Uninplemented method called: addParentPausable");
-	}
-
 	protected void refresh() {
 		chart.setTitle(channel.getName());
 	}
 
+	@Override
+	public ArrayList<Node> getHeader() {
+		return null;
+	}
 }

@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import control.ASIOController;
 import data.Channel;
 import data.DrumTrigger;
-import gui.controller.DrumController;
-import gui.utilities.DrumTriggerObserver;
+import gui.controller.DrumViewController;
+import gui.utilities.DrumTriggerListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -21,7 +21,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.util.StringConverter;
 
-public class DrumTriggerItemController implements Initializable, DrumTriggerObserver {
+public class DrumTriggerItemController implements Initializable, DrumTriggerListener {
 
 	private static final Logger	LOG		= Logger.getLogger(DrumTrigger.class);
 	private static ToggleGroup	group	= new ToggleGroup();
@@ -33,7 +33,7 @@ public class DrumTriggerItemController implements Initializable, DrumTriggerObse
 	private Slider				slider;
 	@FXML
 	private ToggleButton		view;
-	private DrumController		controller;
+	private DrumViewController		controller;
 	private DrumTrigger			trigger;
 
 	@Override
@@ -88,7 +88,7 @@ public class DrumTriggerItemController implements Initializable, DrumTriggerObse
 		});
 	}
 
-	public void setDrumController(DrumController con) {
+	public void setDrumController(DrumViewController con) {
 		this.controller = con;
 	}
 

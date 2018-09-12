@@ -10,9 +10,10 @@ import org.apache.log4j.Logger;
 
 import data.Channel;
 import data.RTAIO;
-import gui.controller.FFTController;
+import gui.controller.RTAViewController;
 import gui.controller.MainController;
-import gui.controller.Pausable;
+import gui.gui.PausableComponent;
+import gui.pausable.Pausable;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
@@ -23,12 +24,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-public class ResizableCanvas extends Canvas implements Pausable {
+public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	private static final Logger	LOG			= Logger.getLogger(ResizableCanvas.class);
 	int							count		= 0;
 	private static final int	POINTS		= 1024;
-
 	private boolean				autoscroll	= true;
 	private String				accent		= "#FF0000";
 	private GraphicsContext		content;
@@ -54,30 +54,17 @@ public class ResizableCanvas extends Canvas implements Pausable {
 		widthProperty().bind(parent.widthProperty());
 		widthProperty().addListener(e -> reset());
 		setHeight(10.0);
-		// Timeline line = new Timeline();
-		// line.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
-		// double[][] map = new double[2][POINTS];
-		// for (int i = 0; i < map[1].length - 1; i++) {
-		// map[1][i] = Math.random();
-		// }
-		// addLine(map);
-		// }));
-		// line.setCycleCount(Timeline.INDEFINITE);
-		// line.playFromStart();
-
 	}
 
 	private void reset() {
 		content.clearRect(0, 0, getWidth(), getHeight());
 		count = 0;
 		setHeight(10);
-
 	}
 
 	public static String makeColorTransparent(String color, double db) {
-		double percent = 1 - Math.abs(Math.max(FFTController.FFT_MIN, db)) / Math.abs(FFTController.FFT_MIN);
+		double percent = 1 - Math.abs(Math.max(RTAViewController.FFT_MIN, db)) / Math.abs(RTAViewController.FFT_MIN);
 		// percent = percent *10;
-
 		String transparency = Integer.toHexString((int) Math.floor(percent * 255.0));
 		if (transparency.length() < 2) {
 			transparency = "0" + transparency;
@@ -113,9 +100,7 @@ public class ResizableCanvas extends Canvas implements Pausable {
 				RTAIO.writeToFile(map);
 			}
 			// long before = System.currentTimeMillis();
-
 			double size = (getWidth() / POINTS);
-
 			if (getHeight() < size * count + size) {
 				setHeight(getHeight() + size);
 			}
@@ -123,36 +108,32 @@ public class ResizableCanvas extends Canvas implements Pausable {
 			for (int pointCount = 0; pointCount < map[0].length; pointCount++) {
 				// System.out.println(map[1][pointCount]);
 				content.setFill(Color.web(makeColorTransparent(accent, Channel.percentToDB(map[1][pointCount]))));
-				double startPoint = getWidth()/2000.0 * map[0][pointCount];
-//				System.out.println(startPoint);
+				double startPoint = getWidth() / 2000.0 * map[0][pointCount];
+// System.out.println(startPoint);
 				double endpoint;
-				if(pointCount <map[0].length-1) {
-					endpoint = getWidth()/2000.0 * map[0][pointCount+1];
+				if (pointCount < map[0].length - 1) {
+					endpoint = getWidth() / 2000.0 * map[0][pointCount + 1];
 				} else {
 					endpoint = getWidth();
 				}
 				content.fillRect(startPoint, size * count, endpoint - startPoint, size);
 			}
 			//
-
 			count++;
 			if (count > 5000 && !toExport) {
 				reset();
 			}
-
 			if (autoscroll && parent != null) {
 				parent.setVvalue(parent.getVmax());
 			}
-
 			// long after = System.currentTimeMillis();
 			// System.out.println(after - before);
 		}
-
 	}
 
 	public void save(File file) {
-
 		final Task<Boolean> task = new Task<Boolean>() {
+
 			@Override
 			public Boolean call() throws Exception {
 				MainController.getInstance().setStatus("Exporting RTA");
@@ -168,23 +149,23 @@ public class ResizableCanvas extends Canvas implements Pausable {
 								WritableImage image = canvas.snapshot(params, null);
 								RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
 								ImageIO.write(renderedImage, "png", file);
-							} catch (Exception e) {
+							}
+							catch (Exception e) {
 								LOG.warn("Unable to export image", e);
-							} finally {
+							}
+							finally {
 								MainController.getInstance().resetStatus();
 							}
 						}
 					});
-
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					LOG.warn("Unable to export image", ex);
 					MainController.getInstance().resetStatus();
 				}
 				return true;
-
 			}
 		};
-
 		Thread th = new Thread(task);
 		th.setDaemon(true);
 		th.start();
@@ -207,8 +188,7 @@ public class ResizableCanvas extends Canvas implements Pausable {
 			if (!pause) {
 				reset();
 				RTAIO.deleteFile();
-			} else {
-			}
+			} else {}
 		}
 	}
 

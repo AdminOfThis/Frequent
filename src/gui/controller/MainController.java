@@ -17,6 +17,7 @@ import data.Channel;
 import data.FileIO;
 import data.Group;
 import data.Input;
+import gui.pausable.Pausable;
 import gui.utilities.FXMLUtil;
 import gui.utilities.controller.InputCell;
 import gui.utilities.controller.WaveFormChartController;
@@ -54,13 +55,13 @@ import main.Main;
 
 public class MainController implements Initializable, Pausable {
 
-	private static final String				FFT_PATH			= "/gui/gui/FFT.fxml";
-	private static final String				RTA_PATH			= "/gui/gui/SpectrumTime.fxml";
+	private static final String				FFT_PATH			= "/gui/gui/RTAView.fxml";
+	private static final String				RTA_PATH			= "/gui/gui/FFTView.fxml";
 	private static final String				TIMEKEEPER_PATH		= "/gui/gui/TimeKeeper.fxml";
-	private static final String				GROUP_PATH			= "/gui/gui/Group.fxml";
+	private static final String				GROUP_PATH			= "/gui/gui/GroupView.fxml";
 	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
-	private static final String				DRUM_PATH			= "/gui/gui/Drum.fxml";
-	private static final String				PHASE_PATH			= "/gui/utilities/gui/Vectorscope.fxml";
+	private static final String				DRUM_PATH			= "/gui/gui/DrumView.fxml";
+	private static final String				PHASE_PATH			= "/gui/gui/VectorScopeView.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
@@ -74,7 +75,7 @@ public class MainController implements Initializable, Pausable {
 	@FXML
 	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView;
 	@FXML
-	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView;
+	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView;
 	@FXML
 	private ToggleButton					toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
 	@FXML
@@ -104,8 +105,8 @@ public class MainController implements Initializable, Pausable {
 	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
 	private double							channelSplitRatio	= 0.8;
 	private ASIOController					controller;
-	private FFTController					fftController;
-	private SpectrumTimeController			rtaController;
+	private RTAViewController				fftController;
+	private FFTViewController				rtaController;
 	private TimeKeeperController			timeKeeperController;
 	// private DrumController drumController;
 	private WaveFormChartController			waveFormController;
@@ -159,13 +160,12 @@ public class MainController implements Initializable, Pausable {
 					e.consume();
 					return;
 				}
-
 				if (toggleButton.getToggleGroup().getSelectedToggle() == null && contentPane.getItems().size() > 0) {
 					contentPane.getItems().remove(0);
 				} else if (toggleButton.isSelected()) {
 					Node n = contentMap.get(toggleButton);
 					if (toggleButton.equals(toggleGroupsView)) {
-						GroupController.getInstance().refresh();
+						GroupViewController.getInstance().refresh();
 					}
 					if (contentPane.getItems().size() < 1) {
 						contentPane.getItems().add(0, n);
@@ -175,7 +175,7 @@ public class MainController implements Initializable, Pausable {
 				}
 				fftController.pause(!toggleFFTView.isSelected());
 				rtaController.pause(!toggleRTAView.isSelected());
-				GroupController.getInstance().pause(!toggleGroupsView.isSelected());
+				GroupViewController.getInstance().pause(!toggleGroupsView.isSelected());
 			});
 		}
 	}
@@ -195,7 +195,7 @@ public class MainController implements Initializable, Pausable {
 	private void initChart() {
 		Parent p = FXMLUtil.loadFXML(FFT_PATH);
 		if (p != null) {
-			fftController = (FFTController) FXMLUtil.getController();
+			fftController = (RTAViewController) FXMLUtil.getController();
 			contentMap.put(toggleFFTView, p);
 		} else {
 			LOG.warn("Unable to load FFT Chart");
@@ -204,7 +204,7 @@ public class MainController implements Initializable, Pausable {
 
 	private void initRTA() {
 		Parent p = FXMLUtil.loadFXML(RTA_PATH);
-		rtaController = (SpectrumTimeController) FXMLUtil.getController();
+		rtaController = (FFTViewController) FXMLUtil.getController();
 		if (p != null) {
 			contentMap.put(toggleRTAView, p);
 		} else {
@@ -246,7 +246,6 @@ public class MainController implements Initializable, Pausable {
 
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-
 				waveFormController.pause(newValue);
 				if (newValue) {
 					if (!channelPane.getItems().contains(waveFormPane)) {
@@ -259,7 +258,6 @@ public class MainController implements Initializable, Pausable {
 				}
 			}
 		});
-
 		channelList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		channelList.setCellFactory(e -> new InputCell());
 		channelList.setRoot(new TreeItem<>());
@@ -288,7 +286,6 @@ public class MainController implements Initializable, Pausable {
 				refreshInputs();
 			}
 		});
-
 	}
 
 	private void refreshInputs() {
@@ -311,31 +308,25 @@ public class MainController implements Initializable, Pausable {
 	}
 
 	private void initMenu() {
-
 		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-
 		bindCheckMenuToToggleButton(menuSpectrumView, toggleFFTView);
 		bindCheckMenuToToggleButton(menuRTAView, toggleRTAView);
 		bindCheckMenuToToggleButton(menuGroupsView, toggleGroupsView);
 		bindCheckMenuToToggleButton(menuDrumView, toggleDrumView);
-
+		bindCheckMenuToToggleButton(menuPhaseView, togglePhaseView);
 		menuTimerStart.setOnAction(e -> TimeKeeperController.getInstance().toggleTimer());
 		menuTimerNext.setOnAction(e -> TimeKeeperController.getInstance().round());
-
 		menuTimerStart.disableProperty().bind(TimeKeeperController.getInstance().getStartButton().disabledProperty());
 		menuTimerNext.disableProperty().bind(TimeKeeperController.getInstance().getRoundButton().disabledProperty());
-
 		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
 		toggleChannels.selectedProperty().bindBidirectional(menuShowChannels.selectedProperty());
 		// toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
 		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
 		// Close Button
 		closeMenu.setOnAction(e -> Main.close());
-
 	}
 
 	private void bindCheckMenuToToggleButton(CheckMenuItem menu, ToggleButton button) {
-
 		menu.setOnAction(e -> button.fire());
 		button.selectedProperty().addListener((obs, oldVal, newVal) -> {
 			menu.setSelected(newVal);
@@ -382,9 +373,7 @@ public class MainController implements Initializable, Pausable {
 				return true;
 			}
 			if (!i.isLeaf()) {
-				if (findAndSelect(i, channel)) {
-					return true;
-				}
+				if (findAndSelect(i, channel)) { return true; }
 			}
 		}
 		return false;
@@ -506,7 +495,7 @@ public class MainController implements Initializable, Pausable {
 		}
 		timeKeeperController.refresh();
 		fftController.refresh();
-		GroupController.getInstance().refresh();
+		GroupViewController.getInstance().refresh();
 	}
 
 	@FXML
@@ -532,7 +521,7 @@ public class MainController implements Initializable, Pausable {
 		if (p != null) {
 			contentMap.put(togglePhaseView, p);
 		} else {
-			LOG.warn("Unable to load FFT Chart");
+			LOG.warn("Unable to load VectorScope");
 		}
 	}
 
@@ -553,13 +542,9 @@ public class MainController implements Initializable, Pausable {
 		return pause;
 	}
 
-	@Override
-	public void setParentPausable(Pausable parent) {
-		LOG.error("Uninplemented method called: addParentPausable");
-	}
-
 	public void setStatus(String text) {
 		Platform.runLater(new Runnable() {
+
 			@Override
 			public void run() {
 				lblStatus.setText(text);
@@ -567,11 +552,11 @@ public class MainController implements Initializable, Pausable {
 				progStatus.setVisible(true);
 			}
 		});
-
 	}
 
 	public void setStatus(double value) {
 		Platform.runLater(new Runnable() {
+
 			@Override
 			public void run() {
 				progStatus.setProgress(value);
@@ -619,7 +604,8 @@ public class MainController implements Initializable, Pausable {
 				}
 			}
 			refresh();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Error while hiding items");
 			LOG.debug("", e);
 		}
@@ -633,7 +619,8 @@ public class MainController implements Initializable, Pausable {
 				}
 			}
 			refresh();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Error while grouping items");
 			LOG.debug("", e);
 		}

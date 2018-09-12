@@ -1,6 +1,6 @@
 package gui.utilities;
 
-public interface DrumTriggerObserver {
+public interface DrumTriggerListener {
 
 	public void tresholdReached(double level, double treshold);
 }

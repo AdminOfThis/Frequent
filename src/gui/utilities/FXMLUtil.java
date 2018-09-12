@@ -22,7 +22,8 @@ public abstract class FXMLUtil {
 			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
 			parent = loader.load();
 			controller = loader.getController();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("Unable to load FXMLFile");
 			LOG.info("", e);
 		}
@@ -35,9 +36,9 @@ public abstract class FXMLUtil {
 			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
 			loader.setController(controller);
 			parent = loader.load();
-			controller = loader.getController();
-		} catch (Exception e) {
-			LOG.error("Unable to load FXMLFile");
+		}
+		catch (Exception e) {
+			LOG.error("Unable to load FXMLFile", e);
 			LOG.debug("", e);
 		}
 		return parent;
@@ -59,15 +60,17 @@ public abstract class FXMLUtil {
 					break;
 				}
 			}
-
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to load css value " + value);
 			LOG.debug("", e);
-		} finally {
+		}
+		finally {
 			if (reader != null) {
 				try {
 					reader.close();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					LOG.error("Problem closing file reader", e);
 				}
 			}

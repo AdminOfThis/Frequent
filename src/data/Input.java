@@ -14,7 +14,7 @@ public abstract class Input implements Serializable {
 	private static final Logger				LOG					= Logger.getLogger(Input.class);
 	private String							name;
 	private float							level				= 0;
-	private transient List<InputListener>	observerList		= new ArrayList<>();
+	private transient List<InputListener>	listeners			= new ArrayList<>();
 	private String							hexColor;
 
 	public String getName() {
@@ -25,31 +25,32 @@ public abstract class Input implements Serializable {
 		this.name = name;
 	}
 
-	public void addObserver(InputListener obs) {
-		if (observerList == null) {
-			observerList = new ArrayList<>();
+	public void addListener(InputListener obs) {
+		if (listeners == null) {
+			listeners = new ArrayList<>();
 		}
-		if (!observerList.contains(obs)) {
-			observerList.add(obs);
+		if (!listeners.contains(obs)) {
+			listeners.add(obs);
 		}
 	}
 
-	public void removeObserver(InputListener obs) {
-		observerList.remove(obs);
+	public void removeListener(InputListener obs) {
+		listeners.remove(obs);
 	}
 
-	protected void notifyObservers() {
-		if (observerList == null) {
-			observerList = new ArrayList<>();
+	protected void notifyListeners() {
+		if (listeners == null) {
+			listeners = new ArrayList<>();
 		}
-		for (InputListener obs : observerList) {
+		for (InputListener obs : listeners) {
 			// new Thread(new Runnable() {
 			//
 			// @Override
 			// public void run() {
 			try {
 				obs.levelChanged(level);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.warn("Unable to notify Level Listener");
 				LOG.debug("", e);
 			}
@@ -58,8 +59,8 @@ public abstract class Input implements Serializable {
 		}
 	}
 
-	protected List<InputListener> getObserverList() {
-		return observerList;
+	protected List<InputListener> getListeners() {
+		return listeners;
 	}
 
 	public float getLevel() {
@@ -68,7 +69,7 @@ public abstract class Input implements Serializable {
 
 	public void setLevel(float level) {
 		this.level = level;
-		notifyObservers();
+		notifyListeners();
 	}
 
 	public boolean setColor(String color) {
@@ -85,7 +86,8 @@ public abstract class Input implements Serializable {
 					c.setColor(hexColor);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return false;
 		}
 		return true;

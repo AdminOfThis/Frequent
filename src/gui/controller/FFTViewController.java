@@ -2,31 +2,31 @@ package gui.controller;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
 import control.FFTListener;
+import gui.pausable.PausableView;
 import gui.utilities.ResizableCanvas;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-public class SpectrumTimeController implements Initializable, Pausable, FFTListener {
+public class FFTViewController implements Initializable, FFTListener, PausableView {
 
-	private static final Logger	LOG		= Logger.getLogger(SpectrumTimeController.class);
+	private static final Logger	LOG		= Logger.getLogger(FFTViewController.class);
 	@FXML
 	private ScrollPane			canvasParent;
-
 	private boolean				pause	= true;
-
 	private ResizableCanvas		canvas;
-
 	@FXML
 	private ToggleButton		tglPlay;
 
@@ -35,10 +35,9 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 		canvas = new ResizableCanvas(canvasParent);
 		canvas.setParentPausable(this);
 		canvasParent.setContent(canvas);
-
-//		if (ASIOController.getInstance() != null) {
-//			ASIOController.getInstance().addFFTListener(this);
-//		}
+// if (ASIOController.getInstance() != null) {
+// ASIOController.getInstance().addFFTListener(this);
+// }
 	}
 
 	@Override
@@ -63,14 +62,9 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 		return pause;
 	}
 
-	@Override
-	public void setParentPausable(Pausable parent) {
-		LOG.error("Uninplemented method called: addParentPausable");
-	}
-
 	@FXML
 	private void export(ActionEvent e) {
-		//pausing 
+		// pausing
 		if (tglPlay.isSelected()) {
 			tglPlay.fire();
 		}
@@ -97,4 +91,8 @@ public class SpectrumTimeController implements Initializable, Pausable, FFTListe
 		}
 	}
 
+	@Override
+	public ArrayList<Node> getHeader() {
+		return null;
+	}
 }
