@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 
 import control.InputListener;
 import data.Input;
-import gui.gui.PausableComponent;
 import gui.pausable.Pausable;
+import gui.pausable.PausableComponent;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

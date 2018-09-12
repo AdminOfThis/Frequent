@@ -1,6 +1,4 @@
-package gui.gui;
-
-import gui.pausable.Pausable;
+package gui.pausable;
 
 public interface PausableComponent extends Pausable {
 

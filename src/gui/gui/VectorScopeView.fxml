@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
 <BorderPane fx:id="root" prefHeight="400.0" prefWidth="600.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.VectorScopeViewController">
    <center>
       <SplitPane dividerPositions="0.7" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
@@ -17,17 +16,17 @@
             <AnchorPane fx:id="chartPane" prefHeight="200.0" prefWidth="200.0" />
             <VBox spacing="5.0" SplitPane.resizableWithParent="false">
                <children>
-                  <HBox alignment="CENTER_LEFT" spacing="5.0">
+                  <HBox alignment="CENTER_RIGHT" spacing="5.0">
                      <children>
-                        <Label prefWidth="60.0" text="Channel 1" />
-                        <ChoiceBox fx:id="cmbChannel1" prefWidth="150.0" />
+                        <Label minWidth="60.0" prefWidth="60.0" text="Channel 1" />
+                        <ChoiceBox fx:id="cmbChannel1" minWidth="100.0" prefWidth="150.0" HBox.hgrow="SOMETIMES" />
                      </children>
                   </HBox>
                   <AnchorPane fx:id="chartChannel1" VBox.vgrow="SOMETIMES" />
-                  <HBox alignment="CENTER_LEFT" spacing="5.0">
+                  <HBox alignment="CENTER_RIGHT" spacing="5.0">
                      <children>
-                        <Label prefWidth="60.0" text="Channel 2" />
-                        <ChoiceBox fx:id="cmbChannel2" prefWidth="150.0" />
+                        <Label minWidth="60.0" prefWidth="60.0" text="Channel 2" />
+                        <ChoiceBox fx:id="cmbChannel2" minWidth="100.0" prefWidth="150.0" />
                      </children>
                   </HBox>
                   <AnchorPane fx:id="chartChannel2" VBox.vgrow="SOMETIMES" />

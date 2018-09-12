@@ -27,6 +27,7 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
@@ -39,7 +40,9 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	private static final int		X_MIN		= 25;
 	private static final int		X_MAX		= 20000;
 	@FXML
-	private HBox					root;
+	private BorderPane				root;
+	@FXML
+	private HBox					chartPane;
 	@FXML
 	private ToggleButton			toggleSlowCurve, toggleVPad;
 	@FXML
@@ -101,7 +104,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		meter = new VuMeter(null, Orientation.VERTICAL);
 		meter.setParentPausable(this);
 		meter.setPrefWidth(50.0);
-		root.getChildren().add(0, meter);
+		chartPane.getChildren().add(0, meter);
 	}
 
 	private void initChart() {
@@ -120,7 +123,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		chart.setTitleSide(Side.TOP);
 		chart.setLegendVisible(false);
 		chart.setHorizontalZeroLineVisible(false);
-		root.getChildren().add(1, chart);
+		chartPane.getChildren().add(1, chart);
 		HBox.setHgrow(chart, Priority.ALWAYS);
 	}
 
@@ -193,12 +196,21 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		return pause;
 	}
 
-	protected void refresh() {
-		chart.setTitle(channel.getName());
+	@Override
+	public void refresh() {
+		if (channel == null) {
+			chart.setTitle("");
+		} else {
+			chart.setTitle(channel.getName());
+		}
 	}
 
 	@Override
 	public ArrayList<Node> getHeader() {
-		return null;
+		ArrayList<Node> list = new ArrayList<>();
+		list.add(sliderPad);
+		list.add(toggleVPad);
+		list.add(toggleSlowCurve);
+		return list;
 	}
 }

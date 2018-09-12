@@ -58,9 +58,11 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 				if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
 					result.add(possibleDriver);
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.debug(possibleDriver + " is unavailable");
-			} finally {
+			}
+			finally {
 				if (tempDriver != null) {
 					tempDriver.shutdownAndUnloadDriver();
 				}
@@ -91,7 +93,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		} catch (AsioException e) {
+		}
+		catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -139,9 +142,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) {
-			return asioDriver.getNumChannelsInput();
-		}
+		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
 		return -1;
 	}
 
@@ -221,12 +222,13 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 								c.setBuffer(output);
 							}
 						}
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
-			} catch (ConcurrentModificationException e) {
 			}
+			catch (ConcurrentModificationException e) {}
 		}
 	}
 
@@ -261,7 +263,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		for (int i = 0; i < spectrumMap[0].length - 1; i++) {
 			spectrumMap[1][i] = (bufferingBuffer[0][1][i] + bufferingBuffer[1][1][i]) / 2.0;
 		}
-
 		for (FFTListener l : fftListeners) {
 			if (l != null) {
 				new Thread(new Runnable() {
@@ -270,7 +271,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					public void run() {
 						try {
 							l.newFFT(spectrumMap);
-						} catch (Exception e) {
+						}
+						catch (Exception e) {
 							LOG.warn("Unable to notify FFTListener");
 							LOG.debug("", e);
 						}
@@ -444,9 +446,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		}
 	}
 
-	public void addFFTListener(FFTListener l) {
-		if (!fftListeners.contains(l)) {
-			fftListeners.add(l);
+	public void addFFTListener(FFTListener pausableView) {
+		if (!fftListeners.contains(pausableView)) {
+			fftListeners.add(pausableView);
 		}
 	}
 

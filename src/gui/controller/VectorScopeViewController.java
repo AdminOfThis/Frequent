@@ -70,4 +70,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	public ArrayList<Node> getHeader() {
 		return null;
 	}
+
+	@Override
+	public void refresh() {}
 }

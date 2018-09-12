@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 
 import control.ChannelListener;
 import data.Channel;
-import gui.gui.PausableComponent;
 import gui.pausable.Pausable;
+import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
 import javafx.application.Platform;

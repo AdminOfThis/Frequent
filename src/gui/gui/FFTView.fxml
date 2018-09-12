@@ -15,7 +15,7 @@
       <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
             <ToggleButton fx:id="tglPlay" mnemonicParsing="false" onAction="#play" prefWidth="70.0" text="Play" />
-            <Button mnemonicParsing="false" onAction="#export" prefWidth="70.0" text="Export" />
+            <Button fx:id="btnExport" mnemonicParsing="false" onAction="#export" prefWidth="70.0" text="Export" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="4.0" top="5.0" />

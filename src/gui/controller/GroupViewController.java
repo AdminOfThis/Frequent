@@ -54,7 +54,7 @@ public class GroupViewController implements Initializable, PausableView {
 	@FXML
 	private ToggleButton				tglTimed;
 	private boolean						pause	= true;
-	private static GroupViewController		instance;
+	private static GroupViewController	instance;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -85,7 +85,8 @@ public class GroupViewController implements Initializable, PausableView {
 		return instance;
 	}
 
-	protected void refresh() {
+	@Override
+	public void refresh() {
 		if (ASIOController.getInstance() != null) {
 			vuPane.getChildren().clear();
 			groupPane.getItems().clear();
@@ -229,6 +230,8 @@ public class GroupViewController implements Initializable, PausableView {
 
 	@Override
 	public ArrayList<Node> getHeader() {
-		return null;
+		ArrayList<Node> res = new ArrayList<>();
+		res.add(tglTimed);
+		return res;
 	}
 }
