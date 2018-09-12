@@ -20,6 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
@@ -32,6 +33,8 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	private HBox							chartParent;
 	@FXML
 	private ScatterChart<Number, Number>	chart;
+	@FXML
+	private Label							lblTitle;
 	private Series<Number, Number>			vectorSeries	= new Series<>();
 	private boolean							pause;
 	private Pausable						parentPausable;
@@ -102,6 +105,10 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	public Channel getChannel2() {
 		return channel2;
+	}
+
+	public void setTitle(String title) {
+		lblTitle.setText(title);
 	}
 
 	@Override

@@ -2,17 +2,25 @@
 
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.ScatterChart?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="chartParent" alignment="CENTER" fillHeight="false" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+
+<VBox alignment="CENTER" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ScatterChart fx:id="chart" alternativeColumnFillVisible="true" animated="false" legendVisible="false" rotate="-45.0">
-         <xAxis>
-            <NumberAxis animated="false" autoRanging="false" lowerBound="-1.0" minorTickCount="0" minorTickLength="0.5" minorTickVisible="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" tickUnit="0.25" upperBound="1.0" />
-         </xAxis>
-         <yAxis>
-            <NumberAxis animated="false" autoRanging="false" lowerBound="-1.0" minorTickCount="0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" tickUnit="0.25" upperBound="1.0" />
-         </yAxis>
-      </ScatterChart>
+      <Label fx:id="lblTitle" style="-fx-font-size: 20;" />
+      <HBox fx:id="chartParent" alignment="CENTER" fillHeight="false" minHeight="300.0" minWidth="300.0" prefHeight="500.0" prefWidth="500.0" VBox.vgrow="SOMETIMES">
+         <children>
+            <ScatterChart fx:id="chart" alternativeColumnFillVisible="true" animated="false" legendVisible="false" rotate="-45.0">
+               <xAxis>
+                  <NumberAxis animated="false" autoRanging="false" lowerBound="-1.0" minorTickCount="0" minorTickLength="0.5" minorTickVisible="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" tickUnit="0.25" upperBound="1.0" />
+               </xAxis>
+               <yAxis>
+                  <NumberAxis animated="false" autoRanging="false" lowerBound="-1.0" minorTickCount="0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" tickUnit="0.25" upperBound="1.0" />
+               </yAxis>
+            </ScatterChart>
+         </children>
+      </HBox>
    </children>
-</HBox>
+</VBox>
