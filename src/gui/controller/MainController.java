@@ -134,17 +134,26 @@ public class MainController implements Initializable, Pausable {
 		instance = this;
 		setStatus("Loading GUI", -1);
 		root.setStyle(Main.getStyle());
+		Main.getInstance().setProgress(0.45);
 		initWaveForm();
+		Main.getInstance().setProgress(0.5);
 		initTimekeeper();
 		initMenu();
 		initChannelList();
+		Main.getInstance().setProgress(0.55);
 		initFullScreen();
 		initChart();
+		Main.getInstance().setProgress(0.6);
 		initRTA();
+		Main.getInstance().setProgress(0.65);
 		initDrumMonitor();
+		Main.getInstance().setProgress(0.7);
 		initPhaseMonitor();
+		Main.getInstance().setProgress(0.75);
 		initGroups();
+		Main.getInstance().setProgress(0.8);
 		initListener();
+		Main.getInstance().setProgress(0.9);
 		resetStatus();
 	}
 

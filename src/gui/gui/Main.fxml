@@ -72,7 +72,7 @@
                                  </accelerator></CheckMenuItem>
                               <CheckMenuItem fx:id="menuPhaseView" mnemonicParsing="false" text="Phase">
                                  <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                    <KeyCodeCombination alt="UP" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                  </accelerator>
                               </CheckMenuItem>
                           </items>

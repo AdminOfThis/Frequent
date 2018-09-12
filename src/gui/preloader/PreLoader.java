@@ -35,12 +35,20 @@ public class PreLoader extends Preloader implements Initializable {
 	private Label				title, version;
 
 	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		status.setText("Starting ...");
+		title.setText(Main.getOnlyTitle());
+		version.setText(Main.getVersion());
+	}
+
+	@Override
 	public void start(Stage primaryStage) throws Exception {
 		LOG.info("Loading SplashScreen");
 		stage = primaryStage;
 		try {
 			stage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO_SMALL)));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("Unable to load logo");
 			LOG.debug("", e);
 		}
@@ -54,14 +62,12 @@ public class PreLoader extends Preloader implements Initializable {
 		loader.setController(this);
 		Parent p = loader.load();
 		stage.setScene(new Scene(p));
-
 		stage.show();
 	}
 
 	@Override
 	public void handleStateChangeNotification(StateChangeNotification evt) {
 		switch (evt.getType()) {
-
 		case BEFORE_INIT:
 			status.setText("Initializing ...");
 			progress.setProgress(0.1);
@@ -83,12 +89,5 @@ public class PreLoader extends Preloader implements Initializable {
 			ProgressNotification pn = (ProgressNotification) arg0;
 			progress.setProgress(pn.getProgress());
 		}
-	}
-
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		status.setText("Starting ...");
-		title.setText(Main.getOnlyTitle());
-		version.setText(Main.getVersion());
 	}
 }

@@ -10,8 +10,7 @@ import control.ASIOController;
 import data.Channel;
 import gui.pausable.PausableView;
 import gui.utilities.controller.VectorScope;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import gui.utilities.controller.WaveFormChart;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -29,6 +28,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	@FXML
 	private AnchorPane			chartChannel1, chartChannel2;
 	private VectorScope			vectorScope;
+	private WaveFormChart		chart1, chart2;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -39,21 +39,34 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		AnchorPane.setTopAnchor(vectorScope, .0);
 		AnchorPane.setLeftAnchor(vectorScope, .0);
 		AnchorPane.setRightAnchor(vectorScope, .0);
+		chart1 = new WaveFormChart();
+		chart1.setParentPausable(this);
+		chartChannel1.getChildren().add(chart1);
+		AnchorPane.setBottomAnchor(chart1, .0);
+		AnchorPane.setTopAnchor(chart1, .0);
+		AnchorPane.setLeftAnchor(chart1, .0);
+		AnchorPane.setRightAnchor(chart1, .0);
+		chart2 = new WaveFormChart();
+		chart2.setParentPausable(this);
+		chartChannel2.getChildren().add(chart2);
+		AnchorPane.setBottomAnchor(chart2, .0);
+		AnchorPane.setTopAnchor(chart2, .0);
+		AnchorPane.setLeftAnchor(chart2, .0);
+		AnchorPane.setRightAnchor(chart2, .0);
 		// updating channels
 		if (ASIOController.getInstance() != null) {
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
 			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
 		}
 		// adding listener
-		ChangeListener<Channel> changeListener = new ChangeListener<Channel>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Channel> observable, Channel oldValue, Channel newValue) {
-				vectorScope.setChannels(cmbChannel1.getValue(), cmbChannel2.getValue());
-			}
-		};
-		cmbChannel1.valueProperty().addListener(changeListener);
-		cmbChannel2.valueProperty().addListener(changeListener);
+		cmbChannel1.valueProperty().addListener(e -> {
+			vectorScope.setChannels(cmbChannel1.getValue(), cmbChannel2.getValue());
+			chart1.setChannel(cmbChannel1.getValue());
+		});
+		cmbChannel2.valueProperty().addListener(e -> {
+			vectorScope.setChannels(cmbChannel1.getValue(), cmbChannel2.getValue());
+			chart2.setChannel(cmbChannel2.getValue());
+		});
 	}
 
 	@Override
