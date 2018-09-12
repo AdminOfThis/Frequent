@@ -10,18 +10,21 @@ import control.InputListener;
 import data.Input;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
+import gui.utilities.FXMLUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.layout.AnchorPane;
 
-public class WaveFormChartController implements Initializable, InputListener, PausableComponent {
+public class WaveFormChart extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
-	public static final String			PATH		= "/gui/utilities/gui/WaveFormChart.fxml";
-	private static final Logger			LOG			= Logger.getLogger(WaveFormChartController.class);
+	private static final Logger			LOG			= Logger.getLogger(WaveFormChart.class);
+	private static final String			FXML		= "/gui/utilities/gui/WaveFormChart.fxml";
 	private static final long			TIME_FRAME	= 5000;
 	@FXML
 	private LineChart<Number, Number>	chart;
@@ -32,6 +35,15 @@ public class WaveFormChartController implements Initializable, InputListener, Pa
 	private boolean						pause		= false;
 	private Pausable					pausableParent;
 	private boolean						styleSet	= false;
+
+	public WaveFormChart() {
+		Parent p = FXMLUtil.loadFXML(FXML, this);
+		getChildren().add(p);
+		AnchorPane.setTopAnchor(p, 0.0);
+		AnchorPane.setBottomAnchor(p, 0.0);
+		AnchorPane.setLeftAnchor(p, 0.0);
+		AnchorPane.setRightAnchor(p, 0.0);
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
