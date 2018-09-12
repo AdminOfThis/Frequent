@@ -43,7 +43,6 @@ public class VectorscopeController implements Initializable, Pausable, ChannelLi
 
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				System.out.println("hey");
 				double h = Math.min(chartParent.getWidth(), chartParent.getHeight());
 				double val = Math.sqrt(0.5 * Math.pow(h, 2));
 				chart.setPrefHeight(val);
