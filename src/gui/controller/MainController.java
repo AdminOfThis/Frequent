@@ -23,7 +23,7 @@ import gui.pausable.Pausable;
 import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
 import gui.utilities.controller.InputCell;
-import gui.utilities.controller.WaveFormChartController;
+import gui.utilities.controller.WaveFormChart;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -114,7 +114,7 @@ public class MainController implements Initializable, Pausable {
 	private ASIOController					controller;
 	private TimeKeeperController			timeKeeperController;
 	// private DrumController drumController;
-	private WaveFormChartController			waveFormController;
+	private WaveFormChart					waveFormController;
 
 	public static MainController getInstance() {
 		return instance;
@@ -198,14 +198,13 @@ public class MainController implements Initializable, Pausable {
 
 	private void initWaveForm() {
 		LOG.debug("Loading WaveForm");
-		Parent p = FXMLUtil.loadFXML(WaveFormChartController.PATH);
-		waveFormController = (WaveFormChartController) FXMLUtil.getController();
+		waveFormController = new WaveFormChart();
 		waveFormController.setParentPausable(this);
-		waveFormPane.getChildren().add(p);
-		AnchorPane.setTopAnchor(p, .0);
-		AnchorPane.setBottomAnchor(p, .0);
-		AnchorPane.setLeftAnchor(p, .0);
-		AnchorPane.setRightAnchor(p, .0);
+		waveFormPane.getChildren().add(waveFormController);
+		AnchorPane.setTopAnchor(waveFormController, .0);
+		AnchorPane.setBottomAnchor(waveFormController, .0);
+		AnchorPane.setLeftAnchor(waveFormController, .0);
+		AnchorPane.setRightAnchor(waveFormController, .0);
 	}
 
 	private void initChart() {
