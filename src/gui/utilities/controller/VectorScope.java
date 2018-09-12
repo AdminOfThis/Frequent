@@ -7,20 +7,26 @@ import org.apache.log4j.Logger;
 
 import control.ChannelListener;
 import data.Channel;
-import gui.controller.Pausable;
+import gui.gui.PausableComponent;
+import gui.pausable.Pausable;
+import gui.pausable.PausableView;
+import gui.utilities.FXMLUtil;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
-public class VectorscopeController implements Initializable, Pausable, ChannelListener {
+public class VectorScope extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
-	private static final Logger				LOG				= Logger.getLogger(VectorscopeController.class);
+	private static final Logger				LOG				= Logger.getLogger(VectorScope.class);
+	private static final String				FXML			= "/gui/utilities/gui/VectorScope.fxml";
 	private static final int				MAX_DATA_POINTS	= 5000;
 	@FXML
 	private HBox							chartParent;
@@ -34,9 +40,22 @@ public class VectorscopeController implements Initializable, Pausable, ChannelLi
 	private long							timeFirstBuffer, timeSecondBuffer;
 	private float[]							buffer1, buffer2;
 
+	public VectorScope() {
+		Parent p = FXMLUtil.loadFXML(FXML, this);
+		getChildren().add(p);
+		AnchorPane.setTopAnchor(p, 0.0);
+		AnchorPane.setBottomAnchor(p, 0.0);
+		AnchorPane.setLeftAnchor(p, 0.0);
+		AnchorPane.setRightAnchor(p, 0.0);
+	}
+
+	public VectorScope(PausableView parent) {
+		this();
+		parentPausable = parent;
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		LOG.info("Starting vectorscope");
 		chart.getData().add(vectorSeries);
 		chart.prefWidthProperty().bindBidirectional(chart.prefHeightProperty());
 		ChangeListener<Number> lis = new ChangeListener<Number>() {
@@ -58,18 +77,18 @@ public class VectorscopeController implements Initializable, Pausable, ChannelLi
 	public void setChannels(Channel c1, Channel c2) {
 		if (!c1.equals(channel1) || !c2.equals(channel2)) {
 			if (channel1 != null) {
-				channel1.removeObserver(this);
+				channel1.removeListener(this);
 			}
 			if (channel2 != null) {
-				channel2.removeObserver(this);
+				channel2.removeListener(this);
 			}
 			channel1 = c1;
 			channel2 = c2;
 			if (channel1 != null) {
-				channel1.addObserver(this);
+				channel1.addListener(this);
 			}
 			if (channel2 != null) {
-				channel2.addObserver(this);
+				channel2.addListener(this);
 			}
 			if (channel1 != null && channel2 != null) {
 				restarting = true;

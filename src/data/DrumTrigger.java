@@ -1,7 +1,7 @@
 package data;
 
 import control.InputListener;
-import gui.utilities.DrumTriggerObserver;
+import gui.utilities.DrumTriggerListener;
 
 public class DrumTrigger implements InputListener {
 
@@ -9,7 +9,7 @@ public class DrumTrigger implements InputListener {
 	private String					name;
 	private Channel					channel;
 	private double					treshold;
-	private DrumTriggerObserver		obs;
+	private DrumTriggerListener		obs;
 	private boolean					below			= true;
 
 	public DrumTrigger(String name) {
@@ -30,11 +30,11 @@ public class DrumTrigger implements InputListener {
 
 	public void setChannel(Channel channel) {
 		if (this.channel != null) {
-			channel.removeObserver(this);
+			channel.removeListener(this);
 		}
 		this.channel = channel;
 		if (this.channel != null) {
-			this.channel.addObserver(this);
+			this.channel.addListener(this);
 		}
 	}
 
@@ -58,11 +58,11 @@ public class DrumTrigger implements InputListener {
 		}
 	}
 
-	public DrumTriggerObserver getObs() {
+	public DrumTriggerListener getObs() {
 		return obs;
 	}
 
-	public void setObs(DrumTriggerObserver obs) {
+	public void setObs(DrumTriggerListener obs) {
 		this.obs = obs;
 	}
 }

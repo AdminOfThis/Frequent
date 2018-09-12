@@ -91,7 +91,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 
 	public void setBuffer(float[] buffer) {
 		this.buffer = buffer;
-		for (InputListener l : getObserverList()) {
+		for (InputListener l : getListeners()) {
 			if (l instanceof ChannelListener) {
 				new Thread(new Runnable() {
 

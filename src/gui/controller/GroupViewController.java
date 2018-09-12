@@ -1,6 +1,7 @@
 package gui.controller;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,7 @@ import control.ASIOController;
 import control.InputListener;
 import data.Channel;
 import data.Group;
+import gui.pausable.PausableView;
 import gui.utilities.controller.VuMeter;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -20,6 +22,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
@@ -35,9 +38,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class GroupController implements Initializable, Pausable {
+public class GroupViewController implements Initializable, PausableView {
 
-	private static final Logger			LOG		= Logger.getLogger(GroupController.class);
+	private static final Logger			LOG		= Logger.getLogger(GroupViewController.class);
 	@FXML
 	private SplitPane					root;
 	@FXML
@@ -51,7 +54,7 @@ public class GroupController implements Initializable, Pausable {
 	@FXML
 	private ToggleButton				tglTimed;
 	private boolean						pause	= true;
-	private static GroupController		instance;
+	private static GroupViewController		instance;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -75,10 +78,10 @@ public class GroupController implements Initializable, Pausable {
 		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
 		yAxis.setAutoRanging(false);
 		yAxis.setUpperBound(0.0);
-		yAxis.setLowerBound(FFTController.FFT_MIN);
+		yAxis.setLowerBound(RTAViewController.FFT_MIN);
 	}
 
-	public static GroupController getInstance() {
+	public static GroupViewController getInstance() {
 		return instance;
 	}
 
@@ -105,7 +108,6 @@ public class GroupController implements Initializable, Pausable {
 			if (redrawChart) {
 				chart.getData().clear();
 			}
-
 			for (Group g : ASIOController.getInstance().getGroupList()) {
 				// groups
 				VuMeter meter = new VuMeter(g, Orientation.VERTICAL);
@@ -142,7 +144,6 @@ public class GroupController implements Initializable, Pausable {
 					groupBox.getChildren().add(meter2Box);
 					HBox.setHgrow(meter2Box, Priority.ALWAYS);
 				}
-
 				// adding chart series
 				if (redrawChart) {
 					Series<Number, Number> series = new Series<>();
@@ -160,8 +161,8 @@ public class GroupController implements Initializable, Pausable {
 						}
 					}
 					NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-					// adding observer to group for chart
-					g.addObserver(new InputListener() {
+					// adding listener to group for chart
+					g.addListener(new InputListener() {
 
 						@Override
 						public void levelChanged(double level) {
@@ -183,7 +184,7 @@ public class GroupController implements Initializable, Pausable {
 										}
 									}
 									double leveldB = Channel.percentToDB(level * 1000.0);
-									leveldB = Math.max(leveldB, FFTController.FFT_MIN);
+									leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
 									long time = System.currentTimeMillis();
 									series.getData().add(new Data<Number, Number>(time, leveldB));
 									// removing old data
@@ -227,7 +228,7 @@ public class GroupController implements Initializable, Pausable {
 	}
 
 	@Override
-	public void setParentPausable(Pausable parent) {
-		LOG.error("Uninplemented method called: addParentPausable");
+	public ArrayList<Node> getHeader() {
+		return null;
 	}
 }

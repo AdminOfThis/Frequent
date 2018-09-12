@@ -8,7 +8,8 @@ import org.apache.log4j.Logger;
 
 import control.InputListener;
 import data.Input;
-import gui.controller.Pausable;
+import gui.gui.PausableComponent;
+import gui.pausable.Pausable;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,7 +18,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 
-public class WaveFormChartController implements Initializable, InputListener, Pausable {
+public class WaveFormChartController implements Initializable, InputListener, PausableComponent {
 
 	public static final String			PATH		= "/gui/utilities/gui/WaveFormChart.fxml";
 	private static final Logger			LOG			= Logger.getLogger(WaveFormChartController.class);
@@ -43,12 +44,12 @@ public class WaveFormChartController implements Initializable, InputListener, Pa
 		try {
 			if (!c.equals(channel)) {
 				if (channel != null) {
-					channel.removeObserver(this);
+					channel.removeListener(this);
 				}
 				series.getData().clear();
 				this.channel = c;
 				if (c != null) {
-					c.addObserver(this);
+					c.addListener(this);
 				}
 			}
 		}
