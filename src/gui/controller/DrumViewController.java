@@ -290,6 +290,11 @@ public class DrumViewController implements Initializable, PausableView {
 
 	@Override
 	public ArrayList<Node> getHeader() {
-		return null;
+		ArrayList<Node> res = new ArrayList<>();
+		res.add(btnSetup);
+		return res;
 	}
+
+	@Override
+	public void refresh() {}
 }

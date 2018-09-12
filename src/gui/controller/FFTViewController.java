@@ -15,6 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.FileChooser;
@@ -29,6 +30,8 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	private ResizableCanvas		canvas;
 	@FXML
 	private ToggleButton		tglPlay;
+	@FXML
+	private Button				btnExport;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -93,6 +96,12 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 
 	@Override
 	public ArrayList<Node> getHeader() {
-		return null;
+		ArrayList<Node> result = new ArrayList<>();
+		result.add(tglPlay);
+		result.add(btnExport);
+		return result;
 	}
+
+	@Override
+	public void refresh() {}
 }

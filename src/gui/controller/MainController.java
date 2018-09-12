@@ -6,18 +6,21 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
+import control.FFTListener;
 import control.TimeKeeper;
 import data.Channel;
 import data.FileIO;
 import data.Group;
 import data.Input;
 import gui.pausable.Pausable;
+import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
 import gui.utilities.controller.InputCell;
 import gui.utilities.controller.WaveFormChartController;
@@ -47,6 +50,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -69,6 +73,8 @@ public class MainController implements Initializable, Pausable {
 	private AnchorPane						waveFormPane;
 	@FXML
 	private StackPane						stack;
+	@FXML
+	private HBox							buttonBox;
 	/**
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
@@ -103,10 +109,9 @@ public class MainController implements Initializable, Pausable {
 	private boolean							showHidden			= false;
 	private boolean							pause				= false;
 	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
+	private HashMap<Node, PausableView>		controllerMap		= new HashMap<>();
 	private double							channelSplitRatio	= 0.8;
 	private ASIOController					controller;
-	private RTAViewController				fftController;
-	private FFTViewController				rtaController;
 	private TimeKeeperController			timeKeeperController;
 	// private DrumController drumController;
 	private WaveFormChartController			waveFormController;
@@ -147,6 +152,7 @@ public class MainController implements Initializable, Pausable {
 		Parent p = FXMLUtil.loadFXML(GROUP_PATH);
 		if (p != null) {
 			contentMap.put(toggleGroupsView, p);
+			controllerMap.put(p, (PausableView) FXMLUtil.getController());
 		} else {
 			LOG.warn("Unable to load FFT Chart");
 		}
@@ -163,19 +169,29 @@ public class MainController implements Initializable, Pausable {
 				if (toggleButton.getToggleGroup().getSelectedToggle() == null && contentPane.getItems().size() > 0) {
 					contentPane.getItems().remove(0);
 				} else if (toggleButton.isSelected()) {
+					// on selection
 					Node n = contentMap.get(toggleButton);
-					if (toggleButton.equals(toggleGroupsView)) {
-						GroupViewController.getInstance().refresh();
-					}
 					if (contentPane.getItems().size() < 1) {
 						contentPane.getItems().add(0, n);
 					} else {
 						contentPane.getItems().set(0, n);
 					}
+					PausableView v = controllerMap.get(n);
+					buttonBox.getChildren().clear();
+					if (v.getHeader() != null) {
+						buttonBox.getChildren().addAll(v.getHeader());
+					}
 				}
-				fftController.pause(!toggleFFTView.isSelected());
-				rtaController.pause(!toggleRTAView.isSelected());
-				GroupViewController.getInstance().pause(!toggleGroupsView.isSelected());
+				for (Entry<Node, PausableView> v : controllerMap.entrySet()) {
+					// Pausing if not shown
+					if (contentPane.getItems().contains(v.getKey())) {
+						// shown
+						v.getValue().refresh();
+						v.getValue().pause(false);
+					} else {
+						v.getValue().pause(true);
+					}
+				}
 			});
 		}
 	}
@@ -195,8 +211,8 @@ public class MainController implements Initializable, Pausable {
 	private void initChart() {
 		Parent p = FXMLUtil.loadFXML(FFT_PATH);
 		if (p != null) {
-			fftController = (RTAViewController) FXMLUtil.getController();
 			contentMap.put(toggleFFTView, p);
+			controllerMap.put(p, (PausableView) FXMLUtil.getController());
 		} else {
 			LOG.warn("Unable to load FFT Chart");
 		}
@@ -204,9 +220,9 @@ public class MainController implements Initializable, Pausable {
 
 	private void initRTA() {
 		Parent p = FXMLUtil.loadFXML(RTA_PATH);
-		rtaController = (FFTViewController) FXMLUtil.getController();
 		if (p != null) {
 			contentMap.put(toggleRTAView, p);
+			controllerMap.put(p, (PausableView) FXMLUtil.getController());
 		} else {
 			LOG.warn("Unable to load FFT Chart");
 		}
@@ -272,7 +288,9 @@ public class MainController implements Initializable, Pausable {
 					if (newValue.getValue() instanceof Channel) {
 						Channel channel = (Channel) newValue.getValue();
 						controller.setActiveChannel(channel.getChannel());
-						fftController.setChannel(channel);
+						// getting RTA Controller
+						RTAViewController con = (RTAViewController) controllerMap.get(contentMap.get(toggleFFTView));
+						con.setChannel(channel);
 						LOG.info("Switching to channel " + channel.getName());
 					}
 					waveFormController.setChannel(newValue.getValue());
@@ -335,8 +353,8 @@ public class MainController implements Initializable, Pausable {
 
 	public void initIO(String ioName) {
 		controller = new ASIOController(ioName);
-		controller.addFFTListener(fftController);
-		controller.addFFTListener(rtaController);
+		controller.addFFTListener((FFTListener) controllerMap.get(contentMap.get(toggleFFTView)));
+		controller.addFFTListener((FFTListener) controllerMap.get(contentMap.get(toggleRTAView)));
 		timeKeeperController.setChannels(controller.getInputList());
 		setChannelList(controller.getInputList());
 		lblDriver.setText(ioName);
@@ -493,9 +511,9 @@ public class MainController implements Initializable, Pausable {
 		if (controller != null) {
 			refreshInputs();
 		}
-		timeKeeperController.refresh();
-		fftController.refresh();
-		GroupViewController.getInstance().refresh();
+		for (PausableView v : controllerMap.values()) {
+			v.refresh();
+		}
 	}
 
 	@FXML
@@ -511,6 +529,7 @@ public class MainController implements Initializable, Pausable {
 		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
 		if (p != null) {
 			contentMap.put(toggleDrumView, p);
+			controllerMap.put(p, (PausableView) FXMLUtil.getController());
 		} else {
 			LOG.warn("Unable to load FFT Chart");
 		}
@@ -520,6 +539,7 @@ public class MainController implements Initializable, Pausable {
 		Parent p = FXMLUtil.loadFXML(PHASE_PATH);
 		if (p != null) {
 			contentMap.put(togglePhaseView, p);
+			controllerMap.put(p, (PausableView) FXMLUtil.getController());
 		} else {
 			LOG.warn("Unable to load VectorScope");
 		}
