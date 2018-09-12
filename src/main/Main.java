@@ -29,33 +29,30 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
 	private static Logger		LOG;
-	private static final String VERSION_KEY = "Implementation-Version";
-	private static final String TITLE_KEY = "Implementation-Title";
+	private static final String	VERSION_KEY		= "Implementation-Version";
+	private static final String	TITLE_KEY		= "Implementation-Title";
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
 	private static final String	GUI_IO_CHOOSER	= "/gui/gui/IOChooser.fxml";
 	private static final String	GUI_MAIN_PATH	= "/gui/gui/Main.fxml";
-
 	private static final String	LOGO			= "/res/logo_64.png";
 	private static String		style			= "";
 	private static boolean		debug			= false, fast = false;
-	private static String version, title;
-	
+	private static String		version, title;
 	private Scene				loginScene;
 	private IOChooserController	loginController;
+	private static Main			instance;
 
 	public static void main(String[] args) {
 		initLogger();
 		title = getFromManifest(TITLE_KEY, "Frequent");
 		version = getFromManifest(VERSION_KEY, "LOCAL");
-		LOG.info(" === " + getTitle() +" ===");
+		LOG.info(" === " + getTitle() + " ===");
 		parseArgs(args);
-		
 		LauncherImpl.launchApplication(Main.class, PreLoader.class, args);
 	}
 
 	/**
-	 * checks the start parameters for keywords and sets the debug flag to true
-	 * if found
+	 * checks the start parameters for keywords and sets the debug flag to true if found
 	 * 
 	 * @param args
 	 */
@@ -96,7 +93,8 @@ public class Main extends Application {
 						a = args[index];
 					}
 					LOG.info("Loaded style as: " + style);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					LOG.warn("Unable to load style from commandline");
 					LOG.debug("", e);
 				}
@@ -112,7 +110,8 @@ public class Main extends Application {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
 			LOG = Logger.getLogger(Main.class);
 			LOG.info("=== Starting Frequent ===");
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.fatal("Unexpected error while initializing logging", e);
 		}
 	}
@@ -120,14 +119,15 @@ public class Main extends Application {
 	@Override
 	public void init() throws Exception {
 		super.init();
+		instance = this;
 		notifyPreloader(new Preloader.ProgressNotification(0.25));
 		Parent parent = FXMLUtil.loadFXML(GUI_IO_CHOOSER);
 		loginController = (IOChooserController) FXMLUtil.getController();
 		loginScene = new Scene(parent);
-		notifyPreloader(new Preloader.ProgressNotification(0.5));
+		notifyPreloader(new Preloader.ProgressNotification(0.4));
 		Scene mainScene = loadMain();
 		loginController.setMainScene(mainScene);
-		notifyPreloader(new Preloader.ProgressNotification(0.75));
+		notifyPreloader(new Preloader.ProgressNotification(0.95));
 		Thread.sleep(100);
 	}
 
@@ -140,7 +140,8 @@ public class Main extends Application {
 		primaryStage.setResizable(false);
 		try {
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO)));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("Unable to load logo");
 			LOG.debug("", e);
 		}
@@ -173,13 +174,14 @@ public class Main extends Application {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
 		try {
 			Parent p = loader.load();
-//			MainController controller = loader.getController();
-			// if (ioName != null) {
-			// controller.initIO(ioName);
-			// }
+// MainController controller = loader.getController();
+// if (ioName != null) {
+// controller.initIO(ioName);
+// }
 			LOG.info("Main Window loaded");
 			return new Scene(p);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			LOG.error("Unable to load Main GUI", e);
 			Main.close();
 		}
@@ -205,30 +207,41 @@ public class Main extends Application {
 	public static String getOnlyTitle() {
 		return title;
 	}
-	
+
 	public static String getFromManifest(String key, String def) {
 		try {
-		Enumeration<URL> resources = Main.class.getClassLoader()
-				  .getResources("META-INF/MANIFEST.MF");
-				while (resources.hasMoreElements()) {
-				    try {
-				      Manifest manifest = new Manifest(resources.nextElement().openStream());
-				      if("Frequent".equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Version")))
-				      // check that this is your manifest and do what you need or get the next one
-				      return manifest.getMainAttributes().getValue(key);
-				    } catch (IOException E) {
-				    	LOG.warn(E);
-				    }
+			Enumeration<URL> resources = Main.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+			while (resources.hasMoreElements()) {
+				try {
+					Manifest manifest = new Manifest(resources.nextElement().openStream());
+					if ("Frequent".equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Version")))
+						// check that this is your manifest and do what you need or get the next one
+						return manifest.getMainAttributes().getValue(key);
 				}
-		} catch(Exception e) {
+				catch (IOException E) {
+					LOG.warn(E);
+				}
+			}
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to read version from manifest");
 			LOG.debug("", e);
 		}
-
 		return def;
 	}
 
 	public static String getVersion() {
 		return version;
+	}
+
+	public static Main getInstance() {
+		return instance;
+	}
+
+	public void setProgress(double prog) {
+		try {
+			notifyPreloader(new Preloader.ProgressNotification(prog));
+		}
+		catch (Exception e) {}
 	}
 }
