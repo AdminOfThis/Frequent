@@ -109,7 +109,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 				// System.out.println(map[1][pointCount]);
 				content.setFill(Color.web(makeColorTransparent(accent, Channel.percentToDB(map[1][pointCount]))));
 				double startPoint = getWidth() / 2000.0 * map[0][pointCount];
-// System.out.println(startPoint);
+				// System.out.println(startPoint);
 				double endpoint;
 				if (pointCount < map[0].length - 1) {
 					endpoint = getWidth() / 2000.0 * map[0][pointCount + 1];
@@ -141,25 +141,18 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 					ResizableCanvas canvas = recreateCanvas();
 					SnapshotParameters params = new SnapshotParameters();
 					params.setFill(Color.web(FXMLUtil.getStyleValue("-fx-base")));
-					Platform.runLater(new Runnable() {
-
-						@Override
-						public void run() {
-							try {
-								WritableImage image = canvas.snapshot(params, null);
-								RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
-								ImageIO.write(renderedImage, "png", file);
-							}
-							catch (Exception e) {
-								LOG.warn("Unable to export image", e);
-							}
-							finally {
-								MainController.getInstance().resetStatus();
-							}
+					Platform.runLater(() -> {
+						try {
+							WritableImage image = canvas.snapshot(params, null);
+							RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
+							ImageIO.write(renderedImage, "png", file);
+						} catch (Exception e) {
+							LOG.warn("Unable to export image", e);
+						} finally {
+							MainController.getInstance().resetStatus();
 						}
 					});
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					LOG.warn("Unable to export image", ex);
 					MainController.getInstance().resetStatus();
 				}
@@ -188,7 +181,8 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			if (!pause) {
 				reset();
 				RTAIO.deleteFile();
-			} else {}
+			} else {
+			}
 		}
 	}
 

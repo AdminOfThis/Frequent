@@ -203,16 +203,20 @@ public class DrumViewController implements Initializable, PausableView {
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
+				} catch (Exception e) {
 				}
-				catch (Exception e) {}
-				if (trig != null) { return trig.getName(); }
+				if (trig != null) {
+					return trig.getName();
+				}
 				return null;
 			}
 
 			@Override
 			public Number fromString(String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
+					if (trig.getName().equals(string)) {
+						return triggerList.indexOf(trig);
+					}
 				}
 				return null;
 			}
@@ -257,16 +261,13 @@ public class DrumViewController implements Initializable, PausableView {
 
 	public void addEntry(DrumTrigger trig, double value) {
 		// LOG.info("Adding Drum Entry " + trig.getName() + ", " + value);
-		Platform.runLater(new Runnable() {
-
-			@Override
-			public void run() {
-				Series<Number, Number> series = seriesMap.get(trig);
-				if (series != null) {
-					Data<Number, Number> data = new XYChart.Data<>(System.currentTimeMillis(), triggerList.indexOf(trig) + 1);
-					series.getData().add(data);
-				}
+		Platform.runLater(() -> {
+			Series<Number, Number> series = seriesMap.get(trig);
+			if (series != null) {
+				Data<Number, Number> data = new XYChart.Data<>(System.currentTimeMillis(), triggerList.indexOf(trig) + 1);
+				series.getData().add(data);
 			}
+
 		});
 	}
 
@@ -296,5 +297,6 @@ public class DrumViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public void refresh() {}
+	public void refresh() {
+	}
 }

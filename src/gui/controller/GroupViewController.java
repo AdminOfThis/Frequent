@@ -168,34 +168,30 @@ public class GroupViewController implements Initializable, PausableView {
 
 						@Override
 						public void levelChanged(double level, Input in) {
-							Platform.runLater(new Runnable() {
-
-								@Override
-								public void run() {
-									if (!series.getNode().getStyle().equals("-fx-stroke: " + g.getColor())) {
-										String color = g.getColor();
-										if (color == null) {
-											color = "-fx-accent";
-										}
-										series.getNode().setStyle("-fx-stroke: " + color);
-										for (LegendItem i : legend.getItems()) {
-											if (i.getText().equals(g.getName())) {
-												i.setSymbol(new Rectangle(10, 4));
-												i.getSymbol().setStyle("-fx-fill: " + color);
-											}
+							Platform.runLater(() -> {
+								if (!series.getNode().getStyle().equals("-fx-stroke: " + g.getColor())) {
+									String color = g.getColor();
+									if (color == null) {
+										color = "-fx-accent";
+									}
+									series.getNode().setStyle("-fx-stroke: " + color);
+									for (LegendItem i : legend.getItems()) {
+										if (i.getText().equals(g.getName())) {
+											i.setSymbol(new Rectangle(10, 4));
+											i.getSymbol().setStyle("-fx-fill: " + color);
 										}
 									}
-									double leveldB = Channel.percentToDB(level * 1000.0);
-									leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
-									long time = System.currentTimeMillis();
-									series.getData().add(new Data<Number, Number>(time, leveldB));
-									// removing old data
-									while (series.getData().size() > 500) {
-										series.getData().remove(0);
-									}
-									xAxis.setUpperBound(time + 100);
-									xAxis.setLowerBound((long) series.getData().get(0).getXValue());
 								}
+								double leveldB = Channel.percentToDB(level * 1000.0);
+								leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
+								long time = System.currentTimeMillis();
+								series.getData().add(new Data<Number, Number>(time, leveldB));
+								// removing old data
+								while (series.getData().size() > 500) {
+									series.getData().remove(0);
+								}
+								xAxis.setUpperBound(time + 100);
+								xAxis.setLowerBound((long) series.getData().get(0).getXValue());
 							});
 						}
 					});

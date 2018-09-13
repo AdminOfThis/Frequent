@@ -78,54 +78,51 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 	@Override
 	public void levelChanged(double level, Input in) {
 		if (!isPaused()) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					if (channel != null) {
-						double peakdB = Channel.percentToDB(channel.getLevel() * 1000.0);
-						if (peak < peakdB) {
-							peak = peakdB;
-						}
-						if (orientation == Orientation.VERTICAL) {
-							vuPeakPane.setPrefHeight(
-								vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-							vuLastPeakPane.setPrefHeight(
-								vuPane.getHeight() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-						} else {
-							vuPeakPane.setPrefWidth(
-								vuPane.getWidth() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-							vuLastPeakPane.setPrefWidth(
-								vuPane.getWidth() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-						}
-						if (peakdB >= RTAViewController.FFT_MIN) {
-							lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
-						} else {
-							lblPeak.setText("-\u221E");
-						}
-						if (peakdB >= -0.5) {
-							vuPane.setStyle("-fx-background-color: red");
-						} else if (peakdB >= -5.0) {
-							vuPane.setStyle("-fx-background-color: yellow");
-						} else {
-							vuPane.setStyle("");
-						}
-						if (peak == 0.0) {
-							peak = -1.0;
-						}
-						peak = (1 + DB_PEAK_FALLOFF) * peak;
+			Platform.runLater(() -> {
+				if (channel != null) {
+					double peakdB = Channel.percentToDB(channel.getLevel() * 1000.0);
+					if (peak < peakdB) {
+						peak = peakdB;
+					}
+					if (orientation == Orientation.VERTICAL) {
+						vuPeakPane.setPrefHeight(
+							vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+						vuLastPeakPane.setPrefHeight(
+							vuPane.getHeight() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
 					} else {
-						if (orientation == Orientation.VERTICAL) {
-							vuPeakPane.setPrefHeight(0);
-							vuLastPeakPane.setPrefHeight(0);
-						} else {
-							vuPeakPane.setPrefWidth(0);
-							vuLastPeakPane.setPrefWidth(0);
-						}
+						vuPeakPane.setPrefWidth(
+							vuPane.getWidth() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+						vuLastPeakPane.setPrefWidth(
+							vuPane.getWidth() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+					}
+					if (peakdB >= RTAViewController.FFT_MIN) {
+						lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
+					} else {
+						lblPeak.setText("-\u221E");
+					}
+					if (peakdB >= -0.5) {
+						vuPane.setStyle("-fx-background-color: red");
+					} else if (peakdB >= -5.0) {
+						vuPane.setStyle("-fx-background-color: yellow");
+					} else {
+						vuPane.setStyle("");
+					}
+					if (peak == 0.0) {
+						peak = -1.0;
+					}
+					peak = (1 + DB_PEAK_FALLOFF) * peak;
+				} else {
+					if (orientation == Orientation.VERTICAL) {
+						vuPeakPane.setPrefHeight(0);
+						vuLastPeakPane.setPrefHeight(0);
+					} else {
+						vuPeakPane.setPrefWidth(0);
+						vuLastPeakPane.setPrefWidth(0);
 					}
 				}
 			});
 		}
+
 	}
 
 	public void setChannel(Input c) {

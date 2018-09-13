@@ -399,7 +399,9 @@ public class MainController implements Initializable, Pausable {
 				return true;
 			}
 			if (!i.isLeaf()) {
-				if (findAndSelect(i, channel)) { return true; }
+				if (findAndSelect(i, channel)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -571,28 +573,20 @@ public class MainController implements Initializable, Pausable {
 	}
 
 	public void setStatus(String text) {
-		Platform.runLater(new Runnable() {
-
-			@Override
-			public void run() {
-				lblStatus.setText(text);
-				progStatus.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
-				progStatus.setVisible(true);
-			}
+		Platform.runLater(() -> {
+			lblStatus.setText(text);
+			progStatus.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+			progStatus.setVisible(true);
 		});
 	}
 
 	public void setStatus(double value) {
-		Platform.runLater(new Runnable() {
-
-			@Override
-			public void run() {
-				progStatus.setProgress(value);
-				if (progStatus.getProgress() == 0) {
-					progStatus.setVisible(false);
-				} else {
-					progStatus.setVisible(true);
-				}
+		Platform.runLater(() -> {
+			progStatus.setProgress(value);
+			if (progStatus.getProgress() == 0) {
+				progStatus.setVisible(false);
+			} else {
+				progStatus.setVisible(true);
 			}
 		});
 	}
@@ -632,8 +626,7 @@ public class MainController implements Initializable, Pausable {
 				}
 			}
 			refresh();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Error while hiding items");
 			LOG.debug("", e);
 		}
@@ -647,8 +640,7 @@ public class MainController implements Initializable, Pausable {
 				}
 			}
 			refresh();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Error while grouping items");
 			LOG.debug("", e);
 		}

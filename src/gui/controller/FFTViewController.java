@@ -38,19 +38,15 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 		canvas = new ResizableCanvas(canvasParent);
 		canvas.setParentPausable(this);
 		canvasParent.setContent(canvas);
-// if (ASIOController.getInstance() != null) {
-// ASIOController.getInstance().addFFTListener(this);
-// }
+		// if (ASIOController.getInstance() != null) {
+		// ASIOController.getInstance().addFFTListener(this);
+		// }
 	}
 
 	@Override
 	public void newFFT(double[][] map) {
-		Platform.runLater(new Runnable() {
-
-			@Override
-			public void run() {
-				canvas.addLine(map);
-			}
+		Platform.runLater(() -> {
+			canvas.addLine(map);
 		});
 	}
 
@@ -103,5 +99,6 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	}
 
 	@Override
-	public void refresh() {}
+	public void refresh() {
+	}
 }
