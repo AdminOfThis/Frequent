@@ -36,7 +36,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	private static final double		DECAY		= 1.01;
 	public static final double		FFT_MIN		= -80;
 	private static final Logger		LOG			= Logger.getLogger(RTAViewController.class);
-// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
+	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
 	private static final int		X_MIN		= 25;
 	private static final int		X_MAX		= 20000;
 	@FXML
@@ -69,7 +69,8 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 
 	// private void initTuner() {
 	// Parent p = FXMLUtil.loadFXML(TUNER_PATH);
-	// TunerController tunerController = (TunerController) FXMLUtil.getController();
+	// TunerController tunerController = (TunerController)
+	// FXMLUtil.getController();
 	// topPane.getChildren().add(1, p);
 	// HBox.setHgrow(p, Priority.ALWAYS);
 	// tunerController.show(true);
@@ -145,37 +146,32 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	}
 
 	private void updateChart(double[][] map) {
-		Platform.runLater(new Runnable() {
-
-			@Override
-			public void run() {
-				ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
-				for (int count = 0; count < map[0].length; count++) {
-					double frequency = map[0][count];
-					if (frequency >= 20 && frequency <= X_MAX) {
-						double level = Math.abs(map[1][count]);
-						level = Channel.percentToDB(level);
-						Data<Number, Number> data = new XYChart.Data<>(frequency, level);
-						dataList.add(data);
-					}
+		Platform.runLater(() -> {
+			ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
+			for (int count = 0; count < map[0].length; count++) {
+				double frequency = map[0][count];
+				if (frequency >= 20 && frequency <= X_MAX) {
+					double level = Math.abs(map[1][count]);
+					level = Channel.percentToDB(level);
+					Data<Number, Number> data = new XYChart.Data<>(frequency, level);
+					dataList.add(data);
 				}
-				// max
-				if (series.getData().size() != maxSeries.getData().size()) {
-					maxSeries.getData().setAll(FXCollections.observableArrayList(series.getData()));
-				} else {
-					for (int i = 0; i < maxSeries.getData().size(); i++) {
-						Data<Number, Number> maxData = maxSeries.getData().get(i);
-						Data<Number, Number> data = series.getData().get(i);
-						if (data.getYValue().doubleValue() >= maxData.getYValue().doubleValue()) {
-							maxData.setYValue(data.getYValue());
-						} else {
-							maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
-						}
-					}
-				}
-				// series.getData().clear();
-				series.getData().setAll(dataList);
 			}
+			// max
+			if (series.getData().size() != maxSeries.getData().size()) {
+				maxSeries.getData().setAll(FXCollections.observableArrayList(series.getData()));
+			} else {
+				for (int i = 0; i < maxSeries.getData().size(); i++) {
+					Data<Number, Number> maxData = maxSeries.getData().get(i);
+					Data<Number, Number> data = series.getData().get(i);
+					if (data.getYValue().doubleValue() >= maxData.getYValue().doubleValue()) {
+						maxData.setYValue(data.getYValue());
+					} else {
+						maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
+					}
+				}
+			}
+			series.getData().setAll(dataList);
 		});
 	}
 

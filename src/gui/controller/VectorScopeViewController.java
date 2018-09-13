@@ -13,6 +13,7 @@ import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.controller.VectorScope;
 import gui.utilities.controller.WaveFormChart;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -122,17 +123,20 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 
 	@Override
 	public void levelChanged(double level, Input in) throws Exception {
-		try {
-			if (in.equals(c1)) {
-				paneL.setMaxWidth(paneParent.getWidth() / 2.0 * level);
-			} else if (in.equals(c2)) {
-				paneR.setMaxWidth(paneParent.getWidth() / 2.0 * level);
-			} else {
-				LOG.error("Unrecogniced channel reporting to stereo imager, will remove listener");
-				in.removeListener(this);
+		Platform.runLater(() -> {
+			try {
+				if (in.equals(c1)) {
+					paneL.setMaxWidth(paneParent.getWidth() / 2.0 * level);
+				} else if (in.equals(c2)) {
+					paneR.setMaxWidth(paneParent.getWidth() / 2.0 * level);
+				} else {
+					LOG.error("Unrecogniced channel reporting to stereo imager, will remove listener");
+					in.removeListener(this);
+				}
+			} catch (Exception e) {
+				LOG.error("Problem setting stereo imager level", e);
 			}
-		} catch (Exception e) {
-			LOG.error("Problem setting stereo imager level", e);
-		}
+		});
+
 	}
 }

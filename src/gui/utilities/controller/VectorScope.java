@@ -175,18 +175,14 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	private void showData(float[] x, float[] y) {
-		Platform.runLater(new Runnable() {
-
-			@Override
-			public void run() {
-				// drawing new data
-				for (int index = 0; index < x.length - 1; index++) {
-					vectorSeries.getData().add(new Data<Number, Number>(x[index], y[index]));
-				}
-				// removing old data points
-				if (vectorSeries.getData().size() > MAX_DATA_POINTS) {
-					vectorSeries.getData().remove(0, vectorSeries.getData().size() - MAX_DATA_POINTS);
-				}
+		Platform.runLater(() -> {
+			// drawing new data
+			for (int index = 0; index < x.length - 1; index++) {
+				vectorSeries.getData().add(new Data<Number, Number>(x[index], y[index]));
+			}
+			// removing old data points
+			if (vectorSeries.getData().size() > MAX_DATA_POINTS) {
+				vectorSeries.getData().remove(0, vectorSeries.getData().size() - MAX_DATA_POINTS);
 			}
 		});
 	}

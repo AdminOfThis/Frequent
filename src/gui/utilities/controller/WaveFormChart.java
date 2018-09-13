@@ -72,55 +72,51 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	@Override
 	public void levelChanged(double level, Input in) {
 		if (!pause) {
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
+			Platform.runLater(() -> {
+				try {
+					if (!styleSet) {
+						series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
+						styleSet = true;
+					}
+					NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+					value = 0;
+					if (channel != null) {
+						value = channel.getLevel();
+					}
+					if (negative) {
+						value = -value;
+					}
+					negative = !negative;
+					Data<Number, Number> newData = new Data<>(System.currentTimeMillis(), value);
+					series.getData().add(newData);
+					long time = System.currentTimeMillis();
+					// axis
+					xAxis.setLowerBound(time - TIME_FRAME);
+					xAxis.setUpperBound(time);
+					boolean continueFlag = true;
+					int count = 0;
+					ArrayList<Data<Number, Number>> removeList = null;
 					try {
-						if (!styleSet) {
-							series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
-							styleSet = true;
-						}
-						NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-						value = 0;
-						if (channel != null) {
-							value = channel.getLevel();
-						}
-						if (negative) {
-							value = -value;
-						}
-						negative = !negative;
-						Data<Number, Number> newData = new Data<>(System.currentTimeMillis(), value);
-						series.getData().add(newData);
-						long time = System.currentTimeMillis();
-						// axis
-						xAxis.setLowerBound(time - TIME_FRAME);
-						xAxis.setUpperBound(time);
-						boolean continueFlag = true;
-						int count = 0;
-						ArrayList<Data<Number, Number>> removeList = null;
-						try {
-							while (continueFlag) {
-								Data<Number, Number> data = series.getData().get(count);
-								if ((long) data.getXValue() < xAxis.getLowerBound() - 10) {
-									if (removeList == null) {
-										removeList = new ArrayList<>();
-									}
-									removeList.add(data);
-								} else {
-									continueFlag = false;
+						while (continueFlag) {
+							Data<Number, Number> data = series.getData().get(count);
+							if ((long) data.getXValue() < xAxis.getLowerBound() - 10) {
+								if (removeList == null) {
+									removeList = new ArrayList<>();
 								}
-								count++;
+								removeList.add(data);
+							} else {
+								continueFlag = false;
 							}
-						} catch (Exception e) {
-							LOG.error("", e);
-						}
-						if (removeList != null) {
-							series.getData().removeAll(removeList);
+							count++;
 						}
 					} catch (Exception e) {
-						LOG.warn("", e);
+						LOG.error("", e);
 					}
+					if (removeList != null) {
+						series.getData().removeAll(removeList);
+					}
+				} catch (Exception e) {
+					LOG.warn("", e);
 				}
 			});
 		}
