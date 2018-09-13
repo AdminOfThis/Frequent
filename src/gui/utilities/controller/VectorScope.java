@@ -135,40 +135,43 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	@Override
 	public void newBuffer(float[] buffer) {
-		if (restarting) {
-			if (timeFirstBuffer == 0) {
-				timeFirstBuffer = System.nanoTime();
-			} else if (timeSecondBuffer == 0) {
-				timeSecondBuffer = System.nanoTime();
+		try {
+			if (restarting) {
+				if (timeFirstBuffer == 0) {
+					timeFirstBuffer = System.nanoTime();
+				} else if (timeSecondBuffer == 0) {
+					timeSecondBuffer = System.nanoTime();
+				} else {
+					// Checking timings to get synched
+					long timeThirdBuffer = System.nanoTime();
+					if (timeSecondBuffer - timeFirstBuffer < timeThirdBuffer - timeSecondBuffer) {
+						buffer1 = buffer;
+					}
+					restarting = false;
+					timeFirstBuffer = 0;
+					timeSecondBuffer = 0;
+				}
 			} else {
-				// Checking timings to get synched
-				long timeThirdBuffer = System.nanoTime();
-				if (timeSecondBuffer - timeFirstBuffer < timeThirdBuffer - timeSecondBuffer) {
+				// Restarting done
+				if (buffer1 == null) {
 					buffer1 = buffer;
+				} else {
+					buffer2 = buffer;
+					// compare the buffers to the scope
+					float[] x = new float[buffer.length];
+					float[] y = new float[buffer.length];
+					for (int index = 0; index < buffer.length - 1; index++) {
+						x[index] = buffer1[index];
+						y[index] = buffer2[index];
+					}
+					showData(x, y);
+					// clear buffers
+					buffer1 = null;
 				}
-				restarting = false;
-				timeFirstBuffer = 0;
-				timeSecondBuffer = 0;
 			}
-		} else {
-			// Restarting done
-			if (buffer1 == null) {
-				buffer1 = buffer;
-			} else {
-				buffer2 = buffer;
-				// compare the buffers to the scope
-				float[] x = new float[buffer.length];
-				float[] y = new float[buffer.length];
-				for (int index = 0; index < buffer.length - 1; index++) {
-					x[index] = buffer1[index];
-					y[index] = buffer2[index];
-				}
-				showData(x, y);
-				// clear buffers
-				buffer1 = null;
-			}
+		} catch (Exception e) {
+			LOG.error("Problem showing vectorscope", e);
 		}
-		System.out.println(buffer);
 	}
 
 	private void showData(float[] x, float[] y) {
