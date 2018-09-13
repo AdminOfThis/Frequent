@@ -74,7 +74,7 @@
 		<echo message="starting ant build" level="info" />
 		<!-- Create the time stamp -->
 		<tstamp />
-		<echo message="version=${version}" level="info"/>
+		<echo message="version=${version}" level="info" />
 		<echo message="version=${version.clean}" />
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${build}" />
@@ -83,7 +83,7 @@
 	<target name="compile" depends="init" description="compile the source">
 		<!-- Compile the Java code from ${src} into ${build} -->
 		<echo message="starting compilation" level="info" />
-		<javac includeantruntime="false" srcdir="${src}" destdir="${build}" target="1.8" source="1.8">
+		<javac includeantruntime="false" srcdir="${src}" destdir="${build}" compiler="javac1.8" executable="yes" listfiles="no">
 			<classpath refid="build.classpath" />
 		</javac>
 	</target>
@@ -118,7 +118,7 @@
 		<echo message="cleaning up post build" level="info" />
 		<!-- Delete the ${build} and ${dist} directory trees -->
 		<delete dir="${build}" />
-		<delete file="${manifest.release}"/>
+		<delete file="${manifest.release}" />
 		<echo message="clean up done" level="info" />
 	</target>
 </project>
