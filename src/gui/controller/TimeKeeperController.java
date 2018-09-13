@@ -238,7 +238,7 @@ public class TimeKeeperController implements Initializable {
 			lblTime.setText("00:00");
 			timeChart.getData().clear();
 			TimeKeeper.getInstance().reset();
-			TimeKeeper.getInstance().getActiveCue();
+			TimeKeeper.getInstance().round();
 			timeKeeperLine = new Timeline(new KeyFrame(Duration.millis(REFRESH_RATE), event -> {
 				String name = TimeKeeper.getInstance().getActiveCue().getName();
 				Data data = null;
@@ -267,8 +267,7 @@ public class TimeKeeperController implements Initializable {
 			cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
 			cueTable.getSelectionModel().select(0);
 			if (TimeKeeper.getInstance().getActiveCue().getChannelToSelect() != null) {
-				MainController.getInstance()
-				        .setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
+				MainController.getInstance().setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
 			}
 		} else {
 			LOG.info("Stopping timer");
@@ -287,8 +286,7 @@ public class TimeKeeperController implements Initializable {
 		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
 		cueTable.getSelectionModel().select(TimeKeeper.getInstance().getActiveIndex());
 		if (TimeKeeper.getInstance().getActiveCue().getChannelToSelect() != null) {
-			MainController.getInstance()
-			        .setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
+			MainController.getInstance().setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
 		}
 	}
 

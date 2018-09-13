@@ -2,6 +2,7 @@ package gui.utilities;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
 import javafx.scene.layout.Pane;
@@ -19,6 +20,7 @@ public class DoughnutChart extends PieChart {
 		setLabelsVisible(false);
 		setStartAngle(90);
 		setClockwise(false);
+		setLegendSide(Side.TOP);
 	}
 
 	@Override
