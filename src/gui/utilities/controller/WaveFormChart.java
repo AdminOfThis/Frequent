@@ -64,14 +64,13 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					c.addListener(this);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}
 
 	@Override
-	public void levelChanged(double level) {
+	public void levelChanged(double level, Input in) {
 		if (!pause) {
 			Platform.runLater(new Runnable() {
 
@@ -113,15 +112,13 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 								}
 								count++;
 							}
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							LOG.error("", e);
 						}
 						if (removeList != null) {
 							series.getData().removeAll(removeList);
 						}
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						LOG.warn("", e);
 					}
 				}

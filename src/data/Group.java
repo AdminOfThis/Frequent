@@ -55,7 +55,7 @@ public class Group extends Input implements InputListener {
 	}
 
 	@Override
-	public void levelChanged(double level) {
+	public void levelChanged(double level, Input in) {
 		channelLevel.add(level);
 		if (channelLevel.size() == channelList.size()) {
 			double median = 0;
