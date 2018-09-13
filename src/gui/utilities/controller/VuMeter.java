@@ -76,7 +76,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 	}
 
 	@Override
-	public void levelChanged(double level) {
+	public void levelChanged(double level, Input in) {
 		if (!isPaused()) {
 			Platform.runLater(new Runnable() {
 
@@ -88,11 +88,15 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 							peak = peakdB;
 						}
 						if (orientation == Orientation.VERTICAL) {
-							vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-							vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+							vuPeakPane.setPrefHeight(
+								vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+							vuLastPeakPane.setPrefHeight(
+								vuPane.getHeight() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
 						} else {
-							vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-							vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+							vuPeakPane.setPrefWidth(
+								vuPane.getWidth() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+							vuLastPeakPane.setPrefWidth(
+								vuPane.getWidth() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
 						}
 						if (peakdB >= RTAViewController.FFT_MIN) {
 							lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");

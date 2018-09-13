@@ -13,6 +13,7 @@ import control.ASIOController;
 import control.InputListener;
 import data.Channel;
 import data.Group;
+import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.controller.VuMeter;
 import javafx.application.Platform;
@@ -166,7 +167,7 @@ public class GroupViewController implements Initializable, PausableView {
 					g.addListener(new InputListener() {
 
 						@Override
-						public void levelChanged(double level) {
+						public void levelChanged(double level, Input in) {
 							Platform.runLater(new Runnable() {
 
 								@Override

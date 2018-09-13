@@ -48,9 +48,8 @@ public abstract class Input implements Serializable {
 			// @Override
 			// public void run() {
 			try {
-				obs.levelChanged(level);
-			}
-			catch (Exception e) {
+				obs.levelChanged(level, this);
+			} catch (Exception e) {
 				LOG.warn("Unable to notify Level Listener");
 				LOG.debug("", e);
 			}
@@ -86,8 +85,7 @@ public abstract class Input implements Serializable {
 					c.setColor(hexColor);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 		return true;

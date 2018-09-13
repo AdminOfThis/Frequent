@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import control.ChannelListener;
 import data.Channel;
+import data.Input;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
@@ -75,7 +76,8 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		initializeTimeline();
 	}
 
-	private void initializeTimeline() {}
+	private void initializeTimeline() {
+	}
 
 	public void setChannels(Channel c1, Channel c2) {
 		if (!c1.equals(channel1) || !c2.equals(channel2)) {
@@ -127,7 +129,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	@Override
-	public void levelChanged(double level) throws Exception {
+	public void levelChanged(double level, Input in) throws Exception {
 		// do nothing, don't care
 	}
 
