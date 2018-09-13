@@ -13,9 +13,11 @@ import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
+import control.CueListener;
 import control.FFTListener;
 import control.TimeKeeper;
 import data.Channel;
+import data.Cue;
 import data.FileIO;
 import data.Group;
 import data.Input;
@@ -57,7 +59,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import main.Main;
 
-public class MainController implements Initializable, Pausable {
+public class MainController implements Initializable, Pausable, CueListener {
 
 	private static final String				FFT_PATH			= "/gui/gui/RTAView.fxml";
 	private static final String				RTA_PATH			= "/gui/gui/FFTView.fxml";
@@ -75,6 +77,8 @@ public class MainController implements Initializable, Pausable {
 	private StackPane						stack;
 	@FXML
 	private HBox							buttonBox;
+	@FXML
+	private Node							bottomLabel;
 	/**
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
@@ -99,7 +103,7 @@ public class MainController implements Initializable, Pausable {
 	@FXML
 	private CheckMenuItem					menuShowCue, menuShowChannels, menuStartFFT, menuShowTuner;
 	@FXML
-	private Label							lblDriver, lblLatency;
+	private Label							lblDriver, lblLatency, lblCurrentSong, lblNextSong;
 	@FXML
 	private SplitPane						channelPane;
 	@FXML
@@ -155,6 +159,8 @@ public class MainController implements Initializable, Pausable {
 		initListener();
 		Main.getInstance().setProgress(0.9);
 		resetStatus();
+		bottomLabel.setVisible(false);
+		TimeKeeper.getInstance().addListener(this);
 	}
 
 	private void initGroups() {
@@ -645,4 +651,32 @@ public class MainController implements Initializable, Pausable {
 			LOG.debug("", e);
 		}
 	}
+
+	public void setSongs(Cue current, Cue next) {
+		showSong(current, lblCurrentSong);
+		showSong(next, lblNextSong);
+	}
+
+
+	private void showSong(Cue cue, Label label) {
+		if (cue != null) {
+			String s = cue.getName();
+			if (cue.getChannelToSelect() != null) {
+				s += " " + cue.getChannelToSelect().getName();
+			}
+			label.setText(s);
+		} else {
+			label.setText("");
+		}
+		boolean hide = lblCurrentSong.getText().isEmpty() && lblNextSong.getText().isEmpty();
+		bottomLabel.setVisible(!hide);
+
+	}
+
+	@Override
+	public void currentCue(Cue cue, Cue next) {
+		Platform.runLater(() -> setSongs(cue, next));
+
+	}
+
 }

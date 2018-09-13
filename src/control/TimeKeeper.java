@@ -8,12 +8,13 @@ import data.FileIO;
 
 public class TimeKeeper implements DataHolder<Cue> {
 
-	private static final String	DEFAULT_CUE_NAME	= "Song #";
-	private static TimeKeeper	instance;
-	private long				startTime;
-	private long				roundStartTime;
-	private List<Cue>			cueList				= new ArrayList<>();
-	private int					activeIndex			= 0;
+	private static final String					DEFAULT_CUE_NAME	= "Song #";
+	private static TimeKeeper					instance;
+	private long								startTime;
+	private long								roundStartTime;
+	private List<Cue>							cueList				= new ArrayList<>();
+	private int									activeIndex			= -1;
+	private static final ArrayList<CueListener>	listeners			= new ArrayList<>();
 
 	public static TimeKeeper getInstance() {
 		if (instance == null) {
@@ -25,6 +26,16 @@ public class TimeKeeper implements DataHolder<Cue> {
 	private TimeKeeper() {
 		FileIO.registerSaveData(this);
 		reset();
+	}
+
+	public void addListener(CueListener lis) {
+		if (lis != null && !listeners.contains(lis)) {
+			listeners.add(lis);
+		}
+	}
+
+	public void removeListener(CueListener lis) {
+		listeners.remove(lis);
 	}
 
 	public long getTimeRunning() {
@@ -40,17 +51,27 @@ public class TimeKeeper implements DataHolder<Cue> {
 		long currentTime = System.currentTimeMillis();
 		long returnTime = currentTime - roundStartTime;
 		roundStartTime = currentTime;
+		notifyObservers();
 		return returnTime;
+	}
+
+	private void notifyObservers() {
+		for (CueListener lis : listeners) {
+			new Thread(() -> lis.currentCue(getActiveCue(), getNextCue())).start();
+		}
+
 	}
 
 	public void reset() {
 		startTime = System.currentTimeMillis();
 		roundStartTime = startTime;
-		activeIndex = 0;
+		activeIndex = -1;
+		notifyObservers();
 	}
 
 	public void addCue(Cue trim) {
 		cueList.add(trim);
+		notifyObservers();
 	}
 
 	public List<Cue> getCueList() {
@@ -62,10 +83,21 @@ public class TimeKeeper implements DataHolder<Cue> {
 	}
 
 	public Cue getActiveCue() {
+		if (getActiveIndex() < 0) {
+			return null;
+		}
 		if (cueList.size() < getActiveIndex() + 1) {
 			cueList.add(new Cue(DEFAULT_CUE_NAME + (activeIndex + 1)));
 		}
 		return cueList.get(getActiveIndex());
+	}
+
+	public Cue getNextCue() {
+		if (cueList.size() < getActiveIndex() + 2) {
+			return null;
+		} else {
+			return cueList.get(getActiveIndex() + 1);
+		}
 	}
 
 	public void removeCue(Cue del) {
