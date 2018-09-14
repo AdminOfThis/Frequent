@@ -21,13 +21,22 @@ import data.Cue;
 
 public class ChurchToolsAdapter {
 
-	private static final Logger	LOG			= Logger.getLogger(ChurchToolsAdapter.class);
-	private static final String	DATE_FORMAT	= "yyyy-MM-dd";
-	private static final int[]	SERVICES	= new int[] { 9, 11, 16 };
-	private transient String	login		= "";
-	private transient String	password	= "";
+	private static final Logger			LOG			= Logger.getLogger(ChurchToolsAdapter.class);
+	private static final String			DATE_FORMAT	= "yyyy-MM-dd";
+	private static final int[]			SERVICES	= new int[] { 9, 11, 16 };
+	private transient String			login		= "";
+	private transient String			password	= "";
 
-	public ChurchToolsAdapter() {
+	private static ChurchToolsAdapter	instance;
+
+	public static ChurchToolsAdapter getInstance() {
+		if (instance == null) {
+			instance = new ChurchToolsAdapter();
+		}
+		return instance;
+	}
+
+	private ChurchToolsAdapter() {
 		CookieManager cookieManager = new CookieManager();
 		CookieHandler.setDefault(cookieManager);
 
@@ -37,7 +46,7 @@ public class ChurchToolsAdapter {
 		ArrayList<Cue> res = new ArrayList<>();
 
 		int service = getClosestService();
-		String sunday = String.format("%02d:00:00", service);
+		String sunday = getNextSundayString() + " " + String.format("%02d:00:00", service);
 		LOG.info("Trying to load songs for sunday: " + sunday);
 		try {
 			logIn(login, password);
