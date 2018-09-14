@@ -10,45 +10,60 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.apache.log4j.Logger;
+
+import data.Cue;
 
 public class ChurchToolsAdapter {
 
+	private static final Logger	LOG			= Logger.getLogger(ChurchToolsAdapter.class);
+	private static final String	DATE_FORMAT	= "yyyy-MM-dd";
+	private static final int[]	SERVICES	= new int[] { 9, 11, 16 };
+	private transient String	login		= "";
+	private transient String	password	= "";
 
 	public ChurchToolsAdapter() {
-
-
-		// getNextSunday();
-		String data = null;
-		try {
-			data = checkCT().get(0);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		int startIndex = data.indexOf(nextSunday(new GregorianCalendar()));
-		GregorianCalendar c = new GregorianCalendar();
-		c.add(GregorianCalendar.DAY_OF_YEAR, 7);
-		int endIndex = data.indexOf(nextSunday(c));
-		System.out.println(data.substring(startIndex, endIndex + 1));
-	}
-
-	private static ArrayList<String> checkCT(String mail, String password) throws Exception {
-		// login
-
 		CookieManager cookieManager = new CookieManager();
 		CookieHandler.setDefault(cookieManager);
-		String paramsLogin = "email=" + URLEncoder.encode(mail , "UTF-8") + "&" + "password="
-			+ URLEncoder.encode(password, "UTF-8") + "&" + "directtool=" + URLEncoder.encode("yes", "UTF-8") + "&" + "func="
-			+ URLEncoder.encode("login", "UTF-8");
-		getData("POST", "login/ajax", paramsLogin);
 
-		System.out.println("POST REQUEST: \r\n");
+	}
 
-		return getData("GET", "churchcal/ajax", "func=" + URLEncoder.encode("getMyServices", "UTF-8"));
+	public ArrayList<Cue> loadCues() {
+		ArrayList<Cue> res = new ArrayList<>();
+
+		int service = getClosestService();
+		String sunday = String.format("%02d:00:00", service);
+		LOG.info("Trying to load songs for sunday: " + sunday);
+		try {
+			logIn(login, password);
+			int eventId = getEventID();
+		} catch (Exception e) {
+			LOG.warn("Unable to load data");
+			LOG.debug("", e);
+		}
+		return res;
+	}
+
+	private int getEventID() {
+
+		return 0;
+	}
+
+	private boolean logIn(String user, String password) throws Exception {
+		String paramsLogin = "email=" + URLEncoder.encode(user, "UTF-8") + "&" + "password="
+		        + URLEncoder.encode(password, "UTF-8") + "&" + "directtool=" + URLEncoder.encode("yes", "UTF-8") + "&"
+		        + "func=" + URLEncoder.encode("login", "UTF-8");
+		String s = getData("POST", "login/ajax", paramsLogin).get(0);
+		boolean success = s.toLowerCase().contains("successful");
+		if (success) {
+			LOG.info("Logged in to Churchtools");
+		}
+		return success;
 	}
 
 	private static ArrayList<String> getData(String method, String request, String params) {
@@ -75,7 +90,6 @@ public class ChurchToolsAdapter {
 			}
 			writer.flush();
 
-
 			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
 			for (String line; (line = reader.readLine()) != null;) {
@@ -83,7 +97,6 @@ public class ChurchToolsAdapter {
 					res.add(line);
 				}
 			}
-
 
 			writer.close();
 			reader.close();
@@ -93,12 +106,65 @@ public class ChurchToolsAdapter {
 		return res;
 	}
 
-	private static String nextSunday(GregorianCalendar c) {
+	private String getNextSundayString() {
+		return getNextSundayString(new GregorianCalendar());
+	}
+
+	private String getNextSundayString(GregorianCalendar c) {
+		c = getNextSunday(c);
+		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
+		return format.format(c.getTime());
+	}
+
+	private GregorianCalendar getNextSunday() {
+		return getNextSunday(new GregorianCalendar());
+	}
+
+	private GregorianCalendar getNextSunday(GregorianCalendar c) {
 		while (c.get(GregorianCalendar.DAY_OF_WEEK) != GregorianCalendar.SUNDAY) {
 			c.add(GregorianCalendar.DAY_OF_YEAR, 1);
 		}
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		return format.format(c.getTime());
+		return c;
+	}
+
+	private int getClosestService() {
+		GregorianCalendar c = new GregorianCalendar();
+		HashMap<Integer, GregorianCalendar> map = new HashMap<>();
+		for (int i : SERVICES) {
+			GregorianCalendar s = getNextSunday();
+			s.set(GregorianCalendar.HOUR_OF_DAY, i);
+			map.put(i, s);
+		}
+		int closest = 0;
+		long difference = -1;
+		for (Entry<Integer, GregorianCalendar> e : map.entrySet()) {
+			long time = e.getValue().getTimeInMillis();
+			if (difference < 0) {
+				difference = Math.abs(c.getTimeInMillis() - time);
+				closest = e.getKey();
+			} else {
+				if (Math.abs(c.getTimeInMillis() - time) < difference) {
+					closest = e.getKey();
+				}
+			}
+		}
+		return closest;
+	}
+
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }
