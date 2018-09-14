@@ -74,7 +74,7 @@ public class TimeKeeperController implements Initializable {
 	 * contextmenu
 	 *************/
 	@FXML
-	private MenuItem					cxtResetChannel;
+	private MenuItem					cxtResetChannel, cxtDeleteCue;
 
 	private Timeline					timeKeeperLine;
 
@@ -202,9 +202,7 @@ public class TimeKeeperController implements Initializable {
 		// System.out.println("Test");
 		// });
 		cueTable.setOnKeyPressed(e -> {
-			if (e.getCode() == KeyCode.DELETE) {
-				deleteCue(new ActionEvent());
-			} else if (e.getCode() == KeyCode.ENTER) {
+			if (e.getCode() == KeyCode.ENTER) {
 				toggleTimer();
 			} else if (e.getCode() == KeyCode.SPACE) {
 				round();
@@ -346,6 +344,7 @@ public class TimeKeeperController implements Initializable {
 
 	private void enableContextMenu(boolean b) {
 		cxtResetChannel.setDisable(!b);
+		cxtDeleteCue.setDisable(!b);
 	}
 
 	@FXML

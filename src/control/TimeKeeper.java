@@ -101,7 +101,7 @@ public class TimeKeeper implements DataHolder<Cue> {
 	}
 
 	public void removeCue(Cue del) {
-		if (activeIndex == 0) {
+		if (activeIndex == -1) {
 			cueList.remove(del);
 		}
 	}
