@@ -342,9 +342,9 @@ public class TimeKeeperController implements Initializable {
 		}
 	}
 
-	private void enableContextMenu(boolean b) {
-		cxtResetChannel.setDisable(!b);
-		cxtDeleteCue.setDisable(!b);
+	private void enableContextMenu(boolean value) {
+		cxtResetChannel.setDisable(!value);
+		cxtDeleteCue.setDisable(!value);
 	}
 
 	@FXML
