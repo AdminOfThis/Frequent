@@ -53,7 +53,7 @@ public class ChurchToolsAdapter {
 			logIn(login, password);
 			int eventId = getEventID(sunday);
 			LOG.info("Found Event-ID: " + eventId);
-			
+
 		} catch (Exception e) {
 			LOG.warn("Unable to load data");
 			LOG.debug("", e);
@@ -163,7 +163,9 @@ public class ChurchToolsAdapter {
 				difference = Math.abs(c.getTimeInMillis() - time);
 				closest = e.getKey();
 			} else {
-				if (Math.abs(c.getTimeInMillis() - time) < difference) {
+				long newTime = c.getTimeInMillis();
+				if (Math.abs(newTime - time) < difference) {
+					difference = newTime;
 					closest = e.getKey();
 				}
 			}
