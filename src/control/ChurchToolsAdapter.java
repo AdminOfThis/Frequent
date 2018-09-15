@@ -22,6 +22,7 @@ import data.Cue;
 public class ChurchToolsAdapter {
 
 	private static final Logger			LOG			= Logger.getLogger(ChurchToolsAdapter.class);
+	private static final String			SPLIT2		= "\"id\":";
 	private static final String			DATE_FORMAT	= "yyyy-MM-dd";
 	private static final int[]			SERVICES	= new int[] { 9, 11, 16 };
 	private transient String			login		= "";
@@ -50,7 +51,9 @@ public class ChurchToolsAdapter {
 		LOG.info("Trying to load songs for sunday: " + sunday);
 		try {
 			logIn(login, password);
-			int eventId = getEventID();
+			int eventId = getEventID(sunday);
+			LOG.info("Found Event-ID: " + eventId);
+			
 		} catch (Exception e) {
 			LOG.warn("Unable to load data");
 			LOG.debug("", e);
@@ -58,9 +61,17 @@ public class ChurchToolsAdapter {
 		return res;
 	}
 
-	private int getEventID() {
-
-		return 0;
+	private int getEventID(String nexGoDi) throws Exception {
+		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("getAllEventData", "UTF-8"))
+		        .get(0);
+		int sundayBeginIndex = allData.indexOf(nexGoDi);
+		String searchString = allData.substring(0, sundayBeginIndex);
+		int lastId = searchString.lastIndexOf(SPLIT2);
+		searchString = searchString.substring(lastId + SPLIT2.length() + 1, searchString.length());
+		searchString = searchString.substring(0, searchString.indexOf("\""));
+		System.out.println(searchString);
+		int eventID = Integer.parseInt(searchString);
+		return eventID;
 	}
 
 	private boolean logIn(String user, String password) throws Exception {
