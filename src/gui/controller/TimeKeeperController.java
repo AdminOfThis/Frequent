@@ -5,11 +5,13 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
+import control.ChurchToolsAdapter;
 import control.TimeKeeper;
 import data.Channel;
 import data.Cue;
@@ -17,6 +19,7 @@ import data.FileIO;
 import gui.utilities.DoughnutChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,29 +28,35 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import javafx.util.Pair;
 import javafx.util.StringConverter;
 
 public class TimeKeeperController implements Initializable {
 
 	private static final Logger			LOG				= Logger.getLogger(TimeKeeperController.class);
-
 	private static TimeKeeperController	instance;
-
 	private static final double			REFRESH_RATE	= 1000;
 	@FXML
 	private Parent						paneCue;
@@ -69,19 +78,16 @@ public class TimeKeeperController implements Initializable {
 	private ComboBox<Channel>			choiceCueChannel;
 	@FXML
 	private Label						lblTime;
-
 	/**************
 	 * contextmenu
 	 *************/
 	@FXML
 	private MenuItem					cxtResetChannel, cxtDeleteCue;
-
 	private Timeline					timeKeeperLine;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
-
 		initTimeKeeper();
 		enableContextMenu(false);
 	}
@@ -165,7 +171,6 @@ public class TimeKeeperController implements Initializable {
 			@Override
 			public void changed(ObservableValue<? extends Cue> observable, Cue oldValue, Cue newValue) {
 				enableContextMenu(newValue != null);
-
 				txtCueName.setDisable(newValue == null || btnStart.isSelected());
 				choiceCueChannel.setDisable(newValue == null || btnStart.isSelected());
 				if (newValue == null) {
@@ -176,7 +181,6 @@ public class TimeKeeperController implements Initializable {
 					choiceCueChannel.getSelectionModel().select(newValue.getChannelToSelect());
 				}
 			}
-
 		});
 		txtCueName.setOnKeyPressed(e -> {
 			if (e.getCode() == KeyCode.ENTER) {
@@ -353,5 +357,59 @@ public class TimeKeeperController implements Initializable {
 		if (cue != null) {
 			cue.setChannelToSelect(null);
 		}
+	}
+
+	@FXML
+	private void loadFromChurchTools(ActionEvent e) {
+		boolean isLoginSet = ChurchToolsAdapter.getInstance().isLoggedIn();
+		if (!isLoginSet) {
+			Pair<String, String> loginCredentials = getLoginData();
+			if (loginCredentials != null) {
+				ChurchToolsAdapter.getInstance().setLogin(loginCredentials.getKey());
+				ChurchToolsAdapter.getInstance().setPassword(loginCredentials.getValue());
+			}
+		}
+		System.out.println(ChurchToolsAdapter.getInstance().loadCues());
+	}
+
+	private Pair<String, String> getLoginData() {
+		Dialog<Pair<String, String>> dialog = new Dialog<>();
+		dialog.setTitle("Login Dialog");
+		dialog.setHeaderText("Look, a Custom Login Dialog");
+		// Set the icon (must be included in the project).
+		// Set the button types.
+		ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+		// Create the username and password labels and fields.
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+		TextField username = new TextField();
+		username.setPromptText("Username");
+		PasswordField password = new PasswordField();
+		password.setPromptText("Password");
+		grid.add(new Label("Username:"), 0, 0);
+		grid.add(username, 1, 0);
+		grid.add(new Label("Password:"), 0, 1);
+		grid.add(password, 1, 1);
+		// Enable/Disable login button depending on whether a username was entered.
+		Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
+		loginButton.setDisable(true);
+		// Do some validation (using the Java 8 lambda syntax).
+		username.textProperty().addListener((observable, oldValue, newValue) -> {
+			loginButton.setDisable(newValue.trim().isEmpty());
+		});
+		dialog.getDialogPane().setContent(grid);
+		// Request focus on the username field by default.
+		Platform.runLater(() -> username.requestFocus());
+		// Convert the result to a username-password-pair when the login button is clicked.
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == loginButtonType) { return new Pair<>(username.getText(), password.getText()); }
+			return null;
+		});
+		Optional<Pair<String, String>> result = dialog.showAndWait();
+		if (result.isPresent()) { return result.get(); }
+		return null;
 	}
 }
