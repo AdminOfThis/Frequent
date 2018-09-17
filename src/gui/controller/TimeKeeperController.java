@@ -17,6 +17,7 @@ import data.Channel;
 import data.Cue;
 import data.FileIO;
 import gui.utilities.DoughnutChart;
+import gui.utilities.FXMLUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -39,6 +40,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
@@ -402,10 +404,17 @@ public class TimeKeeperController implements Initializable {
 
 	private Pair<String, String> getLoginData() {
 		Dialog<Pair<String, String>> dialog = new Dialog<>();
-		dialog.setTitle("Login Dialog");
-		dialog.setHeaderText("Look, a Custom Login Dialog");
+		dialog.setTitle("Login ChurchTools");
+		dialog.setHeaderText("Please enter your ChurchTools Login Credentials");
 		dialog.initModality(Modality.NONE);
 		dialog.initOwner(paneCue.getScene().getWindow());
+		try {
+			DialogPane dialogPane = dialog.getDialogPane();
+			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
+		} catch (Exception e) {
+			LOG.warn("Unable to style dialog");
+			LOG.debug("", e);
+		}
 		// Set the icon (must be included in the project).
 		// Set the button types.
 		ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);

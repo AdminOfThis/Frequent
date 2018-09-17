@@ -55,10 +55,10 @@ public class ChurchToolsAdapter {
 			logIn(login, password);
 			error = "Unable to find event";
 			int eventId = loadEventID(sunday);
-			LOG.info("Found Event-ID: " + eventId);
+			LOG.debug("Found Event-ID: " + eventId);
 			error = "Unable to find agenda for event";
 			int agendaId = loadAgendaId(eventId);
-			LOG.info("Found Agenda-ID: " + agendaId);
+			LOG.debug("Found Agenda-ID: " + agendaId);
 			error = "Unable to load songs";
 			TreeMap<Integer, String> songIds = loadSongIDs(agendaId);
 			for (int i : songIds.keySet()) {
