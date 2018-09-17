@@ -13,7 +13,7 @@ import javafx.scene.Parent;
 public abstract class FXMLUtil {
 
 	private static final Logger		LOG			= Logger.getLogger(FXMLUtil.class);
-	private static final String		STYLE_SHEET	= "/gui/style.css";
+	public static final String		STYLE_SHEET	= "/gui/style.css";
 	private static Initializable	controller;
 
 	public static Parent loadFXML(final String string) {
