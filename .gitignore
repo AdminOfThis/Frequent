@@ -42,3 +42,4 @@ Thumbs.db
 /bin/
 /.settings/
 /workdir/*.png
+/workdir/*.properties
