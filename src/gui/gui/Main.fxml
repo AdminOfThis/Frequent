@@ -49,7 +49,7 @@
                               <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
                            </accelerator></MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                    <MenuItem fx:id="closeMenu" mnemonicParsing="false" text="Close" />
+                    <MenuItem fx:id="closeMenu" mnemonicParsing="false" text="Quit" />
                   </items>
                 </Menu>
                   <Menu mnemonicParsing="false" text="View">
