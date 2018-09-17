@@ -12,22 +12,24 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
+import data.Channel;
 import data.Cue;
 
 public class ChurchToolsAdapter {
 
-	private static final Logger			LOG				= Logger.getLogger(ChurchToolsAdapter.class);
-	private static final String			SPLIT2			= "\"id\":";
-	private static final String			AGENDA_SPLIT	= "\"bezeichnung\":\"Song\"";
-	private static final String			DATE_FORMAT		= "yyyy-MM-dd";
-	private static final int[]			SERVICES		= new int[] { 9, 11, 16 };
-	private transient String			login			= "";
-	private transient String			password		= "";
+	private static final Logger			LOG			= Logger.getLogger(ChurchToolsAdapter.class);
+	private static final String[]		REMOVE_LEAD	= new String[] { "Ltg:", "Ltg.", "Leitung:", "Leitung" };
+	private static final String			DATE_FORMAT	= "yyyy-MM-dd";
+	private static final int[]			SERVICES	= new int[] { 9, 11, 16 };
+	private transient String			login		= "";
+	private transient String			password	= "";
 	private static ChurchToolsAdapter	instance;
 
 	public static ChurchToolsAdapter getInstance() {
@@ -47,83 +49,193 @@ public class ChurchToolsAdapter {
 		int service = getClosestService();
 		String sunday = getNextSundayString() + " " + String.format("%02d:00:00", service);
 		LOG.info("Trying to load songs for sunday: " + sunday);
+		String error = "Unknown error";
 		try {
+			error = "Unable to log in";
 			logIn(login, password);
+			error = "Unable to find event";
 			int eventId = loadEventID(sunday);
 			LOG.info("Found Event-ID: " + eventId);
+			error = "Unable to find agenda for event";
 			int agendaId = loadAgendaId(eventId);
 			LOG.info("Found Agenda-ID: " + agendaId);
-			ArrayList<Integer> songIds = loadSongIDs(agendaId);
-			System.out.println(songIds);
-			for (int i : songIds) {
-				loadSongName(i);
+			error = "Unable to load songs";
+			TreeMap<Integer, String> songIds = loadSongIDs(agendaId);
+			for (int i : songIds.keySet()) {
+				try {
+					String songName = loadSongName(i);
+					int secondsTime = loadTime(agendaId, i);
+					String lead = songIds.get(i);
+					res.add(createCue(songName, lead, secondsTime));
+				} catch (Exception e) {
+					LOG.warn("Unable to load data for song " + i);
+					LOG.debug("", e);
+				}
 			}
-		}
-		catch (Exception e) {
-			LOG.warn("Unable to load data");
+		} catch (Exception e) {
+			LOG.warn("Unable to load data; " + error);
 			LOG.debug("", e);
 		}
+		String log = "Loaded " + res.size() + " cues:";
+		for (Cue c : res) {
+			log += " " + c.getName();
+			if (c.getChannelToSelect() != null) {
+				log += " (" + c.getChannelToSelect().getName() + ")";
+			}
+			log += ",";
+		}
+		log = log.substring(0, log.length() - 1);
+		LOG.info(log);
 		return res;
 	}
 
-	private void loadSongName(int songId) throws Exception {
-		String allData = getData("GET", "churchser" + "vice/ajax", "func=" + URLEncoder.encode("getAllSongs", "UTF-8")).get(0);
-// System.out.println(allData);
+	private int loadTime(int agendaId, int songID) throws Exception {
+		String allData = getData("GET", "churchservice/ajax",
+			"func=" + URLEncoder.encode("loadAgendaItems", "UTF-8") + "&" + "agenda_id=" + URLEncoder.encode(agendaId + "", "UTF-8"));
+		JSONObject json = new JSONObject(allData);
+		JSONObject data = json.getJSONObject("data");
+		for (String s : data.keySet()) {
+			JSONObject obj = data.getJSONObject(s);
+			if (obj.get("bezeichnung").equals("Song")) {
+				if (obj.getInt("arrangement_id") == songID) {
+					return obj.getInt("duration");
+				}
+			}
+		}
+		return 0;
 	}
 
-	private ArrayList<Integer> loadSongIDs(int agendaId) throws Exception {
-		ArrayList<Integer> res = new ArrayList<>();
-		String allData = getData("GET", "churchser" + "vice/ajax", "func=" + URLEncoder.encode("loadAgendaItems", "UTF-8") + "&" + "agenda_id=" + URLEncoder.encode(agendaId + "", "UTF-8")).get(0);
-		System.out.println(allData);
-		int beginIndex = allData.substring(0, allData.indexOf(AGENDA_SPLIT)).lastIndexOf(SPLIT2);
-		String searchString = allData.substring(beginIndex);
-		int endIndex = searchString.lastIndexOf(AGENDA_SPLIT);
-		searchString = searchString.substring(0, endIndex);
-		String[] songs = searchString.split(SPLIT2);
-		for (String s : songs) {
-			if (s.contains("Song")) {
-				String sub = s.substring(s.indexOf("\"") + 1);
-				sub = sub.substring(0, sub.indexOf("\",\""));
-				int songId = Integer.parseInt(sub);
-				res.add(songId);
+	private Cue createCue(String songName, String lead, int time) {
+		Cue cue = new Cue(songName);
+		cue.setTime((long) (time * 1000.0));
+		if (lead != null && lead.length() > 2) {
+			// normalinzing string
+			for (String remove : REMOVE_LEAD) {
+				if (lead.toLowerCase().startsWith(remove.toLowerCase())) {
+					lead = lead.substring(remove.length() + 1, lead.length());
+					break;
+				}
 			}
+			lead = lead.trim();
+			// searching channel with equals
+			if (ASIOController.getInstance() != null) {
+				Channel leadChannel = null;
+				for (Channel c : ASIOController.getInstance().getInputList()) {
+					if (c.getName().equalsIgnoreCase(lead)) {
+						leadChannel = c;
+						break;
+					}
+				} // if no result, try with contains
+				if (leadChannel == null) {
+					for (Channel c : ASIOController.getInstance().getInputList()) {
+						if (c.getName().toLowerCase().contains(lead.toLowerCase())) {
+							leadChannel = c;
+							break;
+						}
+					}
+				}
+				if (leadChannel != null) {
+					cue.setChannelToSelect(leadChannel);
+				}
+			}
+		}
+		return cue;
+	}
+
+	private String loadSongName(int songId) throws Exception {
+		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("getAllSongs", "UTF-8"));
+		try {
+			JSONObject json = new JSONObject(allData);
+			JSONObject data = json.getJSONObject("data");
+			JSONObject songs = data.getJSONObject("songs");
+			for (String key : songs.keySet()) {
+				JSONObject song = songs.getJSONObject(key);
+				JSONObject arrangements = song.getJSONObject("arrangement");
+				for (String arrangementKey : arrangements.keySet()) {
+					JSONObject arrangement = arrangements.getJSONObject(arrangementKey);
+					int arrangementID = arrangement.getInt("id");
+					if (arrangementID == songId) {
+						return song.getString("bezeichnung");
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "NOT FOUND";
+	}
+
+	/**
+	 * loads arrangement ids and lead singer from agenda, and sorts them by
+	 * sortkey
+	 * 
+	 * @param agendaId
+	 * @return
+	 * @throws Exception
+	 */
+	private TreeMap<Integer, String> loadSongIDs(int agendaId) throws Exception {
+		TreeMap<Integer, Integer> map = new TreeMap<>();
+		TreeMap<Integer, String> leadMap = new TreeMap<>();
+		String allData = getData("GET", "churchservice/ajax",
+			"func=" + URLEncoder.encode("loadAgendaItems", "UTF-8") + "&" + "agenda_id=" + URLEncoder.encode(agendaId + "", "UTF-8"));
+		JSONObject json = new JSONObject(allData);
+		JSONObject data = json.getJSONObject("data");
+		for (String s : data.keySet()) {
+			JSONObject obj = data.getJSONObject(s);
+			if (obj.get("bezeichnung").equals("Song")) {
+				int sortkey = obj.getInt("sortkey");
+				map.put(sortkey, obj.getInt("arrangement_id"));
+				String lead = null;
+				try {
+					lead = obj.getString("note");
+				} catch (Exception e) {
+				}
+				leadMap.put(sortkey, lead);
+			}
+		}
+		// sorting by sortkey
+		TreeMap<Integer, String> res = new TreeMap<>();
+		for (Integer i : map.keySet()) {
+			res.put(map.get(i), leadMap.get(i));
 		}
 		return res;
 	}
 
 	private int loadAgendaId(int eventId) throws Exception {
-		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("loadAgendaForEvent", "UTF-8") + "&" + "event_id=" + URLEncoder.encode(eventId + "", "UTF-8")).get(0);
-		int beginIndex = allData.indexOf(SPLIT2);
-		String searchString = allData.substring(beginIndex + SPLIT2.length() + 1);
-		int endIndex = searchString.indexOf("\"");
-		searchString = searchString.substring(0, endIndex);
-		int agendaId = Integer.parseInt(searchString);
-		return agendaId;
+		String allData = getData("GET", "churchservice/ajax",
+			"func=" + URLEncoder.encode("loadAgendaForEvent", "UTF-8") + "&" + "event_id=" + URLEncoder.encode(eventId + "", "UTF-8"));
+		JSONObject json = new JSONObject(allData);
+		JSONObject data = json.getJSONObject("data");
+		return data.getInt("id");
 	}
 
 	private int loadEventID(String nexGoDi) throws Exception {
-		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("getAllEventData", "UTF-8")).get(0);
-		int sundayBeginIndex = allData.indexOf(nexGoDi);
-		String searchString = allData.substring(0, sundayBeginIndex);
-		int lastId = searchString.lastIndexOf(SPLIT2);
-		searchString = searchString.substring(lastId + SPLIT2.length() + 1, searchString.length());
-		searchString = searchString.substring(0, searchString.indexOf("\""));
-		int eventID = Integer.parseInt(searchString);
-		return eventID;
+		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("getAllEventData", "UTF-8"));
+		JSONObject json = new JSONObject(allData);
+		JSONObject data = json.getJSONObject("data");
+		for (String s : data.keySet()) {
+			JSONObject obj = data.getJSONObject(s);
+			if (obj.get("startdate").equals(nexGoDi)) {
+				return obj.getInt("id");
+			}
+		}
+		return -1;
 	}
 
 	private boolean logIn(String user, String password) throws Exception {
-		String paramsLogin = "email=" + URLEncoder.encode(user, "UTF-8") + "&" + "password=" + URLEncoder.encode(password, "UTF-8") + "&" + "directtool=" + URLEncoder.encode("yes", "UTF-8") + "&"
-			+ "func=" + URLEncoder.encode("login", "UTF-8");
-		String s = getData("POST", "login/ajax", paramsLogin).get(0);
-		boolean success = s.toLowerCase().contains("success");
+		String paramsLogin = "email=" + URLEncoder.encode(user, "UTF-8") + "&" + "password=" + URLEncoder.encode(password, "UTF-8") + "&"
+			+ "directtool=" + URLEncoder.encode("yes", "UTF-8") + "&" + "func=" + URLEncoder.encode("login", "UTF-8");
+		String s = getData("POST", "login/ajax", paramsLogin);
+		JSONObject json = new JSONObject(s);
+		String suc = json.getString("status");
+		boolean success = suc.equals("success");
 		if (success) {
 			LOG.info("Logged in to Churchtools");
 		}
 		return success;
 	}
 
-	private static ArrayList<String> getData(String method, String request, String params) {
+	private static String getData(String method, String request, String params) {
 		ArrayList<String> res = new ArrayList<>();
 		try {
 			URL churchTestURL = new URL("https://gospelforum.church.tools/?q=" + request);
@@ -149,11 +261,10 @@ public class ChurchToolsAdapter {
 			}
 			writer.close();
 			reader.close();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return res;
+		return res.get(0);
 	}
 
 	private String getNextSundayString() {
@@ -161,6 +272,7 @@ public class ChurchToolsAdapter {
 	}
 
 	private String getNextSundayString(GregorianCalendar c) {
+		// DEBUG
 		c = getNextSunday(c);
 		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
 		return format.format(c.getTime());
@@ -217,8 +329,7 @@ public class ChurchToolsAdapter {
 		} else {
 			try {
 				return logIn(login, password);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.warn("Problem checking Login");
 				return false;
 			}
