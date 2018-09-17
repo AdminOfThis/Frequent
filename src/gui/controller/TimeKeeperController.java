@@ -24,6 +24,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -49,6 +50,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
@@ -361,21 +363,49 @@ public class TimeKeeperController implements Initializable {
 
 	@FXML
 	private void loadFromChurchTools(ActionEvent e) {
+		MainController.getInstance().setStatus("Loading from Churchtools", -1);
+
 		boolean isLoginSet = ChurchToolsAdapter.getInstance().isLoggedIn();
 		if (!isLoginSet) {
 			Pair<String, String> loginCredentials = getLoginData();
 			if (loginCredentials != null) {
 				ChurchToolsAdapter.getInstance().setLogin(loginCredentials.getKey());
 				ChurchToolsAdapter.getInstance().setPassword(loginCredentials.getValue());
+			} else {
+				MainController.getInstance().setStatus("Loading from Churchtools cancelled", 0);
+				return;
 			}
 		}
-		System.out.println(ChurchToolsAdapter.getInstance().loadCues());
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+
+				ArrayList<Cue> cues = ChurchToolsAdapter.getInstance().loadCues();
+				if (cues != null) {
+					TimeKeeper.getInstance().set(cues);
+					Platform.runLater(() -> {
+						MainController.getInstance().setStatus("Loading finished", 0);
+						refresh();
+					});
+				} else {
+					Platform.runLater(() -> {
+						MainController.getInstance().setStatus("Unable to load from ChurchTools", 0);
+					});
+				}
+				return null;
+			}
+		};
+		new Thread(task).start();
+
 	}
 
 	private Pair<String, String> getLoginData() {
 		Dialog<Pair<String, String>> dialog = new Dialog<>();
 		dialog.setTitle("Login Dialog");
 		dialog.setHeaderText("Look, a Custom Login Dialog");
+		dialog.initModality(Modality.NONE);
+		dialog.initOwner(paneCue.getScene().getWindow());
 		// Set the icon (must be included in the project).
 		// Set the button types.
 		ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
@@ -393,7 +423,8 @@ public class TimeKeeperController implements Initializable {
 		grid.add(username, 1, 0);
 		grid.add(new Label("Password:"), 0, 1);
 		grid.add(password, 1, 1);
-		// Enable/Disable login button depending on whether a username was entered.
+		// Enable/Disable login button depending on whether a username was
+		// entered.
 		Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
 		loginButton.setDisable(true);
 		// Do some validation (using the Java 8 lambda syntax).
@@ -403,13 +434,18 @@ public class TimeKeeperController implements Initializable {
 		dialog.getDialogPane().setContent(grid);
 		// Request focus on the username field by default.
 		Platform.runLater(() -> username.requestFocus());
-		// Convert the result to a username-password-pair when the login button is clicked.
+		// Convert the result to a username-password-pair when the login button
+		// is clicked.
 		dialog.setResultConverter(dialogButton -> {
-			if (dialogButton == loginButtonType) { return new Pair<>(username.getText(), password.getText()); }
+			if (dialogButton == loginButtonType) {
+				return new Pair<>(username.getText(), password.getText());
+			}
 			return null;
 		});
 		Optional<Pair<String, String>> result = dialog.showAndWait();
-		if (result.isPresent()) { return result.get(); }
+		if (result.isPresent()) {
+			return result.get();
+		}
 		return null;
 	}
 }

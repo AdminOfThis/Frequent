@@ -143,26 +143,6 @@
    </top>
    <bottom>
       <BorderPane BorderPane.alignment="CENTER">
-         <left>
-            <HBox alignment="BOTTOM_LEFT" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
-               <children>
-                  <ProgressBar fx:id="progStatus" prefWidth="100.0" progress="0.0" />
-                  <Label fx:id="lblStatus" text="Status" />
-               </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </HBox>
-         </left>
-         <right>
-            <HBox alignment="BOTTOM_RIGHT" BorderPane.alignment="CENTER_RIGHT">
-               <children>
-                  <Separator orientation="VERTICAL" />
-                  <Label fx:id="lblLatency" text="[Latency]" />
-                  <Label fx:id="lblDriver" text="[Driver]" />
-               </children>
-            </HBox>
-         </right>
          <center>
             <GridPane fx:id="bottomLabel" hgap="25.0">
               <columnConstraints>
@@ -187,6 +167,23 @@
                </children>
             </GridPane>
          </center>
+         <left>
+            <HBox alignment="BOTTOM_LEFT" spacing="5.0" BorderPane.alignment="CENTER">
+               <children>
+                  <ProgressBar fx:id="progStatus" prefWidth="100.0" progress="0.0" HBox.hgrow="NEVER" />
+                  <Label fx:id="lblStatus" text="Status" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+         </left>
+         <right>
+            <HBox alignment="BOTTOM_RIGHT" fillHeight="false" BorderPane.alignment="CENTER">
+               <children>
+                  <Separator orientation="VERTICAL" />
+                  <Label fx:id="lblLatency" text="[Latency]" />
+                  <Label fx:id="lblDriver" text="[Driver]" />
+               </children>
+            </HBox>
+         </right>
       </BorderPane>
    </bottom>
    <center>
