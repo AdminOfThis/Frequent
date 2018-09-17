@@ -453,10 +453,7 @@ public class TimeKeeperController implements Initializable {
 			return null;
 		});
 
-		Platform.runLater(() -> {
-			password.requestFocus();
-
-		});
+		Platform.runLater(() -> password.requestFocus());
 		Optional<Pair<String, String>> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			return result.get();
