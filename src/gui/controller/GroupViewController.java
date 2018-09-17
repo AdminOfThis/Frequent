@@ -112,13 +112,13 @@ public class GroupViewController implements Initializable, PausableView {
 			}
 			for (Group g : ASIOController.getInstance().getGroupList()) {
 				// groups
-				VuMeter meter = new VuMeter(g, Orientation.VERTICAL);
-				meter.setParentPausable(this);
-				VBox meterBox = new VBox(meter, new Label(g.getName()));
-				meterBox.prefWidthProperty().bind(meter.prefWidthProperty());
+				VuMeter groupMeter = new VuMeter(g, Orientation.VERTICAL);
+				groupMeter.setParentPausable(this);
+				VBox meterBox = new VBox(groupMeter, new Label(g.getName()));
+				meterBox.prefWidthProperty().bind(groupMeter.prefWidthProperty());
 				meterBox.setAlignment(Pos.TOP_CENTER);
 				meterBox.setMinWidth(40.0);
-				VBox.setVgrow(meter, Priority.ALWAYS);
+				VBox.setVgrow(groupMeter, Priority.ALWAYS);
 				vuPane.getChildren().add(meterBox);
 				HBox.setHgrow(meterBox, Priority.ALWAYS);
 				// individual channels
@@ -129,22 +129,13 @@ public class GroupViewController implements Initializable, PausableView {
 				scroll.setFitToWidth(true);
 				groupPane.getItems().add(scroll);
 				SplitPane.setResizableWithParent(scroll, false);
-				StackPane first = null;
 				for (Channel c : g.getChannelList()) {
-					VuMeter meter2 = new VuMeter(c, Orientation.VERTICAL);
-					meter2.setParentPausable(this);
-					Label label = new Label(c.getName());
-					StackPane meter2Box = new StackPane(meter2, label);
-					StackPane.setAlignment(label, Pos.TOP_CENTER);
-					StackPane.setAlignment(meter2, Pos.CENTER);
-					if (first == null) {
-						first = meter2Box;
-					}
-					meter2Box.setAlignment(Pos.TOP_CENTER);
-					meter2Box.setMinWidth(40.0);
-					VBox.setVgrow(meter2, Priority.ALWAYS);
-					groupBox.getChildren().add(meter2Box);
-					HBox.setHgrow(meter2Box, Priority.ALWAYS);
+					VuMeter channelMeter = new VuMeter(c, Orientation.VERTICAL);
+					channelMeter.setParentPausable(this);
+					channelMeter.setMinWidth(40.0);
+					VBox.setVgrow(channelMeter, Priority.ALWAYS);
+					groupBox.getChildren().add(channelMeter);
+					HBox.setHgrow(channelMeter, Priority.ALWAYS);
 				}
 				// adding chart series
 				if (redrawChart) {
