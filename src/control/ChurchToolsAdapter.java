@@ -21,15 +21,18 @@ import org.json.JSONObject;
 
 import data.Channel;
 import data.Cue;
+import data.FileIO;
 
 public class ChurchToolsAdapter {
 
-	private static final Logger			LOG			= Logger.getLogger(ChurchToolsAdapter.class);
-	private static final String[]		REMOVE_LEAD	= new String[] { "Ltg:", "Ltg.", "Leitung:", "Leitung" };
-	private static final String			DATE_FORMAT	= "yyyy-MM-dd";
-	private static final int[]			SERVICES	= new int[] { 9, 11, 16 };
-	private transient String			login		= "";
-	private transient String			password	= "";
+	private static final String			PREFERENCES_LOGIN_KEY	= "login.user";
+
+	private static final Logger			LOG						= Logger.getLogger(ChurchToolsAdapter.class);
+	private static final String[]		REMOVE_LEAD				= new String[] { "Ltg:", "Ltg.", "Leitung:", "Leitung" };
+	private static final String			DATE_FORMAT				= "yyyy-MM-dd";
+	private static final int[]			SERVICES				= new int[] { 9, 11, 16 };
+	private transient String			login					= "";
+	private transient String			password				= "";
 	private static ChurchToolsAdapter	instance;
 
 	public static ChurchToolsAdapter getInstance() {
@@ -42,6 +45,7 @@ public class ChurchToolsAdapter {
 	private ChurchToolsAdapter() {
 		CookieManager cookieManager = new CookieManager();
 		CookieHandler.setDefault(cookieManager);
+		login = FileIO.readPropertiesString(PREFERENCES_LOGIN_KEY, "");
 	}
 
 	public ArrayList<Cue> loadCues() {
@@ -316,7 +320,12 @@ public class ChurchToolsAdapter {
 	}
 
 	public void setLogin(String login) {
-		this.login = login;
+		if (!this.login.equals(login)) {
+			this.login = login;
+			if (isLoggedIn()) {
+				FileIO.writeProperties(PREFERENCES_LOGIN_KEY, login);
+			}
+		}
 	}
 
 	public void setPassword(String password) {
@@ -334,5 +343,9 @@ public class ChurchToolsAdapter {
 				return false;
 			}
 		}
+	}
+
+	public String getUserName() {
+		return login;
 	}
 }

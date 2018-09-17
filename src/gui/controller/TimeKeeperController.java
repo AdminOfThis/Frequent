@@ -371,8 +371,8 @@ public class TimeKeeperController implements Initializable {
 		if (!isLoginSet) {
 			Pair<String, String> loginCredentials = getLoginData();
 			if (loginCredentials != null) {
-				ChurchToolsAdapter.getInstance().setLogin(loginCredentials.getKey());
 				ChurchToolsAdapter.getInstance().setPassword(loginCredentials.getValue());
+				ChurchToolsAdapter.getInstance().setLogin(loginCredentials.getKey());
 			} else {
 				MainController.getInstance().setStatus("Loading from Churchtools cancelled", 0);
 				return;
@@ -425,6 +425,7 @@ public class TimeKeeperController implements Initializable {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(20, 150, 10, 10));
 		TextField username = new TextField();
+		username.setText(ChurchToolsAdapter.getInstance().getUserName());
 		username.setPromptText("Username");
 		PasswordField password = new PasswordField();
 		password.setPromptText("Password");
@@ -435,7 +436,7 @@ public class TimeKeeperController implements Initializable {
 		// Enable/Disable login button depending on whether a username was
 		// entered.
 		Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
-		loginButton.setDisable(true);
+		loginButton.setDisable(username.getText().isEmpty());
 		// Do some validation (using the Java 8 lambda syntax).
 		username.textProperty().addListener((observable, oldValue, newValue) -> {
 			loginButton.setDisable(newValue.trim().isEmpty());
@@ -450,6 +451,11 @@ public class TimeKeeperController implements Initializable {
 				return new Pair<>(username.getText(), password.getText());
 			}
 			return null;
+		});
+
+		Platform.runLater(() -> {
+			password.requestFocus();
+
 		});
 		Optional<Pair<String, String>> result = dialog.showAndWait();
 		if (result.isPresent()) {

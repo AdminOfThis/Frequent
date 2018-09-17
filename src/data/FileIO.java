@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -24,17 +25,65 @@ import gui.controller.MainController;
 
 public abstract class FileIO {
 
-	private static final Logger			LOG			= Logger.getLogger(FileIO.class);
-	public static final String			ENDING		= ".fre";
+	private static final String			PROPERTIES_FILE	= "./frequent.properties";
+
+	private static final Logger			LOG				= Logger.getLogger(FileIO.class);
+	public static final String			ENDING			= ".fre";
 	// files
-	private static File					currentDir	= new File(System.getProperty("user.home"));
+	private static File					currentDir		= new File(System.getProperty("user.home"));
 	private static File					currentFile;
-	private static List<DataHolder<?>>	holderList	= new ArrayList<>();
+	private static List<DataHolder<?>>	holderList		= new ArrayList<>();
+
+	private static Properties			properties;
 
 	public static void registerSaveData(DataHolder<?> holder) {
 		if (!holderList.contains(holder)) {
 			holderList.add(holder);
 		}
+	}
+
+	public static void writeProperties(String key, String value) {
+		if (properties == null) {
+			loadProperties();
+		}
+		properties.put(key, value);
+		saveProperties();
+	}
+
+	public static String readPropertiesString(String key, String defaultValue) {
+		if (properties == null) {
+			loadProperties();
+		}
+		return properties.getProperty(key, defaultValue);
+
+	}
+
+	public static Properties loadProperties() {
+		if (properties == null) {
+			properties = new Properties();
+		}
+		try {
+			File file = new File(PROPERTIES_FILE);
+			if (file.exists()) {
+				properties.load(new FileInputStream(file));
+			}
+
+		} catch (Exception e) {
+			LOG.warn("Unable to load properties", e);
+			LOG.debug("", e);
+		}
+		return properties;
+	}
+
+	private static boolean saveProperties() {
+		try {
+			properties.store(new FileOutputStream(new File(PROPERTIES_FILE)), "");
+		} catch (Exception e) {
+			LOG.warn("Unable to save preferences");
+			LOG.debug("", e);
+			return false;
+		}
+		return true;
 	}
 
 	public static boolean open(File file) {
