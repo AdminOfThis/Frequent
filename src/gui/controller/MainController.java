@@ -26,6 +26,8 @@ import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
 import gui.utilities.controller.InputCell;
 import gui.utilities.controller.WaveFormChart;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -57,6 +59,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import main.Main;
 
 public class MainController implements Initializable, Pausable, CueListener {
@@ -579,21 +582,33 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	public void setStatus(String text) {
-		Platform.runLater(() -> {
+		if (text != null && !text.isEmpty()) {
+
 			lblStatus.setText(text);
-			progStatus.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
-			progStatus.setVisible(true);
-		});
+			lblStatus.setVisible(true);
+			Timeline line = new Timeline();
+			KeyFrame key = new KeyFrame(Duration.seconds(5), e -> {
+				if (progStatus.getProgress() == 0) {
+					if (lblStatus.getText().equals(text)) {
+						lblStatus.setText("");
+						lblStatus.setVisible(false);
+					}
+				} else {
+					line.playFrom(Duration.seconds(1));
+				}
+			});
+			line.getKeyFrames().add(key);
+			line.playFromStart();
+
+		}
 	}
 
 	public void setStatus(double value) {
 		Platform.runLater(() -> {
 			progStatus.setProgress(value);
-			if (progStatus.getProgress() == 0) {
-				progStatus.setVisible(false);
-			} else {
-				progStatus.setVisible(true);
-			}
+			progStatus.setVisible(!(progStatus.getProgress() == 0));
+			progStatus.setManaged(!(progStatus.getProgress() == 0));
+
 		});
 	}
 
