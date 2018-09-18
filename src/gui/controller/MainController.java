@@ -36,7 +36,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -57,6 +61,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -462,18 +467,20 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	@FXML
-	private void save(ActionEvent e) {
+	public boolean save(ActionEvent e) {
 		setStatus("Saving", -1);
+		boolean result;
 		if (FileIO.getCurrentFile() != null) {
-			FileIO.save(FileIO.getCurrentFile());
+			result = FileIO.save(FileIO.getCurrentFile());
 		} else {
-			saveAs(e);
+			result = saveAs(e);
 		}
 		resetStatus();
+		return result;
 	}
 
 	@FXML
-	private void saveAs(ActionEvent e) {
+	private boolean saveAs(ActionEvent e) {
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Save to Directory");
 		chooser.setInitialDirectory(FileIO.getCurrentDir());
@@ -482,9 +489,10 @@ public class MainController implements Initializable, Pausable, CueListener {
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
 		if (result != null) {
 			if (timeKeeperController != null) {
-				FileIO.save(result);
+				return FileIO.save(result);
 			}
 		}
+		return false;
 	}
 
 	public TimeKeeperController getTimeKeeperController() {
@@ -692,6 +700,32 @@ public class MainController implements Initializable, Pausable, CueListener {
 	public void currentCue(Cue cue, Cue next) {
 		Platform.runLater(() -> setSongs(cue, next));
 
+	}
+
+	public ButtonType showConfirmDialog(String confirm) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		try {
+			DialogPane dialogPane = alert.getDialogPane();
+			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
+		} catch (Exception e) {
+			LOG.warn("Unable to style dialog");
+			LOG.debug("", e);
+		}
+		alert.initOwner(root.getScene().getWindow());
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.setTitle("Confirmation");
+		alert.setHeaderText("Action is required");
+		alert.setContentText(confirm);
+
+		alert.getButtonTypes().clear();
+		alert.getButtonTypes().add(ButtonType.CLOSE);
+		alert.getButtonTypes().add(ButtonType.CANCEL);
+		alert.getButtonTypes().add(ButtonType.OK);
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.isPresent()) {
+			return result.get();
+		}
+		return ButtonType.CANCEL;
 	}
 
 }

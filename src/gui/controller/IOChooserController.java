@@ -42,7 +42,7 @@ public class IOChooserController implements Initializable {
 			listIO.getSelectionModel().select(0);
 		}
 		// Quit Button
-		btnQuit.setOnAction(e -> Main.close());
+		btnQuit.setOnAction(e -> ((Stage) btnQuit.getScene().getWindow()).close());
 		btnStart.disableProperty().bind(listIO.getSelectionModel().selectedItemProperty().isNull());
 		// Debug
 	}
@@ -52,7 +52,7 @@ public class IOChooserController implements Initializable {
 		String selectedIO = null;
 		if (!Main.isDebug()) {
 			selectedIO = listIO.getSelectionModel().getSelectedItem();
-		} else if(!listIO.getItems().isEmpty()) {
+		} else if (!listIO.getItems().isEmpty()) {
 			selectedIO = listIO.getItems().get(0);
 		}
 		LOG.info("Loading Main-Window with selected Driver \"" + selectedIO + "\"");
