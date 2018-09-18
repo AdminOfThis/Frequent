@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 
 import control.InputListener;
 
+import static data.FileIO.compareAndNullCheck;
+
 public abstract class Input implements Serializable {
 
 	private static final long				serialVersionUID	= 1L;
@@ -94,4 +96,19 @@ public abstract class Input implements Serializable {
 	public String getColor() {
 		return hexColor;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Input) {
+			Input other = (Input) obj;
+			if (compareAndNullCheck(this.getName(), other.getName())) {
+				if (compareAndNullCheck(this.getColor(), other.getColor())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
 }

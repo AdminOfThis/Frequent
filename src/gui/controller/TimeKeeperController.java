@@ -442,8 +442,7 @@ public class TimeKeeperController implements Initializable {
 			loginButton.setDisable(newValue.trim().isEmpty());
 		});
 		dialog.getDialogPane().setContent(grid);
-		// Request focus on the username field by default.
-		Platform.runLater(() -> username.requestFocus());
+
 		// Convert the result to a username-password-pair when the login button
 		// is clicked.
 		dialog.setResultConverter(dialogButton -> {
@@ -452,8 +451,12 @@ public class TimeKeeperController implements Initializable {
 			}
 			return null;
 		});
-
-		Platform.runLater(() -> password.requestFocus());
+		// Request focus on the username field by default.
+		if (username.getText().isEmpty()) {
+			Platform.runLater(() -> username.requestFocus());
+		} else {
+			Platform.runLater(() -> password.requestFocus());
+		}
 		Optional<Pair<String, String>> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			return result.get();

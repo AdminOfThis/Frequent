@@ -1,5 +1,7 @@
 package data;
 
+import static data.FileIO.compareAndNullCheck;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -74,5 +76,18 @@ public class Group extends Input implements InputListener {
 			removeChannel(c);
 		}
 		ASIOController.getInstance().removeGroup(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Group) {
+			Group other = (Group) obj;
+			if (super.equals(obj)) {
+				if (compareAndNullCheck(this.getChannelList(), other.getChannelList())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

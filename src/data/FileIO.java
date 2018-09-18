@@ -22,21 +22,22 @@ import control.ASIOController;
 import control.DataHolder;
 import control.TimeKeeper;
 import gui.controller.MainController;
+import gui.controller.TimeKeeperController;
 
 public abstract class FileIO {
 
-	private static final String			PROPERTIES_FILE	= "./frequent.properties";
+	private static final String								PROPERTIES_FILE	= "./frequent.properties";
 
-	private static final Logger			LOG				= Logger.getLogger(FileIO.class);
-	public static final String			ENDING			= ".fre";
+	private static final Logger								LOG				= Logger.getLogger(FileIO.class);
+	public static final String								ENDING			= ".fre";
 	// files
-	private static File					currentDir		= new File(System.getProperty("user.home"));
-	private static File					currentFile;
-	private static List<DataHolder<?>>	holderList		= new ArrayList<>();
+	private static File										currentDir		= new File(System.getProperty("user.home"));
+	private static File										currentFile;
+	private static List<DataHolder<? extends Serializable>>	holderList		= new ArrayList<>();
 
-	private static Properties			properties;
+	private static Properties								properties;
 
-	public static void registerSaveData(DataHolder<?> holder) {
+	public static void registerSaveData(DataHolder<? extends Serializable> holder) {
 		if (!holderList.contains(holder)) {
 			holderList.add(holder);
 		}
@@ -102,6 +103,7 @@ public abstract class FileIO {
 					}
 					handleResult(result);
 					MainController.getInstance().refresh();
+					TimeKeeperController.getInstance().refresh();
 					MainController.getInstance().setTitle(file.getName());
 					return true;
 				} else {
@@ -187,14 +189,31 @@ public abstract class FileIO {
 		return currentFile;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static List<Serializable> collectData() {
 		ArrayList<Serializable> result = new ArrayList<>();
-		for (DataHolder<?> h : holderList) {
+		for (DataHolder<? extends Serializable> h : holderList) {
 			result.addAll((Collection<? extends Serializable>) h.getData());
 		}
 		return result;
 	}
+
+	public static boolean unsavedChanges() {
+		List<Serializable> newResult = collectData();
+		if (!newResult.isEmpty()) {
+
+			if (currentFile == null || !currentFile.exists()) {
+				LOG.info("Program has not yet saved");
+				return true;
+			}
+			List<Serializable> saveFile = openFile(currentFile);
+			if (!newResult.equals(saveFile)) {
+				LOG.info("Program has unsaved changes");
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	public static boolean save(File file) {
 		return save(collectData(), file);
@@ -232,6 +251,14 @@ public abstract class FileIO {
 
 	public static void setCurrentDir(File file) {
 		currentDir = file;
+	}
+
+	public static boolean compareAndNullCheck(Object o1, Object o2) {
+		if (o1 == null && o2 == null) {
+			return true;
+		} else {
+			return o1.equals(o2);
+		}
 	}
 
 }

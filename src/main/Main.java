@@ -15,14 +15,17 @@ import control.ASIOController;
 import data.FileIO;
 import data.RTAIO;
 import gui.controller.IOChooserController;
+import gui.controller.MainController;
 import gui.preloader.PreLoader;
 import gui.utilities.FXMLUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -52,7 +55,8 @@ public class Main extends Application {
 	}
 
 	/**
-	 * checks the start parameters for keywords and sets the debug flag to true if found
+	 * checks the start parameters for keywords and sets the debug flag to true
+	 * if found
 	 * 
 	 * @param args
 	 */
@@ -93,8 +97,7 @@ public class Main extends Application {
 						a = args[index];
 					}
 					LOG.info("Loaded style as: " + style);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOG.warn("Unable to load style from commandline");
 					LOG.debug("", e);
 				}
@@ -110,8 +113,7 @@ public class Main extends Application {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
 			LOG = Logger.getLogger(Main.class);
 			LOG.info("=== Starting Frequent ===");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.fatal("Unexpected error while initializing logging", e);
 		}
 	}
@@ -135,13 +137,17 @@ public class Main extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		LOG.info("Showing IOChooser");
 		primaryStage.setScene(loginScene);
-		primaryStage.setOnCloseRequest(e -> Main.close());
+		primaryStage.setOnCloseRequest(e -> {
+			if (!Main.close()) {
+				MainController.getInstance().setStatus("Close cancelled");
+				e.consume();
+			}
+		});
 		primaryStage.setTitle(getTitle());
 		primaryStage.setResizable(false);
 		try {
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO)));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.error("Unable to load logo");
 			LOG.debug("", e);
 		}
@@ -156,7 +162,20 @@ public class Main extends Application {
 	/**
 	 * stops all running threads and terminates the gui
 	 */
-	public static void close() {
+	public static boolean close() {
+		LOG.info("Checking for unsaved changes");
+		if (FileIO.unsavedChanges()) {
+			ButtonType type = MainController.getInstance().showConfirmDialog("Save changes before exit?");
+			if (type == ButtonType.OK) {
+				boolean result = MainController.getInstance().save(new ActionEvent());
+				if (!result) {
+					LOG.info("Saving cancelled");
+					return false;
+				}
+			} else if (type == ButtonType.CANCEL) {
+				return false;
+			}
+		}
 		LOG.info("Stopping GUI");
 		Platform.exit();
 		if (ASIOController.getInstance() != null) {
@@ -167,6 +186,7 @@ public class Main extends Application {
 		RTAIO.deleteFile();
 		LOG.info("Bye");
 		System.exit(0);
+		return true;
 	}
 
 	private Scene loadMain() {
@@ -174,14 +194,13 @@ public class Main extends Application {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
 		try {
 			Parent p = loader.load();
-// MainController controller = loader.getController();
-// if (ioName != null) {
-// controller.initIO(ioName);
-// }
+			// MainController controller = loader.getController();
+			// if (ioName != null) {
+			// controller.initIO(ioName);
+			// }
 			LOG.info("Main Window loaded");
 			return new Scene(p);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			LOG.error("Unable to load Main GUI", e);
 			Main.close();
 		}
@@ -215,15 +234,14 @@ public class Main extends Application {
 				try {
 					Manifest manifest = new Manifest(resources.nextElement().openStream());
 					if ("Frequent".equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Version")))
-						// check that this is your manifest and do what you need or get the next one
+						// check that this is your manifest and do what you need
+						// or get the next one
 						return manifest.getMainAttributes().getValue(key);
-				}
-				catch (IOException E) {
+				} catch (IOException E) {
 					LOG.warn(E);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to read version from manifest");
 			LOG.debug("", e);
 		}
@@ -241,7 +259,7 @@ public class Main extends Application {
 	public void setProgress(double prog) {
 		try {
 			notifyPreloader(new Preloader.ProgressNotification(prog));
+		} catch (Exception e) {
 		}
-		catch (Exception e) {}
 	}
 }

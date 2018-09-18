@@ -49,4 +49,19 @@ public class Cue implements Serializable {
 	}
 
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Cue) {
+			Cue other = (Cue) obj;
+			if (this.name.equals(other.name)) {
+				if (this.channelToSelect == null && other.channelToSelect == null) {
+					return true;
+				} else if (this.channelToSelect != null && this.channelToSelect.equals(other.channelToSelect)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 }

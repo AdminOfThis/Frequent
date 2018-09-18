@@ -1,5 +1,7 @@
 package data;
 
+import static data.FileIO.compareAndNullCheck;
+
 import java.util.Comparator;
 
 import com.synthbot.jasiohost.AsioChannel;
@@ -83,6 +85,21 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	@Override
 	public int compare(Channel o1, Channel o2) {
 		return o1.getChannelIndex() - o2.getChannelIndex();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Channel) {
+			Channel other = (Channel) obj;
+			if (super.equals(obj)) {
+				if (compareAndNullCheck(this.getChannelIndex(), other.getChannelIndex())) {
+					if (compareAndNullCheck(this.getGroup(), other.getGroup())) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public float[] getBuffer() {
