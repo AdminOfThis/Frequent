@@ -703,7 +703,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	public ButtonType showConfirmDialog(String confirm) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Alert alert = new Alert(AlertType.NONE);
 		try {
 			DialogPane dialogPane = alert.getDialogPane();
 			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
