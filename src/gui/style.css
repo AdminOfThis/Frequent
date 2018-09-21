@@ -1,7 +1,8 @@
 .root {
     -fx-base: rgba(30, 33, 35, 255); // dark
 	-fx-accent: #7DFF2F;
-	-fx-focus-color: #ADFF7B;
+	-fx-focus-color: derive(-fx-accent, 20%);
+	
 }
 
 .default-color0.chart-symbol { -fx-background-color: derive(-fx-accent, -50%); }
@@ -73,6 +74,7 @@
 .toggle-switch: selected .thumb-area{
 	-fx-background-color: -fx-accent;
 }
+
 
 .tree-view {
     -fx-padding: 0em;

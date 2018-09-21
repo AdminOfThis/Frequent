@@ -61,7 +61,9 @@ public class PreLoader extends Preloader implements Initializable {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(PRELOADER_PATH));
 		loader.setController(this);
 		Parent p = loader.load();
-		stage.setScene(new Scene(p));
+		p.setStyle(Main.getStyle());
+		Scene scene = new Scene(p);
+		stage.setScene(scene);
 		stage.show();
 	}
 

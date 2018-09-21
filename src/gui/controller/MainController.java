@@ -711,6 +711,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 			LOG.warn("Unable to style dialog");
 			LOG.debug("", e);
 		}
+		alert.getDialogPane().setStyle(Main.getStyle());
 		alert.initOwner(root.getScene().getWindow());
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.setTitle("Confirmation");

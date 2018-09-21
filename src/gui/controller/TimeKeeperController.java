@@ -42,6 +42,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
@@ -53,6 +54,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -63,6 +65,7 @@ import javafx.stage.Modality;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
+import main.Main;
 
 public class TimeKeeperController implements Initializable {
 
@@ -173,6 +176,20 @@ public class TimeKeeperController implements Initializable {
 	private void initTimeKeeper() {
 		LOG.debug("Loading TimeKeeper");
 		timeChart = new DoughnutChart(FXCollections.observableArrayList());
+		piePane.setOnMouseClicked(e -> {
+			if (MouseButton.SECONDARY.equals(e.getButton())) {
+				ContextMenu menu = new ContextMenu();
+				MenuItem btnClear = new MenuItem("Clear Chart");
+				btnClear.setDisable(timeChart.getData().isEmpty() || TimeKeeper.getInstance().getTimeRunning() > 0);
+				btnClear.setOnAction(ex -> {
+
+					timeChart.getData().clear();
+					lblTime.setText("--:--");
+				});
+				menu.getItems().add(btnClear);
+				menu.show(timeChart, e.getScreenX(), e.getScreenY());
+			}
+		});
 		piePane.getChildren().add(0, timeChart);
 		btnTime.disableProperty().bind(btnStart.selectedProperty().not());
 		btnStart.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -473,6 +490,7 @@ public class TimeKeeperController implements Initializable {
 
 	private Pair<String, String> getLoginData() {
 		Dialog<Pair<String, String>> dialog = new Dialog<>();
+
 		dialog.setTitle("Login ChurchTools");
 		dialog.setHeaderText("Please enter your ChurchTools Login Credentials");
 		dialog.initModality(Modality.NONE);
@@ -484,6 +502,7 @@ public class TimeKeeperController implements Initializable {
 			LOG.warn("Unable to style dialog");
 			LOG.debug("", e);
 		}
+		dialog.getDialogPane().setStyle(Main.getStyle());
 		// Set the icon (must be included in the project).
 		// Set the button types.
 		ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
