@@ -13,18 +13,41 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox fx:id="paneCue" alignment="CENTER" minWidth="300.0" prefWidth="300.0" spacing="5.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.TimeKeeperController">
    <children>
-      <Label fx:id="lblTime" style="-fx-font-size: 30;" text="--:--" VBox.vgrow="NEVER" />
-      <VBox fx:id="piePane">
+      <BorderPane VBox.vgrow="NEVER">
+         <center>
+            <Label fx:id="lblTime" style="-fx-font-size: 30;" text="--:--" />
+         </center>
+         <right>
+            <ToggleButton fx:id="btnInfo" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0" text="i" BorderPane.alignment="CENTER" />
+         </right>
+      </BorderPane>
+      <VBox>
          <children>
-            <PieChart fx:id="timeChart" clockwise="false" labelLineLength="5.0" labelsVisible="false" legendSide="TOP" legendVisible="false" startAngle="90.0" VBox.vgrow="SOMETIMES" />
+            <StackPane fx:id="piePane" VBox.vgrow="SOMETIMES">
+               <children>
+                  <PieChart fx:id="timeChart" clockwise="false" labelLineLength="5.0" labelsVisible="false" legendSide="TOP" legendVisible="false" startAngle="90.0" />
+                  <GridPane fx:id="infoPane">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                  </GridPane>
+               </children>
+            </StackPane>
          </children>
       </VBox>
       <GridPane hgap="5.0" vgap="5.0" VBox.vgrow="NEVER">

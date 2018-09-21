@@ -10,13 +10,13 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.LinkedHashMap;
 import java.util.TreeMap;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import data.Channel;
@@ -25,15 +25,37 @@ import data.FileIO;
 
 public class ChurchToolsAdapter {
 
-	private static final String			PREFERENCES_LOGIN_KEY	= "login.user";
+	private static final String							PREFERENCES_LOGIN_KEY	= "login.user";
 
-	private static final Logger			LOG						= Logger.getLogger(ChurchToolsAdapter.class);
-	private static final String[]		REMOVE_LEAD				= new String[] { "Ltg:", "Ltg.", "Leitung:", "Leitung" };
-	private static final String			DATE_FORMAT				= "yyyy-MM-dd";
-	private static final int[]			SERVICES				= new int[] { 9, 11, 16 };
-	private transient String			login					= "";
-	private transient String			password				= "";
-	private static ChurchToolsAdapter	instance;
+	private static final Logger							LOG						= Logger.getLogger(ChurchToolsAdapter.class);
+	private static final String[]						REMOVE_LEAD				= new String[] { "Ltg:", "Ltg.", "Leitung:", "Leitung" };
+	private static final String							DATETIME_FORMAT			= "yyyy-MM-dd HH:mm:ss";
+	private static final LinkedHashMap<Integer, String>	serviceIDs				= new LinkedHashMap<>();
+	{
+		serviceIDs.put(1, "Sprecher");
+		serviceIDs.put(3, "Moderator");
+		serviceIDs.put(2, "Band-Leitung");
+		serviceIDs.put(136, "Celebration-Manager");
+		serviceIDs.put(6, "FoH");
+		serviceIDs.put(7, "Licht");
+		serviceIDs.put(22, "Beamer-Medien");
+		serviceIDs.put(29, "Beamer-Liedtexte");
+		serviceIDs.put(16, "Stream-Kamera");
+		serviceIDs.put(37, "Stream-Schnitt");
+		serviceIDs.put(38, "Stream-Supervisor");
+		serviceIDs.put(17, "Stream-Sound");
+
+	}
+	private transient String				login			= "";
+	private transient String				password		= "";
+	private static ChurchToolsAdapter		instance;
+
+	private LinkedHashMap<String, String>	additionalInfos	= new LinkedHashMap<>();
+
+
+	public LinkedHashMap<String, String> getAdditionalInfos() {
+		return new LinkedHashMap<>(additionalInfos);
+	}
 
 	public static ChurchToolsAdapter getInstance() {
 		if (instance == null) {
@@ -50,15 +72,13 @@ public class ChurchToolsAdapter {
 
 	public ArrayList<Cue> loadCues() {
 		ArrayList<Cue> res = new ArrayList<>();
-		int service = getClosestService();
-		String sunday = getNextSundayString() + " " + String.format("%02d:00:00", service);
-		LOG.info("Trying to load songs for sunday: " + sunday);
+		additionalInfos.clear();
 		String error = "Unknown error";
 		try {
 			error = "Unable to log in";
 			logIn(login, password);
 			error = "Unable to find event";
-			int eventId = loadEventID(sunday);
+			int eventId = loadEventID();
 			LOG.debug("Found Event-ID: " + eventId);
 			error = "Unable to find agenda for event";
 			int agendaId = loadAgendaId(eventId);
@@ -213,17 +233,70 @@ public class ChurchToolsAdapter {
 		return data.getInt("id");
 	}
 
-	private int loadEventID(String nexGoDi) throws Exception {
+	private int loadEventID() throws Exception {
 		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("getAllEventData", "UTF-8"));
+
+		int eventId = -1;
+		GregorianCalendar time = new GregorianCalendar();
+		time.set(GregorianCalendar.HOUR_OF_DAY, 0);
+		time.set(GregorianCalendar.MINUTE, 0);
+		time.set(GregorianCalendar.SECOND, 0);
+		time.set(GregorianCalendar.MILLISECOND, 0);
+		SimpleDateFormat format = new SimpleDateFormat(DATETIME_FORMAT);
 		JSONObject json = new JSONObject(allData);
+		String suc = json.getString("status");
+		boolean success = suc.equals("success");
+		if (!success) {
+			LOG.warn("Unable to get event data from churchtools");
+			return eventId;
+		}
 		JSONObject data = json.getJSONObject("data");
-		for (String s : data.keySet()) {
-			JSONObject obj = data.getJSONObject(s);
-			if (obj.get("startdate").equals(nexGoDi)) {
-				return obj.getInt("id");
+
+		while (eventId == -1) {
+			String nextGodi = format.format(time.getTime());
+			for (String s : data.keySet()) {
+				JSONObject obj = data.getJSONObject(s);
+				if (obj.get("startdate").equals(nextGodi)) {
+					eventId = obj.getInt("id");
+					LOG.info("Found event on " + nextGodi + ": ");
+					SimpleDateFormat prettyPrint = new SimpleDateFormat("MM.dd HH:mm");
+					additionalInfos.put("Time", prettyPrint.format(time.getTime()));
+					logAdditionalInfo(obj);
+					break;
+				}
+			}
+			if (eventId == -1) {
+				time.add(GregorianCalendar.MINUTE, 15);
 			}
 		}
-		return -1;
+		return eventId;
+	}
+
+	private void logAdditionalInfo(JSONObject obj) {
+		try {
+			String bezeichnung = obj.getString("bezeichnung");
+			additionalInfos.put("Event", bezeichnung);
+			JSONArray services = obj.getJSONArray("services");
+			for (int serviceID : serviceIDs.keySet()) {
+				for (int i = 0; i < services.length(); i++) {
+					JSONObject service = services.getJSONObject(i);
+					if (serviceID == service.getInt("service_id")) {
+						boolean valid = service.getInt("valid_yn") == 1;
+						boolean zugesagt = service.getInt("zugesagt_yn") == 1;
+						if (valid && zugesagt) {
+							String[] besetzung = new String[2];
+							String rolle = serviceIDs.get(serviceID);
+							String name = service.getString("name");
+							besetzung[0] = rolle;
+							besetzung[1] = name;
+							additionalInfos.put(rolle, name);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private boolean logIn(String user, String password) throws Exception {
@@ -271,53 +344,6 @@ public class ChurchToolsAdapter {
 		return res.get(0);
 	}
 
-	private String getNextSundayString() {
-		return getNextSundayString(new GregorianCalendar());
-	}
-
-	private String getNextSundayString(GregorianCalendar c) {
-		// DEBUG
-		c = getNextSunday(c);
-		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-		return format.format(c.getTime());
-	}
-
-	private GregorianCalendar getNextSunday() {
-		return getNextSunday(new GregorianCalendar());
-	}
-
-	private GregorianCalendar getNextSunday(GregorianCalendar c) {
-		while (c.get(GregorianCalendar.DAY_OF_WEEK) != GregorianCalendar.SUNDAY) {
-			c.add(GregorianCalendar.DAY_OF_YEAR, 1);
-		}
-		return c;
-	}
-
-	private int getClosestService() {
-		GregorianCalendar c = new GregorianCalendar();
-		HashMap<Integer, GregorianCalendar> map = new HashMap<>();
-		for (int i : SERVICES) {
-			GregorianCalendar s = getNextSunday();
-			s.set(GregorianCalendar.HOUR_OF_DAY, i);
-			map.put(i, s);
-		}
-		int closest = 0;
-		long difference = -1;
-		for (Entry<Integer, GregorianCalendar> e : map.entrySet()) {
-			long testTime = e.getValue().getTimeInMillis();
-			if (difference < 0) {
-				difference = Math.abs(c.getTimeInMillis() - testTime);
-				closest = e.getKey();
-			} else {
-				long currentTime = c.getTimeInMillis();
-				if (Math.abs(testTime - currentTime) < difference) {
-					difference = testTime - currentTime;
-					closest = e.getKey();
-				}
-			}
-		}
-		return closest;
-	}
 
 	public void setLogin(String login) {
 		if (!this.login.equals(login)) {
