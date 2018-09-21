@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -30,7 +31,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.chart.PieChart;
@@ -50,8 +53,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -65,13 +72,13 @@ public class TimeKeeperController implements Initializable {
 	@FXML
 	private Parent						paneCue;
 	@FXML
-	private VBox						piePane;
+	private StackPane					piePane;
 	@FXML
 	private PieChart					timeChart;
 	@FXML
 	private Button						btnTime;
 	@FXML
-	private ToggleButton				btnStart;
+	private ToggleButton				btnStart, btnInfo;
 	@FXML
 	private TableView<Cue>				cueTable;
 	@FXML
@@ -82,6 +89,9 @@ public class TimeKeeperController implements Initializable {
 	private ComboBox<Channel>			choiceCueChannel;
 	@FXML
 	private Label						lblTime;
+	@FXML
+	private GridPane					infoPane;
+
 	/**************
 	 * contextmenu
 	 *************/
@@ -92,8 +102,68 @@ public class TimeKeeperController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
+		infoPane.setVisible(false);
+		btnInfo.selectedProperty().bindBidirectional(infoPane.visibleProperty());
+		btnInfo.selectedProperty().addListener((o, oldV, newV) -> {
+
+			if (newV) {
+				refreshAdditionalInfos();
+			}
+		});
 		initTimeKeeper();
 		enableContextMenu(false);
+	}
+
+	private void refreshAdditionalInfos() {
+		LinkedHashMap<String, String> map = ChurchToolsAdapter.getInstance().getAdditionalInfos();
+		StackPane p = (StackPane) infoPane.getParent();
+		p.getChildren().remove(infoPane);
+		infoPane = new GridPane();
+		infoPane.setHgap(25.0);
+		infoPane.setVgap(5.0);
+		infoPane.setStyle("-fx-background-color: -fx-background");
+		btnInfo.selectedProperty().bindBidirectional(infoPane.visibleProperty());
+
+		infoPane.addColumn(1);
+		infoPane.getColumnConstraints().add(new ColumnConstraints());
+		infoPane.getColumnConstraints().add(new ColumnConstraints());
+		infoPane.getColumnConstraints().get(1).setHgrow(Priority.ALWAYS);
+		p.getChildren().add(1, infoPane);
+		HBox top = new HBox();
+		top.setAlignment(Pos.CENTER);
+		top.setSpacing(20.0);
+		Label lblEvent = new Label(map.get("Event"));
+
+		lblEvent.setStyle("-fx-font-size: 20px");
+
+		top.getChildren().add(lblEvent);
+		Label lblTime = new Label(map.get("Time"));
+		top.getChildren().add(lblTime);
+		infoPane.getChildren().add(top);
+		GridPane.setColumnIndex(top, 0);
+		GridPane.setRowIndex(top, 0);
+		GridPane.setColumnSpan(top, 2);
+		GridPane.setHalignment(top, HPos.CENTER);
+		map.remove("Event");
+		map.remove("Time");
+		int i = 1;
+		for (String key : map.keySet()) {
+			Label lblKey = new Label(key + ":");
+			infoPane.addRow(i, lblKey);
+			infoPane.getRowConstraints().add(new RowConstraints(30));
+			Label lblValue = new Label(map.get(key));
+			infoPane.getChildren().add(lblValue);
+			GridPane.setColumnIndex(lblValue, 1);
+			GridPane.setRowIndex(lblValue, i);
+			i++;
+		}
+		for (int j = 0; j < infoPane.getRowConstraints().size(); j++) {
+			infoPane.getRowConstraints().get(j).setPrefHeight(-1);
+			infoPane.getRowConstraints().get(j).setVgrow(Priority.SOMETIMES);
+		}
+		infoPane.addRow(i);
+		infoPane.getRowConstraints().add(new RowConstraints(-1));
+		infoPane.getRowConstraints().get(infoPane.getRowConstraints().size() - 1).setVgrow(Priority.ALWAYS);
 	}
 
 	public static TimeKeeperController getInstance() {
@@ -102,9 +172,8 @@ public class TimeKeeperController implements Initializable {
 
 	private void initTimeKeeper() {
 		LOG.debug("Loading TimeKeeper");
-		piePane.getChildren().clear();
 		timeChart = new DoughnutChart(FXCollections.observableArrayList());
-		piePane.getChildren().add(timeChart);
+		piePane.getChildren().add(0, timeChart);
 		btnTime.disableProperty().bind(btnStart.selectedProperty().not());
 		btnStart.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
