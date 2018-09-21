@@ -15,7 +15,6 @@
 *.dmg
 *.gz
 *.iso
-*.jar
 *.rar
 *.tar
 *.zip
@@ -40,6 +39,7 @@ Thumbs.db
 ###############
 /dist/
 /bin/
+/build/
 /.settings/
 /workdir/*.png
 /workdir/*.properties
