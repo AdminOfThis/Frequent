@@ -131,6 +131,7 @@ public class GroupViewController implements Initializable, PausableView {
 				SplitPane.setResizableWithParent(scroll, false);
 				for (Channel c : g.getChannelList()) {
 					VuMeter channelMeter = new VuMeter(c, Orientation.VERTICAL);
+					channelMeter.setTitle(c.getName());
 					channelMeter.setParentPausable(this);
 					channelMeter.setMinWidth(40.0);
 					VBox.setVgrow(channelMeter, Priority.ALWAYS);
