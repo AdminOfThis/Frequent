@@ -80,8 +80,9 @@
     -fx-padding: 0em;
 }
 
-.tree-cell {
+.tree-cell .label{
     -fx-padding: 0em;
+	-fx-text-fill: white;
 }
 
 .split-pane {
@@ -103,7 +104,6 @@
     derive(-fx-accent, -50%)
     );
 }
-
 
 .vuMeter-meter-vertical {
     -fx-background-color: linear-gradient(

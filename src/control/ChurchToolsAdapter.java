@@ -79,7 +79,7 @@ public class ChurchToolsAdapter {
 			logIn(login, password);
 			error = "Unable to find event";
 			int eventId = loadEventID();
-			LOG.debug("Found Event-ID: " + eventId);
+			LOG.info("Found Event-ID: " + eventId);
 			error = "Unable to find agenda for event";
 			int agendaId = loadAgendaId(eventId);
 			LOG.debug("Found Agenda-ID: " + agendaId);
@@ -238,7 +238,7 @@ public class ChurchToolsAdapter {
 
 		int eventId = -1;
 		GregorianCalendar time = new GregorianCalendar();
-		time.set(GregorianCalendar.HOUR_OF_DAY, 0);
+//		time.set(GregorianCalendar.HOUR_OF_DAY, 0);
 		time.set(GregorianCalendar.MINUTE, 0);
 		time.set(GregorianCalendar.SECOND, 0);
 		time.set(GregorianCalendar.MILLISECOND, 0);
