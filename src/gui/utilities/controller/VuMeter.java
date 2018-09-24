@@ -59,7 +59,9 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 	}
 
 	public void setTitle(String title) {
-		lblTitle.setText(title);
+		if (lblTitle != null) {
+			lblTitle.setText(title);
+		}
 	}
 
 	@Override
