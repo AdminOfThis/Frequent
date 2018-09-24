@@ -119,6 +119,7 @@ public class TimeKeeperController implements Initializable {
 
 	private void refreshAdditionalInfos() {
 		LinkedHashMap<String, String> map = ChurchToolsAdapter.getInstance().getAdditionalInfos();
+
 		StackPane p = (StackPane) infoPane.getParent();
 		p.getChildren().remove(infoPane);
 		infoPane = new GridPane();

@@ -131,6 +131,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 		}
 		this.channel = c;
 		if (c != null) {
+			setTitle(c.getName());
 			c.addListener(this);
 			if (c.getColor() != null && !c.getColor().isEmpty()) {
 				this.setStyle("-fx-accent: " + c.getColor());
@@ -147,6 +148,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 				menu.show(vuPane, e.getScreenX(), e.getScreenY());
 			});
 		} else {
+			setTitle("");
 			setOnContextMenuRequested(null);
 			if (lblPeak != null) {
 				lblPeak.setText("");
