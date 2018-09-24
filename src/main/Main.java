@@ -31,6 +31,10 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+	private static String		color_accent	= "#5EBF23";
+	private static String		color_base		= "#1A1A1A";
+	private static String		color_focus		= "#7DFF2F";
+
 	private static Logger		LOG;
 	private static final String	VERSION_KEY		= "Implementation-Version";
 	private static final String	TITLE_KEY		= "Implementation-Title";
@@ -48,10 +52,15 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		initLogger();
 		title = getFromManifest(TITLE_KEY, "Frequent");
-		version = getFromManifest(VERSION_KEY, "LOCAL");
+		version = getFromManifest(VERSION_KEY, "");
 		LOG.info(" === " + getTitle() + " ===");
 		parseArgs(args);
+		setColors();
 		LauncherImpl.launchApplication(Main.class, PreLoader.class, args);
+	}
+
+	private static void setColors() {
+		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
 	}
 
 	/**
@@ -69,7 +78,14 @@ public class Main extends Application {
 			} else if (arg.equalsIgnoreCase("-fast")) {
 				LOG.info("Enabling fast UI elements");
 				fast = true;
+			} else if (arg.toLowerCase().startsWith("-base=")) {
+				color_base = arg.replace("-base=", "");
+			} else if (arg.toLowerCase().startsWith("-accent=")) {
+				color_accent = arg.replace("-accent=", "");
+			} else if (arg.toLowerCase().startsWith("-focus-color=")) {
+				color_focus = arg.replace("-focus-color=", "");
 			} else if (arg.toLowerCase().startsWith("-style=")) {
+
 				LOG.info("Loading custom style");
 				try {
 					style = arg.substring(arg.indexOf("=") + 1);
