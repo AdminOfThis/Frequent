@@ -114,13 +114,9 @@ public class GroupViewController implements Initializable, PausableView {
 				// groups
 				VuMeter groupMeter = new VuMeter(g, Orientation.VERTICAL);
 				groupMeter.setParentPausable(this);
-				VBox meterBox = new VBox(groupMeter, new Label(g.getName()));
-				meterBox.prefWidthProperty().bind(groupMeter.prefWidthProperty());
-				meterBox.setAlignment(Pos.TOP_CENTER);
-				meterBox.setMinWidth(40.0);
-				VBox.setVgrow(groupMeter, Priority.ALWAYS);
-				vuPane.getChildren().add(meterBox);
-				HBox.setHgrow(meterBox, Priority.ALWAYS);
+				groupMeter.setMinWidth(40.0);
+				vuPane.getChildren().add(groupMeter);
+				HBox.setHgrow(groupMeter, Priority.ALWAYS);
 				// individual channels
 				HBox groupBox = new HBox();
 				groupBox.setSpacing(5.0);
@@ -131,7 +127,6 @@ public class GroupViewController implements Initializable, PausableView {
 				SplitPane.setResizableWithParent(scroll, false);
 				for (Channel c : g.getChannelList()) {
 					VuMeter channelMeter = new VuMeter(c, Orientation.VERTICAL);
-					channelMeter.setTitle(c.getName());
 					channelMeter.setParentPausable(this);
 					channelMeter.setMinWidth(40.0);
 					VBox.setVgrow(channelMeter, Priority.ALWAYS);
