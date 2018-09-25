@@ -126,3 +126,8 @@
 .flat-progress .bar {
 	-fx-background-insets: 2;
 }
+
+.button, .toggle-button {
+	-fx-background-radius: null;
+	-fx-background-insets: 0px 0px 0px 0px, 0px, 1px, 1px;
+	}
