@@ -1,5 +1,7 @@
 package data;
 
+import static data.FileIO.compareAndNullCheck;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +9,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import control.InputListener;
-
-import static data.FileIO.compareAndNullCheck;
 
 public abstract class Input implements Serializable {
 
@@ -51,7 +51,8 @@ public abstract class Input implements Serializable {
 			// public void run() {
 			try {
 				obs.levelChanged(level, this);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.warn("Unable to notify Level Listener");
 				LOG.debug("", e);
 			}
@@ -87,7 +88,8 @@ public abstract class Input implements Serializable {
 					c.setColor(hexColor);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return false;
 		}
 		return true;
@@ -102,13 +104,9 @@ public abstract class Input implements Serializable {
 		if (obj instanceof Input) {
 			Input other = (Input) obj;
 			if (compareAndNullCheck(this.getName(), other.getName())) {
-				if (compareAndNullCheck(this.getColor(), other.getColor())) {
-					return true;
-				}
+				if (compareAndNullCheck(this.getColor(), other.getColor())) { return true; }
 			}
 		}
 		return false;
 	}
-
-
 }
