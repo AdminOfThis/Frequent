@@ -43,3 +43,4 @@ Thumbs.db
 /.settings/
 /workdir/*.png
 /workdir/*.properties
+/workdir/rta.temp
