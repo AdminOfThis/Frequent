@@ -93,9 +93,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 			Channel other = (Channel) obj;
 			if (super.equals(obj)) {
 				if (compareAndNullCheck(this.getChannelIndex(), other.getChannelIndex())) {
-					if (compareAndNullCheck(this.getGroup(), other.getGroup())) {
-						return true;
-					}
+					if (compareAndNullCheck(this.getGroup(), other.getGroup())) { return true; }
 				}
 			}
 		}
@@ -110,13 +108,13 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		this.buffer = buffer;
 		for (InputListener l : getListeners()) {
 			if (l instanceof ChannelListener) {
-				new Thread(new Runnable() {
-
-					@Override
-					public void run() {
-						((ChannelListener) l).newBuffer(buffer);
-					}
-				}).start();
+// new Thread(new Runnable() {
+//
+// @Override
+// public void run() {
+				((ChannelListener) l).newBuffer(buffer);
+// }
+// }).start();
 			}
 		}
 	}

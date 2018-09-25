@@ -2,6 +2,7 @@ package control;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
@@ -219,7 +220,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 							}
 							if (c != null) {
 								c.setLevel(max);
-								c.setBuffer(output);
+								c.setBuffer(Arrays.copyOf(output, output.length));
 							}
 						}
 					}
