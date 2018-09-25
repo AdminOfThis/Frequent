@@ -1,6 +1,7 @@
 package gui.utilities.controller;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -29,7 +30,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	private static final Logger				LOG				= Logger.getLogger(VectorScope.class);
 	private static final String				FXML			= "/gui/utilities/gui/VectorScope.fxml";
-	private static final int				MAX_DATA_POINTS	= 5000;
+	private static final int				MAX_DATA_POINTS	= 500;
 	@FXML
 	private HBox							chartParent;
 	@FXML
@@ -60,6 +61,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		chart.getStyleClass().add("vectorscope");
 		chart.getData().add(vectorSeries);
 		chart.prefWidthProperty().bindBidirectional(chart.prefHeightProperty());
 		ChangeListener<Number> lis = new ChangeListener<Number>() {
@@ -76,8 +78,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		initializeTimeline();
 	}
 
-	private void initializeTimeline() {
-	}
+	private void initializeTimeline() {}
 
 	public void setChannels(Channel c1, Channel c2) {
 		if (!c1.equals(channel1) || !c2.equals(channel2)) {
@@ -135,7 +136,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	@Override
 	public void newBuffer(float[] buffer) {
-
 		if (channel1 != null && channel2 != null && !isPaused()) {
 			try {
 				if (restarting) {
@@ -166,12 +166,13 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 							x[index] = buffer1[index];
 							y[index] = buffer2[index];
 						}
-						showData(x, y);
-						// clear buffers
+						showData(buffer1, buffer2);
+// clear buffers
 						buffer1 = null;
 					}
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.error("Problem showing vectorscope", e);
 			}
 		}
@@ -180,9 +181,12 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	private void showData(float[] x, float[] y) {
 		Platform.runLater(() -> {
 			// drawing new data
-			for (int index = 0; index < x.length - 1; index++) {
-				vectorSeries.getData().add(new Data<Number, Number>(x[index], y[index]));
+			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
+			for (int index = 0; index < 200; index++) {
+				Data<Number, Number> data = new Data<>(x[index], y[index]);
+				dataToAdd.add(data);
 			}
+			vectorSeries.getData().addAll(dataToAdd);
 			// removing old data points
 			if (vectorSeries.getData().size() > MAX_DATA_POINTS) {
 				vectorSeries.getData().remove(0, vectorSeries.getData().size() - MAX_DATA_POINTS);

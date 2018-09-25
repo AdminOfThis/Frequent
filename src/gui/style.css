@@ -93,6 +93,11 @@
  -fx-background-insets: 0;
 }
 
+.vectorscope .chart-symbol {
+    -fx-background-radius: 1px ;
+    -fx-padding: 2px ;
+}
+
 .vuMeter-background {
     -fx-background-color: derive(-fx-base, -10%);
 }

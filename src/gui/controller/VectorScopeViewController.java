@@ -21,6 +21,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.util.StringConverter;
 
 public class VectorScopeViewController implements Initializable, PausableView, InputListener {
 
@@ -39,7 +40,6 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 	private VectorScope			vectorScope;
 	private WaveFormChart		chart1, chart2;
 	private Channel				c1, c2;
-
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -69,6 +69,24 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
 			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
 		}
+		StringConverter<Channel> converter = new StringConverter<Channel>() {
+
+			@Override
+			public String toString(Channel object) {
+				if (object == null) {
+					LOG.info("");
+					return "- NONE -";
+				}
+				return object.getName();
+			}
+
+			@Override
+			public Channel fromString(String string) {
+				return null;
+			}
+		};
+		cmbChannel1.setConverter(converter);
+		cmbChannel2.setConverter(converter);
 		// adding listener
 		cmbChannel1.valueProperty().addListener(e -> {
 			Channel cNew = cmbChannel1.getValue();
@@ -98,8 +116,6 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 				}
 			}
 		});
-
-
 	}
 
 	@Override
@@ -119,6 +135,10 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 
 	@Override
 	public void refresh() {
+		if (ASIOController.getInstance() != null) {
+			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
+			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
+		}
 	}
 
 	@Override
@@ -126,17 +146,17 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 		Platform.runLater(() -> {
 			try {
 				if (in.equals(c1)) {
-					paneL.setMaxWidth(paneParent.getWidth() / 2.0 * level);
+					paneL.setMaxWidth(paneParent.getWidth() / 2.0 * (1.0 - level));
 				} else if (in.equals(c2)) {
-					paneR.setMaxWidth(paneParent.getWidth() / 2.0 * level);
+					paneR.setMaxWidth(paneParent.getWidth() / 2.0 * (1.0 - level));
 				} else {
 					LOG.error("Unrecogniced channel reporting to stereo imager, will remove listener");
 					in.removeListener(this);
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.error("Problem setting stereo imager level", e);
 			}
 		});
-
 	}
 }
