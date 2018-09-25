@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 
 import data.Channel;
 import data.RTAIO;
-import gui.controller.RTAViewController;
 import gui.controller.MainController;
+import gui.controller.RTAViewController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import javafx.application.Platform;
@@ -23,6 +23,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import main.Main;
 
 public class ResizableCanvas extends Canvas implements PausableComponent {
 
@@ -44,7 +45,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 	}
 
 	private ResizableCanvas() {
-		accent = FXMLUtil.getStyleValue("-fx-accent");
+		accent = Main.getAccent();
 		content = getGraphicsContext2D();
 	}
 
@@ -146,13 +147,16 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 							WritableImage image = canvas.snapshot(params, null);
 							RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
 							ImageIO.write(renderedImage, "png", file);
-						} catch (Exception e) {
+						}
+						catch (Exception e) {
 							LOG.warn("Unable to export image", e);
-						} finally {
+						}
+						finally {
 							MainController.getInstance().resetStatus();
 						}
 					});
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					LOG.warn("Unable to export image", ex);
 					MainController.getInstance().resetStatus();
 				}
@@ -181,8 +185,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			if (!pause) {
 				reset();
 				RTAIO.deleteFile();
-			} else {
-			}
+			} else {}
 		}
 	}
 

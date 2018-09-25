@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.paint.Color;
 
 public abstract class FXMLUtil {
 
@@ -79,5 +80,12 @@ public abstract class FXMLUtil {
 			result = result.substring(0, result.length() - 1);
 		}
 		return result.trim();
+	}
+
+	public static String toRGBCode(Color color) {
+		int red = (int) (color.getRed() * 255);
+		int green = (int) (color.getGreen() * 255);
+		int blue = (int) (color.getBlue() * 255);
+		return String.format("#%02X%02X%02X", red, green, blue);
 	}
 }

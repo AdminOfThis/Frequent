@@ -725,7 +725,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		Color color = Color.web(baseColor);
 		double value = ((double) index) / ((double) total);
 		color = color.deriveColor(1, 1, value, 1);
-		result = String.format("#%02X%02X%02X", (int) (color.getRed() * 255.0), (int) (color.getGreen() * 255.0), (int) (color.getBlue() * 255.0));
+		result = FXMLUtil.toRGBCode(color);
 		return result;
 	}
 }
