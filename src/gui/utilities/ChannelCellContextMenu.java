@@ -22,10 +22,11 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 	public ChannelCellContextMenu(Channel in) {
 		super(in);
 		if (in != null) {
-			resetName.setOnAction(e -> in.setName(((Channel) in).getChannel().getChannelName()));
+			resetName.setOnAction(e -> {
+				in.setName(in.getChannel().getChannelName());
+			});
 			hide.setOnAction(e -> MainController.getInstance().hideAllSelected());
 			showHidden.setOnAction(e -> MainController.getInstance().setShowHidden(showHidden.isSelected()));
-
 			getItems().add(resetName);
 			getItems().add(new SeparatorMenuItem());
 			getItems().add(hide);
@@ -34,11 +35,11 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 			// groups
 			getItems().add(groupMenu);
 			setOnShowing(e -> refreshData(in));
+			setAutoHide(true);
 		}
 	}
 
 	private void refreshData(Channel channel) {
-
 		showHidden.setSelected(MainController.getInstance().isShowHidden());
 		groupMenu.getItems().clear();
 		for (Group g : ASIOController.getInstance().getGroupList()) {

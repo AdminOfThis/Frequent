@@ -60,9 +60,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import main.Main;
@@ -413,9 +414,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 				return true;
 			}
 			if (!i.isLeaf()) {
-				if (findAndSelect(i, channel)) {
-					return true;
-				}
+				if (findAndSelect(i, channel)) { return true; }
 			}
 		}
 		return false;
@@ -488,9 +487,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
 		if (result != null) {
-			if (timeKeeperController != null) {
-				return FileIO.save(result);
-			}
+			if (timeKeeperController != null) { return FileIO.save(result); }
 		}
 		return false;
 	}
@@ -591,7 +588,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	public void setStatus(String text) {
 		if (text != null && !text.isEmpty()) {
-
 			lblStatus.setText(text);
 			lblStatus.setVisible(true);
 			Timeline line = new Timeline();
@@ -607,7 +603,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 			});
 			line.getKeyFrames().add(key);
 			line.playFromStart();
-
 		}
 	}
 
@@ -616,7 +611,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 			progStatus.setProgress(value);
 			progStatus.setVisible(!(progStatus.getProgress() == 0));
 			progStatus.setManaged(!(progStatus.getProgress() == 0));
-
 		});
 	}
 
@@ -655,7 +649,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 				}
 			}
 			refresh();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Error while hiding items");
 			LOG.debug("", e);
 		}
@@ -669,7 +664,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 				}
 			}
 			refresh();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Error while grouping items");
 			LOG.debug("", e);
 		}
@@ -679,7 +675,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 		showSong(current, lblCurrentSong);
 		showSong(next, lblNextSong);
 	}
-
 
 	private void showSong(Cue cue, Label label) {
 		if (cue != null) {
@@ -693,13 +688,11 @@ public class MainController implements Initializable, Pausable, CueListener {
 		}
 		boolean hide = lblCurrentSong.getText().isEmpty() && lblNextSong.getText().isEmpty();
 		bottomLabel.setVisible(!hide);
-
 	}
 
 	@Override
 	public void currentCue(Cue cue, Cue next) {
 		Platform.runLater(() -> setSongs(cue, next));
-
 	}
 
 	public ButtonType showConfirmDialog(String confirm) {
@@ -707,7 +700,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		try {
 			DialogPane dialogPane = alert.getDialogPane();
 			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to style dialog");
 			LOG.debug("", e);
 		}
@@ -717,27 +711,21 @@ public class MainController implements Initializable, Pausable, CueListener {
 		alert.setTitle("Confirmation");
 		alert.setHeaderText("Action is required");
 		alert.setContentText(confirm);
-
 		alert.getButtonTypes().clear();
 		alert.getButtonTypes().add(ButtonType.CLOSE);
 		alert.getButtonTypes().add(ButtonType.CANCEL);
 		alert.getButtonTypes().add(ButtonType.OK);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent()) {
-			return result.get();
-		}
+		if (result.isPresent()) { return result.get(); }
 		return ButtonType.CANCEL;
 	}
 
 	public static String deriveColor(final String baseColor, final int index, final int total) {
 		String result = baseColor;
+		Color color = Color.web(baseColor);
 		double value = ((double) index) / ((double) total);
-		value = value - .5;
-		value = value * 200.0;
-
-		result = "derive(" + baseColor + ", " + Math.round(value) + ");";
+		color = color.deriveColor(1, 1, value, 1);
+		result = String.format("#%02X%02X%02X", (int) (color.getRed() * 255.0), (int) (color.getGreen() * 255.0), (int) (color.getBlue() * 255.0));
 		return result;
-
 	}
-
 }

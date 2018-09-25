@@ -19,17 +19,16 @@ import javafx.scene.shape.Circle;
 public abstract class InputCellContextMenu extends ContextMenu {
 
 	private static final Logger	LOG			= Logger.getLogger(InputCellContextMenu.class);
-
 	private static final int	COLORS		= 8;
-
 	private MenuItem			name		= new MenuItem("Rename");
 	private MenuItem			newGroup	= new MenuItem("New Group");
 	private Menu				colorMenu	= new Menu("Color");
-
 	private Input				input;
 
 	public InputCellContextMenu(final Input in) {
 		super();
+		setAutoFix(true);
+		setAutoHide(true);
 		input = in;
 		if (input != null) {
 			// NAME
@@ -40,7 +39,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 					input.setName(result.get());
 				}
 			});
-
 			for (int i = 0; i < COLORS; i++) {
 				double hue = (360.0 / COLORS) * i;
 				Color color = Color.hsb(hue, 1.0, 1.0);
@@ -56,7 +54,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 					MainController.getInstance().refresh();
 				});
 			}
-
 			newGroup.setOnAction(e -> {
 				TextInputDialog newGroupDialog = new TextInputDialog();
 				Optional<String> result = newGroupDialog.showAndWait();
@@ -70,7 +67,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 					MainController.getInstance().refresh();
 				}
 			});
-
 			getItems().add(name);
 			getItems().add(colorMenu);
 			getItems().add(newGroup);
@@ -83,5 +79,4 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		int blue = (int) (color.getBlue() * 255);
 		return String.format("#%02X%02X%02X", red, green, blue);
 	}
-
 }
