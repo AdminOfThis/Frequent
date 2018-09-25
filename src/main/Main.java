@@ -278,4 +278,8 @@ public class Main extends Application {
 		} catch (Exception e) {
 		}
 	}
+
+	public static String getAccent() {
+		return color_accent;
+	}
 }

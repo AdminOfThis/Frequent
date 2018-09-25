@@ -729,4 +729,15 @@ public class MainController implements Initializable, Pausable, CueListener {
 		return ButtonType.CANCEL;
 	}
 
+	public static String deriveColor(final String baseColor, final int index, final int total) {
+		String result = baseColor;
+		double value = ((double) index) / ((double) total);
+		value = value - .5;
+		value = value * 200.0;
+
+		result = "derive(" + baseColor + ", " + Math.round(value) + ");";
+		return result;
+
+	}
+
 }
