@@ -23,8 +23,7 @@ public abstract class FXMLUtil {
 			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
 			parent = loader.load();
 			controller = loader.getController();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.error("Unable to load FXMLFile");
 			LOG.info("", e);
 		}
@@ -37,8 +36,7 @@ public abstract class FXMLUtil {
 			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
 			loader.setController(controller);
 			parent = loader.load();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.error("Unable to load FXMLFile", e);
 			LOG.debug("", e);
 		}
@@ -61,17 +59,14 @@ public abstract class FXMLUtil {
 					break;
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to load css value " + value);
 			LOG.debug("", e);
-		}
-		finally {
+		} finally {
 			if (reader != null) {
 				try {
 					reader.close();
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 					LOG.error("Problem closing file reader", e);
 				}
 			}
@@ -87,5 +82,22 @@ public abstract class FXMLUtil {
 		int green = (int) (color.getGreen() * 255);
 		int blue = (int) (color.getBlue() * 255);
 		return String.format("#%02X%02X%02X", red, green, blue);
+	}
+
+	public static Color colorFade(final Color baseColor, final Color targetColor, final double percent) {
+		Color result = null;
+
+		double deltaRed = targetColor.getRed() - baseColor.getRed();
+		double deltaGreen = targetColor.getGreen() - baseColor.getGreen();
+		double deltaBlue = targetColor.getBlue() - baseColor.getBlue();
+		double redD = baseColor.getRed() + (deltaRed * percent);
+		double greenD = baseColor.getGreen() + (deltaGreen * percent);
+		double blueD = baseColor.getBlue() + (deltaBlue * percent);
+		int red = (int) Math.floor(redD * 255.0);
+		int green = (int) Math.floor(greenD * 255.0);
+		int blue = (int) Math.floor(blueD * 255.0);
+
+		result = Color.rgb(red, green, blue);
+		return result;
 	}
 }
