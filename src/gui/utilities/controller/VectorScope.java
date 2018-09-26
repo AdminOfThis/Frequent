@@ -185,18 +185,20 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			// drawing new data
 			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
 			for (int index = 0; index < 200; index++) {
-				float dataX = x[index];
-				float dataY = y[index];
-				Data<Number, Number> data = new Data<>(dataX, dataY);
-				double percent = (dataX / dataY);
+				Data<Number, Number> data = new Data<>(x[index], y[index]);
+				dataToAdd.add(data);
+			}
+			vectorSeries.getData().addAll(dataToAdd);
+			for (Data<Number, Number> d : dataToAdd) {
+				double percent = (d.getXValue().doubleValue() / d.getYValue().doubleValue());
 				if (percent > 1 || percent < -1) {
 					percent = 1.0 / percent;
 				}
 				percent = 1 - Math.abs((percent + 1) / 2.0);
-				data.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
-				dataToAdd.add(data);
+				d.getNode().setStyle("-fx-background-color: "
+					+ FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
+
 			}
-			vectorSeries.getData().addAll(dataToAdd);
 			// removing old data points
 			if (vectorSeries.getData().size() > MAX_DATA_POINTS) {
 				vectorSeries.getData().remove(0, vectorSeries.getData().size() - MAX_DATA_POINTS);
