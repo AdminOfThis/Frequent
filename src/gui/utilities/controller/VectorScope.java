@@ -25,6 +25,8 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import main.Main;
 
 public class VectorScope extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
@@ -78,7 +80,8 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		initializeTimeline();
 	}
 
-	private void initializeTimeline() {}
+	private void initializeTimeline() {
+	}
 
 	public void setChannels(Channel c1, Channel c2) {
 		if (!c1.equals(channel1) || !c2.equals(channel2)) {
@@ -167,12 +170,11 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 							y[index] = buffer2[index];
 						}
 						showData(buffer1, buffer2);
-// clear buffers
+						// clear buffers
 						buffer1 = null;
 					}
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.error("Problem showing vectorscope", e);
 			}
 		}
@@ -183,7 +185,15 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			// drawing new data
 			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
 			for (int index = 0; index < 200; index++) {
-				Data<Number, Number> data = new Data<>(x[index], y[index]);
+				float dataX = x[index];
+				float dataY = y[index];
+				Data<Number, Number> data = new Data<>(dataX, dataY);
+				double percent = (dataX / dataY);
+				if (percent > 1 || percent < -1) {
+					percent = 1.0 / percent;
+				}
+				percent = 1 - Math.abs((percent + 1) / 2.0);
+				data.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccent()), Color.RED, percent)));
 				dataToAdd.add(data);
 			}
 			vectorSeries.getData().addAll(dataToAdd);
