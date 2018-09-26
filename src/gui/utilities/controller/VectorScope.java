@@ -193,7 +193,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					percent = 1.0 / percent;
 				}
 				percent = 1 - Math.abs((percent + 1) / 2.0);
-				data.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccent()), Color.RED, percent)));
+				data.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
 				dataToAdd.add(data);
 			}
 			vectorSeries.getData().addAll(dataToAdd);
