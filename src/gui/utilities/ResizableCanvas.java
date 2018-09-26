@@ -45,7 +45,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 	}
 
 	private ResizableCanvas() {
-		accent = Main.getAccent();
+		accent = Main.getAccentColor();
 		content = getGraphicsContext2D();
 	}
 

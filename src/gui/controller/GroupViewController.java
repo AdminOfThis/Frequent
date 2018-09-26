@@ -112,7 +112,7 @@ public class GroupViewController implements Initializable, PausableView {
 			for (Group g : groupList) {
 				// groups
 // if (g.getColor() == null || g.getColor().isEmpty()) {
-				g.setColor(MainController.deriveColor(Main.getAccent(), groupList.indexOf(g) + 1, groupList.size() + 1));
+				g.setColor(MainController.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1, groupList.size() + 1));
 // }
 				VuMeter groupMeter = new VuMeter(g, Orientation.VERTICAL);
 				groupMeter.setParentPausable(this);
