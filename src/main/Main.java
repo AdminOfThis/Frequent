@@ -253,8 +253,8 @@ public class Main extends Application {
 						// check that this is your manifest and do what you need
 						// or get the next one
 						return manifest.getMainAttributes().getValue(key);
-				} catch (IOException E) {
-					LOG.warn(E);
+				} catch (IOException e) {
+					LOG.warn(e);
 				}
 			}
 		} catch (Exception e) {
@@ -282,11 +282,11 @@ public class Main extends Application {
 	public static String getAccentColor() {
 		return color_accent;
 	}
-	
+
 	public static String getBaseColor() {
 		return color_base;
 	}
-	
+
 	public static String getFocusColor() {
 		return color_focus;
 	}
