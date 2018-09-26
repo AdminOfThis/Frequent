@@ -279,7 +279,15 @@ public class Main extends Application {
 		}
 	}
 
-	public static String getAccent() {
+	public static String getAccentColor() {
 		return color_accent;
+	}
+	
+	public static String getBaseColor() {
+		return color_base;
+	}
+	
+	public static String getFocusColor() {
+		return color_focus;
 	}
 }
