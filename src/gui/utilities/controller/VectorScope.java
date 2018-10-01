@@ -19,6 +19,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
@@ -196,7 +197,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				}
 				percent = 1 - Math.abs((percent + 1) / 2.0);
 				d.getNode().setStyle("-fx-background-color: "
-					+ FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
+				        + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
 
 			}
 			// removing old data points
@@ -204,5 +205,20 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				vectorSeries.getData().remove(0, vectorSeries.getData().size() - MAX_DATA_POINTS);
 			}
 		});
+	}
+
+	public void setMax(final double max) {
+		double value;
+		if (max == -1) {
+			value = 1.0;
+		} else {
+			value = Math.abs(max);
+		}
+		NumberAxis x = (NumberAxis) chart.getXAxis();
+		x.setUpperBound(value);
+		x.setLowerBound(-value);
+		NumberAxis y = (NumberAxis) chart.getYAxis();
+		y.setUpperBound(value);
+		y.setLowerBound(-value);
 	}
 }
