@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -37,6 +38,8 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 	private HBox				paneParent;
 	@FXML
 	private Pane				paneL, paneCenter, paneR;
+	@FXML
+	private Slider				valueSlider;
 	private VectorScope			vectorScope;
 	private WaveFormChart		chart1, chart2;
 	private Channel				c1, c2;
@@ -64,6 +67,8 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 		AnchorPane.setTopAnchor(chart2, .0);
 		AnchorPane.setLeftAnchor(chart2, .0);
 		AnchorPane.setRightAnchor(chart2, .0);
+
+		valueSlider.valueProperty().addListener(e -> vectorScope.setMax(valueSlider.getValue()));
 		// updating channels
 		if (ASIOController.getInstance() != null) {
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
@@ -130,7 +135,10 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 
 	@Override
 	public ArrayList<Node> getHeader() {
-		return null;
+
+		ArrayList<Node> list = new ArrayList<>();
+		list.add(valueSlider);
+		return list;
 	}
 
 	@Override
@@ -138,7 +146,10 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 		if (ASIOController.getInstance() != null) {
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
 			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
+			cmbChannel1.setValue(vectorScope.getChannel1());
+			cmbChannel2.setValue(vectorScope.getChannel2());
 		}
+
 	}
 
 	@Override
@@ -153,8 +164,7 @@ public class VectorScopeViewController implements Initializable, PausableView, I
 					LOG.error("Unrecogniced channel reporting to stereo imager, will remove listener");
 					in.removeListener(this);
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.error("Problem setting stereo imager level", e);
 			}
 		});
