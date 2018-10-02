@@ -4,59 +4,39 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefHeight="400.0" prefWidth="600.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.VectorScopeViewController">
+<BorderPane fx:id="root" prefHeight="400.0" prefWidth="600.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.VectorScopeViewController">
    <center>
-      <SplitPane dividerPositions="0.7" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <items>
-            <VBox>
+      <VBox>
+         <children>
+            <HBox>
                <children>
-                  <Slider fx:id="valueSlider" majorTickUnit="0.25" max="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" />
-                  <AnchorPane fx:id="chartPane" VBox.vgrow="ALWAYS" />
-                  <HBox prefHeight="30.0">
-                     <children>
-                        <HBox fx:id="paneParent" alignment="CENTER" styleClass="vuMeter-background" HBox.hgrow="ALWAYS">
-                           <children>
-                              <Pane fx:id="paneL" HBox.hgrow="ALWAYS" />
-                              <Pane fx:id="paneCenter" style="-fx-background-color: derive(-fx-accent, -50%);" HBox.hgrow="SOMETIMES" />
-                              <Pane fx:id="paneR" HBox.hgrow="ALWAYS" />
-                           </children>
-                        </HBox>
-                     </children>
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </HBox>
-               </children>
-            </VBox>
-            <VBox maxWidth="250.0" spacing="5.0" SplitPane.resizableWithParent="false">
-               <children>
-                  <HBox alignment="CENTER_RIGHT" spacing="5.0">
+                  <Slider fx:id="valueSlider" majorTickUnit="0.2" max="1.0" min="0.1" minorTickCount="1" showTickMarks="true" value="1.0" />
+                  <HBox fx:id="box1" alignment="CENTER_RIGHT" spacing="5.0">
                      <children>
                         <Label minWidth="60.0" prefWidth="60.0" text="Channel 1" />
                         <ChoiceBox fx:id="cmbChannel1" minWidth="100.0" prefWidth="150.0" HBox.hgrow="SOMETIMES" />
                      </children>
                   </HBox>
-                  <AnchorPane fx:id="chartChannel1" VBox.vgrow="SOMETIMES" />
-                  <HBox alignment="CENTER_RIGHT" spacing="5.0">
+                  <HBox fx:id="box2" alignment="CENTER_RIGHT" spacing="5.0">
                      <children>
                         <Label minWidth="60.0" prefWidth="60.0" text="Channel 2" />
                         <ChoiceBox fx:id="cmbChannel2" minWidth="100.0" prefWidth="150.0" />
                      </children>
                   </HBox>
-                  <AnchorPane fx:id="chartChannel2" VBox.vgrow="SOMETIMES" />
                </children>
+            </HBox>
+            <AnchorPane fx:id="chartPane" VBox.vgrow="ALWAYS" />
+            <HBox fx:id="bottomPane" prefHeight="30.0">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
-            </VBox>
-         </items>
-      </SplitPane>
+            </HBox>
+         </children>
+      </VBox>
    </center>
 </BorderPane>

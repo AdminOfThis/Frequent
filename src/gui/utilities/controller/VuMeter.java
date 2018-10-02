@@ -14,6 +14,7 @@ import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.FXMLUtil;
 import gui.utilities.GroupCellContextMenu;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
@@ -26,20 +27,22 @@ import javafx.scene.layout.StackPane;
 
 public class VuMeter extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
-	private static final String	FXML_VERTICAL	= "/gui/utilities/gui/VuMeterVertical.fxml";
-	private static final String	FXML_HORIZONTAL	= "/gui/utilities/gui/VuMeterHorizontal.fxml";
-	private static final double	DB_PEAK_FALLOFF	= 0.015;
+	private static final String		FXML_VERTICAL	= "/gui/utilities/gui/VuMeterVertical.fxml";
+	private static final String		FXML_HORIZONTAL	= "/gui/utilities/gui/VuMeterHorizontal.fxml";
+	private static final int		PEAK_HOLD		= 50;
 	@FXML
-	private StackPane			vuPane;
+	private StackPane				vuPane;
 	@FXML
-	private Pane				vuPeakPane, vuLastPeakPane;
+	private Pane					vuPeakPane, vuLastPeakPane;
 	@FXML
-	private Label				lblPeak, lblTitle;
-	private Input				channel;
-	private double				peak			= RTAViewController.FFT_MIN;
-	private Orientation			orientation;
-	private boolean				pause			= false;
-	private Pausable			parentPausable;
+	private Label					lblPeak, lblTitle;
+	private Input					channel;
+	private double					peak			= RTAViewController.FFT_MIN;
+	private Orientation				orientation;
+	private boolean					pause			= false;
+	private Pausable				parentPausable;
+	private SimpleBooleanProperty	showLabels		= new SimpleBooleanProperty(true);
+	private int						timeSincePeak	= 0;
 
 	public VuMeter(Input channel, Orientation o) {
 		this.orientation = o;
@@ -66,6 +69,8 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		lblPeak.visibleProperty().bind(showLabels);
+		lblTitle.visibleProperty().bind(showLabels);
 		lblTitle.prefWidthProperty().addListener(e -> {
 			if (lblTitle.prefHeightProperty().get() > this.prefWidthProperty().get()) {
 				lblTitle.setRotate(90.0);
@@ -83,8 +88,12 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 			Platform.runLater(() -> {
 				if (channel != null) {
 					double peakdB = Channel.percentToDB(channel.getLevel() * 1000.0);
-					if (peak < peakdB) {
+					if (peak < peakdB || timeSincePeak >= PEAK_HOLD) {
 						peak = peakdB;
+						timeSincePeak = 0;
+					}
+					if (timeSincePeak < PEAK_HOLD) {
+						timeSincePeak++;
 					}
 					if (orientation == Orientation.VERTICAL) {
 						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
@@ -105,10 +114,6 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 					} else {
 						vuPane.setStyle("");
 					}
-					if (peak == 0.0) {
-						peak = -1.0;
-					}
-					peak = (1 + DB_PEAK_FALLOFF) * peak;
 				} else {
 					if (orientation == Orientation.VERTICAL) {
 						vuPeakPane.setPrefHeight(0);
@@ -173,5 +178,9 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 	@Override
 	public void setParentPausable(Pausable parent) {
 		parentPausable = parent;
+	}
+
+	public void showLabels(boolean b) {
+		showLabels.setValue(b);
 	}
 }

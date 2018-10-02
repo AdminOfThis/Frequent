@@ -25,7 +25,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	private static final Logger			LOG			= Logger.getLogger(WaveFormChart.class);
 	private static final String			FXML		= "/gui/utilities/gui/WaveFormChart.fxml";
-	private static final long			TIME_FRAME	= 3000;
+	private static final long			TIME_FRAME	= 5000;
 	@FXML
 	private LineChart<Number, Number>	chart;
 	private Series<Number, Number>		series		= new Series<>();
