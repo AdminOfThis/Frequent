@@ -34,6 +34,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	private static final Logger				LOG				= Logger.getLogger(VectorScope.class);
 	private static final String				FXML			= "/gui/utilities/gui/VectorScope.fxml";
 	private static final int				MAX_DATA_POINTS	= 500;
+	private static final int				DOTS_PER_BUFFER	= 150;
 	@FXML
 	private HBox							chartParent;
 	@FXML
@@ -81,8 +82,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		initializeTimeline();
 	}
 
-	private void initializeTimeline() {
-	}
+	private void initializeTimeline() {}
 
 	public void setChannels(Channel c1, Channel c2) {
 		if (!c1.equals(channel1) || !c2.equals(channel2)) {
@@ -175,7 +175,8 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 						buffer1 = null;
 					}
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.error("Problem showing vectorscope", e);
 			}
 		}
@@ -185,7 +186,10 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		Platform.runLater(() -> {
 			// drawing new data
 			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
-			for (int index = 0; index < 200; index++) {
+			int i = 0;
+			for (int index = 1; index < DOTS_PER_BUFFER; index++) {
+				i = (x.length - 1) / index;
+				i = Math.min(i, x.length - 1);
 				Data<Number, Number> data = new Data<>(x[index], y[index]);
 				dataToAdd.add(data);
 			}
@@ -196,11 +200,9 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					percent = 1.0 / percent;
 				}
 				percent = 1 - Math.abs((percent + 1) / 2.0);
-				d.getNode().setStyle("-fx-background-color: "
-				        + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
-
+				d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
 			}
-			// removing old data points
+// removing old data points
 			if (vectorSeries.getData().size() > MAX_DATA_POINTS) {
 				vectorSeries.getData().remove(0, vectorSeries.getData().size() - MAX_DATA_POINTS);
 			}
