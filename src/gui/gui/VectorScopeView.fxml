@@ -9,13 +9,24 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefHeight="400.0" prefWidth="600.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.VectorScopeViewController">
+<BorderPane fx:id="root" prefHeight="400.0" prefWidth="600.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.VectorScopeViewController">
    <center>
       <VBox>
          <children>
             <HBox>
                <children>
-                  <Slider fx:id="valueSlider" majorTickUnit="0.2" max="1.0" min="0.1" minorTickCount="1" showTickMarks="true" value="1.0" />
+                  <HBox fx:id="boxZoom" alignment="CENTER" spacing="5.0">
+                     <children>
+                        <Label text="Zoom:" />
+                        <Slider fx:id="zoomSlider" majorTickUnit="0.2" max="1.0" min="0.1" minorTickCount="1" showTickMarks="true" value="1.0" />
+                     </children>
+                  </HBox>
+                  <HBox fx:id="boxDecay" alignment="CENTER" spacing="5.0">
+                     <children>
+                        <Label text="Decay-Time:" />
+                        <Slider fx:id="decaySlider" majorTickUnit="2.0" max="10.0" min="1.0" minorTickCount="1" showTickMarks="true" value="1.0" />
+                     </children>
+                  </HBox>
                   <HBox fx:id="box1" alignment="CENTER_RIGHT" spacing="5.0">
                      <children>
                         <Label minWidth="60.0" prefWidth="60.0" text="Channel 1" />
