@@ -23,6 +23,8 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	private Group					group;
 	private boolean					hide				= false;
 	private float[]					buffer;
+	private Channel					stereoChannel;
+
 
 	public Channel(AsioChannel channel) {
 		this(channel, channel.getChannelName());
@@ -93,7 +95,9 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 			Channel other = (Channel) obj;
 			if (super.equals(obj)) {
 				if (compareAndNullCheck(this.getChannelIndex(), other.getChannelIndex())) {
-					if (compareAndNullCheck(this.getGroup(), other.getGroup())) { return true; }
+					if (compareAndNullCheck(this.getGroup(), other.getGroup())) {
+						return true;
+					}
 				}
 			}
 		}
@@ -108,14 +112,22 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		this.buffer = buffer;
 		for (InputListener l : getListeners()) {
 			if (l instanceof ChannelListener) {
-// new Thread(new Runnable() {
-//
-// @Override
-// public void run() {
+				 new Thread(new Runnable() {
+				
+				 @Override
+				 public void run() {
 				((ChannelListener) l).newBuffer(buffer);
-// }
-// }).start();
+					}
+				}).start();
 			}
 		}
+	}
+
+	public Channel getStereoChannel() {
+		return stereoChannel;
+	}
+
+	public void setStereoChannel(Channel stereoChannel) {
+		this.stereoChannel = stereoChannel;
 	}
 }
