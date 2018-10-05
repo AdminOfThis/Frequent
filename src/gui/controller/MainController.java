@@ -42,6 +42,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
@@ -50,7 +51,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -108,7 +108,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	@FXML
 	private MenuItem						menuTimerStart, menuTimerNext;
 	@FXML
-	private TreeView<Input>					channelList;
+	private ListView<Input>					channelList;
 	@FXML
 	private CheckMenuItem					menuShowCue, menuShowChannels, menuStartFFT, menuShowTuner;
 	@FXML
@@ -299,24 +299,22 @@ public class MainController implements Initializable, Pausable, CueListener {
 		});
 		channelList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		channelList.setCellFactory(e -> new InputCell());
-		channelList.setRoot(new TreeItem<>());
-		channelList.setShowRoot(false);
 		// channelList.setOnEditCommit(e ->
 		// timeKeeperController.setChannels(channelList.getItems()));
-		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<Input>>() {
+		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Input>() {
 
 			@Override
-			public void changed(ObservableValue<? extends TreeItem<Input>> observable, TreeItem<Input> oldValue, TreeItem<Input> newValue) {
-				if (newValue != null && newValue.getValue() != null) {
-					if (newValue.getValue() instanceof Channel) {
-						Channel channel = (Channel) newValue.getValue();
+			public void changed(ObservableValue<? extends Input> observable, Input oldValue, Input newValue) {
+				if (newValue != null) {
+					if (newValue instanceof Channel) {
+						Channel channel = (Channel) newValue;
 						controller.setActiveChannel(channel.getChannel());
 						// getting RTA Controller
 						RTAViewController con = (RTAViewController) controllerMap.get(contentMap.get(toggleFFTView));
 						con.setChannel(channel);
 						LOG.info("Switching to channel " + channel.getName());
 					}
-					waveFormController.setChannel(newValue.getValue());
+					waveFormController.setChannel(newValue);
 				}
 			}
 		});
@@ -330,22 +328,19 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void refreshInputs() {
-		TreeItem<Input> root = new TreeItem<>();
-		channelList.setRoot(root);
 		if (ASIOController.getInstance() != null) {
 			if (toggleGroupChannels.isSelected()) {
-				for (Group g : ASIOController.getInstance().getGroupList()) {
-					root.getChildren().add(new TreeItem<Input>(g));
+				for (Group group : ASIOController.getInstance().getGroupList()) {
+					channelList.getItems().add(group);
 				}
 			} else {
 				for (Channel channel : ASIOController.getInstance().getInputList()) {
 					if (!channel.isHidden() || showHidden) {
-						root.getChildren().add(new TreeItem<>(channel));
+						channelList.getItems().add(channel);
 					}
 				}
 			}
 		}
-		root.setExpanded(true);
 	}
 
 	private void initMenu() {
@@ -382,43 +377,19 @@ public class MainController implements Initializable, Pausable, CueListener {
 		setChannelList(controller.getInputList());
 		lblDriver.setText(ioName);
 		lblLatency.setText(controller.getLatency() + "ms ");
-		if (channelList.getRoot().getChildren().size() > 0) {
+		if (channelList.getItems().size() > 0) {
 			channelList.getSelectionModel().select(0);
 		}
 	}
 
 	public void setChannelList(List<Channel> list) {
-		channelList.getRoot().getChildren().clear();
-		for (Channel c : list) {
-			channelList.getRoot().getChildren().add(new TreeItem<Input>(c));
-		}
+		channelList.getItems().setAll(list);
 	}
 
 	public void setSelectedChannel(Channel channel) {
-		findAndSelect(channelList.getRoot(), channel);
+		channelList.selectionModelProperty().get().select(channel);
 	}
 
-	/**
-	 * rekursive slection in treeview
-	 * 
-	 * @param item,
-	 *            leaf which children get searched
-	 * @param channel,
-	 *            the channel to find
-	 * @return result, true if found to bubble upwards
-	 */
-	private boolean findAndSelect(TreeItem<Input> item, Channel channel) {
-		for (TreeItem<Input> i : item.getChildren()) {
-			if (i != null && i.getValue().equals(channel)) {
-				channelList.getSelectionModel().select(i);
-				return true;
-			}
-			if (!i.isLeaf()) {
-				if (findAndSelect(i, channel)) { return true; }
-			}
-		}
-		return false;
-	}
 
 	@FXML
 	private void open(ActionEvent e) {
@@ -487,7 +458,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
 		if (result != null) {
-			if (timeKeeperController != null) { return FileIO.save(result); }
+			if (timeKeeperController != null) {
+				return FileIO.save(result);
+			}
 		}
 		return false;
 	}
@@ -542,7 +515,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	@FXML
 	private void resetName(ActionEvent e) {
-		Input channel = channelList.getSelectionModel().getSelectedItem().getValue();
+		Input channel = channelList.getSelectionModel().getSelectedItem();
 		if (channel != null && channel instanceof Channel) {
 			((Channel) channel).resetName();
 			refresh();
@@ -636,21 +609,20 @@ public class MainController implements Initializable, Pausable, CueListener {
 	 */
 	public void hideAllSelected() {
 		try {
-			TreeItem<Input> first = channelList.getSelectionModel().getSelectedItems().get(0);
+			Input first = channelList.getSelectionModel().getSelectedItems().get(0);
 			if (first != null) {
-				if (first.getValue() instanceof Channel) {
-					Channel channel = (Channel) first.getValue();
+				if (first instanceof Channel) {
+					Channel channel = (Channel) first;
 					boolean hide = !channel.isHidden();
-					for (TreeItem<Input> item : channelList.getSelectionModel().getSelectedItems()) {
-						if (item.getValue() instanceof Channel) {
-							((Channel) item.getValue()).setHidden(hide);
+					for (Input item : channelList.getSelectionModel().getSelectedItems()) {
+						if (item instanceof Channel) {
+							((Channel) item).setHidden(hide);
 						}
 					}
 				}
 			}
 			refresh();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Error while hiding items");
 			LOG.debug("", e);
 		}
@@ -658,14 +630,13 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	public void groupAllSelected(Group g) {
 		try {
-			for (TreeItem<Input> item : channelList.getSelectionModel().getSelectedItems()) {
-				if (item.getValue() instanceof Channel) {
-					g.addChannel((Channel) item.getValue());
+			for (Input item : channelList.getSelectionModel().getSelectedItems()) {
+				if (item instanceof Channel) {
+					g.addChannel((Channel) item);
 				}
 			}
 			refresh();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Error while grouping items");
 			LOG.debug("", e);
 		}
@@ -700,8 +671,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		try {
 			DialogPane dialogPane = alert.getDialogPane();
 			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to style dialog");
 			LOG.debug("", e);
 		}
@@ -716,7 +686,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 		alert.getButtonTypes().add(ButtonType.CANCEL);
 		alert.getButtonTypes().add(ButtonType.OK);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent()) { return result.get(); }
+		if (result.isPresent()) {
+			return result.get();
+		}
 		return ButtonType.CANCEL;
 	}
 
