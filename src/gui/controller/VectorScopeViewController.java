@@ -19,6 +19,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.util.StringConverter;
 
@@ -66,7 +67,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		HBox.setHgrow(vu2, Priority.SOMETIMES);
 		zoomSlider.valueProperty().addListener(e -> vectorScope.setMax(zoomSlider.getValue()));
 		decaySlider.valueProperty().addListener(e -> vectorScope.setDecay(decaySlider.getValue()));
-		
+
 		// updating channels
 		if (ASIOController.getInstance() != null) {
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
@@ -122,10 +123,14 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	@Override
 	public ArrayList<Node> getHeader() {
 		ArrayList<Node> list = new ArrayList<>();
-		list.add(boxZoom);
-		list.add(boxDecay);
+
 		list.add(box1);
 		list.add(box2);
+		// Pane p = new Pane();
+		// HBox.setHgrow(p, Priority.ALWAYS);
+		// list.add(p);
+		list.add(boxZoom);
+		list.add(boxDecay);
 		return list;
 	}
 

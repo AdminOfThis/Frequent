@@ -119,8 +119,8 @@
                         <Tooltip text="Shows/hides the cue manager" />
                      </tooltip></ToggleButton>
                   <Separator orientation="VERTICAL" />
-                  <Pane HBox.hgrow="ALWAYS" />
-                  <HBox fx:id="buttonBox" alignment="CENTER_RIGHT" spacing="5.0" />
+                  <Pane HBox.hgrow="SOMETIMES" />
+                  <HBox fx:id="buttonBox" alignment="CENTER_RIGHT" spacing="5.0" HBox.hgrow="ALWAYS" />
                   <Separator orientation="VERTICAL" />
                   <ToggleButton fx:id="toggleFFTView" mnemonicParsing="false" prefWidth="70.0" text="Spectrum">
                      <toggleGroup>
