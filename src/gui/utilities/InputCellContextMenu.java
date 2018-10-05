@@ -71,6 +71,11 @@ public abstract class InputCellContextMenu extends ContextMenu {
 			getItems().add(colorMenu);
 			getItems().add(newGroup);
 		}
+		this.focusedProperty().addListener((obs, o, n) -> {
+			if (!n) {
+				hide();
+			}
+		});
 	}
 
 	public static String toRGBCode(Color color) {
