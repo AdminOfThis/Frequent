@@ -50,7 +50,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.TreeItem;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -78,7 +77,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private static final String				DRUM_PATH			= "/gui/gui/DrumView.fxml";
 	private static final String				PHASE_PATH			= "/gui/gui/VectorScopeView.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File",
+	        "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private AnchorPane						waveFormPane;
@@ -92,7 +92,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
 	@FXML
-	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView;
+	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView,
+	        togglePhaseView;
 	@FXML
 	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView;
 	@FXML
@@ -389,7 +390,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 	public void setSelectedChannel(Channel channel) {
 		channelList.selectionModelProperty().get().select(channel);
 	}
-
 
 	@FXML
 	private void open(ActionEvent e) {

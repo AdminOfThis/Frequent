@@ -169,7 +169,7 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 		chartPane.getChildren().add(meter);
 		AnchorPane.setTopAnchor(meter, 0.0);
 		AnchorPane.setBottomAnchor(meter, 0.0);
-		AnchorPane.setLeftAnchor(meter, -18.0);
+		AnchorPane.setLeftAnchor(meter, 0.0);
 		AnchorPane.setRightAnchor(meter, 0.0);
 	}
 
