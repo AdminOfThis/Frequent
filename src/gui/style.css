@@ -80,7 +80,7 @@
     -fx-padding: 0em;
 }
 
-.tree-cell .label{
+.list-cell .label{
     -fx-padding: 0em;
 	-fx-text-fill: white;
 }

@@ -24,7 +24,7 @@ import data.Input;
 import gui.pausable.Pausable;
 import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
-import gui.utilities.controller.InputCell;
+import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.WaveFormChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -298,7 +298,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 			}
 		});
 		channelList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		channelList.setCellFactory(e -> new InputCell());
+		channelList.setCellFactory(e -> new ChannelCell());
 		// channelList.setOnEditCommit(e ->
 		// timeKeeperController.setChannels(channelList.getItems()));
 		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Input>() {
