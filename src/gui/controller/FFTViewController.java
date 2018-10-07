@@ -23,6 +23,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 public class FFTViewController implements Initializable, FFTListener, PausableView {
 
+	@SuppressWarnings("unused")
 	private static final Logger	LOG		= Logger.getLogger(FFTViewController.class);
 	@FXML
 	private ScrollPane			canvasParent;
