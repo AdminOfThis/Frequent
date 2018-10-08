@@ -76,7 +76,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	}
 
 	public static double percentToDB(double level) {
-		return 20.0 * Math.log10(level / 1000.0);
+		return 20.0 * Math.log10(level /* / 1000.0 */);
 	}
 
 	@Override
@@ -112,11 +112,11 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		this.buffer = buffer;
 		for (InputListener l : getListeners()) {
 			if (l instanceof ChannelListener) {
-				 new Thread(new Runnable() {
-				
-				 @Override
-				 public void run() {
-				((ChannelListener) l).newBuffer(buffer);
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						((ChannelListener) l).newBuffer(buffer);
 					}
 				}).start();
 			}
