@@ -80,6 +80,9 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		};
 		chartParent.heightProperty().addListener(lis);
 		chartParent.widthProperty().addListener(lis);
+
+		chart.getXAxis().setAnimated(false);
+		chart.getYAxis().setAnimated(false);
 		initializeTimeline();
 	}
 

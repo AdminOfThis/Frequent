@@ -34,7 +34,7 @@ import javafx.scene.layout.Priority;
 public class RTAViewController implements Initializable, FFTListener, PausableView {
 
 	private static final double		DECAY		= 1.01;
-	public static final double		FFT_MIN		= -80;
+	public static final double		FFT_MIN		= -90;
 	private static final Logger		LOG			= Logger.getLogger(RTAViewController.class);
 	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
 	private static final int		X_MIN		= 25;
