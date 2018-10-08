@@ -63,16 +63,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 		setHeight(10);
 	}
 
-	public static String makeColorTransparent(String color, double db) {
-		double percent = 1 - Math.abs(Math.max(RTAViewController.FFT_MIN, db)) / Math.abs(RTAViewController.FFT_MIN);
-		// percent = percent *10;
-		String transparency = Integer.toHexString((int) Math.floor(percent * 255.0));
-		if (transparency.length() < 2) {
-			transparency = "0" + transparency;
-		}
-		String bla = color + transparency.toUpperCase();
-		return bla.trim();
-	}
 
 	@Override
 	public boolean isResizable() {
@@ -108,7 +98,9 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			// adding points
 			for (int pointCount = 0; pointCount < map[0].length; pointCount++) {
 				// System.out.println(map[1][pointCount]);
-				content.setFill(Color.web(makeColorTransparent(accent, Channel.percentToDB(map[1][pointCount]))));
+				double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(Channel.percentToDB(map[1][pointCount])))
+					/ Math.abs(RTAViewController.FFT_MIN);
+				content.setFill(FXMLUtil.colorFade(Color.web(accent), Color.RED, percent));
 				double startPoint = getWidth() / 2000.0 * map[0][pointCount];
 				// System.out.println(startPoint);
 				double endpoint;
@@ -147,16 +139,13 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 							WritableImage image = canvas.snapshot(params, null);
 							RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
 							ImageIO.write(renderedImage, "png", file);
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							LOG.warn("Unable to export image", e);
-						}
-						finally {
+						} finally {
 							MainController.getInstance().resetStatus();
 						}
 					});
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					LOG.warn("Unable to export image", ex);
 					MainController.getInstance().resetStatus();
 				}
@@ -185,7 +174,8 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			if (!pause) {
 				reset();
 				RTAIO.deleteFile();
-			} else {}
+			} else {
+			}
 		}
 	}
 
