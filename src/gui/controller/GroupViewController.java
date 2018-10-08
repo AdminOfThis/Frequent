@@ -171,7 +171,7 @@ public class GroupViewController implements Initializable, PausableView {
 										}
 									}
 								}
-								double leveldB = Channel.percentToDB(level * 1000.0);
+								double leveldB = Channel.percentToDB(level );
 								leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
 								long time = System.currentTimeMillis();
 								series.getData().add(new Data<Number, Number>(time, leveldB));

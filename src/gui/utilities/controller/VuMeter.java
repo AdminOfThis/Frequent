@@ -87,7 +87,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 		if (!isPaused()) {
 			Platform.runLater(() -> {
 				if (channel != null) {
-					double peakdB = Channel.percentToDB(channel.getLevel() * 1000.0);
+					double peakdB = Channel.percentToDB(channel.getLevel());
 					if (peak < peakdB || timeSincePeak >= PEAK_HOLD) {
 						peak = peakdB;
 						timeSincePeak = 0;

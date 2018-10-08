@@ -104,7 +104,7 @@ public class DrumViewController implements Initializable, PausableView {
 
 	private void updateRmsChart() {
 		float level = activeChartChannel.getChannel().getLevel();
-		level = (float) Channel.percentToDB(level * 1000.0);
+		level = (float) Channel.percentToDB(level);
 		rmsSeries.getData().add(new XYChart.Data<>(System.currentTimeMillis(), level));
 		ArrayList<XYChart.Data<Number, Number>> removeList = null;
 		long time = System.currentTimeMillis();
