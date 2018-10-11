@@ -27,14 +27,13 @@ public class TunerController implements Initializable {
 	private Label				lblTone, lblFreq;
 	@FXML
 	private Pane				paneTuneL, paneTuneR;
-	private Timeline			line;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		LOG.info("Loading Tuner");
 		paneTuneL.setMaxWidth(0.0);
 		paneTuneR.setMaxWidth(0.0);
-		line = new Timeline();
+		Timeline line = new Timeline();
 		line.getKeyFrames().add(new KeyFrame(Duration.millis(REFRESH_RATE), event -> {
 			if (ASIOController.getInstance() != null) {
 				double freq = ASIOController.getInstance().getBaseFrequency();

@@ -28,7 +28,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private static final Logger		LOG				= Logger.getLogger(ASIOController.class);
 	private String					driverName;
 	private AsioDriver				asioDriver;
-	private Set<AsioChannel>		activeChannels;
+
 	private int						bufferSize		= 1024;
 	private double					sampleRate;
 	private AsioChannel				activeChannel;
@@ -59,11 +59,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 				if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
 					result.add(possibleDriver);
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.debug(possibleDriver + " is unavailable");
-			}
-			finally {
+			} finally {
 				if (tempDriver != null) {
 					tempDriver.shutdownAndUnloadDriver();
 				}
@@ -94,8 +92,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		}
-		catch (AsioException e) {
+		} catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -105,7 +102,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		asioDriver.addAsioDriverListener(this);
 		// create a Set of AsioChannels, defining which input and output
 		// channels will be used
-		activeChannels = new HashSet<>();
+		Set<AsioChannel> activeChannels = new HashSet<>();
 		// configure the ASIO driver to use the given channels
 		for (int i = 0; i < asioDriver.getNumChannelsInput(); i++) {
 			activeChannels.add(asioDriver.getChannelInput(i));
@@ -143,7 +140,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
+		if (asioDriver != null) {
+			return asioDriver.getNumChannelsInput();
+		}
 		return -1;
 	}
 
@@ -223,13 +222,12 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 								c.setBuffer(Arrays.copyOf(output, output.length));
 							}
 						}
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
+			} catch (ConcurrentModificationException e) {
 			}
-			catch (ConcurrentModificationException e) {}
 		}
 	}
 
@@ -272,8 +270,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					public void run() {
 						try {
 							l.newFFT(spectrumMap);
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							LOG.warn("Unable to notify FFTListener");
 							LOG.debug("", e);
 						}

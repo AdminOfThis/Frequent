@@ -81,8 +81,7 @@ public class ChurchToolsAdapter {
 			LOG.debug("Found Agenda-ID: " + agendaId);
 			error = "Unable to load songs";
 			res = loadSongs(agendaId);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to load data; " + error);
 			LOG.debug("", e);
 		}
@@ -100,15 +99,17 @@ public class ChurchToolsAdapter {
 	}
 
 	private int loadTime(int agendaId, int songID) throws Exception {
-		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("loadAgendaItems", "UTF-8") + "&" + "agenda_id=" + URLEncoder.encode(agendaId + "", "UTF-8"));
+		String allData = getData("GET", "churchservice/ajax",
+			"func=" + URLEncoder.encode("loadAgendaItems", "UTF-8") + "&" + "agenda_id=" + URLEncoder.encode(agendaId + "", "UTF-8"));
 		JSONObject json = new JSONObject(allData);
 		JSONObject data = json.getJSONObject("data");
 		for (String s : data.keySet()) {
 			JSONObject obj = data.getJSONObject(s);
-			if (obj.get("bezeichnung").equals("Song")) {
-				if (obj.getInt("arrangement_id") == songID) { return obj.getInt("duration"); }
+			if (obj.get("bezeichnung").equals("Song") && obj.getInt("arrangement_id") == songID) {
+				return obj.getInt("duration");
 			}
 		}
+
 		return 0;
 	}
 
@@ -161,18 +162,20 @@ public class ChurchToolsAdapter {
 				for (String arrangementKey : arrangements.keySet()) {
 					JSONObject arrangement = arrangements.getJSONObject(arrangementKey);
 					int arrangementID = arrangement.getInt("id");
-					if (arrangementID == songId) { return song.getString("bezeichnung"); }
+					if (arrangementID == songId) {
+						return song.getString("bezeichnung");
+					}
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return "NOT FOUND";
 	}
 
 	/**
-	 * loads arrangement ids and lead singer from agenda, and sorts them by sortkey
+	 * loads arrangement ids and lead singer from agenda, and sorts them by
+	 * sortkey
 	 * 
 	 * @param agendaId
 	 * @return
@@ -181,7 +184,8 @@ public class ChurchToolsAdapter {
 	private ArrayList<Cue> loadSongs(int agendaId) throws Exception {
 		ArrayList<Cue> res = new ArrayList<>();
 		TreeMap<Integer, Cue> map = new TreeMap<>();
-		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("loadAgendaItems", "UTF-8") + "&" + "agenda_id=" + URLEncoder.encode(agendaId + "", "UTF-8"));
+		String allData = getData("GET", "churchservice/ajax",
+			"func=" + URLEncoder.encode("loadAgendaItems", "UTF-8") + "&" + "agenda_id=" + URLEncoder.encode(agendaId + "", "UTF-8"));
 		JSONObject json = new JSONObject(allData);
 		JSONObject data = json.getJSONObject("data");
 		for (String s : data.keySet()) {
@@ -202,16 +206,15 @@ public class ChurchToolsAdapter {
 						title = title.replace("-", "");
 						title = title.trim();
 					}
+				} catch (Exception e) {
 				}
-				catch (Exception e) {}
 			}
 			if (title != null) {
 				int index = 0;
 				try {
 					lead = obj.getString("note");
 					index = obj.getInt("sortkey");
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				// adding song
@@ -225,7 +228,8 @@ public class ChurchToolsAdapter {
 	}
 
 	private int loadAgendaId(int eventId) throws Exception {
-		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("loadAgendaForEvent", "UTF-8") + "&" + "event_id=" + URLEncoder.encode(eventId + "", "UTF-8"));
+		String allData = getData("GET", "churchservice/ajax",
+			"func=" + URLEncoder.encode("loadAgendaForEvent", "UTF-8") + "&" + "event_id=" + URLEncoder.encode(eventId + "", "UTF-8"));
 		JSONObject json = new JSONObject(allData);
 		JSONObject data = json.getJSONObject("data");
 		return data.getInt("id");
@@ -235,14 +239,14 @@ public class ChurchToolsAdapter {
 		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("getAllEventData", "UTF-8"));
 		int eventId = -1;
 		GregorianCalendar time = new GregorianCalendar();
-// time.set(GregorianCalendar.HOUR_OF_DAY, 0);
+		// time.set(GregorianCalendar.HOUR_OF_DAY, 0);
 		time.set(GregorianCalendar.MINUTE, 0);
 		time.set(GregorianCalendar.SECOND, 0);
 		time.set(GregorianCalendar.MILLISECOND, 0);
 		SimpleDateFormat format = new SimpleDateFormat(DATETIME_FORMAT);
 		JSONObject json = new JSONObject(allData);
 		String suc = json.getString("status");
-		boolean success = suc.equals("success");
+		boolean success = "success".equals(suc);
 		if (!success) {
 			LOG.warn("Unable to get event data from churchtools");
 			return eventId;
@@ -290,15 +294,14 @@ public class ChurchToolsAdapter {
 					}
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	private boolean logIn(String user, String password) throws Exception {
-		String paramsLogin = "email=" + URLEncoder.encode(user, "UTF-8") + "&" + "password=" + URLEncoder.encode(password, "UTF-8") + "&" + "directtool=" + URLEncoder.encode("yes", "UTF-8") + "&"
-			+ "func=" + URLEncoder.encode("login", "UTF-8");
+		String paramsLogin = "email=" + URLEncoder.encode(user, "UTF-8") + "&" + "password=" + URLEncoder.encode(password, "UTF-8") + "&"
+			+ "directtool=" + URLEncoder.encode("yes", "UTF-8") + "&" + "func=" + URLEncoder.encode("login", "UTF-8");
 		String s = getData("POST", "login/ajax", paramsLogin);
 		JSONObject json = new JSONObject(s);
 		String suc = json.getString("status");
@@ -335,8 +338,7 @@ public class ChurchToolsAdapter {
 			}
 			writer.close();
 			reader.close();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return res.get(0);
@@ -361,8 +363,7 @@ public class ChurchToolsAdapter {
 		} else {
 			try {
 				return logIn(login, password);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.warn("Problem checking Login");
 				return false;
 			}

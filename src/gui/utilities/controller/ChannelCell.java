@@ -179,7 +179,7 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 		if (empty) {
 			update(null);
 			input = null;
-		} else if (input != item) {
+		} else if (!input.equals(item)) {
 			update(item);
 			input = item;
 		} else if (isEditing()) {

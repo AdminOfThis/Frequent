@@ -56,6 +56,10 @@ public class AutoCompleteComboBoxListener<T> implements EventHandler<KeyEvent> {
 			return;
 		}
 
+		handleResult();
+	}
+
+	private void handleResult() {
 		ObservableList<T> list = FXCollections.observableArrayList();
 		for (int i = 0; i < data.size(); i++) {
 			if (data.get(i).toString().toLowerCase()

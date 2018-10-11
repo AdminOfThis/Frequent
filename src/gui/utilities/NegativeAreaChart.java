@@ -29,7 +29,9 @@ public class NegativeAreaChart extends AreaChart<Number, Number> {
 			double height = getLayoutBounds().getHeight();
 			getData().forEach(series -> {
 				final Path[] paths = getPaths(series);
-				if (null == paths) { return; }
+				if (null == paths) {
+					return;
+				}
 				smooth(paths[1].getElements(), paths[0].getElements(), height);
 				paths[0].setVisible(true);
 				paths[0].setManaged(true);
@@ -38,22 +40,31 @@ public class NegativeAreaChart extends AreaChart<Number, Number> {
 	}
 
 	/**
-	 * Returns an array of paths where the first entry represents the fill path and the second entry represents the stroke path
+	 * Returns an array of paths where the first entry represents the fill path
+	 * and the second entry represents the stroke path
 	 * 
 	 * @param SERIES
 	 * @return an array of paths where [0] == FillPath and [1] == StrokePath
 	 */
 	private Path[] getPaths(final Series<Number, Number> SERIES) {
-		if (!getData().contains(SERIES)) { return null; }
+		if (!getData().contains(SERIES)) {
+			return null;
+		}
 		Node seriesNode = SERIES.getNode();
-		if (null == seriesNode) { return null; }
+		if (null == seriesNode) {
+			return null;
+		}
 		Group seriesGroup = (Group) seriesNode;
-		if (seriesGroup.getChildren().isEmpty() || seriesGroup.getChildren().size() < 2) { return null; }
-		return new Path[] { /* FillPath */ (Path) (seriesGroup).getChildren().get(0), /* StrokePath */ (Path) (seriesGroup).getChildren().get(1) };
+		if (seriesGroup.getChildren().isEmpty() || seriesGroup.getChildren().size() < 2) {
+			return null;
+		}
+		return new Path[] { /* FillPath */ (Path) (seriesGroup).getChildren().get(0),
+			/* StrokePath */ (Path) (seriesGroup).getChildren().get(1) };
 	}
 
 	private void smooth(ObservableList<PathElement> strokeElements, ObservableList<PathElement> fillElements, final double HEIGHT) {
-		if (fillElements.isEmpty()) return;
+		if (fillElements.isEmpty())
+			return;
 		// as we do not have direct access to the data, first recreate the list
 		// of all the data points we have
 		final Point2D[] dataPoints = new Point2D[strokeElements.size()];
@@ -64,7 +75,8 @@ public class NegativeAreaChart extends AreaChart<Number, Number> {
 				dataPoints[i] = new Point2D(move.getX(), move.getY());
 			} else if (element instanceof LineTo) {
 				final LineTo line = (LineTo) element;
-				final double x = line.getX(), y = line.getY();
+				final double x = line.getX();
+				final double y = line.getY();
 				dataPoints[i] = new Point2D(x, y);
 			}
 		}
