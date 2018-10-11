@@ -38,7 +38,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	// GUI
 	private static final int				MAX_DATA_POINTS	= 200;
-	//	private static final int				DOTS_PER_BUFFER	= 150;
+	// private static final int DOTS_PER_BUFFER = 150;
 	@FXML
 	private HBox							chartParent;
 	@FXML
@@ -80,6 +80,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			}
 		};
 		timer.start();
+
 	}
 
 	public VectorScope(PausableView parent) {
@@ -170,9 +171,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		if (!isPaused()) {
 			showData(buffer1, buffer2);
 			// clear buffers
-			synchronized (buffer1) {
-				buffer1.clear();
-			}
+			buffer1.clear();
 			buffer2.clear();
 		}
 	}
