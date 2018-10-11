@@ -1,4 +1,8 @@
 language: java
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - openjdk8
 install: ant
 before_install: cd ./build
 script: ant -file build.xml
