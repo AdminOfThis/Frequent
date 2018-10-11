@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import control.ASIOController;
 import data.Channel;
+import data.FileIO;
 import gui.pausable.PausableView;
 import gui.utilities.controller.VectorScope;
 import gui.utilities.controller.VuMeter;
@@ -66,7 +67,6 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		HBox.setHgrow(vu2, Priority.SOMETIMES);
 		zoomSlider.valueProperty().addListener(e -> vectorScope.setMax(zoomSlider.getValue()));
 		decaySlider.valueProperty().addListener(e -> vectorScope.setDecay(decaySlider.getValue()));
-
 		// updating channels
 		if (ASIOController.getInstance() != null) {
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
@@ -93,7 +93,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		// adding listener
 		cmbChannel1.valueProperty().addListener(e -> {
 			Channel cNew = cmbChannel1.getValue();
-			if (!c1.equals(cNew)) {
+			if (!FileIO.compareAndNullCheck(c1, cNew) || !c1.equals(cNew)) {
 				c1 = cNew;
 				vectorScope.setChannels(cNew, cmbChannel2.getValue());
 				vu1.setChannel(cNew);
@@ -101,7 +101,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		});
 		cmbChannel2.valueProperty().addListener(e -> {
 			Channel cNew = cmbChannel2.getValue();
-			if (!c2.equals(cNew)) {
+			if (!FileIO.compareAndNullCheck(c2, cNew) || !c2.equals(cNew)) {
 				c2 = cNew;
 				vectorScope.setChannels(cmbChannel1.getValue(), cNew);
 				vu2.setChannel(cNew);
@@ -122,7 +122,6 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	@Override
 	public ArrayList<Node> getHeader() {
 		ArrayList<Node> list = new ArrayList<>();
-
 		list.add(box1);
 		list.add(box2);
 		// Pane p = new Pane();
