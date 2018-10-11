@@ -77,8 +77,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private static final String				DRUM_PATH			= "/gui/gui/DrumView.fxml";
 	private static final String				PHASE_PATH			= "/gui/gui/VectorScopeView.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File",
-	        "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private AnchorPane						waveFormPane;
@@ -92,8 +91,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
 	@FXML
-	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView,
-	        togglePhaseView;
+	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView;
 	@FXML
 	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView;
 	@FXML
@@ -411,10 +409,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
-		if (result != null) {
-			if (timeKeeperController != null) {
-				FileIO.save(new ArrayList<Serializable>(TimeKeeper.getInstance().getData()), result);
-			}
+		if (result != null && timeKeeperController != null) {
+			FileIO.save(new ArrayList<Serializable>(TimeKeeper.getInstance().getData()), result);
 		}
 		resetStatus();
 	}
@@ -582,8 +578,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 	public void setStatus(double value) {
 		Platform.runLater(() -> {
 			progStatus.setProgress(value);
-			progStatus.setVisible(!(progStatus.getProgress() == 0));
-			progStatus.setManaged(!(progStatus.getProgress() == 0));
+			progStatus.setVisible(progStatus.getProgress() != 0);
+			progStatus.setManaged(progStatus.getProgress() != 0);
 		});
 	}
 
@@ -610,16 +606,15 @@ public class MainController implements Initializable, Pausable, CueListener {
 	public void hideAllSelected() {
 		try {
 			Input first = channelList.getSelectionModel().getSelectedItems().get(0);
-			if (first != null) {
-				if (first instanceof Channel) {
-					Channel channel = (Channel) first;
-					boolean hide = !channel.isHidden();
-					for (Input item : channelList.getSelectionModel().getSelectedItems()) {
-						if (item instanceof Channel) {
-							((Channel) item).setHidden(hide);
-						}
+			if (first != null && first instanceof Channel) {
+				Channel channel = (Channel) first;
+				boolean hide = !channel.isHidden();
+				for (Input item : channelList.getSelectionModel().getSelectedItems()) {
+					if (item instanceof Channel) {
+						((Channel) item).setHidden(hide);
 					}
 				}
+
 			}
 			refresh();
 		} catch (Exception e) {
