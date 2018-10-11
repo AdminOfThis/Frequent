@@ -51,8 +51,7 @@ public abstract class Input implements Serializable {
 			// public void run() {
 			try {
 				obs.levelChanged(level, this);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.warn("Unable to notify Level Listener");
 				LOG.debug("", e);
 			}
@@ -74,8 +73,9 @@ public abstract class Input implements Serializable {
 		notifyListeners();
 	}
 
-	public boolean setColor(String color) {
+	public boolean setColor(final String colorIn) {
 		// trying to parsse string to make sure its a hex string
+		String color = colorIn;
 		try {
 			if (color.startsWith("#")) {
 				color = color.substring(1);
@@ -88,8 +88,7 @@ public abstract class Input implements Serializable {
 					c.setColor(hexColor);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 		return true;
@@ -104,7 +103,7 @@ public abstract class Input implements Serializable {
 		if (obj instanceof Input) {
 			Input other = (Input) obj;
 			if (compareAndNullCheck(this.getName(), other.getName())) {
-				if (compareAndNullCheck(this.getColor(), other.getColor())) { return true; }
+				return true;
 			}
 		}
 		return false;

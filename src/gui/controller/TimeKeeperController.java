@@ -410,6 +410,14 @@ public class TimeKeeperController implements Initializable {
 		}
 	}
 
+	public ToggleButton getStartButton() {
+		return btnStart;
+	}
+
+	public Button getRoundButton() {
+		return btnTime;
+	}
+
 	public void show(boolean value) {
 		paneCue.setVisible(value);
 		paneCue.setManaged(value);

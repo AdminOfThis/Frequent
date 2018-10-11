@@ -32,7 +32,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private int						bufferSize		= 1024;
 	private double					sampleRate;
 	private AsioChannel				activeChannel;
-	float							lastPeak		= 0, peak = 0, rms = 0;
+	private float					lastPeak		= 0, peak = 0, rms = 0;
 	private float					baseFrequency	= -1;
 	// FFT
 	private float[]					output;

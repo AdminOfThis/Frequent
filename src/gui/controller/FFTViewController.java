@@ -101,5 +101,6 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 
 	@Override
 	public void refresh() {
+		// nothing to do
 	}
 }
