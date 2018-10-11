@@ -191,22 +191,14 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					}
 				} else {
 					// Restarting done
+					ArrayList<Float> tempList = new ArrayList<>(buffer.length);
+					for (float f : buffer) {
+						tempList.add(f);
+					}
 					if (buffer1.size() < buffer2.size()) {
-						for (float f : buffer) {
-							buffer1.add(f);
-						}
+						buffer1.addAll(tempList);
 					} else {
-						for (float f : buffer) {
-							buffer2.add(f);
-						}
-						// // compare the buffers to the scope
-						// float[] x = new float[buffer.length];
-						// float[] y = new float[buffer.length];
-						// for (int index = 0; index < buffer.length - 1;
-						// index++) {
-						// x[index] = buffer1[index];
-						// y[index] = buffer2[index];
-						// }
+						buffer2.addAll(tempList);
 					}
 				}
 			}
@@ -220,7 +212,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		// drawing new data
 		if (x.size() == y.size()) {
 			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
-			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.size() - 2; index = index + 2) {
+			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.size() - 2; index++) {
 				Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
 				dataToAdd.add(data);
 			}
