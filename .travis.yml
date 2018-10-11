@@ -6,13 +6,12 @@ jdk:
 os:
   - windows
   - linux
-  - osx
 matrix:
   allow_failures:
     os: 
     - osx
     - linux
-install: true
+install: ant
 before_script: cd ./build
 script: ant -file build.xml
 addons:
