@@ -18,7 +18,6 @@ install: ant
 before_install: cd ./build
 script: ant -file build.xml
 
-sudo: false
 addons:
   apt:
     update: true
