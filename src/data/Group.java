@@ -82,10 +82,8 @@ public class Group extends Input implements InputListener {
 	public boolean equals(Object obj) {
 		if (obj instanceof Group) {
 			Group other = (Group) obj;
-			if (super.equals(obj)) {
-				if (compareAndNullCheck(this.getChannelList(), other.getChannelList())) {
-					return true;
-				}
+			if (super.equals(obj) && compareAndNullCheck(this.getChannelList(), other.getChannelList())) {
+				return true;
 			}
 		}
 		return false;

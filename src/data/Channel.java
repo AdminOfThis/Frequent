@@ -94,10 +94,9 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		if (obj instanceof Channel) {
 			Channel other = (Channel) obj;
 			if (super.equals(obj)) {
-				if (compareAndNullCheck(this.getChannelIndex(), other.getChannelIndex())) {
-					if (compareAndNullCheck(this.getGroup(), other.getGroup())) {
-						return true;
-					}
+				if (compareAndNullCheck(this.getChannelIndex(), other.getChannelIndex())
+					&& compareAndNullCheck(this.getGroup(), other.getGroup())) {
+					return true;
 				}
 			}
 		}

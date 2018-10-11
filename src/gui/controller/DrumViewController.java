@@ -63,7 +63,6 @@ public class DrumViewController implements Initializable, PausableView {
 	private ToggleButton											btnSetup;
 	private XYChart<Number, Number>									chart;
 	private Series<Number, Number>									rmsSeries			= new Series<>();
-	private Timeline												line;
 	private DrumTrigger												activeChartChannel;
 	private ArrayList<DrumTrigger>									triggerList			= new ArrayList<>();
 	private HashMap<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap			= new HashMap<>();
@@ -88,7 +87,7 @@ public class DrumViewController implements Initializable, PausableView {
 	}
 
 	private void initTimer() {
-		line = new Timeline();
+		Timeline line = new Timeline();
 		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
 			if (activeChartChannel != null && activeChartChannel.getChannel() != null) {
 				updateRmsChart();

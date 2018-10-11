@@ -30,7 +30,7 @@ public class ChurchToolsAdapter {
 	private static final String[]						REMOVE_LEAD				= new String[] { "Ltg:", "Ltg.", "Leitung:", "Leitung" };
 	private static final String							DATETIME_FORMAT			= "yyyy-MM-dd HH:mm:ss";
 	private static final LinkedHashMap<Integer, String>	serviceIDs				= new LinkedHashMap<>();
-	{
+	static {
 		serviceIDs.put(1, "Sprecher");
 		serviceIDs.put(3, "Moderator");
 		serviceIDs.put(2, "Band-Leitung");
@@ -113,30 +113,31 @@ public class ChurchToolsAdapter {
 		return 0;
 	}
 
-	private Cue createCue(String songName, String lead, int time) {
+	private Cue createCue(final String songName, final String lead, final int time) {
 		Cue cue = new Cue(songName);
 		cue.setTime((long) (time * 1000.0));
 		if (lead != null && lead.length() > 2) {
 			// normalinzing string
+			String leadName;
 			for (String remove : REMOVE_LEAD) {
 				if (lead.toLowerCase().startsWith(remove.toLowerCase())) {
-					lead = lead.substring(remove.length() + 1, lead.length());
+					leadName = lead.substring(remove.length() + 1, lead.length());
 					break;
 				}
 			}
-			lead = lead.trim();
+			leadName = lead.trim();
 			// searching channel with equals
 			if (ASIOController.getInstance() != null) {
 				Channel leadChannel = null;
 				for (Channel c : ASIOController.getInstance().getInputList()) {
-					if (c.getName().equalsIgnoreCase(lead)) {
+					if (c.getName().equalsIgnoreCase(leadName)) {
 						leadChannel = c;
 						break;
 					}
 				} // if no result, try with contains
 				if (leadChannel == null) {
 					for (Channel c : ASIOController.getInstance().getInputList()) {
-						if (c.getName().toLowerCase().contains(lead.toLowerCase())) {
+						if (c.getName().toLowerCase().contains(leadName.toLowerCase())) {
 							leadChannel = c;
 							break;
 						}
