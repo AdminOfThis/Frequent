@@ -7,20 +7,16 @@ os:
   - windows
   - linux
   - osx
-  
 install: ant
 before_install: cd ./build
 script: ant -file build.xml
-
 addons:
   apt:
     update: true
-	
 notifications:
   email:
     on_success: change
     on_failure: change
-	
 deploy:
   skip_cleanup: true
   provider: releases
