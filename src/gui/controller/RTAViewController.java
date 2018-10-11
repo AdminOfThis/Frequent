@@ -152,7 +152,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 				double frequency = map[0][count];
 				if (frequency >= 20 && frequency <= X_MAX) {
 					double level = Math.abs(map[1][count]);
-					level = Channel.percentToDB(level);
+					level = Channel.percentToDB(level / 1000.0);
 					Data<Number, Number> data = new XYChart.Data<>(frequency, level);
 					dataList.add(data);
 				}

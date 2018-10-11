@@ -176,10 +176,10 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	@Override
 	protected void updateItem(Input item, boolean empty) {
 		super.updateItem(item, empty);
-		if (empty) {
+		if (empty || item == null) {
 			update(null);
 			input = null;
-		} else if (!input.equals(item)) {
+		} else if (!item.equals(input)) {
 			update(item);
 			input = item;
 		} else if (isEditing()) {

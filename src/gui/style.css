@@ -10,10 +10,9 @@
 .default-color2.chart-symbol { -fx-background-color: derive(-fx-accent, 50%) }
 .default-color3.chart-symbol { -fx-background-color: derive(-fx-accent, 75%) }
 
-
-<!–- .default-color0.chart-series-area-line { -fx-stroke: -fx-accent }-->
-.default-color0.chart-series-area-fill { -fx-fill: linear-gradient( to bottom, -fx-accent, transparent); }
-.default-color0.chart-series-area-fill { -fx-fill: ladder(derive(-fx-accent, 80%) , -fx-accent 90%, transparent 100%); }
+.default-color0.chart-series-area-line { -fx-stroke: -fx-accent }
+.default-color0.chart-series-area-fill { -fx-fill: linear-gradient( to top, -fx-accent, transparent); }
+//.default-color0.chart-series-area-fill { -fx-fill: ladder(derive(-fx-accent, 80%) , -fx-accent 90%, transparent 100%); }
 	
 .default-color1.chart-series-area-line { -fx-stroke: white }
 .default-color1.chart-series-area-fill { -fx-fill: transparent }

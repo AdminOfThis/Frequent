@@ -35,10 +35,9 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	private static final Logger				LOG				= Logger.getLogger(VectorScope.class);
 	private static final String				FXML			= "/gui/utilities/gui/VectorScope.fxml";
-
 	// GUI
 	private static final int				MAX_DATA_POINTS	= 200;
-	// private static final int DOTS_PER_BUFFER = 150;
+	private static final int				DOTS_PER_BUFFER	= 500;
 	@FXML
 	private HBox							chartParent;
 	@FXML
@@ -57,7 +56,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	// vars to align the buffers, instead of beeing of by one
 	private long							timeFirstBuffer, timeSecondBuffer;
 	// buffers
-
 	private List<Float>						buffer1, buffer2;
 	private double							decay			= 1.0;
 
@@ -76,7 +74,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		// initialize synchronized lists
 		buffer1 = Collections.synchronizedList(new ArrayList<Float>());
 		buffer2 = Collections.synchronizedList(new ArrayList<Float>());
-
 		// initialize timer
 		timer = new AnimationTimer() {
 
@@ -86,9 +83,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			}
 		};
 		timer.start();
-
 	}
-
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -106,13 +101,8 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		};
 		chartParent.heightProperty().addListener(lis);
 		chartParent.widthProperty().addListener(lis);
-
 		chart.getXAxis().setAnimated(false);
 		chart.getYAxis().setAnimated(false);
-		initializeTimeline();
-	}
-
-	private void initializeTimeline() {
 	}
 
 	public void setChannels(Channel c1, Channel c2) {
@@ -180,7 +170,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	@Override
 	public void newBuffer(float[] buffer) {
-		if (channel1 != null && channel2 != null && !isPaused()) {
+		if (!isPaused()) {
 			try {
 				if (restarting) {
 					if (timeFirstBuffer == 0) {
@@ -201,7 +191,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					}
 				} else {
 					// Restarting done
-					if (buffer1 == null) {
+					if (buffer1.size() < buffer2.size()) {
 						for (float f : buffer) {
 							buffer1.add(f);
 						}
@@ -219,36 +209,34 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 						// }
 					}
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.error("Problem showing vectorscope", e);
 			}
 		}
 	}
 
 	private void showData(final List<Float> x, final List<Float> y) {
-
 		// drawing new data
-		ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
-		int i = 0;
-		for (int index = 1; /* index < DOTS_PER_BUFFER && */ index < x.size() - 1; index++) {
-			i = (x.size() - 1) / index;
-			i = Math.min(i, x.size() - 1);
-			Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
-			dataToAdd.add(data);
-		}
-		vectorSeries.getData().addAll(dataToAdd);
-		for (Data<Number, Number> d : dataToAdd) {
-			double percent = (d.getXValue().doubleValue() / d.getYValue().doubleValue());
-			if (percent > 1 || percent < -1) {
-				percent = 1.0 / percent;
+		if (x.size() == y.size()) {
+			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
+			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.size() - 2; index = index + 2) {
+				Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
+				dataToAdd.add(data);
 			}
-			percent = 1 - Math.abs((percent + 1) / 2.0);
-			d.getNode().setStyle(
-				"-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
-		}
-		// removing old data points
+			vectorSeries.getData().addAll(dataToAdd);
+			for (Data<Number, Number> d : dataToAdd) {
+				double percent = (d.getXValue().doubleValue() / d.getYValue().doubleValue());
+				if (percent > 1 || percent < -1) {
+					percent = 1.0 / percent;
+				}
+				percent = 1 - Math.abs((percent + 1) / 2.0);
+				d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
+			}
+		} // removing old data points
 		if (vectorSeries.getData().size() > (MAX_DATA_POINTS * decay)) {
-			vectorSeries.getData().remove(0, vectorSeries.getData().size() - MAX_DATA_POINTS);
+			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0, (int) Math.round(vectorSeries.getData().size() - (MAX_DATA_POINTS * decay)));
+			vectorSeries.getData().removeAll(removeList);
 		}
 	}
 
