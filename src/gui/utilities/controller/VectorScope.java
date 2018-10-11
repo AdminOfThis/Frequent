@@ -2,6 +2,8 @@ package gui.utilities.controller;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -13,6 +15,7 @@ import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -33,6 +36,8 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	private static final Logger				LOG				= Logger.getLogger(VectorScope.class);
 	private static final String				FXML			= "/gui/utilities/gui/VectorScope.fxml";
+
+	// GUI
 	private static final int				MAX_DATA_POINTS	= 200;
 	private static final int				DOTS_PER_BUFFER	= 150;
 	@FXML
@@ -42,13 +47,19 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	@FXML
 	private Label							lblTitle;
 	private Series<Number, Number>			vectorSeries	= new Series<>();
+	// pausable
 	private boolean							pause;
 	private Pausable						parentPausable;
+	// data
 	private Channel							channel1, channel2;
 	private boolean							restarting		= true;
+	// vars to align the buffers, instead of beeing of by one
 	private long							timeFirstBuffer, timeSecondBuffer;
-	private float[]							buffer1, buffer2;
+	// buffers
+
+	private List<Float>						buffer1, buffer2;
 	private double							decay			= 1.0;
+	private AnimationTimer					timer;
 
 	public VectorScope() {
 		Parent p = FXMLUtil.loadFXML(FXML, this);
@@ -57,6 +68,19 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		AnchorPane.setBottomAnchor(p, 0.0);
 		AnchorPane.setLeftAnchor(p, 0.0);
 		AnchorPane.setRightAnchor(p, 0.0);
+		// initialize synchronized Lists
+		buffer1 = Collections.synchronizedList(new ArrayList<Float>());
+		buffer2 = Collections.synchronizedList(new ArrayList<Float>());
+
+		// initialize timer
+		timer = new AnimationTimer() {
+
+			@Override
+			public void handle(long now) {
+				update();
+			}
+		};
+		timer.start();
 	}
 
 	public VectorScope(PausableView parent) {
@@ -130,7 +154,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	@Override
 	public boolean isPaused() {
-		return pause || parentPausable.isPaused();
+		return pause || (parentPausable != null && parentPausable.isPaused()) || channel1 == null || channel2 == null;
 	}
 
 	@Override
@@ -141,6 +165,17 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	@Override
 	public void levelChanged(double level, Input in) throws Exception {
 		// do nothing, don't care
+	}
+
+	private void update() {
+		if (!isPaused()) {
+			showData(buffer1, buffer2);
+			// clear buffers
+			synchronized (buffer1) {
+				buffer1.clear();
+			}
+			buffer2.clear();
+		}
 	}
 
 	@Override
@@ -156,7 +191,9 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 						// Checking timings to get synched
 						long timeThirdBuffer = System.nanoTime();
 						if (timeSecondBuffer - timeFirstBuffer < timeThirdBuffer - timeSecondBuffer) {
-							buffer1 = buffer;
+							for (float f : buffer) {
+								buffer1.add(f);
+							}
 						}
 						restarting = false;
 						timeFirstBuffer = 0;
@@ -165,19 +202,21 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				} else {
 					// Restarting done
 					if (buffer1 == null) {
-						buffer1 = buffer;
-					} else {
-						buffer2 = buffer;
-						// compare the buffers to the scope
-						float[] x = new float[buffer.length];
-						float[] y = new float[buffer.length];
-						for (int index = 0; index < buffer.length - 1; index++) {
-							x[index] = buffer1[index];
-							y[index] = buffer2[index];
+						for (float f : buffer) {
+							buffer1.add(f);
 						}
-						showData(buffer1, buffer2);
-						// clear buffers
-						buffer1 = null;
+					} else {
+						for (float f : buffer) {
+							buffer2.add(f);
+						}
+						// // compare the buffers to the scope
+						// float[] x = new float[buffer.length];
+						// float[] y = new float[buffer.length];
+						// for (int index = 0; index < buffer.length - 1;
+						// index++) {
+						// x[index] = buffer1[index];
+						// y[index] = buffer2[index];
+						// }
 					}
 				}
 			} catch (Exception e) {
@@ -186,15 +225,15 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		}
 	}
 
-	private void showData(float[] x, float[] y) {
+	private void showData(final List<Float> x, final List<Float> y) {
 		Platform.runLater(() -> {
 			// drawing new data
 			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
 			int i = 0;
 			for (int index = 1; index < DOTS_PER_BUFFER; index++) {
-				i = (x.length - 1) / index;
-				i = Math.min(i, x.length - 1);
-				Data<Number, Number> data = new Data<>(x[index], y[index]);
+				i = (x.size() - 1) / index;
+				i = Math.min(i, x.size() - 1);
+				Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
 				dataToAdd.add(data);
 			}
 			vectorSeries.getData().addAll(dataToAdd);
