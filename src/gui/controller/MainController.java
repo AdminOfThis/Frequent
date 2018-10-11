@@ -424,10 +424,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
-		if (result != null) {
-			if (timeKeeperController != null) {
-				FileIO.save(new ArrayList<>(ASIOController.getInstance().getData()), result);
-			}
+		if (result != null && timeKeeperController != null) {
+			FileIO.save(new ArrayList<>(ASIOController.getInstance().getData()), result);
 		}
 		resetStatus();
 	}
