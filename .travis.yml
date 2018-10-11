@@ -8,12 +8,6 @@ os:
   - linux
   - osx
   
-matrix:
-  allow_failures:
-    os: 
-	  - osx
-	  - linux
-	  
 install: ant
 before_install: cd ./build
 script: ant -file build.xml
