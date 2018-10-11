@@ -12,7 +12,7 @@ matrix:
     - osx
     - linux
 install: ant
-before_script: cd ./build
+before_install: cd ./build
 script: ant -file build.xml
 addons:
   apt:
