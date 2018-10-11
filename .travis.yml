@@ -12,6 +12,7 @@ matrix:
     os: 
     - osx
     - linux
+install: ant deps
 before_install: cd ./build
 script: ant -file build.xml
 addons:
