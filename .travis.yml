@@ -7,7 +7,13 @@ os:
   - windows
   - linux
   - osx
-
+  
+matrix:
+  allow_failures:
+    os: 
+	  - osx
+	  - linux
+	  
 install: ant
 before_install: cd ./build
 script: ant -file build.xml
@@ -16,8 +22,7 @@ sudo: false
 addons:
   apt:
     update: true
-	packages:
-      - oracle-java8-installer
+	
 notifications:
   email:
     on_success: change
