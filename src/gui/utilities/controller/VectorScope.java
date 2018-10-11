@@ -46,6 +46,8 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	@FXML
 	private Label							lblTitle;
 	private Series<Number, Number>			vectorSeries	= new Series<>();
+	// GUI data
+	private AnimationTimer					timer;
 	// pausable
 	private boolean							pause;
 	private Pausable						parentPausable;
@@ -58,7 +60,11 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	private List<Float>						buffer1, buffer2;
 	private double							decay			= 1.0;
-	private AnimationTimer					timer;
+
+	public VectorScope(PausableView parent) {
+		this();
+		parentPausable = parent;
+	}
 
 	public VectorScope() {
 		Parent p = FXMLUtil.loadFXML(FXML, this);
@@ -67,7 +73,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		AnchorPane.setBottomAnchor(p, 0.0);
 		AnchorPane.setLeftAnchor(p, 0.0);
 		AnchorPane.setRightAnchor(p, 0.0);
-		// initialize synchronized Lists
+		// initialize synchronized lists
 		buffer1 = Collections.synchronizedList(new ArrayList<Float>());
 		buffer2 = Collections.synchronizedList(new ArrayList<Float>());
 
@@ -83,10 +89,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	}
 
-	public VectorScope(PausableView parent) {
-		this();
-		parentPausable = parent;
-	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
