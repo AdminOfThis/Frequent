@@ -16,7 +16,6 @@ import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -39,7 +38,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	// GUI
 	private static final int				MAX_DATA_POINTS	= 200;
-	private static final int				DOTS_PER_BUFFER	= 150;
+	//	private static final int				DOTS_PER_BUFFER	= 150;
 	@FXML
 	private HBox							chartParent;
 	@FXML
@@ -226,31 +225,30 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	private void showData(final List<Float> x, final List<Float> y) {
-		Platform.runLater(() -> {
-			// drawing new data
-			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
-			int i = 0;
-			for (int index = 1; index < DOTS_PER_BUFFER; index++) {
-				i = (x.size() - 1) / index;
-				i = Math.min(i, x.size() - 1);
-				Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
-				dataToAdd.add(data);
+
+		// drawing new data
+		ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
+		int i = 0;
+		for (int index = 1; /* index < DOTS_PER_BUFFER && */ index < x.size() - 1; index++) {
+			i = (x.size() - 1) / index;
+			i = Math.min(i, x.size() - 1);
+			Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
+			dataToAdd.add(data);
+		}
+		vectorSeries.getData().addAll(dataToAdd);
+		for (Data<Number, Number> d : dataToAdd) {
+			double percent = (d.getXValue().doubleValue() / d.getYValue().doubleValue());
+			if (percent > 1 || percent < -1) {
+				percent = 1.0 / percent;
 			}
-			vectorSeries.getData().addAll(dataToAdd);
-			for (Data<Number, Number> d : dataToAdd) {
-				double percent = (d.getXValue().doubleValue() / d.getYValue().doubleValue());
-				if (percent > 1 || percent < -1) {
-					percent = 1.0 / percent;
-				}
-				percent = 1 - Math.abs((percent + 1) / 2.0);
-				d.getNode().setStyle("-fx-background-color: "
-					+ FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
-			}
-			// removing old data points
-			if (vectorSeries.getData().size() > (MAX_DATA_POINTS * decay)) {
-				vectorSeries.getData().remove(0, vectorSeries.getData().size() - MAX_DATA_POINTS);
-			}
-		});
+			percent = 1 - Math.abs((percent + 1) / 2.0);
+			d.getNode().setStyle(
+				"-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
+		}
+		// removing old data points
+		if (vectorSeries.getData().size() > (MAX_DATA_POINTS * decay)) {
+			vectorSeries.getData().remove(0, vectorSeries.getData().size() - MAX_DATA_POINTS);
+		}
 	}
 
 	public void setMax(final double max) {
