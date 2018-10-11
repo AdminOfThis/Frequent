@@ -12,7 +12,7 @@ matrix:
     os: 
     - osx
     - linux
-install: maven ant deps
+install: ant
 before_install: cd ./build
 script: ant -file build.xml
 addons:
