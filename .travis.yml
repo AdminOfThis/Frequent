@@ -9,7 +9,7 @@ os:
   
 matrix:
   allow_failures:
-    - os: 
+    os: 
 	  - osx
 	  - linux
 	  
