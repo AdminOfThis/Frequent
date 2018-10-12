@@ -47,8 +47,7 @@ public class PreLoader extends Preloader implements Initializable {
 		stage = primaryStage;
 		try {
 			stage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO_SMALL)));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.error("Unable to load logo");
 			LOG.debug("", e);
 		}
