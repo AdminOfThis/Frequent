@@ -111,9 +111,9 @@ public class GroupViewController implements Initializable, PausableView {
 			ArrayList<Group> groupList = ASIOController.getInstance().getGroupList();
 			for (Group g : groupList) {
 				// groups
-// if (g.getColor() == null || g.getColor().isEmpty()) {
+				// if (g.getColor() == null || g.getColor().isEmpty()) {
 				g.setColor(MainController.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1, groupList.size() + 1));
-// }
+				// }
 				VuMeter groupMeter = new VuMeter(g, Orientation.VERTICAL);
 				groupMeter.setParentPausable(this);
 				groupMeter.setMinWidth(40.0);
@@ -156,7 +156,7 @@ public class GroupViewController implements Initializable, PausableView {
 					g.addListener(new InputListener() {
 
 						@Override
-						public void levelChanged(double level, Input in) {
+						public void levelChanged(double level) {
 							Platform.runLater(() -> {
 								if (!series.getNode().getStyle().equals("-fx-stroke: " + g.getColor())) {
 									String color = g.getColor();
@@ -171,7 +171,7 @@ public class GroupViewController implements Initializable, PausableView {
 										}
 									}
 								}
-								double leveldB = Channel.percentToDB(level );
+								double leveldB = Channel.percentToDB(level);
 								leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
 								long time = System.currentTimeMillis();
 								series.getData().add(new Data<Number, Number>(time, leveldB));

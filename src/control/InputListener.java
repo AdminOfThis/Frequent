@@ -4,5 +4,5 @@ import data.Input;
 
 public interface InputListener {
 
-	public void levelChanged(double level, Input sender) throws Exception;
+	public void levelChanged(double level) throws Exception;
 }

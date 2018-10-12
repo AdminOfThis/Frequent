@@ -50,7 +50,7 @@ public abstract class Input implements Serializable {
 			// @Override
 			// public void run() {
 			try {
-				obs.levelChanged(level, this);
+				obs.levelChanged(level);
 			} catch (Exception e) {
 				LOG.warn("Unable to notify Level Listener");
 				LOG.debug("", e);

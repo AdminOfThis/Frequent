@@ -2,15 +2,21 @@ package gui.utilities.controller;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
 import control.InputListener;
+import data.Channel;
 import data.Input;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.utilities.FXMLUtil;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -35,6 +41,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	private boolean						pause		= false;
 	private Pausable					pausableParent;
 	private boolean						styleSet	= false;
+	private Map<Long, Double>			pendingMap;
 
 	public WaveFormChart() {
 		Parent p = FXMLUtil.loadFXML(FXML, this);
@@ -43,37 +50,25 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		AnchorPane.setBottomAnchor(p, 0.0);
 		AnchorPane.setLeftAnchor(p, 0.0);
 		AnchorPane.setRightAnchor(p, 0.0);
-	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
-		yAxis.setAutoRanging(true);
-		chart.getData().add(series);
-	}
+		pendingMap = Collections.synchronizedMap(new HashMap<Long, Double>());
 
-	public void setChannel(Input c) {
-		try {
-			if (!c.equals(channel)) {
-				if (channel != null) {
-					channel.removeListener(this);
-				}
-				series.getData().clear();
-				this.channel = c;
-				if (c != null) {
-					c.addListener(this);
-				}
+		AnimationTimer timer = new AnimationTimer() {
+
+			@Override
+			public void handle(long now) {
+				update();
 			}
-		}
-		catch (Exception e) {
-			LOG.warn("", e);
-		}
+
+
+		};
+		timer.start();
 	}
 
-	@Override
-	public void levelChanged(double level, Input in) {
-		if (!pause) {
-			Platform.runLater(() -> {
+
+	private void update() {
+		if (!isPaused()) {
+			for (Entry<Long, Double> entry : pendingMap.entrySet()) {
 				try {
 					if (!styleSet) {
 						series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
@@ -82,13 +77,13 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 					value = 0;
 					if (channel != null) {
-						value = channel.getLevel();
+						value = entry.getValue();
 					}
 					if (negative) {
 						value = -value;
 					}
 					negative = !negative;
-					Data<Number, Number> newData = new Data<>(System.currentTimeMillis(), value);
+					Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 					series.getData().add(newData);
 					long time = System.currentTimeMillis();
 					// axis
@@ -110,19 +105,48 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 							}
 							count++;
 						}
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						LOG.error("", e);
 					}
 					if (removeList != null) {
 						series.getData().removeAll(removeList);
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOG.warn("", e);
 				}
-			});
+
+			}
+			pendingMap.clear();
 		}
+	}
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
+		yAxis.setAutoRanging(true);
+		chart.getData().add(series);
+	}
+
+	public void setChannel(Input c) {
+		try {
+			if (!c.equals(channel)) {
+				if (channel != null) {
+					channel.removeListener(this);
+				}
+				series.getData().clear();
+				this.channel = c;
+				if (c != null) {
+					c.addListener(this);
+				}
+			}
+		} catch (Exception e) {
+			LOG.warn("", e);
+		}
+	}
+
+	@Override
+	public void levelChanged(double level, Input in) {
+		pendingMap.put(System.currentTimeMillis(), Channel.percentToDB(level));
 	}
 
 	@Override
@@ -137,7 +161,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	@Override
 	public boolean isPaused() {
-		return pause || (pausableParent != null && pausableParent.isPaused());
+		return pause || (pausableParent != null && pausableParent.isPaused()) || channel == null;
 	}
 
 	@Override
