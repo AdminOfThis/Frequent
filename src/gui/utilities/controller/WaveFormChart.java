@@ -145,7 +145,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	}
 
 	@Override
-	public void levelChanged(double level, Input in) {
+	public void levelChanged(double level) {
 		pendingMap.put(System.currentTimeMillis(), Channel.percentToDB(level));
 	}
 
