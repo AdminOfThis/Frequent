@@ -106,7 +106,7 @@
 		<manifest file="${manifest.release}" mode="update" flattenAttributes="true">
 			<attribute name="Main-Class" value="${manifest.mainclass}" />
 			<attribute name="Class-Path" value="${manifest.classpath}" />
-			<attribute name="Implementation-Version" value="${version} ${timestamp}" />
+			<attribute name="Implementation-Version" value="${version}" />
 			<attribute name="Specification-Version" value="${version.clean}" />
 
 		</manifest>
