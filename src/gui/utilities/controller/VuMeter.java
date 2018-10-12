@@ -80,7 +80,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 
 	private void update() {
 		for (Double peakdB : pendingLevelList) {
-			if (!isPaused() && channel != null) {
+			if (!isPaused()) {
 				if (peak < peakdB || timeSincePeak >= PEAK_HOLD) {
 					peak = peakdB;
 					timeSincePeak = 0;
@@ -121,6 +121,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 				}
 			}
 		}
+		pendingLevelList.clear();
 	}
 
 
@@ -146,7 +147,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 	}
 
 	@Override
-	public void levelChanged(double level, Input in) {
+	public void levelChanged(double level) {
 		pendingLevelList.add(Channel.percentToDB(level));
 	}
 
@@ -195,7 +196,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 
 	@Override
 	public boolean isPaused() {
-		return pause || (parentPausable != null && parentPausable.isPaused());
+		return pause || (parentPausable != null && parentPausable.isPaused() || channel == null);
 	}
 
 	@Override
