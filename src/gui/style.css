@@ -82,6 +82,7 @@
 .list-cell .label{
     -fx-padding: 0em;
 	-fx-text-fill: white;
+    -fa-background-color: -fx-base;
 }
 
 .split-pane {

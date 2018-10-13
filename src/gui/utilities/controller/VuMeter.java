@@ -17,7 +17,8 @@ import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.FXMLUtil;
 import gui.utilities.GroupCellContextMenu;
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -28,6 +29,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 public class VuMeter extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
@@ -63,7 +65,6 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 		AnchorPane.setBottomAnchor(p, 0.0);
 		AnchorPane.setLeftAnchor(p, 0.0);
 		AnchorPane.setRightAnchor(p, 0.0);
-
 		pendingLevelList = Collections.synchronizedList(new ArrayList<Double>());
 		setChannel(channel);
 		AnimationTimer timer = new AnimationTimer() {
@@ -74,56 +75,57 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 			}
 		};
 		timer.start();
-
 	}
 
-
 	private void update() {
-		for (Double peakdB : pendingLevelList) {
-			if (!isPaused()) {
-				if (peak < peakdB || timeSincePeak >= PEAK_HOLD) {
-					peak = peakdB;
-					timeSincePeak = 0;
+		if (!isPaused()) {
+			synchronized (pendingLevelList) {
+				for (Double peakdB : pendingLevelList) {
+					if (peak < peakdB || timeSincePeak >= PEAK_HOLD) {
+						peak = peakdB;
+						timeSincePeak = 0;
+					}
+					if (timeSincePeak < PEAK_HOLD) {
+						timeSincePeak++;
+					}
+					if (orientation == Orientation.VERTICAL) {
+						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+						vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+					} else {
+						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+						vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+					}
+					if (peakdB >= RTAViewController.FFT_MIN) {
+						lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
+					} else {
+						lblPeak.setText("-\u221E");
+					}
+					if (peakdB > -5.0) {
+						if (peakdB >= -1.0) {
+							vuPeakPane.setStyle("-fx-background-color: red");
+						} else {
+							vuPeakPane.setStyle("-fx-background-color: yellow");
+						}
+						Timeline line = new Timeline();
+						KeyFrame frame = new KeyFrame(Duration.seconds(5.0), e -> {
+							vuPeakPane.setStyle("");
+						});
+						line.getKeyFrames().add(frame);
+						line.playFromStart();
+					}
 				}
-				if (timeSincePeak < PEAK_HOLD) {
-					timeSincePeak++;
-				}
-				if (orientation == Orientation.VERTICAL) {
-					vuPeakPane.setPrefHeight(
-						vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-					vuLastPeakPane.setPrefHeight(
-						vuPane.getHeight() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-				} else {
-					vuPeakPane.setPrefWidth(
-						vuPane.getWidth() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-					vuLastPeakPane.setPrefWidth(
-						vuPane.getWidth() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-				}
-				if (peakdB >= RTAViewController.FFT_MIN) {
-					lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
-				} else {
-					lblPeak.setText("-\u221E");
-				}
-				if (peakdB >= -0.5) {
-					vuPane.setStyle("-fx-background-color: red");
-				} else if (peakdB >= -5.0) {
-					vuPane.setStyle("-fx-background-color: yellow");
-				} else {
-					vuPane.setStyle("");
-				}
+			}
+		} else {
+			if (orientation == Orientation.VERTICAL) {
+				vuPeakPane.setPrefHeight(0);
+				vuLastPeakPane.setPrefHeight(0);
 			} else {
-				if (orientation == Orientation.VERTICAL) {
-					vuPeakPane.setPrefHeight(0);
-					vuLastPeakPane.setPrefHeight(0);
-				} else {
-					vuPeakPane.setPrefWidth(0);
-					vuLastPeakPane.setPrefWidth(0);
-				}
+				vuPeakPane.setPrefWidth(0);
+				vuLastPeakPane.setPrefWidth(0);
 			}
 		}
 		pendingLevelList.clear();
 	}
-
 
 	public void setTitle(String title) {
 		if (lblTitle != null) {
@@ -196,7 +198,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 
 	@Override
 	public boolean isPaused() {
-		return pause || (parentPausable != null && parentPausable.isPaused() || channel == null);
+		return pause || (parentPausable != null && parentPausable.isPaused() || channel == null) || pendingLevelList == null;
 	}
 
 	@Override
