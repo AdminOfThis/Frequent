@@ -118,7 +118,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 				} else {
 					endpoint = getWidth();
 				}
-				content.fillRect(startPoint, size * count, endpoint - startPoint, size);
+				content.fillRect(startPoint, size * count, endpoint - startPoint + 1, size + 1);
 			}
 			//
 			count++;
