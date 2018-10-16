@@ -64,8 +64,7 @@ public abstract class FileIO {
 			if (file.exists()) {
 				properties.load(new FileInputStream(file));
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to load properties", e);
 			LOG.debug("", e);
 		}
@@ -75,8 +74,7 @@ public abstract class FileIO {
 	private static boolean saveProperties() {
 		try {
 			properties.store(new FileOutputStream(new File(PROPERTIES_FILE)), "");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to save preferences");
 			LOG.debug("", e);
 			return false;
@@ -156,25 +154,20 @@ public abstract class FileIO {
 					result.add((Serializable) o);
 				}
 			}
-		}
-		catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			LOG.warn("File not found");
 			LOG.debug("", e);
-		}
-		catch (EOFException e) {}
-		catch (IOException e) {
+		} catch (EOFException e) {
+		} catch (IOException e) {
 			LOG.warn("Unable to read file");
 			LOG.debug("", e);
-		}
-		catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			LOG.warn("Class not found");
 			LOG.debug("", e);
-		}
-		finally {
+		} finally {
 			try {
 				stream.close();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				LOG.error("Unable to close file stream");
 				LOG.debug("", e);
 			}
@@ -233,17 +226,14 @@ public abstract class FileIO {
 			for (Serializable o : objects) {
 				stream.writeObject(o);
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			LOG.warn("Unable to write file");
 			LOG.debug("", e);
 			result = false;
-		}
-		finally {
+		} finally {
 			try {
 				stream.close();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				LOG.error("Unable to close file stream");
 				LOG.debug("", e);
 			}
@@ -257,12 +247,6 @@ public abstract class FileIO {
 	}
 
 	public static boolean compareAndNullCheck(Object o1, Object o2) {
-		if (o1 == null && o2 == null) {
-			return true;
-		} else if ((o1 == null && o2 != null) || (o1 != null && o2 == null)) {
-			return false;
-		} else {
-			return o1.equals(o2);
-		}
+		return (o1 == null ? o2 == null : o1.equals(o2));
 	}
 }

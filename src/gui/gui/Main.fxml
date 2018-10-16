@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -13,7 +14,6 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -110,11 +110,11 @@
             </MenuBar>
             <HBox alignment="CENTER_LEFT" spacing="5.0">
                <children>
-                  <ToggleButton fx:id="toggleChannels" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Channels">
+                  <ToggleButton fx:id="toggleChannels" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Channels">
                      <tooltip>
                         <Tooltip text="Shows/hides the channellist" />
                      </tooltip></ToggleButton>
-                  <ToggleButton fx:id="toggleCue" mnemonicParsing="false" prefWidth="65.0" text="Cues">
+                  <ToggleButton fx:id="toggleCue" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" text="Cues">
                      <tooltip>
                         <Tooltip text="Shows/hides the cue manager" />
                      </tooltip></ToggleButton>
@@ -122,14 +122,14 @@
                   <Pane HBox.hgrow="SOMETIMES" />
                   <HBox fx:id="buttonBox" alignment="CENTER_RIGHT" spacing="5.0" HBox.hgrow="ALWAYS" />
                   <Separator orientation="VERTICAL" />
-                  <ToggleButton fx:id="toggleFFTView" mnemonicParsing="false" prefWidth="70.0" text="Spectrum">
+                  <ToggleButton fx:id="toggleFFTView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Spectrum">
                      <toggleGroup>
                         <ToggleGroup fx:id="viewGroup" />
                      </toggleGroup></ToggleButton>
-                  <ToggleButton fx:id="toggleRTAView" mnemonicParsing="false" prefWidth="70.0" text="RTA" toggleGroup="$viewGroup" />
-                  <ToggleButton fx:id="toggleDrumView" mnemonicParsing="false" prefWidth="70.0" text="Drum" toggleGroup="$viewGroup" />
-                  <ToggleButton fx:id="toggleGroupsView" mnemonicParsing="false" prefWidth="70.0" text="Groups" toggleGroup="$viewGroup" />
-                  <ToggleButton fx:id="togglePhaseView" mnemonicParsing="false" prefWidth="70.0" text="Phase" toggleGroup="$viewGroup" />
+                  <ToggleButton fx:id="toggleRTAView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="RTA" toggleGroup="$viewGroup" />
+                  <ToggleButton fx:id="toggleDrumView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Drum" toggleGroup="$viewGroup" />
+                  <ToggleButton fx:id="toggleGroupsView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Groups" toggleGroup="$viewGroup" />
+                  <ToggleButton fx:id="togglePhaseView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Phase" toggleGroup="$viewGroup" />
                </children>
                <VBox.margin>
                   <Insets />
@@ -212,11 +212,11 @@
                      <children>
                         <HBox spacing="5.0">
                            <children>
-                              <ToggleButton fx:id="toggleWaveForm" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Wave">
+                              <ToggleButton fx:id="toggleWaveForm" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Wave">
                                  <tooltip>
                                     <Tooltip text="Hides/shows WaveForm for selected channel" />
                                  </tooltip></ToggleButton>
-                              <ToggleButton fx:id="toggleGroupChannels" mnemonicParsing="false" prefWidth="65.0" text="Group">
+                              <ToggleButton fx:id="toggleGroupChannels" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" text="Group">
                                  <tooltip>
                                     <Tooltip text="Groups the channels by groups if selected" />
                                  </tooltip></ToggleButton>
