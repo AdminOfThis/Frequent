@@ -1,23 +1,16 @@
 package gui.utilities.controller;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import control.ASIOController;
 import data.Channel;
 import data.Group;
 import data.Input;
-import gui.controller.MainController;
 import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.FXMLUtil;
 import gui.utilities.GroupCellContextMenu;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -27,16 +20,9 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
 public class ChannelCell extends ListCell<Input> implements Initializable {
 
@@ -49,7 +35,6 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	private Label				lblNumber;
 	private Input				input;
 	private VuMeter				meter;
-	private ContextMenu			contextMenu	= new ContextMenu();
 
 	public ChannelCell() {
 		super();
@@ -76,91 +61,35 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	}
 
 	private void initContextMenu() {
-		// adding colorPicker
-		Menu colorMenu = new Menu("Color");
-		contextMenu.getItems().add(colorMenu);
-		for (int i = 0; i < COLORS; i++) {
-			double hue = (360.0 / COLORS) * i;
-			Color color = Color.hsb(hue, 1.0, 1.0);
-			Circle circle = new Circle(5.0);
-			String colorHex = toRGBCode(color);
-			circle.setStyle("-fx-fill: " + colorHex);
-			MenuItem item = new MenuItem("Color #" + i);
-			item.setGraphic(circle);
-			colorMenu.getItems().add(item);
-			item.setOnAction(e -> {
-				LOG.info("Changing color of " + getItem().getName() + " to " + colorHex);
-				getItem().setColor(colorHex);
-				MainController.getInstance().refresh();
-			});
-		}
-		Menu groupMenu = new Menu("Groups");
-		MenuItem newGroupMenu = new MenuItem("New Group");
-		newGroupMenu.setOnAction(newGroup);
-		// groups
-		contextMenu.getItems().add(groupMenu);
-		contextMenu.setOnShowing(e -> {
-			groupMenu.getItems().clear();
-			groupMenu.getItems().add(newGroupMenu);
-			groupMenu.getItems().add(new SeparatorMenuItem());
-			ToggleGroup toggle = new ToggleGroup();
-			for (Group g : ASIOController.getInstance().getGroupList()) {
-				RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
-				groupMenuItem.setToggleGroup(toggle);
-				groupMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
-
-					@Override
-					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-						if (getItem() != null && getItem() instanceof Channel) {
-							Channel channel = (Channel) getItem();
-							if (newValue) {
-								g.addChannel(channel);
-							} else {
-								g.removeChannel(channel);
-							}
-							MainController.getInstance().refresh();
-						}
-					}
-				});
-				groupMenu.getItems().add(groupMenuItem);
+		setOnContextMenuRequested(e -> {
+			ContextMenu menu;
+			if (input instanceof Channel) {
+				menu = new ChannelCellContextMenu((Channel) input);
+			} else {
+				menu = new GroupCellContextMenu((Group) input);
 			}
-			Input item = this.getItem();
-			if (item != null && item instanceof Channel) {
-				for (MenuItem g : groupMenu.getItems()) {
-					if (g instanceof RadioMenuItem) {
-						String text = g.getText();
-						Group group = ((Channel) item).getGroup();
-						if (group != null && text.equals(group.getName())) {
-							((RadioMenuItem) g).setSelected(true);
-							break;
-						} else {
-							((RadioMenuItem) g).setSelected(false);
-						}
-					}
-				}
-			}
+			menu.show(this, e.getScreenX(), e.getScreenY());
 		});
 	}
 
-	private EventHandler<ActionEvent> newGroup = new EventHandler<ActionEvent>() {
-
-		@Override
-		public void handle(ActionEvent event) {
-			TextInputDialog newGroupDialog = new TextInputDialog();
-			Optional<String> result = newGroupDialog.showAndWait();
-			if (result.isPresent()) {
-				Group g = new Group(result.get());
-				LOG.info("Created new group: " + g.getName());
-				ASIOController.getInstance().addGroup(g);
-				Input in = ChannelCell.this.getItem();
-				if (in != null && in instanceof Channel) {
-					g.addChannel((Channel) in);
-				}
-				MainController.getInstance().refresh();
-			}
-		}
-	};
-
+// private EventHandler<ActionEvent> newGroup = new EventHandler<ActionEvent>() {
+//
+// @Override
+// public void handle(ActionEvent event) {
+// TextInputDialog newGroupDialog = new TextInputDialog();
+// Optional<String> result = newGroupDialog.showAndWait();
+// if (result.isPresent()) {
+// Group g = new Group(result.get());
+// LOG.info("Created new group: " + g.getName());
+// ASIOController.getInstance().addGroup(g);
+// Input in = ChannelCell.this.getItem();
+// if (in != null && in instanceof Channel) {
+// g.addChannel((Channel) in);
+// }
+// MainController.getInstance().refresh();
+// }
+// }
+// };
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initVuMeter();
@@ -203,14 +132,14 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 			this.setStyle("");
 		} else {
 			this.setStyle("-fx-accent: " + item.getColor());
-			if (item instanceof Channel) {
-				lblNumber.setText(Integer.toString(((Channel) item).getChannel().getChannelIndex()));
-			}
 		}
 		if (item == null) {
 			meter.setTitle(null);
 		} else {
 			meter.setTitle(item.getName());
+			if (item instanceof Channel) {
+				lblNumber.setText(Integer.toString(((Channel) item).getChannel().getChannelIndex()));
+			}
 		}
 	}
 
