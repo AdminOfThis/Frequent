@@ -1,10 +1,9 @@
 package data;
 
-import static data.FileIO.compareAndNullCheck;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.log4j.Logger;
 
@@ -82,9 +81,7 @@ public class Group extends Input implements InputListener {
 	public boolean equals(Object obj) {
 		if (obj instanceof Group) {
 			Group other = (Group) obj;
-			if (super.equals(obj) && compareAndNullCheck(this.getChannelList(), other.getChannelList())) {
-				return true;
-			}
+			return (super.equals(obj) && Objects.equals(this.getChannelList(), other.getChannelList()));
 		}
 		return false;
 	}

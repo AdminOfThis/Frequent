@@ -2,13 +2,13 @@ package gui.controller;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
 import data.Channel;
-import data.FileIO;
 import gui.pausable.PausableView;
 import gui.utilities.controller.VectorScope;
 import gui.utilities.controller.VuMeter;
@@ -93,7 +93,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		// adding listener
 		cmbChannel1.valueProperty().addListener(e -> {
 			Channel cNew = cmbChannel1.getValue();
-			if (!FileIO.compareAndNullCheck(c1, cNew) || !c1.equals(cNew)) {
+			if (!Objects.equals(c1, cNew) || !c1.equals(cNew)) {
 				c1 = cNew;
 				vectorScope.setChannels(cNew, cmbChannel2.getValue());
 				vu1.setChannel(cNew);
@@ -101,7 +101,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		});
 		cmbChannel2.valueProperty().addListener(e -> {
 			Channel cNew = cmbChannel2.getValue();
-			if (!FileIO.compareAndNullCheck(c2, cNew) || !c2.equals(cNew)) {
+			if (!Objects.equals(c2, cNew) || !c2.equals(cNew)) {
 				c2 = cNew;
 				vectorScope.setChannels(cmbChannel1.getValue(), cNew);
 				vu2.setChannel(cNew);

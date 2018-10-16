@@ -1,10 +1,9 @@
 package data;
 
-import static data.FileIO.compareAndNullCheck;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.log4j.Logger;
 
@@ -102,9 +101,7 @@ public abstract class Input implements Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof Input) {
 			Input other = (Input) obj;
-			if (compareAndNullCheck(this.getName(), other.getName())) {
-				return true;
-			}
+			return (Objects.equals(this.getName(), other.getName()));
 		}
 		return false;
 	}
