@@ -201,8 +201,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 						buffer2.addAll(tempList);
 					}
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.error("Problem showing vectorscope", e);
 			}
 		}
@@ -212,7 +211,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		// drawing new data
 		if (x.size() == y.size()) {
 			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
-			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.size() - 2; index++) {
+			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.size() - 2; index = index + 5) {
 				Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
 				dataToAdd.add(data);
 			}
@@ -223,11 +222,13 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					percent = 1.0 / percent;
 				}
 				percent = 1 - Math.abs((percent + 1) / 2.0);
-				d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
+				d.getNode().setStyle("-fx-background-color: "
+					+ FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
 			}
 		} // removing old data points
 		if (vectorSeries.getData().size() > (MAX_DATA_POINTS * decay)) {
-			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0, (int) Math.round(vectorSeries.getData().size() - (MAX_DATA_POINTS * decay)));
+			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0,
+				(int) Math.round(vectorSeries.getData().size() - (MAX_DATA_POINTS * decay)));
 			vectorSeries.getData().removeAll(removeList);
 		}
 	}
