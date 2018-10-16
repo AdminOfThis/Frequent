@@ -66,6 +66,7 @@ public class IOChooserController implements Initializable {
 		if (stage != null) {
 			stage.close();
 		}
+		e.consume();
 	}
 
 	private void launchMain(String selectedIO) {
