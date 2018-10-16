@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import control.ASIOController;
 import data.Channel;
 import data.Group;
+import data.Input;
 import gui.controller.MainController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -30,6 +31,8 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 	private MenuItem			newGroup	= new MenuItem("New Group");
 
 	private Menu				groupMenu	= new Menu("Groups");
+	private Menu				pairingMenu	= new Menu("Pairing");
+	private CheckMenuItem		noPair		= new CheckMenuItem("Unpaired");
 
 	public ChannelCellContextMenu(Channel in) {
 		super(in);
@@ -47,7 +50,15 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 			// groups
 			getItems().add(groupMenu);
 			groupMenu.getItems().add(newGroup);
+			getItems().add(pairingMenu);
+			pairingMenu.getItems().add(noPair);
+			noPair.selectedProperty().addListener((obs, old, newValue) -> {
+				if (newValue) {
+					in.setStereoChannel(null);
+				}
+			});
 			groupMenu.getItems().add(new SeparatorMenuItem());
+			//
 			setOnShowing(e -> refreshData(in));
 			setAutoHide(true);
 			newGroup.setOnAction(e -> {
@@ -88,6 +99,21 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 				}
 			});
 			groupMenu.getItems().add(groupMenuItem);
+		}
+		ToggleGroup channelGroup = new ToggleGroup();
+		for (Channel c : ASIOController.getInstance().getInputList()) {
+			if (!channel.equals(c)) {
+				RadioMenuItem channelCheck = new RadioMenuItem(c.getName());
+				channelGroup.getToggles().add(channelCheck);
+				pairingMenu.getItems().add(channelCheck);
+				channelCheck.setSelected(c.equals(channel.getStereoChannel()));
+				channelCheck.selectedProperty().addListener((obs, old, newValue) -> {
+					if (newValue) {
+						LOG.info("Setting Stereo Channel of " + channel.getName() + " to " + c.getName());
+						channel.setStereoChannel(c);
+					}
+				});
+			}
 		}
 	}
 }
