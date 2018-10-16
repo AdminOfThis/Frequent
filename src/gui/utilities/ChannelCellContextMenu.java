@@ -21,13 +21,10 @@ import javafx.scene.control.ToggleGroup;
 public class ChannelCellContextMenu extends InputCellContextMenu {
 
 	private static final Logger	LOG			= Logger.getLogger(ChannelCellContextMenu.class);
-
 	private MenuItem			resetName	= new MenuItem("Reset Name");
 	private CheckMenuItem		hide		= new CheckMenuItem("Hide");
-
 	private CheckMenuItem		showHidden	= new CheckMenuItem("Show Hidden");
 	private MenuItem			newGroup	= new MenuItem("New Group");
-
 	private Menu				groupMenu	= new Menu("Groups");
 	private Menu				pairingMenu	= new Menu("Pairing");
 	private CheckMenuItem		noPair		= new CheckMenuItem("Unpaired");
@@ -47,7 +44,6 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 			getItems().add(new SeparatorMenuItem());
 			// groups
 			getItems().add(groupMenu);
-			groupMenu.getItems().add(newGroup);
 			getItems().add(pairingMenu);
 			pairingMenu.getItems().add(noPair);
 			noPair.selectedProperty().addListener((obs, old, newValue) -> {
@@ -55,7 +51,6 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 					in.setStereoChannel(null);
 				}
 			});
-			groupMenu.getItems().add(new SeparatorMenuItem());
 			//
 			setOnShowing(e -> refreshData(in));
 			setAutoHide(true);
@@ -66,9 +61,7 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 					Group g = new Group(result.get());
 					LOG.info("Created new group: " + g.getName());
 					ASIOController.getInstance().addGroup(g);
-					if (in != null && in instanceof Channel) {
-						g.addChannel((Channel) in);
-					}
+					MainController.getInstance().groupAllSelected(g);
 					MainController.getInstance().refresh();
 				}
 			});
@@ -78,7 +71,8 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 	private void refreshData(Channel channel) {
 		showHidden.setSelected(MainController.getInstance().isShowHidden());
 		groupMenu.getItems().clear();
-
+		groupMenu.getItems().add(newGroup);
+		groupMenu.getItems().add(new SeparatorMenuItem());
 		ToggleGroup toggle = new ToggleGroup();
 		for (Group g : ASIOController.getInstance().getGroupList()) {
 			RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
@@ -89,9 +83,9 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 					if (newValue) {
-						g.addChannel(channel);
+						MainController.getInstance().groupAllSelected(g);
 					} else {
-						g.removeChannel(channel);
+						MainController.getInstance().groupAllSelected(null);
 					}
 					MainController.getInstance().refresh();
 				}

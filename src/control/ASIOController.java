@@ -1,6 +1,7 @@
 package control;
 
 import java.io.Serializable;
+import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -32,7 +33,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private static final Logger		LOG				= Logger.getLogger(ASIOController.class);
 	private String					driverName;
 	private AsioDriver				asioDriver;
-
 	private int						bufferSize		= 1024;
 	private double					sampleRate;
 	private AsioChannel				activeChannel;
@@ -64,9 +64,11 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 				if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
 					result.add(possibleDriver);
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.debug(possibleDriver + " is unavailable");
-			} finally {
+			}
+			finally {
 				if (tempDriver != null) {
 					tempDriver.shutdownAndUnloadDriver();
 				}
@@ -97,7 +99,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		} catch (AsioException e) {
+		}
+		catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -119,8 +122,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		// create the audio buffers and prepare the driver to run
 		asioDriver.createBuffers(activeChannels);
 		// creating ThreadPool
-		exe = new ThreadPoolExecutor(4, 64, 500, TimeUnit.MILLISECONDS,
-		        new ArrayBlockingQueue<Runnable>(activeChannels.size()));
+		exe = new ThreadPoolExecutor(4, 128, 500, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(activeChannels.size() * 2));
 		// start the driver
 		asioDriver.start();
 		LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
@@ -148,9 +150,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) {
-			return asioDriver.getNumChannelsInput();
-		}
+		if (asioDriver != null) { return asioDriver.getNumChannelsInput(); }
 		return -1;
 	}
 
@@ -201,22 +201,24 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	@Override
 	public void bufferSwitch(long sampleTime, long samplePosition, Set<AsioChannel> channels) {
 		for (AsioChannel channel : channels) {
-
 			try {
 				if (channel.isInput() && channel.isActive()) {
-
 					Runnable runnable = new Runnable() {
+
 						@Override
 						public void run() {
 							try {
 								float[] output = new float[bufferSize];
 								if (activeChannel != null) {
-									if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
+									try {
 										channel.read(output);
+									}
+									catch (BufferUnderflowException e) {
+										LOG.debug("Underflow Exception", e);
+									}
+									if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
 										calculatePeaks(output);
 										fftThis(output);
-									} else {
-										channel.read(output);
 									}
 									float max = 0;
 									for (float f : output) {
@@ -236,66 +238,71 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 										c.setBuffer(Arrays.copyOf(output, output.length));
 									}
 								}
-							} catch (Exception e) {
+							}
+							catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
-
 					};
 					exe.submit(runnable);
 				}
-
-			} catch (ConcurrentModificationException e) {
 			}
+			catch (ConcurrentModificationException e) {}
 		}
 	}
 
 	private void fftThis(float[] output) {
-		for (int i = 0; i < bufferSize; i++) {
-			for (int j = 0; j < bufferCount; j++) {
-				fftBuffer[j][index[j]] = output[i];
+		try {
+			for (int i = 0; i < bufferSize; i++) {
+				for (int j = 0; j < bufferCount; j++) {
+					fftBuffer[j][index[j]] = output[i];
+				}
+				for (int j = 0; j < bufferCount; j++) {
+					index[j]++;
+				}
 			}
-			for (int j = 0; j < bufferCount; j++) {
-				index[j]++;
+			// TODO IST DAS RICHTIG???
+			for (int i = 0; i < bufferCount; i++) {
+				if (index[i] == fftBufferSize) {
+					fftBuffer[i] = applyHannWindow(fftBuffer[i]);
+					// fft.realForward(fftBuffer[i]);
+					fft.forward(fftBuffer[i], false);
+					// double[] fftData = fftAbs(fftBuffer[i]);
+					double[] fftData = fftBuffer[i];
+					int baseFrequencyIndex = getBaseFrequencyIndex(fftData);
+					// int baseFrequencyIndex = getBaseFrequencyIndexHPS(fftData);
+					baseFrequency = getFrequencyForIndex(baseFrequencyIndex, fftData.length, (int) sampleRate) / 2;
+					// System.out.println("Base " + baseFrequency);
+					spectrumMap = getSpectrum(fftData);
+					// controller.updateText(baseFrequency);
+					index[i] = 0;
+				}
 			}
-		}
-		// TODO IST DAS RICHTIG???
-		for (int i = 0; i < bufferCount; i++) {
-			if (index[i] == fftBufferSize) {
-				fftBuffer[i] = applyHannWindow(fftBuffer[i]);
-				// fft.realForward(fftBuffer[i]);
-				fft.forward(fftBuffer[i], false);
-				// double[] fftData = fftAbs(fftBuffer[i]);
-				double[] fftData = fftBuffer[i];
-				int baseFrequencyIndex = getBaseFrequencyIndex(fftData);
-				// int baseFrequencyIndex = getBaseFrequencyIndexHPS(fftData);
-				baseFrequency = getFrequencyForIndex(baseFrequencyIndex, fftData.length, (int) sampleRate) / 2;
-				// System.out.println("Base " + baseFrequency);
-				spectrumMap = getSpectrum(fftData);
-				// controller.updateText(baseFrequency);
-				index[i] = 0;
+			bufferingBuffer[1] = bufferingBuffer[0];
+			bufferingBuffer[0] = spectrumMap;
+			for (int i = 0; i < spectrumMap[0].length - 1; i++) {
+				spectrumMap[1][i] = (bufferingBuffer[0][1][i] + bufferingBuffer[1][1][i]) / 2.0;
 			}
-		}
-		bufferingBuffer[1] = bufferingBuffer[0];
-		bufferingBuffer[0] = spectrumMap;
-		for (int i = 0; i < spectrumMap[0].length - 1; i++) {
-			spectrumMap[1][i] = (bufferingBuffer[0][1][i] + bufferingBuffer[1][1][i]) / 2.0;
-		}
-		for (FFTListener l : fftListeners) {
-			if (l != null) {
-				new Thread(new Runnable() {
+			for (FFTListener l : fftListeners) {
+				if (l != null) {
+					new Thread(new Runnable() {
 
-					@Override
-					public void run() {
-						try {
-							l.newFFT(spectrumMap);
-						} catch (Exception e) {
-							LOG.warn("Unable to notify FFTListener");
-							LOG.debug("", e);
+						@Override
+						public void run() {
+							try {
+								l.newFFT(spectrumMap);
+							}
+							catch (Exception e) {
+								LOG.warn("Unable to notify FFTListener");
+								LOG.debug("", e);
+							}
 						}
-					}
-				}).start();
+					}).start();
+				}
 			}
+		}
+		catch (Exception e) {
+			LOG.debug("Problem on FFT", e);
 		}
 	}
 

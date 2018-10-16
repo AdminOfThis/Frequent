@@ -453,9 +453,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
 		if (result != null) {
-			if (timeKeeperController != null) {
-				return FileIO.save(result);
-			}
+			if (timeKeeperController != null) { return FileIO.save(result); }
 		}
 		return false;
 	}
@@ -613,10 +611,10 @@ public class MainController implements Initializable, Pausable, CueListener {
 						((Channel) item).setHidden(hide);
 					}
 				}
-
 			}
 			refresh();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Error while hiding items");
 			LOG.debug("", e);
 		}
@@ -626,11 +624,18 @@ public class MainController implements Initializable, Pausable, CueListener {
 		try {
 			for (Input item : channelList.getSelectionModel().getSelectedItems()) {
 				if (item instanceof Channel) {
-					g.addChannel((Channel) item);
+					if (g == null) {
+						if (((Channel) item).getGroup() != null) {
+							((Channel) item).getGroup().removeChannel((Channel) item);
+						}
+					} else {
+						g.addChannel((Channel) item);
+					}
 				}
 			}
 			refresh();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Error while grouping items");
 			LOG.debug("", e);
 		}
@@ -665,7 +670,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		try {
 			DialogPane dialogPane = alert.getDialogPane();
 			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to style dialog");
 			LOG.debug("", e);
 		}
@@ -680,9 +686,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		alert.getButtonTypes().add(ButtonType.CANCEL);
 		alert.getButtonTypes().add(ButtonType.OK);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent()) {
-			return result.get();
-		}
+		if (result.isPresent()) { return result.get(); }
 		return ButtonType.CANCEL;
 	}
 

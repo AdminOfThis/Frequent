@@ -2,6 +2,7 @@ package data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,8 +16,12 @@ public abstract class Input implements Serializable {
 	private static final Logger				LOG					= Logger.getLogger(Input.class);
 	private String							name;
 	private float							level				= 0;
-	private transient List<InputListener>	listeners			= new ArrayList<>();
+	private transient List<InputListener>	listeners;
 	private String							hexColor;
+
+	public Input() {
+		listeners = Collections.synchronizedList(new ArrayList<>());
+	}
 
 	public String getName() {
 		return name;
@@ -27,35 +32,36 @@ public abstract class Input implements Serializable {
 	}
 
 	public void addListener(InputListener obs) {
-		if (listeners == null) {
-			listeners = new ArrayList<>();
-		}
 		if (!listeners.contains(obs)) {
-			listeners.add(obs);
+			synchronized (listeners) {
+				listeners.add(obs);
+			}
 		}
 	}
 
 	public void removeListener(InputListener obs) {
-		listeners.remove(obs);
+		synchronized (listeners) {
+			listeners.remove(obs);
+		}
 	}
 
 	protected void notifyListeners() {
-		if (listeners == null) {
-			listeners = new ArrayList<>();
-		}
-		for (InputListener obs : listeners) {
-			// new Thread(new Runnable() {
-			//
-			// @Override
-			// public void run() {
-			try {
-				obs.levelChanged(level);
-			} catch (Exception e) {
-				LOG.warn("Unable to notify Level Listener");
-				LOG.debug("", e);
+		synchronized (listeners) {
+			for (InputListener obs : listeners) {
+				// new Thread(new Runnable() {
+				//
+				// @Override
+				// public void run() {
+				try {
+					obs.levelChanged(level);
+				}
+				catch (Exception e) {
+					LOG.warn("Unable to notify Level Listener", e);
+					LOG.debug("", e);
+				}
+				// }
+				// }).start();
 			}
-			// }
-			// }).start();
 		}
 	}
 
@@ -87,7 +93,8 @@ public abstract class Input implements Serializable {
 					c.setColor(hexColor);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return false;
 		}
 		return true;
