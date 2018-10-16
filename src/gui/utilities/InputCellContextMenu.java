@@ -22,7 +22,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 	private static final Logger	LOG			= Logger.getLogger(InputCellContextMenu.class);
 	private static final int	COLORS		= 8;
 	private MenuItem			name		= new MenuItem("Rename");
-	private MenuItem			newGroup	= new MenuItem("New Group");
 	private Menu				colorMenu	= new Menu("Color");
 	private Input				input;
 
@@ -60,22 +59,10 @@ public abstract class InputCellContextMenu extends ContextMenu {
 					MainController.getInstance().refresh();
 				});
 			}
-			newGroup.setOnAction(e -> {
-				TextInputDialog newGroupDialog = new TextInputDialog();
-				Optional<String> result = newGroupDialog.showAndWait();
-				if (result.isPresent()) {
-					Group g = new Group(result.get());
-					LOG.info("Created new group: " + g.getName());
-					ASIOController.getInstance().addGroup(g);
-					if (input != null && input instanceof Channel) {
-						g.addChannel((Channel) in);
-					}
-					MainController.getInstance().refresh();
-				}
-			});
+			
 			getItems().add(name);
 			getItems().add(colorMenu);
-			getItems().add(newGroup);
+			
 		}
 		this.focusedProperty().addListener((obs, o, n) -> {
 			if (!n) {
