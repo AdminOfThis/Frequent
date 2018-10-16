@@ -119,13 +119,16 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	}
 
 	public void setStereoChannel(Channel newChannel) {
-		if (this.stereoChannel != null && stereoChannel.getStereoChannel().equals(this)) {
-			stereoChannel.setStereoChannel(null);
+		if (!Objects.equals(newChannel, stereoChannel)) {
+			if (this.stereoChannel != null && stereoChannel.getStereoChannel().equals(this)) {
+				Channel oldChannel = stereoChannel;
+				stereoChannel = null;
+				oldChannel.setStereoChannel(null);
+			}
+			this.stereoChannel = newChannel;
+			if (this.stereoChannel != null && !this.stereoChannel.getStereoChannel().equals(this)) {
+				stereoChannel.setStereoChannel(this);
+			}
 		}
-		this.stereoChannel = newChannel;
-		if (this.stereoChannel != null && !this.stereoChannel.getStereoChannel().equals(this)) {
-			stereoChannel.setStereoChannel(this);
-		}
-
 	}
 }
