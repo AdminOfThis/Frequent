@@ -327,6 +327,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void refreshInputs() {
+		channelList.getItems().clear();
 		if (ASIOController.getInstance() != null) {
 			if (toggleGroupChannels.isSelected()) {
 				for (Group group : ASIOController.getInstance().getGroupList()) {
