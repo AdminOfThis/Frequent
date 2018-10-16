@@ -50,6 +50,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private List<Group>				groupList		= new ArrayList<>();
 	private List<FFTListener>		fftListeners	= new ArrayList<>();
 	private double[][][]			bufferingBuffer	= new double[2][2][1024];
+	private ExecutorService			exe;
 
 	public static List<String> getPossibleDrivers() {
 		List<String> preList = AsioDriver.getDriverNames();
@@ -117,6 +118,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		sampleRate = asioDriver.getSampleRate();
 		// create the audio buffers and prepare the driver to run
 		asioDriver.createBuffers(activeChannels);
+		// creating ThreadPool
+		exe = new ThreadPoolExecutor(4, 64, 500, TimeUnit.MILLISECONDS,
+		        new ArrayBlockingQueue<Runnable>(activeChannels.size()));
 		// start the driver
 		asioDriver.start();
 		LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
@@ -196,8 +200,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	@Override
 	public void bufferSwitch(long sampleTime, long samplePosition, Set<AsioChannel> channels) {
-		ExecutorService exe = new ThreadPoolExecutor(4, 8, 500, TimeUnit.MILLISECONDS,
-		        new ArrayBlockingQueue<Runnable>(channels.size()));
 		for (AsioChannel channel : channels) {
 
 			try {
