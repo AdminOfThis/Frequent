@@ -25,6 +25,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -44,6 +45,8 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	private static final int	COLORS		= 8;
 	@FXML
 	private AnchorPane			chartPane;
+	@FXML
+	private Label				lblNumber;
 	private Input				input;
 	private VuMeter				meter;
 	private ContextMenu			contextMenu	= new ContextMenu();
@@ -195,10 +198,14 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 
 	private void update(Input item) {
 		meter.setChannel(item);
+		lblNumber.setText("");
 		if (item == null || item.getColor() == null) {
 			this.setStyle("");
 		} else {
 			this.setStyle("-fx-accent: " + item.getColor());
+			if (item instanceof Channel) {
+				lblNumber.setText(Integer.toString(((Channel) item).getChannel().getChannelIndex()));
+			}
 		}
 		if (item == null) {
 			meter.setTitle(null);
