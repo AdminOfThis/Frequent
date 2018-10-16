@@ -7,6 +7,10 @@ import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.jtransforms.dct.DoubleDCT_1D;
@@ -35,7 +39,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private float					lastPeak		= 0, peak = 0, rms = 0;
 	private float					baseFrequency	= -1;
 	// FFT
-	private float[]					output;
+	// private float[] output;
 	private int						bufferCount;
 	private DoubleDCT_1D			fft;
 	private int[]					index;
@@ -109,7 +113,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		}
 		// activeChannels.add(asioDriver.getChannelInput(0));
 		bufferSize = asioDriver.getBufferPreferredSize();
-		output = new float[bufferSize];
+		// output = new float[bufferSize];
 		sampleRate = asioDriver.getSampleRate();
 		// create the audio buffers and prepare the driver to run
 		asioDriver.createBuffers(activeChannels);
@@ -192,46 +196,59 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	@Override
 	public void bufferSwitch(long sampleTime, long samplePosition, Set<AsioChannel> channels) {
+		ExecutorService exe = new ThreadPoolExecutor(4, 8, 500, TimeUnit.MILLISECONDS,
+		        new ArrayBlockingQueue<Runnable>(channels.size()));
 		for (AsioChannel channel : channels) {
+
 			try {
 				if (channel.isInput() && channel.isActive()) {
-					try {
-						if (activeChannel != null) {
-							if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
-								channel.read(output);
-								calculatePeaks(output);
-								fftThis();
-							} else {
-								channel.read(output);
-							}
-							float max = 0;
-							for (float f : output) {
-								if (f > max) {
-									max = f;
+
+					Runnable runnable = new Runnable() {
+						@Override
+						public void run() {
+							try {
+								float[] output = new float[bufferSize];
+								if (activeChannel != null) {
+									if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
+										channel.read(output);
+										calculatePeaks(output);
+										fftThis(output);
+									} else {
+										channel.read(output);
+									}
+									float max = 0;
+									for (float f : output) {
+										if (f > max) {
+											max = f;
+										}
+									}
+									Channel c = null;
+									for (Channel cTemp : channelList) {
+										if (cTemp.getChannel().equals(channel)) {
+											c = cTemp;
+											break;
+										}
+									}
+									if (c != null) {
+										c.setLevel(max);
+										c.setBuffer(Arrays.copyOf(output, output.length));
+									}
 								}
-							}
-							Channel c = null;
-							for (Channel cTemp : channelList) {
-								if (cTemp.getChannel().equals(channel)) {
-									c = cTemp;
-									break;
-								}
-							}
-							if (c != null) {
-								c.setLevel(max);
-								c.setBuffer(Arrays.copyOf(output, output.length));
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+
+					};
+					exe.submit(runnable);
 				}
+
 			} catch (ConcurrentModificationException e) {
 			}
 		}
 	}
 
-	private void fftThis() {
+	private void fftThis(float[] output) {
 		for (int i = 0; i < bufferSize; i++) {
 			for (int j = 0; j < bufferCount; j++) {
 				fftBuffer[j][index[j]] = output[i];
