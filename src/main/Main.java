@@ -52,7 +52,7 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		initLogger();
 		title = getFromManifest(TITLE_KEY, "Frequent");
-		version = getFromManifest(VERSION_KEY, "");
+		version = getFromManifest(VERSION_KEY, "Local");
 		LOG.info(" === " + getTitle() + " ===");
 		parseArgs(args);
 		setColors();
@@ -64,8 +64,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * checks the start parameters for keywords and sets the debug flag to true
-	 * if found
+	 * checks the start parameters for keywords and sets the debug flag to true if found
 	 * 
 	 * @param args
 	 */
@@ -128,7 +127,6 @@ public class Main extends Application {
 		try {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
 			LOG = Logger.getLogger(Main.class);
-			LOG.info("=== Starting Frequent ===");
 		} catch (Exception e) {
 			LOG.fatal("Unexpected error while initializing logging", e);
 		}
@@ -249,7 +247,7 @@ public class Main extends Application {
 			while (resources.hasMoreElements()) {
 				try {
 					Manifest manifest = new Manifest(resources.nextElement().openStream());
-					if ("Frequent".equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Version")))
+					if (getTitle().equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Version")))
 						// check that this is your manifest and do what you need
 						// or get the next one
 						return manifest.getMainAttributes().getValue(key);
