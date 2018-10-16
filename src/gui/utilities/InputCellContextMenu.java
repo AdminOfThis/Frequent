@@ -13,6 +13,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -81,6 +82,7 @@ public abstract class InputCellContextMenu extends ContextMenu {
 				hide();
 			}
 		});
+		this.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> hide());
 	}
 
 	public static String toRGBCode(Color color) {
