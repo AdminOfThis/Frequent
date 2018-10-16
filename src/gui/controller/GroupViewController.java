@@ -109,82 +109,7 @@ public class GroupViewController implements Initializable, PausableView {
 			}
 			ArrayList<Group> groupList = ASIOController.getInstance().getGroupList();
 			for (Group g : groupList) {
-				// groups
-				// if (g.getColor() == null || g.getColor().isEmpty()) {
-				g.setColor(MainController.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1,
-				        groupList.size() + 1));
-				// }
-				VuMeter groupMeter = new VuMeter(g, Orientation.VERTICAL);
-				groupMeter.setParentPausable(this);
-				groupMeter.setMinWidth(40.0);
-				vuPane.getChildren().add(groupMeter);
-				HBox.setHgrow(groupMeter, Priority.ALWAYS);
-				// individual channels
-				HBox groupBox = new HBox();
-				groupBox.setSpacing(5.0);
-				ScrollPane scroll = new ScrollPane(groupBox);
-				scroll.setFitToHeight(true);
-				scroll.setFitToWidth(true);
-				groupPane.getItems().add(scroll);
-				SplitPane.setResizableWithParent(scroll, false);
-				for (Channel c : g.getChannelList()) {
-					VuMeter channelMeter = new VuMeter(c, Orientation.VERTICAL);
-					channelMeter.setParentPausable(this);
-					channelMeter.setMinWidth(40.0);
-					VBox.setVgrow(channelMeter, Priority.ALWAYS);
-					groupBox.getChildren().add(channelMeter);
-					HBox.setHgrow(channelMeter, Priority.ALWAYS);
-				}
-				// adding chart series
-				if (redrawChart) {
-					Series<Number, Number> series = new Series<>();
-					series.setName(g.getName());
-					chart.getData().add(series);
-					Legend legend = (Legend) chart.lookup(".chart-legend");
-					for (LegendItem i : legend.getItems()) {
-						if (i.getText().equals(g.getName())) {
-							if (g.getColor() == null) {
-								i.setSymbol(new Rectangle(10, 4));
-								i.getSymbol().setStyle("-fx-fill: -fx-accent");
-							} else {
-								i.setSymbol(new Rectangle(10, 4, Color.web(g.getColor())));
-							}
-						}
-					}
-					NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-					// adding listener to group for chart
-					g.addListener(new InputListener() {
-
-						@Override
-						public void levelChanged(double level) {
-							Platform.runLater(() -> {
-								if (!series.getNode().getStyle().equals("-fx-stroke: " + g.getColor())) {
-									String color = g.getColor();
-									if (color == null) {
-										color = "-fx-accent";
-									}
-									series.getNode().setStyle("-fx-stroke: " + color);
-									for (LegendItem i : legend.getItems()) {
-										if (i.getText().equals(g.getName())) {
-											i.setSymbol(new Rectangle(10, 4));
-											i.getSymbol().setStyle("-fx-fill: " + color);
-										}
-									}
-								}
-								double leveldB = Channel.percentToDB(level);
-								leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
-								long time = System.currentTimeMillis();
-								series.getData().add(new Data<Number, Number>(time, leveldB));
-								// removing old data
-								while (series.getData().size() > 500) {
-									series.getData().remove(0);
-								}
-								xAxis.setUpperBound(time + 100);
-								xAxis.setLowerBound((long) series.getData().get(0).getXValue());
-							});
-						}
-					});
-				}
+				redrawGroup(redrawChart, groupList, g);
 			}
 			// smoothing out splitPane
 			int divCount = groupPane.getDividerPositions().length;
@@ -194,6 +119,85 @@ public class GroupViewController implements Initializable, PausableView {
 				divPosValues[count - 1] = equalSize * count;
 			}
 			groupPane.setDividerPositions(divPosValues);
+		}
+	}
+
+	private void redrawGroup(boolean redrawChart, ArrayList<Group> groupList, Group g) {
+		// groups
+		// if (g.getColor() == null || g.getColor().isEmpty()) {
+		g.setColor(MainController.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1,
+		        groupList.size() + 1));
+		// }
+		VuMeter groupMeter = new VuMeter(g, Orientation.VERTICAL);
+		groupMeter.setParentPausable(this);
+		groupMeter.setMinWidth(40.0);
+		vuPane.getChildren().add(groupMeter);
+		HBox.setHgrow(groupMeter, Priority.ALWAYS);
+		// individual channels
+		HBox groupBox = new HBox();
+		groupBox.setSpacing(5.0);
+		ScrollPane scroll = new ScrollPane(groupBox);
+		scroll.setFitToHeight(true);
+		scroll.setFitToWidth(true);
+		groupPane.getItems().add(scroll);
+		SplitPane.setResizableWithParent(scroll, false);
+		for (Channel c : g.getChannelList()) {
+			VuMeter channelMeter = new VuMeter(c, Orientation.VERTICAL);
+			channelMeter.setParentPausable(this);
+			channelMeter.setMinWidth(40.0);
+			VBox.setVgrow(channelMeter, Priority.ALWAYS);
+			groupBox.getChildren().add(channelMeter);
+			HBox.setHgrow(channelMeter, Priority.ALWAYS);
+		}
+		// adding chart series
+		if (redrawChart) {
+			Series<Number, Number> series = new Series<>();
+			series.setName(g.getName());
+			chart.getData().add(series);
+			Legend legend = (Legend) chart.lookup(".chart-legend");
+			for (LegendItem i : legend.getItems()) {
+				if (i.getText().equals(g.getName())) {
+					if (g.getColor() == null) {
+						i.setSymbol(new Rectangle(10, 4));
+						i.getSymbol().setStyle("-fx-fill: -fx-accent");
+					} else {
+						i.setSymbol(new Rectangle(10, 4, Color.web(g.getColor())));
+					}
+				}
+			}
+			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+			// adding listener to group for chart
+			g.addListener(new InputListener() {
+
+				@Override
+				public void levelChanged(double level) {
+					Platform.runLater(() -> {
+						if (!series.getNode().getStyle().equals("-fx-stroke: " + g.getColor())) {
+							String color = g.getColor();
+							if (color == null) {
+								color = "-fx-accent";
+							}
+							series.getNode().setStyle("-fx-stroke: " + color);
+							for (LegendItem i : legend.getItems()) {
+								if (i.getText().equals(g.getName())) {
+									i.setSymbol(new Rectangle(10, 4));
+									i.getSymbol().setStyle("-fx-fill: " + color);
+								}
+							}
+						}
+						double leveldB = Channel.percentToDB(level);
+						leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
+						long time = System.currentTimeMillis();
+						series.getData().add(new Data<Number, Number>(time, leveldB));
+						// removing old data
+						while (series.getData().size() > 500) {
+							series.getData().remove(0);
+						}
+						xAxis.setUpperBound(time + 100);
+						xAxis.setLowerBound((long) series.getData().get(0).getXValue());
+					});
+				}
+			});
 		}
 	}
 

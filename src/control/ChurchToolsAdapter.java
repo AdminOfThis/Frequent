@@ -3,6 +3,7 @@ package control;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.URL;
@@ -23,7 +24,7 @@ import data.Channel;
 import data.Cue;
 import data.FileIO;
 
-public class ChurchToolsAdapter {
+public final class ChurchToolsAdapter {
 
 	private static final String							PREFERENCES_LOGIN_KEY	= "login.user";
 	private static final Logger							LOG						= Logger.getLogger(ChurchToolsAdapter.class);
@@ -98,7 +99,7 @@ public class ChurchToolsAdapter {
 		return res;
 	}
 
-	private int loadTime(int agendaId, int songID) throws Exception {
+	private int loadTime(int agendaId, int songID) throws UnsupportedEncodingException{
 		String allData = getData("GET", "churchservice/ajax",
 			"func=" + URLEncoder.encode("loadAgendaItems", "UTF-8") + "&" + "agenda_id=" + URLEncoder.encode(agendaId + "", "UTF-8"));
 		JSONObject json = new JSONObject(allData);
@@ -151,7 +152,7 @@ public class ChurchToolsAdapter {
 		return cue;
 	}
 
-	private String loadSongName(int songId) throws Exception {
+	private String loadSongName(int songId) throws UnsupportedEncodingException {
 		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("getAllSongs", "UTF-8"));
 		try {
 			JSONObject json = new JSONObject(allData);
@@ -180,9 +181,10 @@ public class ChurchToolsAdapter {
 	 * 
 	 * @param agendaId
 	 * @return
+	 * @throws UnsupportedEncodingException 
 	 * @throws Exception
 	 */
-	private ArrayList<Cue> loadSongs(int agendaId) throws Exception {
+	private ArrayList<Cue> loadSongs(int agendaId) throws UnsupportedEncodingException  {
 		ArrayList<Cue> res = new ArrayList<>();
 		TreeMap<Integer, Cue> map = new TreeMap<>();
 		String allData = getData("GET", "churchservice/ajax",

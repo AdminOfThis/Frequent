@@ -6,7 +6,7 @@ import java.util.List;
 import data.Cue;
 import data.FileIO;
 
-public class TimeKeeper implements DataHolder<Cue> {
+public final class TimeKeeper implements DataHolder<Cue> {
 
 	private static final String					DEFAULT_CUE_NAME	= "Song #";
 	private static TimeKeeper					instance;
