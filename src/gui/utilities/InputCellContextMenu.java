@@ -33,7 +33,12 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		if (input != null) {
 			// NAME
 			name.setOnAction(e -> {
-				TextInputDialog dialog = new TextInputDialog();
+				TextInputDialog dialog;
+				if (input == null) {
+					dialog = new TextInputDialog();
+				} else {
+					dialog = new TextInputDialog(input.getName());
+				}
 				Optional<String> result = dialog.showAndWait();
 				if (result.isPresent()) {
 					input.setName(result.get());
