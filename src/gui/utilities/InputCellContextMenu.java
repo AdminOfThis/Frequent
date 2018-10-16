@@ -4,9 +4,6 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
-import control.ASIOController;
-import data.Channel;
-import data.Group;
 import data.Input;
 import gui.controller.MainController;
 import javafx.scene.control.ContextMenu;
@@ -59,10 +56,10 @@ public abstract class InputCellContextMenu extends ContextMenu {
 					MainController.getInstance().refresh();
 				});
 			}
-			
+
 			getItems().add(name);
 			getItems().add(colorMenu);
-			
+
 		}
 		this.focusedProperty().addListener((obs, o, n) -> {
 			if (!n) {
