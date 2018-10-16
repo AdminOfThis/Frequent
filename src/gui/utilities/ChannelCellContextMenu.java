@@ -1,6 +1,5 @@
 package gui.utilities;
 
-
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
@@ -8,7 +7,6 @@ import org.apache.log4j.Logger;
 import control.ASIOController;
 import data.Channel;
 import data.Group;
-import data.Input;
 import gui.controller.MainController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

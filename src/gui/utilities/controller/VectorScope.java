@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 
 import control.ChannelListener;
 import data.Channel;
-import data.Input;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
@@ -37,7 +36,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	private static final String				FXML			= "/gui/utilities/gui/VectorScope.fxml";
 	// GUI
 	private static final int				MAX_DATA_POINTS	= 200;
-	private static final int				DOTS_PER_BUFFER	= 500;
+//	private static final int				DOTS_PER_BUFFER	= 500;
 	@FXML
 	private HBox							chartParent;
 	@FXML
@@ -223,12 +222,12 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				}
 				percent = 1 - Math.abs((percent + 1) / 2.0);
 				d.getNode().setStyle("-fx-background-color: "
-					+ FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
+				        + FXMLUtil.toRGBCode(FXMLUtil.colorFade(Color.web(Main.getAccentColor()), Color.RED, percent)));
 			}
 		} // removing old data points
 		if (vectorSeries.getData().size() > (MAX_DATA_POINTS * decay)) {
 			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0,
-				(int) Math.round(vectorSeries.getData().size() - (MAX_DATA_POINTS * decay)));
+			        (int) Math.round(vectorSeries.getData().size() - (MAX_DATA_POINTS * decay)));
 			vectorSeries.getData().removeAll(removeList);
 		}
 	}
