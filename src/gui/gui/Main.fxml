@@ -192,7 +192,7 @@
             <Insets />
          </BorderPane.margin>
          <children>
-            <BorderPane fx:id="sub" styleClass="transparent">
+            <BorderPane styleClass="transparent">
                <center>
                   <SplitPane fx:id="contentPane" onDragDropped="#dragDropped" onDragOver="#dragOver" styleClass="transparent">
                      <BorderPane.margin>

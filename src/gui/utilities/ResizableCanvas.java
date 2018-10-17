@@ -28,7 +28,7 @@ import main.Main;
 public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	private static final Logger	LOG			= Logger.getLogger(ResizableCanvas.class);
-	int							count		= 0;
+	private int					count		= 0;
 	private static final int	POINTS		= 1024;
 	private boolean				autoscroll	= true;
 	private String				accent		= "#FF0000";
@@ -104,11 +104,11 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 				}
 				level = Math.abs(level);
 				double percent = (Math.abs(RTAViewController.FFT_MIN) - level) / Math.abs(RTAViewController.FFT_MIN);
-// double percent = map[1][pointCount] / 10.0;
-// if (percent < 0 || percent > 1) {
-// System.out.println(percent);
-// }
-// System.out.println(percent);
+				// double percent = map[1][pointCount] / 10.0;
+				// if (percent < 0 || percent > 1) {
+				// System.out.println(percent);
+				// }
+				// System.out.println(percent);
 				content.setFill(FXMLUtil.colorFade(Color.web(accent), Color.RED, percent));
 				double startPoint = getWidth() / 2000.0 * map[0][pointCount];
 				// System.out.println(startPoint);
@@ -137,7 +137,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 		final Task<Boolean> task = new Task<Boolean>() {
 
 			@Override
-			public Boolean call() throws Exception {
+			public Boolean call() {
 				MainController.getInstance().setStatus("Exporting RTA");
 				try {
 					ResizableCanvas canvas = recreateCanvas();
@@ -148,16 +148,13 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 							WritableImage image = canvas.snapshot(params, null);
 							RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
 							ImageIO.write(renderedImage, "png", file);
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							LOG.warn("Unable to export image", e);
-						}
-						finally {
+						} finally {
 							MainController.getInstance().resetStatus();
 						}
 					});
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					LOG.warn("Unable to export image", ex);
 					MainController.getInstance().resetStatus();
 				}
@@ -186,7 +183,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			if (!pause) {
 				reset();
 				RTAIO.deleteFile();
-			} else {}
+			}
 		}
 	}
 
