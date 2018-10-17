@@ -28,7 +28,7 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 
 	private static final Logger	LOG			= Logger.getLogger(ChannelCell.class);
 	private static final String	FXML_PATH	= "/gui/utilities/gui/ChannelCell.fxml";
-	private static final int	COLORS		= 8;
+	// private static final int COLORS = 8;
 	@FXML
 	private AnchorPane			chartPane;
 	@FXML
@@ -72,24 +72,25 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 		});
 	}
 
-// private EventHandler<ActionEvent> newGroup = new EventHandler<ActionEvent>() {
-//
-// @Override
-// public void handle(ActionEvent event) {
-// TextInputDialog newGroupDialog = new TextInputDialog();
-// Optional<String> result = newGroupDialog.showAndWait();
-// if (result.isPresent()) {
-// Group g = new Group(result.get());
-// LOG.info("Created new group: " + g.getName());
-// ASIOController.getInstance().addGroup(g);
-// Input in = ChannelCell.this.getItem();
-// if (in != null && in instanceof Channel) {
-// g.addChannel((Channel) in);
-// }
-// MainController.getInstance().refresh();
-// }
-// }
-// };
+	// private EventHandler<ActionEvent> newGroup = new
+	// EventHandler<ActionEvent>() {
+	//
+	// @Override
+	// public void handle(ActionEvent event) {
+	// TextInputDialog newGroupDialog = new TextInputDialog();
+	// Optional<String> result = newGroupDialog.showAndWait();
+	// if (result.isPresent()) {
+	// Group g = new Group(result.get());
+	// LOG.info("Created new group: " + g.getName());
+	// ASIOController.getInstance().addGroup(g);
+	// Input in = ChannelCell.this.getItem();
+	// if (in != null && in instanceof Channel) {
+	// g.addChannel((Channel) in);
+	// }
+	// MainController.getInstance().refresh();
+	// }
+	// }
+	// };
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initVuMeter();
