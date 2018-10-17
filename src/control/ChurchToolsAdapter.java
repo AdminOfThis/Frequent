@@ -230,7 +230,7 @@ public final class ChurchToolsAdapter {
 		return res;
 	}
 
-	private int loadAgendaId(int eventId) throws Exception {
+	private int loadAgendaId(int eventId) throws UnsupportedEncodingException  {
 		String allData = getData("GET", "churchservice/ajax",
 			"func=" + URLEncoder.encode("loadAgendaForEvent", "UTF-8") + "&" + "event_id=" + URLEncoder.encode(eventId + "", "UTF-8"));
 		JSONObject json = new JSONObject(allData);
@@ -238,7 +238,7 @@ public final class ChurchToolsAdapter {
 		return data.getInt("id");
 	}
 
-	private int loadEventID() throws Exception {
+	private int loadEventID() throws UnsupportedEncodingException {
 		String allData = getData("GET", "churchservice/ajax", "func=" + URLEncoder.encode("getAllEventData", "UTF-8"));
 		int eventId = -1;
 		GregorianCalendar time = new GregorianCalendar();
@@ -302,13 +302,13 @@ public final class ChurchToolsAdapter {
 		}
 	}
 
-	private boolean logIn(String user, String password) throws Exception {
+	private boolean logIn(String user, String password) throws UnsupportedEncodingException {
 		String paramsLogin = "email=" + URLEncoder.encode(user, "UTF-8") + "&" + "password=" + URLEncoder.encode(password, "UTF-8") + "&"
 			+ "directtool=" + URLEncoder.encode("yes", "UTF-8") + "&" + "func=" + URLEncoder.encode("login", "UTF-8");
 		String s = getData("POST", "login/ajax", paramsLogin);
 		JSONObject json = new JSONObject(s);
 		String suc = json.getString("status");
-		boolean success = suc.equals("success");
+		boolean success = "success".equals(suc);
 		if (success) {
 			LOG.info("Logged in to Churchtools");
 		}

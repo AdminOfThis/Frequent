@@ -381,6 +381,7 @@ public class TimeKeeperController implements Initializable {
 			timeKeeperLine.stop();
 			TimeKeeper.getInstance().reset();
 		}
+		e.consume();
 	}
 
 	@FXML
@@ -393,6 +394,7 @@ public class TimeKeeperController implements Initializable {
 		if (TimeKeeper.getInstance().getActiveCue().getChannelToSelect() != null) {
 			MainController.getInstance().setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
 		}
+		e.consume();
 	}
 
 	@FXML
@@ -408,6 +410,7 @@ public class TimeKeeperController implements Initializable {
 				cueTable.getSelectionModel().select(cueTable.getItems().size() - 1);
 			}
 		}
+		e.consume();
 	}
 
 	public ToggleButton getStartButton() {
@@ -458,6 +461,7 @@ public class TimeKeeperController implements Initializable {
 		if (cue != null) {
 			cue.setChannelToSelect(null);
 		}
+		e.consume();
 	}
 
 	@FXML
@@ -478,7 +482,7 @@ public class TimeKeeperController implements Initializable {
 		Task<Void> task = new Task<Void>() {
 
 			@Override
-			protected Void call() throws Exception {
+			protected Void call() {
 
 				ArrayList<Cue> cues = ChurchToolsAdapter.getInstance().loadCues();
 				if (cues != null) {
@@ -496,7 +500,7 @@ public class TimeKeeperController implements Initializable {
 			}
 		};
 		new Thread(task).start();
-
+		e.consume();
 	}
 
 	private Pair<String, String> getLoginData() {

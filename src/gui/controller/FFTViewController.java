@@ -79,6 +79,7 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 			canvas.save(file);
 			MainController.getInstance().resetStatus();
 		}
+		e.consume();
 	}
 
 	@FXML
@@ -89,6 +90,7 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 		} else {
 			tglPlay.setText("Play");
 		}
+		e.consume();
 	}
 
 	@Override

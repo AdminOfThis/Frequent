@@ -58,7 +58,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -82,8 +81,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 	@FXML
 	private AnchorPane						waveFormPane;
 	@FXML
-	private StackPane						stack;
-	@FXML
 	private HBox							buttonBox;
 	@FXML
 	private Node							bottomLabel;
@@ -97,11 +94,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 	@FXML
 	private ToggleButton					toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
 	@FXML
-	private BorderPane						root, sub;
+	private BorderPane						root;
 	@FXML
 	private SplitPane						contentPane;
-	@FXML
-	private Menu							driverMenu;
 	@FXML
 	private MenuItem						closeMenu, menuSave;
 	@FXML
@@ -109,7 +104,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	@FXML
 	private ListView<Input>					channelList;
 	@FXML
-	private CheckMenuItem					menuShowCue, menuShowChannels, menuStartFFT, menuShowTuner;
+	private CheckMenuItem					menuShowCue, menuShowChannels, menuStartFFT;
 	@FXML
 	private Label							lblDriver, lblLatency, lblCurrentSong, lblNextSong;
 	@FXML
@@ -399,6 +394,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showOpenDialog(root.getScene().getWindow());
 		FileIO.open(result);
+		e.consume();
 	}
 
 	@FXML
@@ -414,6 +410,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 			FileIO.save(new ArrayList<Serializable>(TimeKeeper.getInstance().getData()), result);
 		}
 		resetStatus();
+		e.consume();
 	}
 
 	@FXML
@@ -429,6 +426,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 			FileIO.save(new ArrayList<>(ASIOController.getInstance().getData()), result);
 		}
 		resetStatus();
+		e.consume();
 	}
 
 	@FXML
@@ -441,6 +439,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 			result = saveAs(e);
 		}
 		resetStatus();
+		e.consume();
 		return result;
 	}
 
@@ -452,9 +451,11 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
-		if (result != null) {
-			if (timeKeeperController != null) { return FileIO.save(result); }
+		if (result != null && timeKeeperController != null) {
+			return FileIO.save(result);
 		}
+
+		e.consume();
 		return false;
 	}
 
@@ -495,6 +496,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 			}
 			refresh();
 		}
+		e.consume();
 	}
 
 	public void refresh() {
@@ -513,6 +515,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 			((Channel) channel).resetName();
 			refresh();
 		}
+		e.consume();
 	}
 
 	private void initDrumMonitor() {
@@ -613,8 +616,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 				}
 			}
 			refresh();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Error while hiding items");
 			LOG.debug("", e);
 		}
@@ -634,8 +636,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 				}
 			}
 			refresh();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Error while grouping items");
 			LOG.debug("", e);
 		}
@@ -670,8 +671,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		try {
 			DialogPane dialogPane = alert.getDialogPane();
 			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to style dialog");
 			LOG.debug("", e);
 		}
@@ -686,7 +686,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 		alert.getButtonTypes().add(ButtonType.CANCEL);
 		alert.getButtonTypes().add(ButtonType.OK);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent()) { return result.get(); }
+		if (result.isPresent()) {
+			return result.get();
+		}
 		return ButtonType.CANCEL;
 	}
 
