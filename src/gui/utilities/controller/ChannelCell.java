@@ -15,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
@@ -34,7 +35,6 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	@FXML
 	private Label				lblNumber;
 	private Input				input;
-	private VuMeter				meter;
 
 	public ChannelCell() {
 		super();
@@ -72,38 +72,8 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 		});
 	}
 
-	// private EventHandler<ActionEvent> newGroup = new
-	// EventHandler<ActionEvent>() {
-	//
-	// @Override
-	// public void handle(ActionEvent event) {
-	// TextInputDialog newGroupDialog = new TextInputDialog();
-	// Optional<String> result = newGroupDialog.showAndWait();
-	// if (result.isPresent()) {
-	// Group g = new Group(result.get());
-	// LOG.info("Created new group: " + g.getName());
-	// ASIOController.getInstance().addGroup(g);
-	// Input in = ChannelCell.this.getItem();
-	// if (in != null && in instanceof Channel) {
-	// g.addChannel((Channel) in);
-	// }
-	// MainController.getInstance().refresh();
-	// }
-	// }
-	// };
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		initVuMeter();
-	}
-
-	private void initVuMeter() {
-		meter = new VuMeter(null, Orientation.HORIZONTAL);
-		// meter.setRotate(90.0);
-		chartPane.getChildren().add(meter);
-		AnchorPane.setTopAnchor(meter, 0.0);
-		AnchorPane.setBottomAnchor(meter, 0.0);
-		AnchorPane.setLeftAnchor(meter, 0.0);
-		AnchorPane.setRightAnchor(meter, 0.0);
 	}
 
 	@Override
@@ -127,7 +97,7 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	}
 
 	private void update(Input item) {
-		meter.setChannel(item);
+		Node meter = new VuMeter(input, Orientation.HORIZONTAL);
 		lblNumber.setText("");
 		if (item == null || item.getColor() == null) {
 			this.setStyle("");
@@ -135,13 +105,21 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 			this.setStyle("-fx-accent: " + item.getColor());
 		}
 		if (item == null) {
-			meter.setTitle(null);
 		} else {
-			meter.setTitle(item.getName());
 			if (item instanceof Channel) {
-				lblNumber.setText(Integer.toString(((Channel) item).getChannel().getChannelIndex()));
+				Channel channel = (Channel) item;
+				lblNumber.setText(Integer.toString(channel.getChannel().getChannelIndex()));
+				if (channel.getStereoChannel() != null) {
+					meter = new VuMeterStereo(channel, channel.getStereoChannel(), Orientation.HORIZONTAL);
+				}
 			}
 		}
+		chartPane.getChildren().clear();
+		chartPane.getChildren().add(meter);
+		AnchorPane.setTopAnchor(meter, 0.0);
+		AnchorPane.setBottomAnchor(meter, 0.0);
+		AnchorPane.setLeftAnchor(meter, 0.0);
+		AnchorPane.setRightAnchor(meter, 0.0);
 	}
 
 	public static String toRGBCode(Color color) {
