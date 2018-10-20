@@ -48,7 +48,7 @@ public abstract class Input implements Serializable {
 		return level;
 	}
 
-	protected synchronized List<InputListener> getListeners() {
+	protected List<InputListener> getListeners() {
 		return listeners;
 	}
 
