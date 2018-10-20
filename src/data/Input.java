@@ -23,15 +23,7 @@ public abstract class Input implements Serializable {
 		listeners = Collections.synchronizedList(new ArrayList<>());
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void addListener(InputListener obs) {
+	public void addListener(final InputListener obs) {
 		if (!listeners.contains(obs)) {
 			synchronized (listeners) {
 				listeners.add(obs);
@@ -39,10 +31,29 @@ public abstract class Input implements Serializable {
 		}
 	}
 
-	public void removeListener(InputListener obs) {
-		synchronized (listeners) {
-			listeners.remove(obs);
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj instanceof Input) {
+			Input other = (Input) obj;
+			return Objects.equals(getName(), other.getName());
 		}
+		return false;
+	}
+
+	public String getColor() {
+		return hexColor;
+	}
+
+	public float getLevel() {
+		return level;
+	}
+
+	protected synchronized List<InputListener> getListeners() {
+		return listeners;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	protected void notifyListeners() {
@@ -54,8 +65,7 @@ public abstract class Input implements Serializable {
 				// public void run() {
 				try {
 					obs.levelChanged(level);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOG.warn("Unable to notify Level Listener", e);
 					LOG.debug("", e);
 				}
@@ -65,17 +75,10 @@ public abstract class Input implements Serializable {
 		}
 	}
 
-	protected List<InputListener> getListeners() {
-		return listeners;
-	}
-
-	public float getLevel() {
-		return level;
-	}
-
-	public void setLevel(float level) {
-		this.level = level;
-		notifyListeners();
+	public void removeListener(final InputListener obs) {
+		synchronized (listeners) {
+			listeners.remove(obs);
+		}
 	}
 
 	public boolean setColor(final String colorIn) {
@@ -93,23 +96,18 @@ public abstract class Input implements Serializable {
 					c.setColor(hexColor);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 		return true;
 	}
 
-	public String getColor() {
-		return hexColor;
+	public void setLevel(final float level) {
+		this.level = level;
+		notifyListeners();
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Input) {
-			Input other = (Input) obj;
-			return (Objects.equals(this.getName(), other.getName()));
-		}
-		return false;
+	public void setName(final String name) {
+		this.name = name;
 	}
 }
