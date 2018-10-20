@@ -34,25 +34,58 @@ public abstract class FileIO {
 	private static List<DataHolder<? extends Serializable>>	holderList		= new ArrayList<>();
 	private static Properties								properties;
 
-	public static void registerSaveData(DataHolder<? extends Serializable> holder) {
-		if (!holderList.contains(holder)) {
-			holderList.add(holder);
+	private static List<Serializable> collectData() {
+		ArrayList<Serializable> result = new ArrayList<>();
+		for (DataHolder<? extends Serializable> h : holderList) {
+			result.addAll(h.getData());
 		}
+		return result;
 	}
 
-	public static void writeProperties(String key, String value) {
-		if (properties == null) {
-			loadProperties();
-		}
-		properties.put(key, value);
-		saveProperties();
+	public static File getCurrentDir() {
+		return currentDir;
 	}
 
-	public static String readPropertiesString(String key, String defaultValue) {
-		if (properties == null) {
-			loadProperties();
+	public static File getCurrentFile() {
+		return currentFile;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static void handleResult(final List<Serializable> result) {
+		ArrayList<Group> groupList = new ArrayList<>();
+		HashMap<Class, Integer> counterMap = new HashMap<>();
+		for (Object o : result) {
+			try {
+				if (counterMap.get(o.getClass()) == null) {
+					counterMap.put(o.getClass(), 0);
+				}
+				counterMap.put(o.getClass(), counterMap.get(o.getClass()) + 1);
+				// finding right controller
+				DataHolder holder = null;
+				if (o instanceof Cue) {
+					holder = TimeKeeper.getInstance();
+				} else if (o instanceof Channel) {
+					holder = ASIOController.getInstance();
+				} else if (o instanceof Group) {
+					groupList.add((Group) o);
+				}
+				// adding
+				if (holder != null) {
+					holder.add(o);
+				}
+			} catch (Exception e) {
+				LOG.warn("Problem loading object", e);
+			}
 		}
-		return properties.getProperty(key, defaultValue);
+		for (Group g : groupList) {
+			if (ASIOController.getInstance() != null) {
+				ASIOController.getInstance().add(g);
+			}
+		}
+		LOG.info("= Loading statistics: ");
+		for (Entry<Class, Integer> o : counterMap.entrySet()) {
+			LOG.info("    " + o.getKey().getSimpleName() + ": " + o.getValue());
+		}
 	}
 
 	public static Properties loadProperties() {
@@ -71,18 +104,7 @@ public abstract class FileIO {
 		return properties;
 	}
 
-	private static boolean saveProperties() {
-		try {
-			properties.store(new FileOutputStream(new File(PROPERTIES_FILE)), "");
-		} catch (Exception e) {
-			LOG.warn("Unable to save preferences");
-			LOG.debug("", e);
-			return false;
-		}
-		return true;
-	}
-
-	public static boolean open(File file) {
+	public static boolean open(final File file) {
 		if (file != null) {
 			if (!file.getName().endsWith(ENDING)) {
 				LOG.warn("Unable to load file " + file.getName());
@@ -107,40 +129,6 @@ public abstract class FileIO {
 			}
 		}
 		return false;
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static void handleResult(List<Serializable> result) {
-		ArrayList<Group> groupList = new ArrayList<>();
-		HashMap<Class, Integer> counterMap = new HashMap<>();
-		for (Object o : result) {
-			if (counterMap.get(o.getClass()) == null) {
-				counterMap.put(o.getClass(), 0);
-			}
-			counterMap.put(o.getClass(), counterMap.get(o.getClass()) + 1);
-			// finding right controller
-			DataHolder holder = null;
-			if (o instanceof Cue) {
-				holder = TimeKeeper.getInstance();
-			} else if (o instanceof Channel) {
-				holder = ASIOController.getInstance();
-			} else if (o instanceof Group) {
-				groupList.add((Group) o);
-			}
-			// adding
-			if (holder != null) {
-				holder.add(o);
-			}
-		}
-		for (Group g : groupList) {
-			if (ASIOController.getInstance() != null) {
-				ASIOController.getInstance().add(g);
-			}
-		}
-		LOG.info("= Loading statistics: ");
-		for (Entry<Class, Integer> o : counterMap.entrySet()) {
-			LOG.info("    " + o.getKey().getSimpleName() + ": " + o.getValue());
-		}
 	}
 
 	private static List<Serializable> openFile(final File file) {
@@ -176,43 +164,24 @@ public abstract class FileIO {
 		return result;
 	}
 
-	public static File getCurrentDir() {
-		return currentDir;
-	}
-
-	public static File getCurrentFile() {
-		return currentFile;
-	}
-
-	private static List<Serializable> collectData() {
-		ArrayList<Serializable> result = new ArrayList<>();
-		for (DataHolder<? extends Serializable> h : holderList) {
-			result.addAll(h.getData());
+	public static String readPropertiesString(final String key, final String defaultValue) {
+		if (properties == null) {
+			loadProperties();
 		}
-		return result;
+		return properties.getProperty(key, defaultValue);
 	}
 
-	public static boolean unsavedChanges() {
-		List<Serializable> newResult = collectData();
-		if (!newResult.isEmpty()) {
-			if (currentFile == null || !currentFile.exists()) {
-				LOG.info("Program has not yet saved");
-				return true;
-			}
-			List<Serializable> saveFile = openFile(currentFile);
-			if (!newResult.equals(saveFile)) {
-				LOG.info("Program has unsaved changes");
-				return true;
-			}
+	public static void registerSaveData(final DataHolder<? extends Serializable> holder) {
+		if (!holderList.contains(holder)) {
+			holderList.add(holder);
 		}
-		return false;
 	}
 
-	public static boolean save(File file) {
+	public static boolean save(final File file) {
 		return save(collectData(), file);
 	}
 
-	public static boolean save(List<Serializable> objects, File file) {
+	public static boolean save(final List<Serializable> objects, final File file) {
 		LOG.info("Saving " + objects.size() + " object(s) to " + file.getPath());
 		currentDir = file.getParentFile();
 		currentFile = file;
@@ -242,8 +211,43 @@ public abstract class FileIO {
 		return result;
 	}
 
-	public static void setCurrentDir(File file) {
+	private static boolean saveProperties() {
+		try {
+			properties.store(new FileOutputStream(new File(PROPERTIES_FILE)), "");
+		} catch (Exception e) {
+			LOG.warn("Unable to save preferences");
+			LOG.debug("", e);
+			return false;
+		}
+		return true;
+	}
+
+	public static void setCurrentDir(final File file) {
 		currentDir = file;
+	}
+
+	public static boolean unsavedChanges() {
+		List<Serializable> newResult = collectData();
+		if (!newResult.isEmpty()) {
+			if (currentFile == null || !currentFile.exists()) {
+				LOG.info("Program has not yet saved");
+				return true;
+			}
+			List<Serializable> saveFile = openFile(currentFile);
+			if (!newResult.equals(saveFile)) {
+				LOG.info("Program has unsaved changes");
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static void writeProperties(final String key, final String value) {
+		if (properties == null) {
+			loadProperties();
+		}
+		properties.put(key, value);
+		saveProperties();
 	}
 
 }

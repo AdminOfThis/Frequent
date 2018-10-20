@@ -30,7 +30,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -67,78 +66,240 @@ import main.Main;
 
 public class MainController implements Initializable, Pausable, CueListener {
 
-	private static final String				FFT_PATH			= "/gui/gui/RTAView.fxml";
-	private static final String				RTA_PATH			= "/gui/gui/FFTView.fxml";
-	private static final String				TIMEKEEPER_PATH		= "/gui/gui/TimeKeeper.fxml";
-	private static final String				GROUP_PATH			= "/gui/gui/GroupView.fxml";
+	private static final String				FFT_PATH		= "/gui/gui/RTAView.fxml";
+	private static final String				RTA_PATH		= "/gui/gui/FFTView.fxml";
+	private static final String				TIMEKEEPER_PATH	= "/gui/gui/TimeKeeper.fxml";
+	private static final String				GROUP_PATH		= "/gui/gui/GroupView.fxml";
 	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
-	private static final String				DRUM_PATH			= "/gui/gui/DrumView.fxml";
-	private static final String				PHASE_PATH			= "/gui/gui/VectorScopeView.fxml";
-	private static final Logger				LOG					= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File",
+	private static final String				DRUM_PATH		= "/gui/gui/DrumView.fxml";
+	private static final String				PHASE_PATH		= "/gui/gui/VectorScopeView.fxml";
+	private static final Logger				LOG				= Logger.getLogger(MainController.class);
+	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.getOnlyTitle() + " File",
 	        "*" + FileIO.ENDING);
 	private static MainController			instance;
-	@FXML
-	private AnchorPane						waveFormPane;
-	@FXML
-	private HBox							buttonBox;
-	@FXML
-	private Node							bottomLabel;
-	/**
-	 * Buttons for cues, get mapped with content to contentMap
-	 */
-	@FXML
-	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView,
-	        togglePhaseView;
-	@FXML
-	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView;
-	@FXML
-	private ToggleButton					toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
-	@FXML
-	private BorderPane						root;
-	@FXML
-	private SplitPane						contentPane;
-	@FXML
-	private MenuItem						closeMenu, menuSave;
-	@FXML
-	private MenuItem						menuTimerStart, menuTimerNext;
-	@FXML
-	private ListView<Input>					channelList;
-	@FXML
-	private CheckMenuItem					menuShowCue, menuShowChannels, menuStartFFT;
-	@FXML
-	private Label							lblDriver, lblLatency, lblCurrentSong, lblNextSong;
-	@FXML
-	private SplitPane						channelPane;
-	@FXML
-	private Label							lblStatus;
-	@FXML
-	private ProgressBar						progStatus;
-	private boolean							showHidden			= false;
-	private boolean							pause				= false;
-	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
-	private HashMap<Node, PausableView>		controllerMap		= new HashMap<>();
-	private double							channelSplitRatio	= 0.8;
-	private ASIOController					controller;
-	private TimeKeeperController			timeKeeperController;
-	// private DrumController drumController;
-	private WaveFormChart					waveFormController;
+
+	public static String deriveColor(final String baseColor, final int index, final int total) {
+		String result = baseColor;
+		Color color = Color.web(baseColor);
+		double value = (double) index / (double) total;
+		color = color.deriveColor(1, 1, value, 1);
+		result = FXMLUtil.toRGBCode(color);
+		return result;
+	}
 
 	public static MainController getInstance() {
 		return instance;
 	}
 
-	public void setTitle(String title) {
-		Stage stage = (Stage) channelList.getScene().getWindow();
-		String finalTitle = Main.getTitle();
-		if (title != null && !title.isEmpty()) {
-			finalTitle += " - " + title;
-		}
-		stage.setTitle(finalTitle);
+	@FXML
+	private AnchorPane					waveFormPane;
+	@FXML
+	private HBox						buttonBox;
+	@FXML
+	private Node						bottomLabel;
+	/**
+	 * Buttons for cues, get mapped with content to contentMap
+	 */
+	@FXML
+	private ToggleButton				toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView;
+	@FXML
+	private CheckMenuItem				menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView;
+	@FXML
+	private ToggleButton				toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
+	@FXML
+	private BorderPane					root;
+	@FXML
+	private SplitPane					contentPane;
+	@FXML
+	private MenuItem					closeMenu, menuSave;
+	@FXML
+	private MenuItem					menuTimerStart, menuTimerNext;
+	@FXML
+	private ListView<Input>				channelList;
+	@FXML
+	private CheckMenuItem				menuShowCue, menuShowChannels, menuStartFFT;
+	@FXML
+	private Label						lblDriver, lblLatency, lblCurrentSong, lblNextSong;
+	@FXML
+	private SplitPane					channelPane;
+	@FXML
+	private Label						lblStatus;
+	@FXML
+	private ProgressBar					progStatus;
+	private boolean						showHidden			= false;
+	private boolean						pause				= false;
+	private HashMap<ToggleButton, Node>	contentMap			= new HashMap<>();
+	private HashMap<Node, PausableView>	controllerMap		= new HashMap<>();
+	private double						channelSplitRatio	= 0.8;
+	private ASIOController				controller;
+
+	private TimeKeeperController		timeKeeperController;
+
+	// private DrumController drumController;
+	private WaveFormChart waveFormController;
+
+	private void bindCheckMenuToToggleButton(final CheckMenuItem menu, final ToggleButton button) {
+		menu.setOnAction(e -> button.fire());
+		button.selectedProperty().addListener((obs, oldVal, newVal) -> {
+			menu.setSelected(newVal);
+		});
 	}
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public void currentCue(final Cue cue, final Cue next) {
+		Platform.runLater(() -> setSongs(cue, next));
+	}
+
+	@FXML
+	public void dragDropped(final DragEvent e) {
+		if (e.getDragboard().hasFiles()) {
+			setStatus("Loading file", -1);
+			for (File f : e.getDragboard().getFiles()) {
+				FileIO.open(f);
+			}
+			resetStatus();
+		}
+	}
+
+	@FXML
+	public void dragOver(final DragEvent e) {
+		if (e.getDragboard().hasFiles() && e.getDragboard().getFiles().get(0).getName().endsWith(FileIO.ENDING)) {
+			e.acceptTransferModes(TransferMode.MOVE);
+		}
+	}
+
+	public TimeKeeperController getTimeKeeperController() {
+		return timeKeeperController;
+	}
+
+	public void groupAllSelected(final Group g) {
+		try {
+			for (Input item : channelList.getSelectionModel().getSelectedItems()) {
+				if (item instanceof Channel) {
+					if (g == null) {
+						if (((Channel) item).getGroup() != null) {
+							((Channel) item).getGroup().removeChannel((Channel) item);
+						}
+					} else {
+						g.addChannel((Channel) item);
+					}
+				}
+			}
+			refresh();
+		} catch (Exception e) {
+			LOG.warn("Error while grouping items");
+			LOG.debug("", e);
+		}
+	}
+
+	/**
+	 * toggles hide for all selected items
+	 */
+	public void hideAllSelected() {
+		try {
+			Input first = channelList.getSelectionModel().getSelectedItems().get(0);
+			if (first != null && first instanceof Channel) {
+				Channel channel = (Channel) first;
+				boolean hide = !channel.isHidden();
+				for (Input item : channelList.getSelectionModel().getSelectedItems()) {
+					if (item instanceof Channel) {
+						((Channel) item).setHidden(hide);
+					}
+				}
+			}
+			refresh();
+		} catch (Exception e) {
+			LOG.warn("Error while hiding items");
+			LOG.debug("", e);
+		}
+	}
+
+	private void initChannelList() {
+		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().visibleProperty());
+		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
+		toggleChannels.selectedProperty().addListener(e -> pause(!toggleChannels.isSelected()));
+		toggleWaveForm.selectedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
+			waveFormController.pause(newValue);
+			if (newValue) {
+				if (!channelPane.getItems().contains(waveFormPane)) {
+					channelPane.getItems().add(waveFormPane);
+					channelPane.setDividerPosition(0, channelSplitRatio);
+				}
+			} else {
+				channelSplitRatio = channelPane.getDividerPositions()[0];
+				channelPane.getItems().remove(waveFormPane);
+			}
+		});
+		channelList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		channelList.setCellFactory(e -> new ChannelCell());
+		// channelList.setOnEditCommit(e ->
+		// timeKeeperController.setChannels(channelList.getItems()));
+		channelList.getSelectionModel().selectedItemProperty()
+		        .addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
+			        if (newValue != null) {
+				        if (newValue instanceof Channel) {
+					        Channel channel = (Channel) newValue;
+					        controller.setActiveChannel(channel.getChannel());
+					        // getting RTA Controller
+					        RTAViewController con = (RTAViewController) controllerMap
+					                .get(contentMap.get(toggleFFTView));
+					        con.setChannel(channel);
+					        LOG.info("Switching to channel " + channel.getName());
+				        }
+				        waveFormController.setChannel(newValue);
+			        }
+		        });
+		// Edit channel list
+		channelList.setEditable(true);
+		toggleGroupChannels.selectedProperty().addListener((obs, oldV, newV) -> {
+			if (oldV != newV) {
+				refreshInputs();
+			}
+		});
+	}
+
+	private void initChart() {
+		Parent p = FXMLUtil.loadFXML(FFT_PATH);
+		if (p != null) {
+			contentMap.put(toggleFFTView, p);
+			controllerMap.put(p, (PausableView) FXMLUtil.getController());
+		} else {
+			LOG.warn("Unable to load FFT Chart");
+		}
+	}
+
+	private void initDrumMonitor() {
+		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
+		if (p != null) {
+			contentMap.put(toggleDrumView, p);
+			controllerMap.put(p, (PausableView) FXMLUtil.getController());
+		} else {
+			LOG.warn("Unable to load FFT Chart");
+		}
+	}
+
+	private void initFullScreen() {
+		root.setOnKeyPressed(e -> {
+			if (e.getCode() == KeyCode.F11) {
+				Stage stage = (Stage) root.getScene().getWindow();
+				stage.setFullScreenExitHint("");
+				stage.setFullScreen(!stage.isFullScreen());
+			}
+		});
+	}
+
+	private void initGroups() {
+		Parent p = FXMLUtil.loadFXML(GROUP_PATH);
+		if (p != null) {
+			contentMap.put(toggleGroupsView, p);
+			controllerMap.put(p, (PausableView) FXMLUtil.getController());
+		} else {
+			LOG.warn("Unable to load FFT Chart");
+		}
+	}
+
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
 		instance = this;
 		setStatus("Loading GUI", -1);
 		root.setStyle(Main.getStyle());
@@ -167,13 +328,16 @@ public class MainController implements Initializable, Pausable, CueListener {
 		TimeKeeper.getInstance().addListener(this);
 	}
 
-	private void initGroups() {
-		Parent p = FXMLUtil.loadFXML(GROUP_PATH);
-		if (p != null) {
-			contentMap.put(toggleGroupsView, p);
-			controllerMap.put(p, (PausableView) FXMLUtil.getController());
-		} else {
-			LOG.warn("Unable to load FFT Chart");
+	public void initIO(final String ioName) {
+		controller = new ASIOController(ioName);
+		controller.addFFTListener((FFTListener) controllerMap.get(contentMap.get(toggleFFTView)));
+		controller.addFFTListener((FFTListener) controllerMap.get(contentMap.get(toggleRTAView)));
+		timeKeeperController.setChannels(controller.getInputList());
+		setChannelList(controller.getInputList());
+		lblDriver.setText(ioName);
+		lblLatency.setText(controller.getLatency() + "ms ");
+		if (channelList.getItems().size() > 0) {
+			channelList.getSelectionModel().select(0);
 		}
 	}
 
@@ -215,24 +379,32 @@ public class MainController implements Initializable, Pausable, CueListener {
 		}
 	}
 
-	private void initWaveForm() {
-		LOG.debug("Loading WaveForm");
-		waveFormController = new WaveFormChart();
-		waveFormController.setParentPausable(this);
-		waveFormPane.getChildren().add(waveFormController);
-		AnchorPane.setTopAnchor(waveFormController, .0);
-		AnchorPane.setBottomAnchor(waveFormController, .0);
-		AnchorPane.setLeftAnchor(waveFormController, .0);
-		AnchorPane.setRightAnchor(waveFormController, .0);
+	private void initMenu() {
+		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+		bindCheckMenuToToggleButton(menuSpectrumView, toggleFFTView);
+		bindCheckMenuToToggleButton(menuRTAView, toggleRTAView);
+		bindCheckMenuToToggleButton(menuGroupsView, toggleGroupsView);
+		bindCheckMenuToToggleButton(menuDrumView, toggleDrumView);
+		bindCheckMenuToToggleButton(menuPhaseView, togglePhaseView);
+		menuTimerStart.setOnAction(e -> TimeKeeperController.getInstance().toggleTimer());
+		menuTimerNext.setOnAction(e -> TimeKeeperController.getInstance().round());
+		menuTimerStart.disableProperty().bind(TimeKeeperController.getInstance().getStartButton().disabledProperty());
+		menuTimerNext.disableProperty().bind(TimeKeeperController.getInstance().getRoundButton().disabledProperty());
+		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
+		toggleChannels.selectedProperty().bindBidirectional(menuShowChannels.selectedProperty());
+		// toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
+		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
+		// Close Button
+		closeMenu.setOnAction(e -> Main.close());
 	}
 
-	private void initChart() {
-		Parent p = FXMLUtil.loadFXML(FFT_PATH);
+	private void initPhaseMonitor() {
+		Parent p = FXMLUtil.loadFXML(PHASE_PATH);
 		if (p != null) {
-			contentMap.put(toggleFFTView, p);
+			contentMap.put(togglePhaseView, p);
 			controllerMap.put(p, (PausableView) FXMLUtil.getController());
 		} else {
-			LOG.warn("Unable to load FFT Chart");
+			LOG.warn("Unable to load VectorScope");
 		}
 	}
 
@@ -262,64 +434,75 @@ public class MainController implements Initializable, Pausable, CueListener {
 		}
 	}
 
-	private void initFullScreen() {
-		root.setOnKeyPressed(e -> {
-			if (e.getCode() == KeyCode.F11) {
-				Stage stage = (Stage) root.getScene().getWindow();
-				stage.setFullScreenExitHint("");
-				stage.setFullScreen(!stage.isFullScreen());
-			}
-		});
+	private void initWaveForm() {
+		LOG.debug("Loading WaveForm");
+		waveFormController = new WaveFormChart();
+		waveFormController.setParentPausable(this);
+		waveFormPane.getChildren().add(waveFormController);
+		AnchorPane.setTopAnchor(waveFormController, .0);
+		AnchorPane.setBottomAnchor(waveFormController, .0);
+		AnchorPane.setLeftAnchor(waveFormController, .0);
+		AnchorPane.setRightAnchor(waveFormController, .0);
 	}
 
-	private void initChannelList() {
-		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().visibleProperty());
-		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
-		toggleChannels.selectedProperty().addListener(e -> pause(!toggleChannels.isSelected()));
-		toggleWaveForm.selectedProperty().addListener(new ChangeListener<Boolean>() {
+	@Override
+	public boolean isPaused() {
+		return pause;
+	}
 
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				waveFormController.pause(newValue);
-				if (newValue) {
-					if (!channelPane.getItems().contains(waveFormPane)) {
-						channelPane.getItems().add(waveFormPane);
-						channelPane.setDividerPosition(0, channelSplitRatio);
-					}
-				} else {
-					channelSplitRatio = channelPane.getDividerPositions()[0];
-					channelPane.getItems().remove(waveFormPane);
-				}
-			}
-		});
-		channelList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		channelList.setCellFactory(e -> new ChannelCell());
-		// channelList.setOnEditCommit(e ->
-		// timeKeeperController.setChannels(channelList.getItems()));
-		channelList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Input>() {
+	public boolean isShowHidden() {
+		return showHidden;
+	}
 
-			@Override
-			public void changed(ObservableValue<? extends Input> observable, Input oldValue, Input newValue) {
-				if (newValue != null) {
-					if (newValue instanceof Channel) {
-						Channel channel = (Channel) newValue;
-						controller.setActiveChannel(channel.getChannel());
-						// getting RTA Controller
-						RTAViewController con = (RTAViewController) controllerMap.get(contentMap.get(toggleFFTView));
-						con.setChannel(channel);
-						LOG.info("Switching to channel " + channel.getName());
-					}
-					waveFormController.setChannel(newValue);
-				}
+	@FXML
+	private void newGroup(final ActionEvent e) {
+		TextInputDialog dialog = new TextInputDialog("");
+		dialog.initStyle(((Stage) root.getScene().getWindow()).getStyle());
+		dialog.setTitle("New Group");
+		dialog.setHeaderText("Choose a name for the new Group");
+		dialog.setContentText("Please enter the name:");
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			if (ASIOController.getInstance() != null) {
+				ASIOController.getInstance().addGroup(new Group(result.get()));
 			}
-		});
-		// Edit channel list
-		channelList.setEditable(true);
-		toggleGroupChannels.selectedProperty().addListener((obs, oldV, newV) -> {
-			if (oldV != newV) {
-				refreshInputs();
+			refresh();
+		}
+		e.consume();
+	}
+
+	@FXML
+	private void open(final ActionEvent e) {
+		FileChooser chooser = new FileChooser();
+		chooser.setTitle("Open");
+		chooser.setInitialDirectory(FileIO.getCurrentDir());
+		chooser.getExtensionFilters().add(FILTER);
+		chooser.setSelectedExtensionFilter(FILTER);
+		File result = chooser.showOpenDialog(root.getScene().getWindow());
+		FileIO.open(result);
+		e.consume();
+	}
+
+	@Override
+	public void pause(final boolean pause) {
+		if (this.pause != pause) {
+			this.pause = pause;
+			if (pause) {
+				LOG.debug(getClass().getSimpleName() + "; pausing animations");
+			} else {
+				LOG.debug(getClass().getSimpleName() + "; playing animations");
 			}
-		});
+		}
+	}
+
+	public void refresh() {
+		if (controller != null) {
+			refreshInputs();
+		}
+		for (PausableView v : controllerMap.values()) {
+			v.refresh();
+		}
 	}
 
 	private void refreshInputs() {
@@ -338,86 +521,55 @@ public class MainController implements Initializable, Pausable, CueListener {
 					}
 				}
 			}
+			channelList.getItems().sort(Input.COMPARATOR);
 		}
-	}
-
-	private void initMenu() {
-		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-		bindCheckMenuToToggleButton(menuSpectrumView, toggleFFTView);
-		bindCheckMenuToToggleButton(menuRTAView, toggleRTAView);
-		bindCheckMenuToToggleButton(menuGroupsView, toggleGroupsView);
-		bindCheckMenuToToggleButton(menuDrumView, toggleDrumView);
-		bindCheckMenuToToggleButton(menuPhaseView, togglePhaseView);
-		menuTimerStart.setOnAction(e -> TimeKeeperController.getInstance().toggleTimer());
-		menuTimerNext.setOnAction(e -> TimeKeeperController.getInstance().round());
-		menuTimerStart.disableProperty().bind(TimeKeeperController.getInstance().getStartButton().disabledProperty());
-		menuTimerNext.disableProperty().bind(TimeKeeperController.getInstance().getRoundButton().disabledProperty());
-		toggleCue.selectedProperty().bindBidirectional(menuShowCue.selectedProperty());
-		toggleChannels.selectedProperty().bindBidirectional(menuShowChannels.selectedProperty());
-		// toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
-		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
-		// Close Button
-		closeMenu.setOnAction(e -> Main.close());
-	}
-
-	private void bindCheckMenuToToggleButton(CheckMenuItem menu, ToggleButton button) {
-		menu.setOnAction(e -> button.fire());
-		button.selectedProperty().addListener((obs, oldVal, newVal) -> {
-			menu.setSelected(newVal);
-		});
-	}
-
-	public void initIO(String ioName) {
-		controller = new ASIOController(ioName);
-		controller.addFFTListener((FFTListener) controllerMap.get(contentMap.get(toggleFFTView)));
-		controller.addFFTListener((FFTListener) controllerMap.get(contentMap.get(toggleRTAView)));
-		timeKeeperController.setChannels(controller.getInputList());
-		setChannelList(controller.getInputList());
-		lblDriver.setText(ioName);
-		lblLatency.setText(controller.getLatency() + "ms ");
-		if (channelList.getItems().size() > 0) {
-			channelList.getSelectionModel().select(0);
-		}
-	}
-
-	public void setChannelList(List<Channel> list) {
-		channelList.getItems().setAll(list);
-	}
-
-	public void setSelectedChannel(Channel channel) {
-		channelList.selectionModelProperty().get().select(channel);
 	}
 
 	@FXML
-	private void open(ActionEvent e) {
-		FileChooser chooser = new FileChooser();
-		chooser.setTitle("Open");
-		chooser.setInitialDirectory(FileIO.getCurrentDir());
-		chooser.getExtensionFilters().add(FILTER);
-		chooser.setSelectedExtensionFilter(FILTER);
-		File result = chooser.showOpenDialog(root.getScene().getWindow());
-		FileIO.open(result);
+	private void resetName(final ActionEvent e) {
+		Input channel = channelList.getSelectionModel().getSelectedItem();
+		if (channel != null && channel instanceof Channel) {
+			((Channel) channel).resetName();
+			refresh();
+		}
 		e.consume();
 	}
 
+	public void resetStatus() {
+		setStatus("", 0);
+	}
+
 	@FXML
-	private void saveCues(ActionEvent e) {
-		setStatus("Saving cues", -1);
+	public boolean save(final ActionEvent e) {
+		setStatus("Saving", -1);
+		boolean result;
+		if (FileIO.getCurrentFile() != null) {
+			result = FileIO.save(FileIO.getCurrentFile());
+		} else {
+			result = saveAs(e);
+		}
+		resetStatus();
+		e.consume();
+		return result;
+	}
+
+	@FXML
+	private boolean saveAs(final ActionEvent e) {
 		FileChooser chooser = new FileChooser();
-		chooser.setTitle("Save cues");
+		chooser.setTitle("Save to Directory");
 		chooser.setInitialDirectory(FileIO.getCurrentDir());
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
-		if (result != null && timeKeeperController != null) {
-			FileIO.save(new ArrayList<Serializable>(TimeKeeper.getInstance().getData()), result);
-		}
-		resetStatus();
+		if (result != null && timeKeeperController != null)
+			return FileIO.save(result);
+
 		e.consume();
+		return false;
 	}
 
 	@FXML
-	private void saveChannels(ActionEvent e) {
+	private void saveChannels(final ActionEvent e) {
 		setStatus("Saving channels", -1);
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Save channels");
@@ -433,132 +585,47 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	@FXML
-	public boolean save(ActionEvent e) {
-		setStatus("Saving", -1);
-		boolean result;
-		if (FileIO.getCurrentFile() != null) {
-			result = FileIO.save(FileIO.getCurrentFile());
-		} else {
-			result = saveAs(e);
-		}
-		resetStatus();
-		e.consume();
-		return result;
-	}
-
-	@FXML
-	private boolean saveAs(ActionEvent e) {
+	private void saveCues(final ActionEvent e) {
+		setStatus("Saving cues", -1);
 		FileChooser chooser = new FileChooser();
-		chooser.setTitle("Save to Directory");
+		chooser.setTitle("Save cues");
 		chooser.setInitialDirectory(FileIO.getCurrentDir());
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
 		if (result != null && timeKeeperController != null) {
-			return FileIO.save(result);
+			FileIO.save(new ArrayList<Serializable>(TimeKeeper.getInstance().getData()), result);
 		}
-
-		e.consume();
-		return false;
-	}
-
-	public TimeKeeperController getTimeKeeperController() {
-		return timeKeeperController;
-	}
-
-	@FXML
-	public void dragOver(DragEvent e) {
-		if (e.getDragboard().hasFiles() && e.getDragboard().getFiles().get(0).getName().endsWith(FileIO.ENDING)) {
-			e.acceptTransferModes(TransferMode.MOVE);
-		}
-	}
-
-	@FXML
-	public void dragDropped(DragEvent e) {
-		if (e.getDragboard().hasFiles()) {
-			setStatus("Loading file", -1);
-			for (File f : e.getDragboard().getFiles()) {
-				FileIO.open(f);
-			}
-			resetStatus();
-		}
-	}
-
-	@FXML
-	private void newGroup(ActionEvent e) {
-		TextInputDialog dialog = new TextInputDialog("");
-		dialog.initStyle(((Stage) root.getScene().getWindow()).getStyle());
-		dialog.setTitle("New Group");
-		dialog.setHeaderText("Choose a name for the new Group");
-		dialog.setContentText("Please enter the name:");
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()) {
-			if (ASIOController.getInstance() != null) {
-				ASIOController.getInstance().addGroup(new Group(result.get()));
-			}
-			refresh();
-		}
+		resetStatus();
 		e.consume();
 	}
 
-	public void refresh() {
-		if (controller != null) {
-			refreshInputs();
-		}
-		for (PausableView v : controllerMap.values()) {
-			v.refresh();
-		}
+	public void setChannelList(final List<Channel> list) {
+		channelList.getItems().setAll(list);
 	}
 
-	@FXML
-	private void resetName(ActionEvent e) {
-		Input channel = channelList.getSelectionModel().getSelectedItem();
-		if (channel != null && channel instanceof Channel) {
-			((Channel) channel).resetName();
-			refresh();
-		}
-		e.consume();
+	public void setSelectedChannel(final Channel channel) {
+		channelList.selectionModelProperty().get().select(channel);
 	}
 
-	private void initDrumMonitor() {
-		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
-		if (p != null) {
-			contentMap.put(toggleDrumView, p);
-			controllerMap.put(p, (PausableView) FXMLUtil.getController());
-		} else {
-			LOG.warn("Unable to load FFT Chart");
-		}
+	public void setShowHidden(final boolean showHidden) {
+		this.showHidden = showHidden;
 	}
 
-	private void initPhaseMonitor() {
-		Parent p = FXMLUtil.loadFXML(PHASE_PATH);
-		if (p != null) {
-			contentMap.put(togglePhaseView, p);
-			controllerMap.put(p, (PausableView) FXMLUtil.getController());
-		} else {
-			LOG.warn("Unable to load VectorScope");
-		}
+	public void setSongs(final Cue current, final Cue next) {
+		showSong(current, lblCurrentSong);
+		showSong(next, lblNextSong);
 	}
 
-	@Override
-	public void pause(boolean pause) {
-		if (this.pause != pause) {
-			this.pause = pause;
-			if (pause) {
-				LOG.debug(getClass().getSimpleName() + "; pausing animations");
-			} else {
-				LOG.debug(getClass().getSimpleName() + "; playing animations");
-			}
-		}
+	public void setStatus(final double value) {
+		Platform.runLater(() -> {
+			progStatus.setProgress(value);
+			progStatus.setVisible(progStatus.getProgress() != 0);
+			progStatus.setManaged(progStatus.getProgress() != 0);
+		});
 	}
 
-	@Override
-	public boolean isPaused() {
-		return pause;
-	}
-
-	public void setStatus(String text) {
+	public void setStatus(final String text) {
 		if (text != null && !text.isEmpty()) {
 			lblStatus.setText(text);
 			lblStatus.setVisible(true);
@@ -578,98 +645,21 @@ public class MainController implements Initializable, Pausable, CueListener {
 		}
 	}
 
-	public void setStatus(double value) {
-		Platform.runLater(() -> {
-			progStatus.setProgress(value);
-			progStatus.setVisible(progStatus.getProgress() != 0);
-			progStatus.setManaged(progStatus.getProgress() != 0);
-		});
-	}
-
-	public void setStatus(String text, double value) {
+	public void setStatus(final String text, final double value) {
 		setStatus(text);
 		setStatus(value);
 	}
 
-	public void resetStatus() {
-		setStatus("", 0);
-	}
-
-	public boolean isShowHidden() {
-		return showHidden;
-	}
-
-	public void setShowHidden(boolean showHidden) {
-		this.showHidden = showHidden;
-	}
-
-	/**
-	 * toggles hide for all selected items
-	 */
-	public void hideAllSelected() {
-		try {
-			Input first = channelList.getSelectionModel().getSelectedItems().get(0);
-			if (first != null && first instanceof Channel) {
-				Channel channel = (Channel) first;
-				boolean hide = !channel.isHidden();
-				for (Input item : channelList.getSelectionModel().getSelectedItems()) {
-					if (item instanceof Channel) {
-						((Channel) item).setHidden(hide);
-					}
-				}
-			}
-			refresh();
-		} catch (Exception e) {
-			LOG.warn("Error while hiding items");
-			LOG.debug("", e);
+	public void setTitle(final String title) {
+		Stage stage = (Stage) channelList.getScene().getWindow();
+		String finalTitle = Main.getTitle();
+		if (title != null && !title.isEmpty()) {
+			finalTitle += " - " + title;
 		}
+		stage.setTitle(finalTitle);
 	}
 
-	public void groupAllSelected(Group g) {
-		try {
-			for (Input item : channelList.getSelectionModel().getSelectedItems()) {
-				if (item instanceof Channel) {
-					if (g == null) {
-						if (((Channel) item).getGroup() != null) {
-							((Channel) item).getGroup().removeChannel((Channel) item);
-						}
-					} else {
-						g.addChannel((Channel) item);
-					}
-				}
-			}
-			refresh();
-		} catch (Exception e) {
-			LOG.warn("Error while grouping items");
-			LOG.debug("", e);
-		}
-	}
-
-	public void setSongs(Cue current, Cue next) {
-		showSong(current, lblCurrentSong);
-		showSong(next, lblNextSong);
-	}
-
-	private void showSong(Cue cue, Label label) {
-		if (cue != null) {
-			String s = cue.getName();
-			if (cue.getChannelToSelect() != null) {
-				s += " " + cue.getChannelToSelect().getName();
-			}
-			label.setText(s);
-		} else {
-			label.setText("");
-		}
-		boolean hide = lblCurrentSong.getText().isEmpty() && lblNextSong.getText().isEmpty();
-		bottomLabel.setVisible(!hide);
-	}
-
-	@Override
-	public void currentCue(Cue cue, Cue next) {
-		Platform.runLater(() -> setSongs(cue, next));
-	}
-
-	public ButtonType showConfirmDialog(String confirm) {
+	public ButtonType showConfirmDialog(final String confirm) {
 		Alert alert = new Alert(AlertType.NONE);
 		try {
 			DialogPane dialogPane = alert.getDialogPane();
@@ -689,18 +679,22 @@ public class MainController implements Initializable, Pausable, CueListener {
 		alert.getButtonTypes().add(ButtonType.CANCEL);
 		alert.getButtonTypes().add(ButtonType.OK);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent()) {
+		if (result.isPresent())
 			return result.get();
-		}
 		return ButtonType.CANCEL;
 	}
 
-	public static String deriveColor(final String baseColor, final int index, final int total) {
-		String result = baseColor;
-		Color color = Color.web(baseColor);
-		double value = ((double) index) / ((double) total);
-		color = color.deriveColor(1, 1, value, 1);
-		result = FXMLUtil.toRGBCode(color);
-		return result;
+	private void showSong(final Cue cue, final Label label) {
+		if (cue != null) {
+			String s = cue.getName();
+			if (cue.getChannelToSelect() != null) {
+				s += " " + cue.getChannelToSelect().getName();
+			}
+			label.setText(s);
+		} else {
+			label.setText("");
+		}
+		boolean hide = lblCurrentSong.getText().isEmpty() && lblNextSong.getText().isEmpty();
+		bottomLabel.setVisible(!hide);
 	}
 }
