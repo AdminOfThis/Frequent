@@ -133,7 +133,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		AnimationTimer timer = new AnimationTimer() {
 			@Override
 			public void handle(final long now) {
-				if (buffer != null && !pause) {
+				if (buffer != null && !isPaused()) {
 					updateChart(buffer);
 				}
 			}
