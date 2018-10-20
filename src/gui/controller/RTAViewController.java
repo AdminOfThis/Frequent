@@ -12,6 +12,7 @@ import gui.pausable.PausableView;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeter;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -56,15 +57,15 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	private Series<Number, Number>	series		= new Series<>();
 	private Series<Number, Number>	maxSeries	= new Series<>();
 	private Channel					channel;
+	private double[][]				buffer;
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		LOG.debug("Loading FFT Chart");
-		topLeft.prefWidthProperty().bind(topRight.widthProperty());
-		initVuMeter();
-		initChart();
-		initButtons();
-		// initTuner();
+	public ArrayList<Node> getHeader() {
+		ArrayList<Node> list = new ArrayList<>();
+		list.add(sliderPad);
+		list.add(toggleVPad);
+		list.add(toggleSlowCurve);
+		return list;
 	}
 
 	// private void initTuner() {
@@ -101,13 +102,6 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		});
 	}
 
-	private void initVuMeter() {
-		meter = new VuMeter(null, Orientation.VERTICAL);
-		meter.setParentPausable(this);
-		meter.setPrefWidth(50.0);
-		chartPane.getChildren().add(0, meter);
-	}
-
 	private void initChart() {
 		ValueAxis<Number> yaxis = new NumberAxis(FFT_MIN, 0, 6);
 		yaxis.setPrefWidth(20.0);
@@ -128,7 +122,64 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		HBox.setHgrow(chart, Priority.ALWAYS);
 	}
 
-	public void setChannel(Channel channel) {
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		LOG.debug("Loading FFT Chart");
+		topLeft.prefWidthProperty().bind(topRight.widthProperty());
+		initVuMeter();
+		initChart();
+		initButtons();
+		// initTuner();
+		AnimationTimer timer = new AnimationTimer() {
+			@Override
+			public void handle(final long now) {
+				if (buffer != null && !pause) {
+					updateChart(buffer);
+				}
+			}
+		};
+		timer.start();
+	}
+
+	private void initVuMeter() {
+		meter = new VuMeter(null, Orientation.VERTICAL);
+		meter.setParentPausable(this);
+		meter.setPrefWidth(50.0);
+		chartPane.getChildren().add(0, meter);
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause;
+	}
+
+	@Override
+	public void newFFT(final double[][] map) {
+		buffer = map;
+	}
+
+	@Override
+	public void pause(final boolean pause) {
+		if (this.pause != pause) {
+			this.pause = pause;
+			if (pause) {
+				LOG.debug(getClass().getSimpleName() + "; pausing animations");
+			} else {
+				LOG.debug(getClass().getSimpleName() + "; playing animations");
+			}
+		}
+	}
+
+	@Override
+	public void refresh() {
+		if (channel == null) {
+			chart.setTitle("");
+		} else {
+			chart.setTitle(channel.getName());
+		}
+	}
+
+	public void setChannel(final Channel channel) {
 		this.channel = channel;
 		meter.setChannel(channel);
 		if (channel == null) {
@@ -138,14 +189,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		}
 	}
 
-	@Override
-	public void newFFT(double[][] map) {
-		if (map != null && !pause) {
-			updateChart(map);
-		}
-	}
-
-	private void updateChart(double[][] map) {
+	private void updateChart(final double[][] map) {
 		Platform.runLater(() -> {
 			ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
 			for (int count = 0; count < map[0].length; count++) {
@@ -173,40 +217,5 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 			}
 			series.getData().setAll(dataList);
 		});
-	}
-
-	@Override
-	public void pause(boolean pause) {
-		if (this.pause != pause) {
-			this.pause = pause;
-			if (pause) {
-				LOG.debug(getClass().getSimpleName() + "; pausing animations");
-			} else {
-				LOG.debug(getClass().getSimpleName() + "; playing animations");
-			}
-		}
-	}
-
-	@Override
-	public boolean isPaused() {
-		return pause;
-	}
-
-	@Override
-	public void refresh() {
-		if (channel == null) {
-			chart.setTitle("");
-		} else {
-			chart.setTitle(channel.getName());
-		}
-	}
-
-	@Override
-	public ArrayList<Node> getHeader() {
-		ArrayList<Node> list = new ArrayList<>();
-		list.add(sliderPad);
-		list.add(toggleVPad);
-		list.add(toggleSlowCurve);
-		return list;
 	}
 }
