@@ -45,11 +45,113 @@ public class Main extends Application {
 	private static String		style			= "";
 	private static boolean		debug			= false, fast = false;
 	private static String		version, title;
-	private Scene				loginScene;
-	private IOChooserController	loginController;
 	private static Main			instance;
 
-	public static void main(String[] args) {
+	/**
+	 * stops all running threads and terminates the gui
+	 */
+	public static boolean close() {
+		if (!Main.isDebug()) {
+			LOG.info("Checking for unsaved changes");
+			if (FileIO.unsavedChanges()) {
+				ButtonType type = MainController.getInstance().showConfirmDialog("Save changes before exit?");
+				if (type == ButtonType.OK) {
+					boolean result = MainController.getInstance().save(new ActionEvent());
+					if (!result) {
+						LOG.info("Saving cancelled");
+						return false;
+					}
+				} else if (type == ButtonType.CANCEL)
+					return false;
+			}
+		}
+		LOG.info("Stopping GUI");
+		Platform.exit();
+		if (ASIOController.getInstance() != null) {
+			LOG.info("Stopping AudioDriver");
+			ASIOController.getInstance().shutdown();
+		}
+		LOG.info("Deleting RTA file");
+		RTAIO.deleteFile();
+		LOG.info("Bye");
+		System.exit(0);
+		return true;
+	}
+
+	public static String getAccentColor() {
+		return color_accent;
+	}
+
+	public static String getBaseColor() {
+		return color_base;
+	}
+
+	public static String getFocusColor() {
+		return color_focus;
+	}
+
+	public static String getFromManifest(final String key, final String def) {
+		try {
+			Enumeration<URL> resources = Main.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+			while (resources.hasMoreElements()) {
+				try {
+					Manifest manifest = new Manifest(resources.nextElement().openStream());
+					if (getTitle().equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Version")))
+						// check that this is your manifest and do what you need
+						// or get the next one
+						return manifest.getMainAttributes().getValue(key);
+				} catch (IOException e) {
+					LOG.warn(e);
+				}
+			}
+		} catch (Exception e) {
+			LOG.warn("Unable to read version from manifest");
+			LOG.debug("", e);
+		}
+		return def;
+	}
+
+	public static Main getInstance() {
+		return instance;
+	}
+
+	public static String getOnlyTitle() {
+		return title;
+	}
+
+	public static String getStyle() {
+		return style;
+	}
+
+	public static String getTitle() {
+		return title + " " + version;
+	}
+
+	public static String getVersion() {
+		return version;
+	}
+
+	/**
+	 * sets up the Log4j logger ba reading the properties file
+	 */
+	private static void initLogger() {
+		try {
+			PropertyConfigurator.configure(LOG_CONFIG_FILE);
+			LOG = Logger.getLogger(Main.class);
+		} catch (Exception e) {
+			LOG.fatal("Unexpected error while initializing logging", e);
+		}
+	}
+
+	public static boolean isDebug() {
+		return debug;
+	}
+
+	public static boolean isFast() {
+		return fast;
+	}
+
+	public static void main(final String[] args) {
 		initLogger();
 		title = getFromManifest(TITLE_KEY, "Frequent");
 		version = getFromManifest(VERSION_KEY, "Local");
@@ -59,16 +161,12 @@ public class Main extends Application {
 		LauncherImpl.launchApplication(Main.class, PreLoader.class, args);
 	}
 
-	private static void setColors() {
-		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
-	}
-
 	/**
 	 * checks the start parameters for keywords and sets the debug flag to true if found
-	 * 
+	 *
 	 * @param args
 	 */
-	private static void parseArgs(String[] args) {
+	private static void parseArgs(final String[] args) {
 		for (String arg : args) {
 			if (arg.equalsIgnoreCase("-debug")) {
 				debug = true;
@@ -120,17 +218,13 @@ public class Main extends Application {
 		}
 	}
 
-	/**
-	 * sets up the Log4j logger ba reading the properties file
-	 */
-	private static void initLogger() {
-		try {
-			PropertyConfigurator.configure(LOG_CONFIG_FILE);
-			LOG = Logger.getLogger(Main.class);
-		} catch (Exception e) {
-			LOG.fatal("Unexpected error while initializing logging", e);
-		}
+	private static void setColors() {
+		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
 	}
+
+	private Scene				loginScene;
+
+	private IOChooserController	loginController;
 
 	@Override
 	public void init() throws Exception {
@@ -147,8 +241,33 @@ public class Main extends Application {
 		Thread.sleep(100);
 	}
 
+	private Scene loadMain() {
+		LOG.debug("Loading from: " + GUI_MAIN_PATH);
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
+		try {
+			Parent p = loader.load();
+			// MainController controller = loader.getController();
+			// if (ioName != null) {
+			// controller.initIO(ioName);
+			// }
+			LOG.info("Main Window loaded");
+			return new Scene(p);
+		} catch (IOException e) {
+			LOG.error("Unable to load Main GUI", e);
+			Main.close();
+		}
+		return null;
+	}
+
+	public void setProgress(final double prog) {
+		try {
+			notifyPreloader(new Preloader.ProgressNotification(prog));
+		} catch (Exception e) {
+		}
+	}
+
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(final Stage primaryStage) throws Exception {
 		LOG.info("Showing IOChooser");
 		primaryStage.setScene(loginScene);
 		primaryStage.setOnCloseRequest(e -> {
@@ -171,121 +290,5 @@ public class Main extends Application {
 			}
 		});
 		primaryStage.show();
-	}
-
-	/**
-	 * stops all running threads and terminates the gui
-	 */
-	public static boolean close() {
-		LOG.info("Checking for unsaved changes");
-		if (FileIO.unsavedChanges()) {
-			ButtonType type = MainController.getInstance().showConfirmDialog("Save changes before exit?");
-			if (type == ButtonType.OK) {
-				boolean result = MainController.getInstance().save(new ActionEvent());
-				if (!result) {
-					LOG.info("Saving cancelled");
-					return false;
-				}
-			} else if (type == ButtonType.CANCEL) {
-				return false;
-			}
-		}
-		LOG.info("Stopping GUI");
-		Platform.exit();
-		if (ASIOController.getInstance() != null) {
-			LOG.info("Stopping AudioDriver");
-			ASIOController.getInstance().shutdown();
-		}
-		LOG.info("Deleting RTA file");
-		RTAIO.deleteFile();
-		LOG.info("Bye");
-		System.exit(0);
-		return true;
-	}
-
-	private Scene loadMain() {
-		LOG.debug("Loading from: " + GUI_MAIN_PATH);
-		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
-		try {
-			Parent p = loader.load();
-			// MainController controller = loader.getController();
-			// if (ioName != null) {
-			// controller.initIO(ioName);
-			// }
-			LOG.info("Main Window loaded");
-			return new Scene(p);
-		} catch (IOException e) {
-			LOG.error("Unable to load Main GUI", e);
-			Main.close();
-		}
-		return null;
-	}
-
-	public static boolean isDebug() {
-		return debug;
-	}
-
-	public static String getStyle() {
-		return style;
-	}
-
-	public static boolean isFast() {
-		return fast;
-	}
-
-	public static String getTitle() {
-		return title + " " + version;
-	}
-
-	public static String getOnlyTitle() {
-		return title;
-	}
-
-	public static String getFromManifest(String key, String def) {
-		try {
-			Enumeration<URL> resources = Main.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
-			while (resources.hasMoreElements()) {
-				try {
-					Manifest manifest = new Manifest(resources.nextElement().openStream());
-					if (getTitle().equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Version")))
-						// check that this is your manifest and do what you need
-						// or get the next one
-						return manifest.getMainAttributes().getValue(key);
-				} catch (IOException e) {
-					LOG.warn(e);
-				}
-			}
-		} catch (Exception e) {
-			LOG.warn("Unable to read version from manifest");
-			LOG.debug("", e);
-		}
-		return def;
-	}
-
-	public static String getVersion() {
-		return version;
-	}
-
-	public static Main getInstance() {
-		return instance;
-	}
-
-	public void setProgress(double prog) {
-		try {
-			notifyPreloader(new Preloader.ProgressNotification(prog));
-		} catch (Exception e) {
-		}
-	}
-
-	public static String getAccentColor() {
-		return color_accent;
-	}
-
-	public static String getBaseColor() {
-		return color_base;
-	}
-
-	public static String getFocusColor() {
-		return color_focus;
 	}
 }

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import control.InputListener;
 import data.Channel;
 import data.Input;
+import gui.controller.RTAViewController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.utilities.FXMLUtil;
@@ -25,12 +26,14 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.StringConverter;
 
 public class WaveFormChart extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
 	private static final Logger			LOG			= Logger.getLogger(WaveFormChart.class);
 	private static final String			FXML		= "/gui/utilities/gui/WaveFormChart.fxml";
 	private static final long			TIME_FRAME	= 5000000000l;
+
 	@FXML
 	private LineChart<Number, Number>	chart;
 	private Series<Number, Number>		series		= new Series<>();
@@ -62,13 +65,23 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
-		yAxis.setAutoRanging(true);
 		chart.getData().add(series);
 		NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 		xAxis.setAutoRanging(false);
-		xAxis.setTickUnit(TIME_FRAME / 100.0);
+		xAxis.setTickUnit(TIME_FRAME / 10.0);
 		xAxis.setForceZeroInRange(false);
+		xAxis.setTickLabelFormatter(new StringConverter<Number>() {
+
+			@Override
+			public Number fromString(final String string) {
+				return null;
+			}
+
+			@Override
+			public String toString(final Number object) {
+				return null;
+			}
+		});
 
 	}
 
@@ -79,7 +92,11 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	@Override
 	public void levelChanged(final double level) {
-		pendingMap.put(System.nanoTime(), Channel.percentToDB(level));
+		double value = Channel.percentToDB(level * 1000.0);
+		if (value < RTAViewController.FFT_MIN) {
+			value = RTAViewController.FFT_MIN;
+		}
+		pendingMap.put(System.nanoTime(), value);
 	}
 
 	@Override
@@ -127,7 +144,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 							series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
 							styleSet = true;
 						}
-						NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 						value = 0;
 						if (channel != null) {
 							value = entry.getValue();
@@ -138,16 +154,17 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 						negative = !negative;
 						Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 						dataList.add(newData);
-						long time = System.nanoTime();
-						// axis
-						xAxis.setLowerBound(time - TIME_FRAME);
-						xAxis.setUpperBound(time);
 
 					} catch (Exception e) {
 						LOG.warn("", e);
 					}
 				}
 				series.getData().addAll(dataList);
+				long time = System.nanoTime();
+				// axis
+				NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+				xAxis.setLowerBound(time - TIME_FRAME);
+				xAxis.setUpperBound(time);
 				pendingMap.clear();
 
 			}
