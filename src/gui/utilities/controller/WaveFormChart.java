@@ -53,16 +53,74 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		AnimationTimer timer = new AnimationTimer() {
 
 			@Override
-			public void handle(long now) {
+			public void handle(final long now) {
 				update();
 			}
 		};
 		timer.start();
 	}
 
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
+		yAxis.setAutoRanging(true);
+		chart.getData().add(series);
+		NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+		xAxis.setAutoRanging(false);
+		xAxis.setTickUnit(TIME_FRAME / 100.0);
+		xAxis.setForceZeroInRange(false);
+
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause || pausableParent != null && pausableParent.isPaused() || channel == null || pendingMap == null;
+	}
+
+	@Override
+	public void levelChanged(final double level) {
+		pendingMap.put(System.nanoTime(), Channel.percentToDB(level));
+	}
+
+	@Override
+	public void pause(final boolean pause) {
+		this.pause = pause;
+		if (pause) {
+			LOG.debug(getClass().getSimpleName() + "; playing animations");
+		} else {
+			LOG.debug(getClass().getSimpleName() + "; pausing animations");
+		}
+	}
+
+	public void setChannel(final Input c) {
+		try {
+			if (!c.equals(channel)) {
+				if (channel != null) {
+					channel.removeListener(this);
+				}
+				series.getData().clear();
+				synchronized (pendingMap) {
+					pendingMap.clear();
+				}
+				channel = c;
+				if (c != null) {
+					c.addListener(this);
+				}
+			}
+		} catch (Exception e) {
+			LOG.warn("", e);
+		}
+	}
+
+	@Override
+	public void setParentPausable(final Pausable parent) {
+		pausableParent = parent;
+	}
+
 	private void update() {
 		if (!isPaused()) {
 			synchronized (pendingMap) {
+				ArrayList<Data<Number, Number>> dataList = new ArrayList<>();
 				for (Entry<Long, Double> entry : pendingMap.entrySet()) {
 					try {
 						if (!styleSet) {
@@ -79,92 +137,42 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 						}
 						negative = !negative;
 						Data<Number, Number> newData = new Data<>(entry.getKey(), value);
-						series.getData().add(newData);
+						dataList.add(newData);
 						long time = System.nanoTime();
 						// axis
 						xAxis.setLowerBound(time - TIME_FRAME);
 						xAxis.setUpperBound(time);
-						boolean continueFlag = true;
-						int count = 0;
-						ArrayList<Data<Number, Number>> removeList = null;
-						try {
-							while (continueFlag) {
-								Data<Number, Number> data = series.getData().get(count);
-								if ((long) data.getXValue() < xAxis.getLowerBound() - 10) {
-									if (removeList == null) {
-										removeList = new ArrayList<>();
-									}
-									removeList.add(data);
-								} else {
-									continueFlag = false;
-								}
-								count++;
-							}
-						}
-						catch (Exception e) {
-// LOG.error("", e);
-						}
-						if (removeList != null) {
-							series.getData().removeAll(removeList);
-						}
-					}
-					catch (Exception e) {
+
+					} catch (Exception e) {
 						LOG.warn("", e);
 					}
 				}
+				series.getData().addAll(dataList);
+				pendingMap.clear();
+
 			}
-			pendingMap.clear();
-		}
-	}
-
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
-		yAxis.setAutoRanging(true);
-		chart.getData().add(series);
-		((NumberAxis) chart.getXAxis()).setTickUnit(50000000000l);
-	}
-
-	public void setChannel(Input c) {
-		try {
-			if (!c.equals(channel)) {
-				if (channel != null) {
-					channel.removeListener(this);
+			boolean continueFlag = true;
+			int count = 0;
+			ArrayList<Data<Number, Number>> removeList = null;
+			try {
+				while (continueFlag) {
+					Data<Number, Number> data = series.getData().get(count);
+					if ((long) data.getXValue() < ((NumberAxis) chart.getXAxis()).getLowerBound() - 100) {
+						if (removeList == null) {
+							removeList = new ArrayList<>();
+						}
+						removeList.add(data);
+					} else {
+						continueFlag = false;
+					}
+					count++;
 				}
-				series.getData().clear();
-				this.channel = c;
-				if (c != null) {
-					c.addListener(this);
-				}
+			} catch (Exception e) {
+				// LOG.error("", e);
+			}
+			if (removeList != null) {
+				series.getData().removeAll(removeList);
 			}
 		}
-		catch (Exception e) {
-			LOG.warn("", e);
-		}
-	}
-
-	@Override
-	public void levelChanged(double level) {
-		pendingMap.put(System.nanoTime(), Channel.percentToDB(level));
-	}
-
-	@Override
-	public void pause(boolean pause) {
-		this.pause = pause;
-		if (pause) {
-			LOG.debug(getClass().getSimpleName() + "; playing animations");
-		} else {
-			LOG.debug(getClass().getSimpleName() + "; pausing animations");
-		}
-	}
-
-	@Override
-	public boolean isPaused() {
-		return pause || (pausableParent != null && pausableParent.isPaused()) || channel == null || pendingMap == null;
-	}
-
-	@Override
-	public void setParentPausable(Pausable parent) {
-		pausableParent = parent;
 	}
 }
