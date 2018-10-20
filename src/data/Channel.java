@@ -11,40 +11,62 @@ import control.InputListener;
 public class Channel extends Input implements Comparable<Channel>, Comparator<Channel> {
 
 	/**
-	 * 
+	 *
 	 */
-	private static final long		serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
+
+	public static double percentToDB(final double level) {
+		return 20.0 * Math.log10(level /* / 1000.0 */);
+	}
+
 	/**
-	 * 
+	 *
 	 */
 	private transient AsioChannel	channel;
-	private int						channelIndex		= -1;
+	private int						channelIndex	= -1;
 	private Group					group;
-	private boolean					hide				= false;
+	private boolean					hide			= false;
 	private float[]					buffer;
+
 	private Channel					stereoChannel;
 
-	public Channel(AsioChannel channel) {
+	public Channel(final AsioChannel channel) {
 		this(channel, channel.getChannelName());
 	}
 
-	public Channel(AsioChannel channel, String name) {
-		this.channelIndex = channel.getChannelIndex();
+	public Channel(final AsioChannel channel, final String name) {
+		channelIndex = channel.getChannelIndex();
 		this.channel = channel;
 		setName(name);
 	}
 
-	public AsioChannel getChannel() {
-		return channel;
+	@Override
+	public int compare(final Channel o1, final Channel o2) {
+		return o1.getChannelIndex() - o2.getChannelIndex();
 	}
 
-	public void setChannel(AsioChannel channel) {
-		this.channel = channel;
-		if (channel != null) {
-			this.channelIndex = channel.getChannelIndex();
-		} else {
-			channelIndex = -1;
+	@Override
+	public int compareTo(final Channel o) {
+		return getChannelIndex() - o.getChannelIndex();
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj instanceof Channel) {
+			Channel other = (Channel) obj;
+			if (super.equals(obj))
+				return Objects.equals(getChannelIndex(), other.getChannelIndex())
+				        && Objects.equals(getGroup(), other.getGroup());
 		}
+		return false;
+	}
+
+	public float[] getBuffer() {
+		return buffer;
+	}
+
+	public AsioChannel getChannel() {
+		return channel;
 	}
 
 	public int getChannelIndex() {
@@ -55,8 +77,12 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		return group;
 	}
 
-	protected void setGroup(Group group) {
-		this.group = group;
+	public Channel getStereoChannel() {
+		return stereoChannel;
+	}
+
+	public boolean isHidden() {
+		return hide;
 	}
 
 	public void resetName() {
@@ -65,45 +91,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		}
 	}
 
-	public boolean isHidden() {
-		return hide;
-	}
-
-	public void setHidden(boolean hide) {
-		this.hide = hide;
-	}
-
-	public static double percentToDB(double level) {
-		return 20.0 * Math.log10(level /* / 1000.0 */);
-	}
-
-	@Override
-	public int compareTo(Channel o) {
-		return this.getChannelIndex() - o.getChannelIndex();
-	}
-
-	@Override
-	public int compare(Channel o1, Channel o2) {
-		return o1.getChannelIndex() - o2.getChannelIndex();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Channel) {
-			Channel other = (Channel) obj;
-			if (super.equals(obj)) {
-				return (Objects.equals(this.getChannelIndex(), other.getChannelIndex())
-					&& Objects.equals(this.getGroup(), other.getGroup()));
-			}
-		}
-		return false;
-	}
-
-	public float[] getBuffer() {
-		return buffer;
-	}
-
-	public void setBuffer(float[] buffer) {
+	public void setBuffer(final float[] buffer) {
 		this.buffer = buffer;
 		for (InputListener l : getListeners()) {
 			if (l instanceof ChannelListener) {
@@ -114,20 +102,33 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		}
 	}
 
-	public Channel getStereoChannel() {
-		return stereoChannel;
+	public void setChannel(final AsioChannel channel) {
+		this.channel = channel;
+		if (channel != null) {
+			channelIndex = channel.getChannelIndex();
+		} else {
+			channelIndex = -1;
+		}
 	}
 
-	public void setStereoChannel(Channel newChannel) {
-		//if stereo channel is not already equal
+	protected void setGroup(final Group group) {
+		this.group = group;
+	}
+
+	public void setHidden(final boolean hide) {
+		this.hide = hide;
+	}
+
+	public void setStereoChannel(final Channel newChannel) {
+		// if stereo channel is not already equal
 		if (!Objects.equals(newChannel, stereoChannel)) {
-			if (this.stereoChannel != null && this.equals(stereoChannel.getStereoChannel())) {
+			if (stereoChannel != null && equals(stereoChannel.getStereoChannel())) {
 				Channel oldChannel = stereoChannel;
 				stereoChannel = null;
 				oldChannel.setStereoChannel(null);
 			}
-			this.stereoChannel = newChannel;
-			if (this.stereoChannel != null && !this.stereoChannel.getStereoChannel().equals(this)) {
+			stereoChannel = newChannel;
+			if (stereoChannel != null && !stereoChannel.getStereoChannel().equals(this)) {
 				stereoChannel.setStereoChannel(this);
 			}
 		}
