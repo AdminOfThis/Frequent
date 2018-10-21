@@ -56,7 +56,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 			Channel other = (Channel) obj;
 			if (super.equals(obj))
 				return Objects.equals(getChannelIndex(), other.getChannelIndex())
-				        && Objects.equals(getGroup(), other.getGroup());
+				        && Objects.equals(getGroup().getName(), other.getGroup().getName());
 		}
 		return false;
 	}
