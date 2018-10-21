@@ -168,50 +168,12 @@ public class MainController implements Initializable, Pausable, CueListener {
 		}
 	}
 
+	public ArrayList<Input> getSelectedChannels() {
+		return new ArrayList<>(channelList.getSelectionModel().getSelectedItems());
+	}
+
 	public TimeKeeperController getTimeKeeperController() {
 		return timeKeeperController;
-	}
-
-	public void groupAllSelected(final Group g) {
-		try {
-			for (Input item : channelList.getSelectionModel().getSelectedItems()) {
-				if (item instanceof Channel) {
-					if (g == null) {
-						if (((Channel) item).getGroup() != null) {
-							((Channel) item).getGroup().removeChannel((Channel) item);
-						}
-					} else {
-						g.addChannel((Channel) item);
-					}
-				}
-			}
-			refresh();
-		} catch (Exception e) {
-			LOG.warn("Error while grouping items");
-			LOG.debug("", e);
-		}
-	}
-
-	/**
-	 * toggles hide for all selected items
-	 */
-	public void hideAllSelected() {
-		try {
-			Input first = channelList.getSelectionModel().getSelectedItems().get(0);
-			if (first != null && first instanceof Channel) {
-				Channel channel = (Channel) first;
-				boolean hide = !channel.isHidden();
-				for (Input item : channelList.getSelectionModel().getSelectedItems()) {
-					if (item instanceof Channel) {
-						((Channel) item).setHidden(hide);
-					}
-				}
-			}
-			refresh();
-		} catch (Exception e) {
-			LOG.warn("Error while hiding items");
-			LOG.debug("", e);
-		}
 	}
 
 	private void initChannelList() {

@@ -1,5 +1,6 @@
 package gui.utilities;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
@@ -7,9 +8,9 @@ import org.apache.log4j.Logger;
 import control.ASIOController;
 import data.Channel;
 import data.Group;
+import data.Input;
 import gui.controller.MainController;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -29,13 +30,13 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 	private Menu				pairingMenu	= new Menu("Pairing");
 	private CheckMenuItem		noPair		= new CheckMenuItem("Unpaired");
 
-	public ChannelCellContextMenu(Channel in) {
+	public ChannelCellContextMenu(final Channel in) {
 		super(in);
 		if (in != null) {
 			resetName.setOnAction(e -> {
 				in.setName(in.getChannel().getChannelName());
 			});
-			hide.setOnAction(e -> MainController.getInstance().hideAllSelected());
+			hide.setOnAction(e -> hideAllSelected());
 			showHidden.setOnAction(e -> MainController.getInstance().setShowHidden(showHidden.isSelected()));
 			getItems().add(resetName);
 			getItems().add(new SeparatorMenuItem());
@@ -61,14 +62,49 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 					Group g = new Group(result.get());
 					LOG.info("Created new group: " + g.getName());
 					ASIOController.getInstance().addGroup(g);
-					MainController.getInstance().groupAllSelected(g);
+					groupAllSelected(g);
 					MainController.getInstance().refresh();
 				}
 			});
 		}
 	}
 
-	private void refreshData(Channel channel) {
+	private void groupAllSelected(final Group g) {
+		ArrayList<Input> list = MainController.getInstance().getSelectedChannels();
+		for (Input i : list) {
+			if (i instanceof Channel) {
+				Channel c = (Channel) i;
+				if (g != null) {
+					g.addChannel(c);
+				} else {
+					c.getGroup().removeChannel(c);
+				}
+			}
+		}
+		MainController.getInstance().refresh();
+	}
+
+	private void hideAllSelected() {
+		ArrayList<Input> list = MainController.getInstance().getSelectedChannels();
+		Channel c = null;
+		int i = 0;
+		while (c == null) {
+			if (list.get(i) instanceof Channel) {
+				c = (Channel) list.get(i);
+			}
+		}
+		if (c != null) {
+			boolean hide = !c.isHidden();
+			for (Input in : list) {
+				if (in instanceof Channel) {
+					Channel c2 = (Channel) in;
+					c2.setHidden(hide);
+				}
+			}
+		}
+	}
+
+	private void refreshData(final Channel channel) {
 		showHidden.setSelected(MainController.getInstance().isShowHidden());
 		groupMenu.getItems().clear();
 		groupMenu.getItems().add(newGroup);
@@ -78,17 +114,13 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 			RadioMenuItem groupMenuItem = new RadioMenuItem(g.getName());
 			toggle.getToggles().add(groupMenuItem);
 			groupMenuItem.setSelected(g.getChannelList().contains(channel));
-			groupMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
-
-				@Override
-				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-					if (newValue) {
-						MainController.getInstance().groupAllSelected(g);
-					} else {
-						MainController.getInstance().groupAllSelected(null);
-					}
-					MainController.getInstance().refresh();
+			groupMenuItem.selectedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
+				if (newValue) {
+					groupAllSelected(g);
+				} else {
+					groupAllSelected(null);
 				}
+				MainController.getInstance().refresh();
 			});
 			groupMenu.getItems().add(groupMenuItem);
 		}
