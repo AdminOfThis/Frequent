@@ -95,7 +95,7 @@ public abstract class Input implements Serializable {
 	}
 
 	public boolean setColor(final String colorIn) {
-		// trying to parsse string to make sure its a hex string
+		// trying to parse string to make sure its a hex string
 		String color = colorIn;
 		try {
 			if (color.startsWith("#")) {
