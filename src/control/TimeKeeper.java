@@ -3,18 +3,25 @@ package control;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import data.Cue;
 import data.FileIO;
 
 public final class TimeKeeper implements DataHolder<Cue> {
 
+	private static final Logger					LOG					= Logger.getLogger(TimeKeeper.class);
+
 	private static final String					DEFAULT_CUE_NAME	= "Song #";
 	private static TimeKeeper					instance;
 	private long								startTime;
 	private long								roundStartTime;
+	private long								pauseStarttime;
+	private long								pauseTime, pauseRoundTime;
 	private List<Cue>							cueList				= new ArrayList<>();
 	private int									activeIndex			= -1;
 	private static final ArrayList<CueListener>	listeners			= new ArrayList<>();
+	boolean										pause				= false;
 
 	public static TimeKeeper getInstance() {
 		if (instance == null) {
@@ -22,6 +29,7 @@ public final class TimeKeeper implements DataHolder<Cue> {
 		}
 		return instance;
 	}
+
 
 	private TimeKeeper() {
 		FileIO.registerSaveData(this);
@@ -39,15 +47,33 @@ public final class TimeKeeper implements DataHolder<Cue> {
 	}
 
 	public long getTimeRunning() {
-		return System.currentTimeMillis() - startTime;
+		// runtime
+		long result = (System.currentTimeMillis() - startTime);
+		// minus pause time
+		result = result - pauseTime;
+		// if pause running minus running pause time
+		if (pause) {
+			result = result - (System.currentTimeMillis() - pauseStarttime);
+		}
+		return result;
 	}
 
 	public long getRoundTime() {
-		return System.currentTimeMillis() - roundStartTime;
+		// runtime
+		long result = (System.currentTimeMillis() - roundStartTime);
+		// minus pause time
+		result = result - pauseRoundTime;
+		// if pause running minus running pause time
+		if (pause) {
+			result = result - (System.currentTimeMillis() - pauseStarttime);
+		}
+		return result;
 	}
 
 	public long round() {
+		LOG.info("Adding round to timer");
 		activeIndex++;
+		pauseRoundTime = 0;
 		long currentTime = System.currentTimeMillis();
 		long returnTime = currentTime - roundStartTime;
 		roundStartTime = currentTime;
@@ -63,10 +89,35 @@ public final class TimeKeeper implements DataHolder<Cue> {
 	}
 
 	public void reset() {
+		LOG.info("Resetting timer");
 		startTime = System.currentTimeMillis();
+		pauseTime = 0;
+		pause = false;
 		roundStartTime = startTime;
 		activeIndex = -1;
 		notifyObservers();
+	}
+
+	public void pause() {
+		pause(!pause);
+	}
+
+	public void pause(boolean pause) {
+		this.pause = pause;
+		if (pause) {
+			LOG.info("Pausing timer");
+			pauseStarttime = System.currentTimeMillis();
+
+		} else {
+
+			LOG.info("Unpausing timer");
+			pauseTime = pauseTime + System.currentTimeMillis() - pauseStarttime;
+			pauseRoundTime = pauseRoundTime + System.currentTimeMillis() - pauseStarttime;
+		}
+	}
+
+	public boolean isPaused() {
+		return pause;
 	}
 
 	public void addCue(Cue trim) {

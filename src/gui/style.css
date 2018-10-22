@@ -132,7 +132,8 @@
 	-fx-background-insets: 0;
 }
 
-.button, .toggle-button {
+.button, .toggle-button, .split-menu-button, .text-field{
 	-fx-background-radius: null;
 	-fx-background-insets: 0px 0px 0px 0px, 0px, 1px, 1px;
 	}
+	

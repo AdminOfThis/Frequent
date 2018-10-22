@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -95,7 +96,11 @@
          <children>
             <TextField fx:id="txtCue" promptText="New Cue" HBox.hgrow="ALWAYS" />
             <Button fx:id="btnTime" mnemonicParsing="false" onAction="#round" text="Next" />
-            <ToggleButton fx:id="btnStart" mnemonicParsing="false" onAction="#toggleTimerStart" text="Start" />
+            <SplitMenuButton fx:id="btnStart" mnemonicParsing="false" text="Start">
+              <items>
+                <MenuItem fx:id="btnStop" mnemonicParsing="false" text="Stop" />
+              </items>
+            </SplitMenuButton>
          </children>
       </HBox>
    </children>

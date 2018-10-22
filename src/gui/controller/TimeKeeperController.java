@@ -19,8 +19,7 @@ import data.Cue;
 import data.FileIO;
 import gui.utilities.DoughnutChart;
 import gui.utilities.FXMLUtil;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -48,6 +47,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -62,16 +62,14 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
-import javafx.util.Duration;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
 import main.Main;
 
 public class TimeKeeperController implements Initializable {
 
-	private static final Logger			LOG				= Logger.getLogger(TimeKeeperController.class);
+	private static final Logger			LOG	= Logger.getLogger(TimeKeeperController.class);
 	private static TimeKeeperController	instance;
-	private static final double			REFRESH_RATE	= 1000;
 	@FXML
 	private Parent						paneCue;
 	@FXML
@@ -81,7 +79,11 @@ public class TimeKeeperController implements Initializable {
 	@FXML
 	private Button						btnTime;
 	@FXML
-	private ToggleButton				btnStart, btnInfo;
+	private ToggleButton				btnInfo;
+	@FXML
+	private SplitMenuButton				btnStart;
+	@FXML
+	private MenuItem					btnStop;
 	@FXML
 	private TableView<Cue>				cueTable;
 	@FXML
@@ -100,7 +102,6 @@ public class TimeKeeperController implements Initializable {
 	 *************/
 	@FXML
 	private MenuItem					cxtResetChannel, cxtDeleteCue;
-	private Timeline					timeKeeperLine;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -201,8 +202,8 @@ public class TimeKeeperController implements Initializable {
 			@Override
 			public void changed(ObservableValue<? extends Cue> observable, Cue oldValue, Cue newValue) {
 				enableContextMenu(newValue != null);
-				txtCueName.setDisable(newValue == null || btnStart.isSelected());
-				choiceCueChannel.setDisable(newValue == null || btnStart.isSelected());
+				txtCueName.setDisable(newValue == null || TimeKeeper.getInstance().getActiveIndex() < 0);
+				choiceCueChannel.setDisable(newValue == null || TimeKeeper.getInstance().getActiveIndex() < 0);
 				if (newValue == null) {
 					txtCueName.setText(null);
 					choiceCueChannel.getSelectionModel().select(-1);
@@ -242,26 +243,20 @@ public class TimeKeeperController implements Initializable {
 				round();
 			}
 		});
-		btnTime.disableProperty().bind(btnStart.selectedProperty().not());
 	}
 
 	private void initButtons() {
-		btnTime.disableProperty().bind(btnStart.selectedProperty().not());
-		btnStart.selectedProperty().addListener(new ChangeListener<Boolean>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				if (newValue) {
-					btnStart.setText("Stop");
-					if (!cueTable.getItems().isEmpty()) {
-						cueTable.getSelectionModel().select(0);
-					}
-					cueTable.requestFocus();
-				} else {
-					btnStart.setText("Start");
-				}
+		// btnTime.disableProperty().bind(btnStart.selectedProperty().not());
+		btnStart.setOnAction(e -> {
+			if (TimeKeeper.getInstance().getActiveIndex() < 0) {
+				startTimer();
+			} else {
+				TimeKeeper.getInstance().pause();
 			}
+			e.consume();
 		});
+
+		btnStop.setOnAction(e -> stopTimer());
 		txtCue.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			@Override
@@ -274,6 +269,72 @@ public class TimeKeeperController implements Initializable {
 				}
 			}
 		});
+	}
+
+	private void stopTimer() {
+
+		LOG.info("Stopping timer");
+		txtCueName.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
+		choiceCueChannel.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
+		TimeKeeper.getInstance().reset();
+		// Update GUI
+		btnStart.setText("Start");
+	}
+
+	private void startTimer() {
+		txtCueName.setDisable(true);
+		choiceCueChannel.setDisable(true);
+		lblTime.setText("00:00");
+		timeChart.getData().clear();
+		TimeKeeper.getInstance().reset();
+		TimeKeeper.getInstance().round();
+
+
+		AnimationTimer timer = new AnimationTimer() {
+
+			@Override
+			public void handle(long now) {
+				if (TimeKeeper.getInstance().getActiveIndex() >= 0) {
+					String name = TimeKeeper.getInstance().getActiveCue().getName();
+					Data data = null;
+					for (Data temp : timeChart.getData()) {
+						if (temp.getName().equals(name)) {
+							data = temp;
+							break;
+						}
+					}
+					if (data == null) {
+						data = new Data(name, TimeKeeper.getInstance().getRoundTime());
+						timeChart.getData().add(data);
+					}
+					data.setPieValue(TimeKeeper.getInstance().getRoundTime());
+					TimeKeeper.getInstance().getActiveCue().setTime(TimeKeeper.getInstance().getRoundTime());
+					cueTable.refresh();
+					// total time
+					long time = TimeKeeper.getInstance().getTimeRunning();
+					time = time / 1000;
+					int mins = (int) (time / 60);
+					int secs = (int) (time % 60);
+					lblTime.setText(String.format("%02d", mins) + ":" + String.format("%02d", secs));
+				}
+			}
+		};
+
+		timer.start();
+		while (TimeKeeper.getInstance().getActiveIndex() < 0) {
+		}
+		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
+		cueTable.getSelectionModel().select(0);
+		cueTable.refresh();
+		if (TimeKeeper.getInstance().getActiveCue().getChannelToSelect() != null) {
+			MainController.getInstance().setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
+		}
+		// Updating GUI
+		btnStart.setText("Pause");
+		if (!cueTable.getItems().isEmpty()) {
+			cueTable.getSelectionModel().select(0);
+		}
+		cueTable.requestFocus();
 	}
 
 	private void initTable() {
@@ -336,52 +397,7 @@ public class TimeKeeperController implements Initializable {
 
 	@FXML
 	private void toggleTimerStart(ActionEvent e) {
-		if (btnStart.isSelected()) {
-			LOG.info("Starting timer");
-			txtCueName.setDisable(true);
-			choiceCueChannel.setDisable(true);
-			lblTime.setText("00:00");
-			timeChart.getData().clear();
-			TimeKeeper.getInstance().reset();
-			TimeKeeper.getInstance().round();
-			timeKeeperLine = new Timeline(new KeyFrame(Duration.millis(REFRESH_RATE), event -> {
-				String name = TimeKeeper.getInstance().getActiveCue().getName();
-				Data data = null;
-				for (Data temp : timeChart.getData()) {
-					if (temp.getName().equals(name)) {
-						data = temp;
-						break;
-					}
-				}
-				if (data == null) {
-					data = new Data(name, TimeKeeper.getInstance().getTimeRunning());
-					timeChart.getData().add(data);
-				}
-				data.setPieValue(TimeKeeper.getInstance().getRoundTime());
-				TimeKeeper.getInstance().getActiveCue().setTime(TimeKeeper.getInstance().getRoundTime());
-				cueTable.refresh();
-				// total time
-				long time = System.currentTimeMillis() - TimeKeeper.getInstance().getStartTime();
-				time = time / 1000;
-				int mins = (int) (time / 60);
-				int secs = (int) (time % 60);
-				lblTime.setText(String.format("%02d", mins) + ":" + String.format("%02d", secs));
-			}));
-			timeKeeperLine.setCycleCount(Timeline.INDEFINITE);
-			timeKeeperLine.playFromStart();
-			cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
-			cueTable.getSelectionModel().select(0);
-			if (TimeKeeper.getInstance().getActiveCue().getChannelToSelect() != null) {
-				MainController.getInstance().setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
-			}
-		} else {
-			LOG.info("Stopping timer");
-			txtCueName.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
-			choiceCueChannel.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
-			timeKeeperLine.stop();
-			TimeKeeper.getInstance().reset();
-		}
-		e.consume();
+
 	}
 
 	@FXML
@@ -399,7 +415,7 @@ public class TimeKeeperController implements Initializable {
 
 	@FXML
 	private void deleteCue(ActionEvent e) {
-		if (!btnStart.isSelected() && cueTable.getSelectionModel().getSelectedItem() != null) {
+		if (TimeKeeper.getInstance().getActiveIndex() < 0 && cueTable.getSelectionModel().getSelectedItem() != null) {
 			Cue del = cueTable.getSelectionModel().getSelectedItem();
 			int index = cueTable.getSelectionModel().getSelectedIndex();
 			TimeKeeper.getInstance().removeCue(del);
@@ -413,7 +429,7 @@ public class TimeKeeperController implements Initializable {
 		e.consume();
 	}
 
-	public ToggleButton getStartButton() {
+	public SplitMenuButton getStartButton() {
 		return btnStart;
 	}
 
