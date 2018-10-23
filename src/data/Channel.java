@@ -85,6 +85,10 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		return hide;
 	}
 
+	private void removeStereoChannel() {
+		stereoChannel = null;
+	}
+
 	public void resetName() {
 		if (channel != null) {
 			setName(channel.getChannelName());
@@ -122,13 +126,16 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	public void setStereoChannel(final Channel newChannel) {
 		// if stereo channel is not already equal
 		if (!Objects.equals(newChannel, stereoChannel)) {
-			if (stereoChannel != null && equals(stereoChannel.getStereoChannel())) {
-				Channel oldChannel = stereoChannel;
-				stereoChannel = null;
-				oldChannel.setStereoChannel(null);
+			// if old stereochannel not null
+			if (stereoChannel != null) {
+				// remove reference to this on other channel
+				stereoChannel.removeStereoChannel();
 			}
+			// setting channel
 			stereoChannel = newChannel;
-			if (stereoChannel != null && !stereoChannel.getStereoChannel().equals(this)) {
+			// if new channel is not null and does not already reference this as his pair
+			if (stereoChannel != null && !Objects.equals(stereoChannel.getStereoChannel(), this)) {
+				// setting channel
 				stereoChannel.setStereoChannel(this);
 			}
 		}
