@@ -82,9 +82,13 @@ public abstract class FileIO {
 				ASIOController.getInstance().add(g);
 			}
 		}
-		LOG.info("= Loading statistics: ");
-		for (Entry<Class, Integer> o : counterMap.entrySet()) {
-			LOG.info("    " + o.getKey().getSimpleName() + ": " + o.getValue());
+		try {
+			LOG.info("= Loading statistics: ");
+			for (Entry<Class, Integer> o : counterMap.entrySet()) {
+				LOG.info("    " + o.getKey().getSimpleName() + ": " + o.getValue());
+			}
+		} catch (Exception e) {
+			LOG.warn("Problem while showing statistics", e);
 		}
 	}
 
@@ -109,22 +113,26 @@ public abstract class FileIO {
 			if (!file.getName().endsWith(ENDING)) {
 				LOG.warn("Unable to load file " + file.getName());
 			} else {
-				currentFile = file;
-				List<Serializable> result = null;
-				currentDir = file.getParentFile();
-				LOG.info("Trying to open file " + file.getName());
-				result = openFile(file);
-				if (result != null && !result.isEmpty()) {
-					for (DataHolder<?> h : holderList) {
-						h.clear();
+				try {
+					currentFile = file;
+					List<Serializable> result = null;
+					currentDir = file.getParentFile();
+					LOG.info("Trying to open file " + file.getName());
+					result = openFile(file);
+					if (result != null && !result.isEmpty()) {
+						for (DataHolder<?> h : holderList) {
+							h.clear();
+						}
+						handleResult(result);
+						MainController.getInstance().refresh();
+						TimeKeeperController.getInstance().refresh();
+						MainController.getInstance().setTitle(file.getName());
+						return true;
+					} else {
+						LOG.warn("Nothing loaded");
 					}
-					handleResult(result);
-					MainController.getInstance().refresh();
-					TimeKeeperController.getInstance().refresh();
-					MainController.getInstance().setTitle(file.getName());
-					return true;
-				} else {
-					LOG.warn("Nothing loaded");
+				} catch (Exception e) {
+					LOG.error("Unable to open file", e);
 				}
 			}
 		}
