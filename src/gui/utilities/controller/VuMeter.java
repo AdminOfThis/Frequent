@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import control.InputListener;
@@ -51,8 +52,8 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 	private int						timeSincePeak	= 0;
 	private List<Double>			pendingLevelList;
 
-	public VuMeter(Input channel, Orientation o) {
-		this.orientation = o;
+	public VuMeter(final Input channel, final Orientation o) {
+		orientation = o;
 		String path;
 		if (o.equals(Orientation.HORIZONTAL)) {
 			path = FXML_HORIZONTAL;
@@ -70,11 +71,101 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 		AnimationTimer timer = new AnimationTimer() {
 
 			@Override
-			public void handle(long now) {
+			public void handle(final long now) {
 				update();
 			}
 		};
 		timer.start();
+	}
+
+	public Input getInput() {
+		return channel;
+	}
+
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		lblPeak.visibleProperty().bind(showLabels);
+		lblTitle.visibleProperty().bind(showLabels);
+		lblTitle.prefWidthProperty().addListener(e -> {
+			if (lblTitle.prefHeightProperty().get() > prefWidthProperty().get()) {
+				lblTitle.setRotate(90.0);
+			} else {
+				lblTitle.setRotate(0.0);
+			}
+		});
+		lblPeak.setText("");
+		if (channel != null) {
+			lblTitle.setText(channel.getName());
+		} else {
+			lblTitle.setText("");
+		}
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause || parentPausable != null && parentPausable.isPaused() || channel == null
+		        || pendingLevelList == null;
+	}
+
+	@Override
+	public void levelChanged(final double level) {
+		pendingLevelList.add(Channel.percentToDB(level));
+	}
+
+	@Override
+	public void pause(final boolean pause) {
+		this.pause = pause;
+	}
+
+	public void setChannel(final Input c) {
+		if (!Objects.equals(c, channel)) {
+			if (channel != null) {
+				channel.removeListener(this);
+			}
+			channel = c;
+			if (c != null) {
+				setTitle(c.getName());
+				c.addListener(this);
+				if (c.getColor() != null && !c.getColor().isEmpty()) {
+					setStyle("-fx-accent: " + c.getColor());
+				} else {
+					setStyle("");
+				}
+				setOnContextMenuRequested(e -> {
+					ContextMenu menu = null;
+					if (c instanceof Channel) {
+						menu = new ChannelCellContextMenu((Channel) c);
+					} else if (c instanceof Group) {
+						menu = new GroupCellContextMenu((Group) c);
+					}
+					menu.show(vuPane, e.getScreenX(), e.getScreenY());
+				});
+			} else {
+				setTitle("");
+				setOnContextMenuRequested(null);
+				if (lblPeak != null) {
+					lblPeak.setText("");
+				}
+				if (lblTitle != null) {
+					lblTitle.setText("");
+				}
+			}
+		}
+	}
+
+	@Override
+	public void setParentPausable(final Pausable parent) {
+		parentPausable = parent;
+	}
+
+	public void setTitle(final String title) {
+		if (lblTitle != null) {
+			lblTitle.setText(title);
+		}
+	}
+
+	public void showLabels(final boolean b) {
+		showLabels.setValue(b);
 	}
 
 	private void update() {
@@ -129,93 +220,5 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 			}
 		}
 		pendingLevelList.clear();
-	}
-
-	public void setTitle(String title) {
-		if (lblTitle != null) {
-			lblTitle.setText(title);
-		}
-	}
-
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		lblPeak.visibleProperty().bind(showLabels);
-		lblTitle.visibleProperty().bind(showLabels);
-		lblTitle.prefWidthProperty().addListener(e -> {
-			if (lblTitle.prefHeightProperty().get() > this.prefWidthProperty().get()) {
-				lblTitle.setRotate(90.0);
-			} else {
-				lblTitle.setRotate(0.0);
-			}
-		});
-		lblPeak.setText("");
-		if (channel != null) {
-			lblTitle.setText(channel.getName());
-		} else {
-			lblTitle.setText("");
-		}
-	}
-
-	@Override
-	public void levelChanged(double level) {
-		pendingLevelList.add(Channel.percentToDB(level));
-	}
-
-	public void setChannel(Input c) {
-		if (this.channel != null) {
-			this.channel.removeListener(this);
-		}
-		this.channel = c;
-		if (c != null) {
-			setTitle(c.getName());
-			c.addListener(this);
-			if (c.getColor() != null && !c.getColor().isEmpty()) {
-				this.setStyle("-fx-accent: " + c.getColor());
-			} else {
-				this.setStyle("");
-			}
-			setOnContextMenuRequested(e -> {
-				ContextMenu menu = null;
-				if (c instanceof Channel) {
-					menu = new ChannelCellContextMenu((Channel) c);
-				} else if (c instanceof Group) {
-					menu = new GroupCellContextMenu((Group) c);
-				}
-				menu.show(vuPane, e.getScreenX(), e.getScreenY());
-			});
-		} else {
-			setTitle("");
-			setOnContextMenuRequested(null);
-			if (lblPeak != null) {
-				lblPeak.setText("");
-			}
-			if (lblTitle != null) {
-				lblTitle.setText("");
-			}
-		}
-	}
-
-	public Input getInput() {
-		return channel;
-	}
-
-	@Override
-	public void pause(boolean pause) {
-		this.pause = pause;
-	}
-
-	@Override
-	public boolean isPaused() {
-		return pause || (parentPausable != null && parentPausable.isPaused() || channel == null)
-		        || pendingLevelList == null;
-	}
-
-	@Override
-	public void setParentPausable(Pausable parent) {
-		parentPausable = parent;
-	}
-
-	public void showLabels(boolean b) {
-		showLabels.setValue(b);
 	}
 }

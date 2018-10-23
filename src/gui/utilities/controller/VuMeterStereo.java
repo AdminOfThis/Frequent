@@ -1,5 +1,7 @@
 package gui.utilities.controller;
 
+import java.util.Objects;
+
 import data.Input;
 import javafx.geometry.Orientation;
 import javafx.scene.layout.AnchorPane;
@@ -13,8 +15,7 @@ public class VuMeterStereo extends AnchorPane {
 	private Pane	root;
 	private VuMeter	meter1, meter2;
 
-
-	public VuMeterStereo(Input channel1, Input channel2, Orientation o) {
+	public VuMeterStereo(final Input channel1, final Input channel2, final Orientation o) {
 		if (o == Orientation.HORIZONTAL) {
 			root = new VBox();
 		} else {
@@ -34,15 +35,26 @@ public class VuMeterStereo extends AnchorPane {
 		root.getChildren().addAll(meter1, meter2);
 	}
 
-	public void setChannel1(Input channel) {
-		setChannel(meter1, channel);
+	public void setChannel1(final Input channel) {
+		meter1.setChannel(channel);
 	}
 
-	public void setChannel2(Input channel) {
-		setChannel(meter2, channel);
+	public void setChannel2(final Input channel) {
+		meter2.setChannel(channel);
 	}
 
-	private void setChannel(VuMeter meter, Input in) {
-		meter.setChannel(in);
+	public void setChannels(final Input c1, final Input c2) {
+		if (Objects.equals(c1, meter1.getInput())) {
+			meter2.setChannel(c2);
+		} else if (Objects.equals(c1, meter2.getInput())) {
+			meter1.setChannel(c2);
+		} else if (Objects.equals(c2, meter1.getInput())) {
+			meter2.setChannel(c1);
+		} else if (Objects.equals(c2, meter2.getInput())) {
+			meter1.setChannel(c1);
+		} else {
+			meter1.setChannel(c1);
+			meter2.setChannel(c2);
+		}
 	}
 }
