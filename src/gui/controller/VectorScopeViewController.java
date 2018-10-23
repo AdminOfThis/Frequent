@@ -46,7 +46,20 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	private Channel				c1, c2;
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public ArrayList<Node> getHeader() {
+		ArrayList<Node> list = new ArrayList<>();
+		list.add(box1);
+		list.add(box2);
+		// Pane p = new Pane();
+		// HBox.setHgrow(p, Priority.ALWAYS);
+		// list.add(p);
+		list.add(boxZoom);
+		list.add(boxDecay);
+		return list;
+	}
+
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
 		vectorScope = new VectorScope();
 		vectorScope.setParentPausable(this);
 		chartPane.getChildren().add(vectorScope);
@@ -55,7 +68,6 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		AnchorPane.setLeftAnchor(vectorScope, .0);
 		AnchorPane.setRightAnchor(vectorScope, .0);
 		vu1 = new VuMeter(null, Orientation.HORIZONTAL);
-		vu1.showLabels(false);
 		vu1.setRotate(180.0);
 		vu1.setParentPausable(this);
 		bottomPane.getChildren().add(vu1);
@@ -75,17 +87,17 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		StringConverter<Channel> converter = new StringConverter<Channel>() {
 
 			@Override
-			public String toString(Channel object) {
+			public Channel fromString(final String string) {
+				return null;
+			}
+
+			@Override
+			public String toString(final Channel object) {
 				if (object == null) {
 					LOG.info("");
 					return "- NONE -";
 				}
 				return object.getName();
-			}
-
-			@Override
-			public Channel fromString(String string) {
-				return null;
 			}
 		};
 		cmbChannel1.setConverter(converter);
@@ -110,26 +122,13 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public void pause(boolean pause) {
-		this.pause = pause;
-	}
-
-	@Override
 	public boolean isPaused() {
 		return pause;
 	}
 
 	@Override
-	public ArrayList<Node> getHeader() {
-		ArrayList<Node> list = new ArrayList<>();
-		list.add(box1);
-		list.add(box2);
-		// Pane p = new Pane();
-		// HBox.setHgrow(p, Priority.ALWAYS);
-		// list.add(p);
-		list.add(boxZoom);
-		list.add(boxDecay);
-		return list;
+	public void pause(final boolean pause) {
+		this.pause = pause;
 	}
 
 	@Override
