@@ -129,7 +129,6 @@
 				<path refid="test.classpath" />
 				<pathelement location="${test.build.dir}"/>
 			</classpath>
-			<formatter type="brief" usefile="false" />
 			<batchtest>
 				<fileset dir="${test.src.dir}">
 					<include name="**/*Test.java" />
