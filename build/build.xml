@@ -22,6 +22,7 @@
 	<property name="test.build.dir" location="build/test" />
 
 	<property name="build.dir" location="build" />
+	<property name="test.output.dir" location="." />
 	<property name="lib.extern" value="lib" />
 	<!-- Manifest options -->
 	<property name="manifest.mainclass" value="main.Main" />
@@ -44,7 +45,7 @@
 		<fileset dir="${test.lib.dir}">
 			<include name="**/*.jar" />
 		</fileset>
-		<pathelement location="${main.build.dir}"/>
+		<pathelement location="${main.build.dir}" />
 	</path>
 
 	<!-- converter of lib paths-->
@@ -104,15 +105,15 @@
 			<classpath refid="build.classpath" />
 		</javac>
 	</target>
-	
+
 	<target name="test-compile" depends="compile" description="compile the tests">
-			<!-- Compile the Java code from ${src} into ${build} -->
-			<echo message="starting compilation" level="info" />
-			<javac includeantruntime="false" srcdir="${test.src.dir}" destdir="${test.build.dir}" compiler="javac1.8" executable="yes" listfiles="no">
-				<classpath refid="test.classpath" />
-			</javac>
-		</target>
-		
+		<!-- Compile the Java code from ${src} into ${build} -->
+		<echo message="starting compilation" level="info" />
+		<javac includeantruntime="false" srcdir="${test.src.dir}" destdir="${test.build.dir}" compiler="javac1.8" executable="yes" listfiles="no">
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+
 
 	<target name="copy_additional_resources" depends="test-compile" description="kopiert alle zusaetzlichen Files aus Source">
 		<!-- Copy over none Java-Files -->
@@ -124,20 +125,21 @@
 	</target>
 
 	<target name="test" depends="copy_additional_resources" description="running all junit tests">
-		<junit printsummary="yes" haltonfailure="no">
+		<echo message="Running junit tests" level="info" />
+		<junitlauncher haltOnFailure="false" printsummary="true">
 			<classpath>
 				<path refid="test.classpath" />
-				<pathelement location="${test.build.dir}"/>
+				<pathelement location="${test.build.dir}" />
 			</classpath>
-			<batchtest>
-				<fileset dir="${test.src.dir}">
-					<include name="**/*Test.java" />
+			<testclasses outputdir="${test.output.dir}">
+				<fileset dir="${test.build.dir}">
+					<include name="**/*Test.class" />
 				</fileset>
-			</batchtest>
+			</testclasses>
+		</junitlauncher>
+		<echo message="Tests done" level="info" />
 
-		</junit>
 	</target>
-
 
 
 	<target name="dist" depends="test" description="generate the distribution">

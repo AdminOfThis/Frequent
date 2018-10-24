@@ -1,10 +1,11 @@
 package data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ChannelTest {
 
@@ -17,6 +18,7 @@ public class ChannelTest {
 	}
 
 	@Test
+	@BeforeEach
 	public void createChannel() {
 		setup();
 		assertNotNull(c1);
@@ -25,7 +27,6 @@ public class ChannelTest {
 
 	@Test
 	public void setStereoChannel() {
-		setup();
 		assertNull(c1.getStereoChannel());
 		assertNull(c2.getStereoChannel());
 		c1.setStereoChannel(c2);
