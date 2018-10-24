@@ -10,10 +10,18 @@
 
 	<property environment="env" />
 	<property name="name" value="Frequent" />
-	<property name="src" location="../src" />
-	<property name="lib" location="../lib" />
-	<property name="build" location="build" />
 
+	<!--folders-->
+	<!-- main -->
+	<property name="main.src.dir" location="../src/main" />
+	<property name="main.lib.dir" location="../lib/main" />
+	<property name="main.build.dir" location="build/main" />
+	<!-- test -->
+	<property name="test.src.dir" location="../src/test" />
+	<property name="test.lib.dir" location="../lib/test" />
+	<property name="test.build.dir" location="build/test" />
+
+	<property name="build.dir" location="build" />
 	<property name="lib.extern" value="lib" />
 	<!-- Manifest options -->
 	<property name="manifest.mainclass" value="main.Main" />
@@ -21,13 +29,22 @@
 	<property name="manifest.release" location="MANIFEST_RELEASE.MF" />
 	<!--<property name="version.clean" value="LOCAL" />-->
 
-
-
 	<path id="build.classpath">
-		<fileset dir="${lib}">
+		<fileset dir="${main.lib.dir}">
 			<include name="**/*.jar" />
 			<exclude name="ant*.jar" />
 		</fileset>
+	</path>
+
+	<path id="test.classpath">
+		<fileset dir="${main.lib.dir}">
+			<include name="**/*.jar" />
+			<exclude name="ant*.jar" />
+		</fileset>
+		<fileset dir="${test.lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement location="${main.build.dir}"/>
 	</path>
 
 	<!-- converter of lib paths-->
@@ -49,7 +66,6 @@
 		<exec executable="git" outputproperty="version" failifexecutionfails="false">
 			<arg value="describe" />
 		</exec>
-		<!--	<propertyregex property="versionclean" input="version" regexp="((\d{1}\.){2}\d{1})\-([a-zA-Z0-9]{5,10})" select="((\d{1}\.){2}\d{1})" casesensitive="false" />-->
 		<propertyregex property="version.clean" input="${version}" override="true" regexp="((\d{1,5}\.){2}\d{1,5})-(.{5,20})" global="true" select="\1" casesensitive="false" defaultValue="LOCAL" />
 
 		<!-- ensure version is defined even if git was not available -->
@@ -65,7 +81,7 @@
 	<target name="cleanPre" description="clean up">
 		<echo message="cleaning up" level="info" />
 		<!-- Delete the ${build} and ${dist} directory trees -->
-		<delete dir="${build}" />
+		<delete dir="${main.build.dir}" />
 		<delete file="${manifest.release}" />
 		<echo message="clean up done" level="info" />
 	</target>
@@ -77,27 +93,55 @@
 		<echo message="version=${version}" level="info" />
 		<echo message="version=${version.clean}" />
 		<!-- Create the build directory structure used by compile -->
-		<mkdir dir="${build}" />
+		<mkdir dir="${main.build.dir}" />
+		<mkdir dir="${test.build.dir}" />
 	</target>
 
 	<target name="compile" depends="init" description="compile the source">
 		<!-- Compile the Java code from ${src} into ${build} -->
 		<echo message="starting compilation" level="info" />
-		<javac includeantruntime="false" srcdir="${src}" destdir="${build}" compiler="javac1.8" executable="yes" listfiles="no">
+		<javac includeantruntime="false" srcdir="${main.src.dir}" destdir="${main.build.dir}" compiler="javac1.8" executable="yes" listfiles="no">
 			<classpath refid="build.classpath" />
 		</javac>
 	</target>
+	
+	<target name="test-compile" depends="compile" description="compile the tests">
+			<!-- Compile the Java code from ${src} into ${build} -->
+			<echo message="starting compilation" level="info" />
+			<javac includeantruntime="false" srcdir="${test.src.dir}" destdir="${test.build.dir}" compiler="javac1.8" executable="yes" listfiles="no">
+				<classpath refid="test.classpath" />
+			</javac>
+		</target>
+		
 
-	<target name="copy_additional_resources" depends="compile" description="kopiert alle zusaetzlichen Files aus Source">
+	<target name="copy_additional_resources" depends="test-compile" description="kopiert alle zusaetzlichen Files aus Source">
 		<!-- Copy over none Java-Files -->
-		<copy todir="${build}">
-			<fileset dir="${src}">
+		<copy todir="${main.build.dir}">
+			<fileset dir="${main.src.dir}">
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
 	</target>
 
-	<target name="dist" depends="copy_additional_resources" description="generate the distribution">
+	<target name="test" depends="copy_additional_resources" description="running all junit tests">
+		<junit printsummary="yes" haltonfailure="no">
+			<classpath>
+				<path refid="test.classpath" />
+				<pathelement location="${test.build.dir}"/>
+			</classpath>
+			<formatter type="brief" usefile="false" />
+			<batchtest>
+				<fileset dir="${test.src.dir}">
+					<include name="**/*Test.java" />
+				</fileset>
+			</batchtest>
+
+		</junit>
+	</target>
+
+
+
+	<target name="dist" depends="test" description="generate the distribution">
 		<!-- Create the distribution directory -->
 
 		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
@@ -110,14 +154,16 @@
 			<attribute name="Specification-Version" value="${version.clean}" />
 
 		</manifest>
-		<jar destfile="./${name}.jar" basedir="${build}" manifest="${manifest.release}" />
+		<jar destfile="./${name}.jar" basedir="${main.build.dir}" manifest="${manifest.release}" />
 		<antcall target="cleanPost" />
 	</target>
 
 	<target name="cleanPost" description="clean up after the build">
 		<echo message="cleaning up post build" level="info" />
 		<!-- Delete the ${build} and ${dist} directory trees -->
-		<delete dir="${build}" />
+		<delete dir="${main.build.dir}" />
+		<delete dir="${test.build.dir}" />
+		<delete dir="${build.dir}" />
 		<delete file="${manifest.release}" />
 		<echo message="clean up done" level="info" />
 	</target>
