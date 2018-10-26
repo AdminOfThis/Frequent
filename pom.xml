@@ -7,7 +7,27 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Frequent</name>
 
+	<properties>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+	</properties>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.0</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.junit.platform</groupId>
+						<artifactId>junit-platform-surefire-provider</artifactId>
+						<version>1.2.0</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
 
@@ -38,13 +58,17 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.junit</groupId>
-			<artifactId>junit-bom</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
 			<version>5.3.1</version>
-			<type>pom</type>
+			<scope>test</scope>
 		</dependency>
 
-
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<version>2.22.0</version>
+		</dependency>
 
 	</dependencies>
 </project>

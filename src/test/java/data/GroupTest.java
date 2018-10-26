@@ -21,6 +21,7 @@ public class GroupTest {
 		assertEquals(name, g.getName());
 	}
 
+	@Test
 	public void addChannels() {
 		assertTrue(g.getChannelList().isEmpty());
 		Channel c1 = new Channel();

@@ -12,15 +12,11 @@ public class ChannelTest {
 	Channel	c1;
 	Channel	c2;
 
-	private void setup() {
-		c1 = new Channel("Channel 1");
-		c2 = new Channel("Channel 2");
-	}
-
 	@Test
 	@BeforeEach
 	public void createChannel() {
-		setup();
+		c1 = new Channel("Channel 1");
+		c2 = new Channel("Channel 2");
 		assertNotNull(c1);
 		assertNotNull(c2);
 	}
