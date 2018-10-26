@@ -35,6 +35,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -61,6 +62,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import main.Main;
 
@@ -74,8 +76,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private static final String				DRUM_PATH		= "/fxml/DrumView.fxml";
 	private static final String				PHASE_PATH		= "/fxml/VectorScopeView.fxml";
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.getOnlyTitle() + " File",
-	        "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
 
 	public static String deriveColor(final String baseColor, final int index, final int total) {
@@ -136,7 +137,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private TimeKeeperController		timeKeeperController;
 
 	// private DrumController drumController;
-	private WaveFormChart waveFormController;
+	private WaveFormChart				waveFormController;
 
 	private void bindCheckMenuToToggleButton(final CheckMenuItem menu, final ToggleButton button) {
 		menu.setOnAction(e -> button.fire());
@@ -196,21 +197,19 @@ public class MainController implements Initializable, Pausable, CueListener {
 		channelList.setCellFactory(e -> new ChannelCell());
 		// channelList.setOnEditCommit(e ->
 		// timeKeeperController.setChannels(channelList.getItems()));
-		channelList.getSelectionModel().selectedItemProperty()
-		        .addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
-			        if (newValue != null) {
-				        if (newValue instanceof Channel) {
-					        Channel channel = (Channel) newValue;
-					        controller.setActiveChannel(channel.getChannel());
-					        // getting RTA Controller
-					        RTAViewController con = (RTAViewController) controllerMap
-					                .get(contentMap.get(toggleFFTView));
-					        con.setChannel(channel);
-					        LOG.info("Switching to channel " + channel.getName());
-				        }
-				        waveFormController.setChannel(newValue);
-			        }
-		        });
+		channelList.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				if (newValue instanceof Channel) {
+					Channel channel = (Channel) newValue;
+					controller.setActiveChannel(channel.getChannel());
+					// getting RTA Controller
+					RTAViewController con = (RTAViewController) controllerMap.get(contentMap.get(toggleFFTView));
+					con.setChannel(channel);
+					LOG.info("Switching to channel " + channel.getName());
+				}
+				waveFormController.setChannel(newValue);
+			}
+		});
 		// Edit channel list
 		channelList.setEditable(true);
 		toggleGroupChannels.selectedProperty().addListener((obs, oldV, newV) -> {
@@ -476,9 +475,10 @@ public class MainController implements Initializable, Pausable, CueListener {
 				}
 			} else {
 				for (Channel channel : ASIOController.getInstance().getInputList()) {
-					// if channel is not hidden, or showHidden, and if sterechannel isn't already added to list
-					if ((!channel.isHidden() || showHidden) && (channel.getStereoChannel() == null
-					        || !channelList.getItems().contains(channel.getStereoChannel()))) {
+					// if channel is not hidden, or showHidden, and if
+					// sterechannel isn't already added to list
+					if ((!channel.isHidden() || showHidden)
+						&& (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
 						channelList.getItems().add(channel);
 					}
 				}
@@ -658,5 +658,19 @@ public class MainController implements Initializable, Pausable, CueListener {
 		}
 		boolean hide = lblCurrentSong.getText().isEmpty() && lblNextSong.getText().isEmpty();
 		bottomLabel.setVisible(!hide);
+	}
+
+	@FXML
+	private void popOut(ActionEvent event) {
+		Stage stage = new Stage();
+		stage.setOnCloseRequest(e -> stage.close());
+		stage.initModality(Modality.NONE);
+		stage.initStyle(StageStyle.UTILITY);
+		stage.initOwner(root.getScene().getWindow());
+		Parent newRoot = (Parent) contentPane.getItems().get(0);
+		contentPane.getItems().remove(newRoot);
+		stage.setScene(new Scene(newRoot));
+		stage.show();
+		event.consume();
 	}
 }
