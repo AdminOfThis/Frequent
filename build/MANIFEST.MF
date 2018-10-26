@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Specification-Title: frequent
-Specification-Version: 1.0
-Specification-Vendor: AdminOfThis
-Implementation-Title: Frequent
-Implementation-Version: 0.2.5
-Implementation-Vendor: AdminOfThis

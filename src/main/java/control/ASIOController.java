@@ -248,7 +248,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					// double[] fftData = fftAbs(fftBuffer[i]);
 					double[] fftData = fftBuffer[i];
 					int baseFrequencyIndex = getBaseFrequencyIndex(fftData);
-					// int baseFrequencyIndex = getBaseFrequencyIndexHPS(fftData);
+					// int baseFrequencyIndex =
+					// getBaseFrequencyIndexHPS(fftData);
 					baseFrequency = getFrequencyForIndex(baseFrequencyIndex, fftData.length, (int) sampleRate) / 2;
 					// System.out.println("Base " + baseFrequency);
 					spectrumMap = getSpectrum(fftData);
@@ -438,8 +439,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		asioDriver.start();
 
 		// creating ThreadPool
-		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS,
-		        new LinkedBlockingQueue<Runnable>());
+		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 		LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
 		LOG.info("Buffer size: " + bufferSize);
 		LOG.info("Samplerate: " + sampleRate);
