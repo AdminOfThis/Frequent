@@ -3,8 +3,6 @@ package data;
 import java.util.Comparator;
 import java.util.Objects;
 
-import org.apache.log4j.Logger;
-
 import com.synthbot.jasiohost.AsioChannel;
 
 import control.ChannelListener;
