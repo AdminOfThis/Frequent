@@ -9,9 +9,6 @@ matrix:
     os: 
     - osx
     - linux
-install: ant
-before_install: cd ./build
-script: ant -file build.xml
 addons:
   apt:
     update: true
