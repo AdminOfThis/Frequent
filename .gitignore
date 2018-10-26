@@ -45,3 +45,4 @@ Thumbs.db
 /workdir/*.png
 /workdir/*.properties
 /workdir/rta.temp
+/target/
