@@ -12,8 +12,7 @@ import control.InputListener;
 
 public class Channel extends Input implements Comparable<Channel>, Comparator<Channel> {
 
-	private static final Logger	LOG					= Logger.getLogger(Channel.class);
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public static double percentToDB(final double level) {
 		return 20.0 * Math.log10(level /* / 1000.0 */);
@@ -47,8 +46,6 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 			this.channel = channel;
 			setName(channel.getChannelName());
 			channelIndex = channel.getChannelIndex();
-		} else {
-			LOG.warn("Created channel without corresponding asioChannel");
 		}
 		if (name != null) {
 			setName(name);
