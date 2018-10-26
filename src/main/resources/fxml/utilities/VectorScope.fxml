@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label fx:id="lblTitle" style="-fx-font-size: 20;" />
       <HBox fx:id="chartParent" alignment="CENTER" fillHeight="false" minHeight="300.0" minWidth="300.0" prefHeight="500.0" prefWidth="500.0" VBox.vgrow="SOMETIMES">

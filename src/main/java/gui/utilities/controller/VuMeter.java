@@ -34,8 +34,8 @@ import javafx.util.Duration;
 
 public class VuMeter extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
-	private static final String		FXML_VERTICAL	= "/gui/utilities/gui/VuMeterVertical.fxml";
-	private static final String		FXML_HORIZONTAL	= "/gui/utilities/gui/VuMeterHorizontal.fxml";
+	private static final String		FXML_VERTICAL	= "/fxml/utilities/VuMeterVertical.fxml";
+	private static final String		FXML_HORIZONTAL	= "/fxml/utilities/VuMeterHorizontal.fxml";
 	private static final int		PEAK_HOLD		= 50;
 	@FXML
 	private StackPane				vuPane;
@@ -103,8 +103,7 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 
 	@Override
 	public boolean isPaused() {
-		return pause || parentPausable != null && parentPausable.isPaused() || channel == null
-		        || pendingLevelList == null;
+		return pause || parentPausable != null && parentPausable.isPaused() || channel == null || pendingLevelList == null;
 	}
 
 	@Override
@@ -180,15 +179,15 @@ public class VuMeter extends AnchorPane implements Initializable, InputListener,
 						timeSincePeak++;
 					}
 					if (orientation == Orientation.VERTICAL) {
-						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN))
-						        / Math.abs(RTAViewController.FFT_MIN));
-						vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(RTAViewController.FFT_MIN))
-						        / Math.abs(RTAViewController.FFT_MIN));
+						vuPeakPane.setPrefHeight(
+							vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+						vuLastPeakPane.setPrefHeight(
+							vuPane.getHeight() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
 					} else {
-						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(RTAViewController.FFT_MIN))
-						        / Math.abs(RTAViewController.FFT_MIN));
-						vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(RTAViewController.FFT_MIN))
-						        / Math.abs(RTAViewController.FFT_MIN));
+						vuPeakPane.setPrefWidth(
+							vuPane.getWidth() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+						vuLastPeakPane.setPrefWidth(
+							vuPane.getWidth() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
 					}
 					if (peakdB >= RTAViewController.FFT_MIN) {
 						lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");

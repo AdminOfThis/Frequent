@@ -27,7 +27,7 @@ import javafx.scene.paint.Color;
 public class ChannelCell extends ListCell<Input> implements Initializable {
 
 	private static final Logger	LOG			= Logger.getLogger(ChannelCell.class);
-	private static final String	FXML_PATH	= "/gui/utilities/gui/ChannelCell.fxml";
+	private static final String	FXML_PATH	= "/fxml/utilities/ChannelCell.fxml";
 
 	public static String toRGBCode(final Color color) {
 		int red = (int) (color.getRed() * 255);

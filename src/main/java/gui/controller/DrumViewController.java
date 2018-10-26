@@ -43,7 +43,7 @@ import javafx.util.StringConverter;
 public class DrumViewController implements Initializable, PausableView {
 
 	private static final Logger										LOG					= Logger.getLogger(DrumViewController.class);
-	private static final String										DRUM_ITEM_PATH		= "/gui/utilities/gui/DrumTriggerItem.fxml";
+	private static final String										DRUM_ITEM_PATH		= "/fxml/utilities/DrumTriggerItem.fxml";
 	private static final int										REFRESH_RATE		= 10;
 	private static final double										TIME_FRAME			= 7500;
 	private static final double										DRUM_TIME_FRAME		= 5000;

@@ -7,7 +7,7 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox alignment="CENTER_LEFT" spacing="5.0" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.DrumTriggerItemController">
+<HBox alignment="CENTER_LEFT" spacing="5.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.DrumTriggerItemController">
    <children>
       <Label fx:id="label" prefWidth="50.0" text="Label" />
       <ComboBox fx:id="combo" prefWidth="150.0" />

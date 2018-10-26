@@ -5,13 +5,13 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 
-<HBox alignment="CENTER_LEFT" minHeight="10.0" minWidth="10.0" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<HBox alignment="CENTER_LEFT" minHeight="10.0" minWidth="10.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <StackPane fx:id="vuPane" prefWidth="200.0" styleClass="vuMeter-background" HBox.hgrow="ALWAYS">
          <children>
             <HBox alignment="CENTER_LEFT">
                <children>
-                  <Pane fx:id="vuPeakPane" prefWidth="0.0" styleClass="vuMeter-meter-horizontal" stylesheets="@../../style.css" />
+                  <Pane fx:id="vuPeakPane" prefWidth="0.0" styleClass="vuMeter-meter-horizontal" stylesheets="@../../css/style.css" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT">

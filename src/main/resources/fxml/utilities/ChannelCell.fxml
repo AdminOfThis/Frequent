@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox alignment="CENTER_LEFT" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<HBox alignment="CENTER_LEFT" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label fx:id="lblNumber" minWidth="15.0" prefWidth="15.0" />
       <AnchorPane fx:id="chartPane" prefHeight="30.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />

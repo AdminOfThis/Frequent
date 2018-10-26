@@ -39,9 +39,9 @@ public class Main extends Application {
 	private static final String	VERSION_KEY		= "Implementation-Version";
 	private static final String	TITLE_KEY		= "Implementation-Title";
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
-	private static final String	GUI_IO_CHOOSER	= "/gui/gui/IOChooser.fxml";
-	private static final String	GUI_MAIN_PATH	= "/gui/gui/Main.fxml";
-	private static final String	LOGO			= "/res/logo_64.png";
+	private static final String	GUI_IO_CHOOSER	= "/fxml/IOChooser.fxml";
+	private static final String	GUI_MAIN_PATH	= "/fxml/Main.fxml";
+	private static final String	LOGO			= "/logo/logo_64.png";
 	private static String		style			= "";
 	private static boolean		debug			= false, fast = false;
 	private static String		version, title;
@@ -162,7 +162,8 @@ public class Main extends Application {
 	}
 
 	/**
-	 * checks the start parameters for keywords and sets the debug flag to true if found
+	 * checks the start parameters for keywords and sets the debug flag to true
+	 * if found
 	 *
 	 * @param args
 	 */
