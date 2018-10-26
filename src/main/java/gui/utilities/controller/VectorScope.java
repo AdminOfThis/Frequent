@@ -33,7 +33,7 @@ import main.Main;
 public class VectorScope extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
 	private static final Logger				LOG				= Logger.getLogger(VectorScope.class);
-	private static final String				FXML			= "/gui/utilities/gui/VectorScope.fxml";
+	private static final String				FXML			= "/fxml/utilities/VectorScope.fxml";
 	// GUI
 	private static final int				MAX_DATA_POINTS	= 200;
 // private static final int DOTS_PER_BUFFER = 500;

@@ -66,13 +66,13 @@ import main.Main;
 
 public class MainController implements Initializable, Pausable, CueListener {
 
-	private static final String				FFT_PATH		= "/gui/gui/RTAView.fxml";
-	private static final String				RTA_PATH		= "/gui/gui/FFTView.fxml";
-	private static final String				TIMEKEEPER_PATH	= "/gui/gui/TimeKeeper.fxml";
-	private static final String				GROUP_PATH		= "/gui/gui/GroupView.fxml";
-	// private static final String BACKGROUND_PATH = "/gui/gui/Background.fxml";
-	private static final String				DRUM_PATH		= "/gui/gui/DrumView.fxml";
-	private static final String				PHASE_PATH		= "/gui/gui/VectorScopeView.fxml";
+	private static final String				FFT_PATH		= "/fxml/RTAView.fxml";
+	private static final String				RTA_PATH		= "/fxml/FFTView.fxml";
+	private static final String				TIMEKEEPER_PATH	= "/fxml/TimeKeeper.fxml";
+	private static final String				GROUP_PATH		= "/fxml/GroupView.fxml";
+	// private static final String BACKGROUND_PATH = "/fxml/Background.fxml";
+	private static final String				DRUM_PATH		= "/fxml/DrumView.fxml";
+	private static final String				PHASE_PATH		= "/fxml/VectorScopeView.fxml";
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.getOnlyTitle() + " File",
 	        "*" + FileIO.ENDING);

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.Circle?>
 
-<StackPane minHeight="10.0" minWidth="10.0" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.BackgroundItemController">
+<StackPane minHeight="10.0" minWidth="10.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.BackgroundItemController">
    <children>
       <PieChart fx:id="chart" labelsVisible="false" legendVisible="false" minHeight="10.0" minWidth="10.0" />
       <Circle fx:id="circle" fill="DODGERBLUE" radius="50.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" style="-fx-fill: derive(-fx-base, 26%);" />

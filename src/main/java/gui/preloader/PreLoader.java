@@ -22,8 +22,8 @@ import main.Main;
 public class PreLoader extends Preloader implements Initializable {
 
 	private static final Logger	LOG				= Logger.getLogger(Preloader.class);
-	private static final String	PRELOADER_PATH	= "/gui/preloader/SplashScreen.fxml";
-	private static final String	LOGO_SMALL		= "/res/logo_64.png";
+	private static final String	PRELOADER_PATH	= "/fxml/preloader/SplashScreen.fxml";
+	private static final String	LOGO_SMALL		= "/logo/logo_64.png";
 	private Stage				stage;
 	@FXML
 	private ProgressBar			progress;
@@ -48,8 +48,7 @@ public class PreLoader extends Preloader implements Initializable {
 		try {
 			stage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO_SMALL)));
 		} catch (Exception e) {
-			LOG.error("Unable to load logo");
-			LOG.debug("", e);
+			LOG.error("Unable to load logo", e);
 		}
 		stage.initStyle(StageStyle.UNDECORATED);
 		stage.setTitle(Main.getTitle());

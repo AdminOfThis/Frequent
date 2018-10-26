@@ -31,7 +31,7 @@ import javafx.util.StringConverter;
 public class WaveFormChart extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
 	private static final Logger			LOG			= Logger.getLogger(WaveFormChart.class);
-	private static final String			FXML		= "/gui/utilities/gui/WaveFormChart.fxml";
+	private static final String			FXML		= "/fxml/utilities/WaveFormChart.fxml";
 	private static final long			TIME_FRAME	= 5000000000l;
 
 	@FXML

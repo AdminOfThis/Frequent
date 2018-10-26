@@ -38,7 +38,6 @@ public abstract class FXMLUtil {
 			parent = loader.load();
 		} catch (Exception e) {
 			LOG.error("Unable to load FXMLFile", e);
-			LOG.debug("", e);
 		}
 		return parent;
 	}
