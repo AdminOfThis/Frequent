@@ -83,7 +83,7 @@ public abstract class FXMLUtil {
 		return String.format("#%02X%02X%02X", red, green, blue);
 	}
 
-	public static Color colorFade(final Color baseColor, final Color targetColor, final double percent) {
+	private static Color colorFade(final Color baseColor, final Color targetColor, final double percent) {
 		Color result = null;
 
 		double deltaRed = targetColor.getRed() - baseColor.getRed();
@@ -98,5 +98,18 @@ public abstract class FXMLUtil {
 
 		result = Color.rgb(red, green, blue);
 		return result;
+	}
+
+	public static Color colorFade(final double percent, final Color... colors) {
+		int index = (int) Math.floor((percent * colors.length));
+		// if topped (only with 1.0 percent
+		if (index == colors.length) {
+			return colors[colors.length - 1];
+		} else {
+			Color baseColor = colors[index - 1];
+			Color targetColor = colors[index];
+			double percentNew = (percent - ((1.0 / colors.length) * index)) / ((1.0 / colors.length));
+			return colorFade(baseColor, targetColor, percentNew);
+		}
 	}
 }
