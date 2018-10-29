@@ -109,7 +109,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 				// System.out.println(percent);
 				// }
 				// System.out.println(percent);
-				content.setFill(FXMLUtil.colorFade(Color.web(accent), Color.RED, percent));
+				content.setFill(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.YELLOW, Color.RED));
 				double startPoint = getWidth() / 2000.0 * map[0][pointCount];
 				// System.out.println(startPoint);
 				double endpoint;

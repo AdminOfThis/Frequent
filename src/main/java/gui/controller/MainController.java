@@ -659,18 +659,4 @@ public class MainController implements Initializable, Pausable, CueListener {
 		boolean hide = lblCurrentSong.getText().isEmpty() && lblNextSong.getText().isEmpty();
 		bottomLabel.setVisible(!hide);
 	}
-
-	@FXML
-	private void popOut(ActionEvent event) {
-		Stage stage = new Stage();
-		stage.setOnCloseRequest(e -> stage.close());
-		stage.initModality(Modality.NONE);
-		stage.initStyle(StageStyle.UTILITY);
-		stage.initOwner(root.getScene().getWindow());
-		Parent newRoot = (Parent) contentPane.getItems().get(0);
-		contentPane.getItems().remove(newRoot);
-		stage.setScene(new Scene(newRoot));
-		stage.show();
-		event.consume();
-	}
 }
