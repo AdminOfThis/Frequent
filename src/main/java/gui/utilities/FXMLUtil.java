@@ -17,36 +17,41 @@ public abstract class FXMLUtil {
 	public static final String		STYLE_SHEET	= "/gui/style.css";
 	private static Initializable	controller;
 
-	public static Parent loadFXML(final String string) {
-		Parent parent = null;
-		try {
-			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
-			parent = loader.load();
-			controller = loader.getController();
-		} catch (Exception e) {
-			LOG.error("Unable to load FXMLFile");
-			LOG.info("", e);
-		}
-		return parent;
+	private static Color colorFade(final Color baseColor, final Color targetColor, final double percent) {
+		Color result = null;
+
+		double deltaRed = targetColor.getRed() - baseColor.getRed();
+		double deltaGreen = targetColor.getGreen() - baseColor.getGreen();
+		double deltaBlue = targetColor.getBlue() - baseColor.getBlue();
+		double redD = baseColor.getRed() + deltaRed * percent;
+		double greenD = baseColor.getGreen() + deltaGreen * percent;
+		double blueD = baseColor.getBlue() + deltaBlue * percent;
+		int red = (int) Math.floor(redD * 255.0);
+		int green = (int) Math.floor(greenD * 255.0);
+		int blue = (int) Math.floor(blueD * 255.0);
+
+		result = Color.rgb(red, green, blue);
+		return result;
 	}
 
-	public static Parent loadFXML(final String string, Initializable controller) {
-		Parent parent = null;
-		try {
-			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
-			loader.setController(controller);
-			parent = loader.load();
-		} catch (Exception e) {
-			LOG.error("Unable to load FXMLFile", e);
+	public static Color colorFade(final double percent, final Color... colors) {
+		int index = (int) Math.floor(percent * (colors.length - 1));
+		// if topped (only with 1.0 percent
+		if (index == colors.length)
+			return colors[colors.length - 1];
+		else {
+			Color baseColor = colors[index];
+			Color targetColor = colors[index + 1];
+			double percentNew = (percent - 1.0 / (colors.length - 1) * index) / (1.0 / (colors.length - 1));
+			return colorFade(baseColor, targetColor, percentNew);
 		}
-		return parent;
 	}
 
 	public static Initializable getController() {
 		return controller;
 	}
 
-	public static String getStyleValue(String value) {
+	public static String getStyleValue(final String value) {
 		String result = "";
 		BufferedReader reader = null;
 		try {
@@ -76,40 +81,35 @@ public abstract class FXMLUtil {
 		return result.trim();
 	}
 
-	public static String toRGBCode(Color color) {
+	public static Parent loadFXML(final String string) {
+		Parent parent = null;
+		try {
+			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
+			parent = loader.load();
+			controller = loader.getController();
+		} catch (Exception e) {
+			LOG.error("Unable to load FXMLFile");
+			LOG.info("", e);
+		}
+		return parent;
+	}
+
+	public static Parent loadFXML(final String string, final Initializable controller) {
+		Parent parent = null;
+		try {
+			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
+			loader.setController(controller);
+			parent = loader.load();
+		} catch (Exception e) {
+			LOG.error("Unable to load FXMLFile", e);
+		}
+		return parent;
+	}
+
+	public static String toRGBCode(final Color color) {
 		int red = (int) (color.getRed() * 255);
 		int green = (int) (color.getGreen() * 255);
 		int blue = (int) (color.getBlue() * 255);
 		return String.format("#%02X%02X%02X", red, green, blue);
-	}
-
-	private static Color colorFade(final Color baseColor, final Color targetColor, final double percent) {
-		Color result = null;
-
-		double deltaRed = targetColor.getRed() - baseColor.getRed();
-		double deltaGreen = targetColor.getGreen() - baseColor.getGreen();
-		double deltaBlue = targetColor.getBlue() - baseColor.getBlue();
-		double redD = baseColor.getRed() + (deltaRed * percent);
-		double greenD = baseColor.getGreen() + (deltaGreen * percent);
-		double blueD = baseColor.getBlue() + (deltaBlue * percent);
-		int red = (int) Math.floor(redD * 255.0);
-		int green = (int) Math.floor(greenD * 255.0);
-		int blue = (int) Math.floor(blueD * 255.0);
-
-		result = Color.rgb(red, green, blue);
-		return result;
-	}
-
-	public static Color colorFade(final double percent, final Color... colors) {
-		int index = (int) Math.floor((percent * colors.length));
-		// if topped (only with 1.0 percent
-		if (index == colors.length) {
-			return colors[colors.length - 1];
-		} else {
-			Color baseColor = colors[index - 1];
-			Color targetColor = colors[index];
-			double percentNew = (percent - ((1.0 / colors.length) * index)) / ((1.0 / colors.length));
-			return colorFade(baseColor, targetColor, percentNew);
-		}
 	}
 }

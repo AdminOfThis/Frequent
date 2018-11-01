@@ -28,8 +28,8 @@ import main.Main;
 public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	private static final Logger	LOG			= Logger.getLogger(ResizableCanvas.class);
-	private int					count		= 0;
 	private static final int	POINTS		= 1024;
+	private int					count		= 0;
 	private boolean				autoscroll	= true;
 	private String				accent		= "#FF0000";
 	private GraphicsContext		content;
@@ -38,18 +38,18 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 	private boolean				exporting	= false;
 	private Pausable			pausableParent;
 
-	private ResizableCanvas(double width, double heigth) {
-		this();
-		setWidth(width);
-		setHeight(heigth);
-	}
-
 	private ResizableCanvas() {
 		accent = Main.getAccentColor();
 		content = getGraphicsContext2D();
 	}
 
-	public ResizableCanvas(ScrollPane parent) {
+	private ResizableCanvas(final double width, final double heigth) {
+		this();
+		setWidth(width);
+		setHeight(heigth);
+	}
+
+	public ResizableCanvas(final ScrollPane parent) {
 		this();
 		this.parent = parent;
 		widthProperty().bind(parent.widthProperty());
@@ -57,40 +57,19 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 		setHeight(10.0);
 	}
 
-	private void reset() {
-		content.clearRect(0, 0, getWidth(), getHeight());
-		count = 0;
-		setHeight(10);
-	}
-
-	@Override
-	public boolean isResizable() {
-		return true;
-	}
-
-	@Override
-	public double prefWidth(double height) {
-		return getWidth();
-	}
-
-	@Override
-	public double prefHeight(double width) {
-		return getHeight();
-	}
-
-	public void addLine(double[][] map) {
+	public void addLine(final double[][] map) {
 		if (!exporting) {
 			addLine(map, false);
 		}
 	}
 
-	private void addLine(double[][] map, boolean toExport) {
+	private void addLine(final double[][] map, final boolean toExport) {
 		if (!isPaused() || toExport) {
 			if (!toExport) {
 				RTAIO.writeToFile(map);
 			}
 			// long before = System.currentTimeMillis();
-			double size = (getWidth() / POINTS);
+			double size = getWidth() / POINTS;
 			if (getHeight() < size * count + size) {
 				setHeight(getHeight() + size);
 			}
@@ -98,18 +77,25 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			for (int pointCount = 0; pointCount < map[0].length; pointCount++) {
 				// System.out.println(map[1][pointCount]);
 				double level = Math.abs(map[1][pointCount]);
-				level = Channel.percentToDB(level / 1000.0);
-				if (level < RTAViewController.FFT_MIN) {
-					level = RTAViewController.FFT_MIN;
+				level = Channel.percentToDB(level * 1000.0);
+				if (level <= RTAViewController.FFT_MIN) {
+					level = RTAViewController.FFT_MIN + 1;
+				} else if (level >= Math.abs(RTAViewController.FFT_MIN)) {
+					level = Math.abs(RTAViewController.FFT_MIN) - 1;
 				}
-				level = Math.abs(level);
-				double percent = (Math.abs(RTAViewController.FFT_MIN) - level) / Math.abs(RTAViewController.FFT_MIN);
+				double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level))
+				        / Math.abs(RTAViewController.FFT_MIN);
+				percent = 1.0 - percent;
 				// double percent = map[1][pointCount] / 10.0;
 				// if (percent < 0 || percent > 1) {
 				// System.out.println(percent);
 				// }
 				// System.out.println(percent);
-				content.setFill(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.YELLOW, Color.RED));
+				try {
+					content.setFill(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.YELLOW, Color.RED));
+				} catch (ArrayIndexOutOfBoundsException e) {
+					LOG.error("Out of bounds: " + level, e);
+				}
 				double startPoint = getWidth() / 2000.0 * map[0][pointCount];
 				// System.out.println(startPoint);
 				double endpoint;
@@ -133,7 +119,54 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 		}
 	}
 
-	public void save(File file) {
+	@Override
+	public boolean isPaused() {
+		return pause || pausableParent != null && pausableParent.isPaused();
+	}
+
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
+
+	@Override
+	public void pause(final boolean pause) {
+		if (this.pause != pause) {
+			this.pause = pause;
+			if (!pause) {
+				reset();
+				RTAIO.deleteFile();
+			}
+		}
+	}
+
+	@Override
+	public double prefHeight(final double width) {
+		return getHeight();
+	}
+
+	@Override
+	public double prefWidth(final double height) {
+		return getWidth();
+	}
+
+	private ResizableCanvas recreateCanvas() {
+		ResizableCanvas printCanvas = new ResizableCanvas(getWidth(), getHeight());
+		reset();
+		ArrayList<double[][]> list = RTAIO.readFile();
+		for (double[][] entry : list) {
+			printCanvas.addLine(entry, true);
+		}
+		return printCanvas;
+	}
+
+	private void reset() {
+		content.clearRect(0, 0, getWidth(), getHeight());
+		count = 0;
+		setHeight(10);
+	}
+
+	public void save(final File file) {
 		final Task<Boolean> task = new Task<Boolean>() {
 
 			@Override
@@ -166,34 +199,8 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 		th.start();
 	}
 
-	private ResizableCanvas recreateCanvas() {
-		ResizableCanvas printCanvas = new ResizableCanvas(getWidth(), getHeight());
-		reset();
-		ArrayList<double[][]> list = RTAIO.readFile();
-		for (double[][] entry : list) {
-			printCanvas.addLine(entry, true);
-		}
-		return printCanvas;
-	}
-
 	@Override
-	public void pause(boolean pause) {
-		if (this.pause != pause) {
-			this.pause = pause;
-			if (!pause) {
-				reset();
-				RTAIO.deleteFile();
-			}
-		}
-	}
-
-	@Override
-	public boolean isPaused() {
-		return pause || (pausableParent != null && pausableParent.isPaused());
-	}
-
-	@Override
-	public void setParentPausable(Pausable parent) {
+	public void setParentPausable(final Pausable parent) {
 		pausableParent = parent;
 	}
 }
