@@ -69,6 +69,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		AnchorPane.setRightAnchor(vectorScope, .0);
 		vu1 = new VuMeter(null, Orientation.HORIZONTAL);
 		vu1.setRotate(180.0);
+		vu1.showLabels(false);
 		vu1.setParentPausable(this);
 		bottomPane.getChildren().add(vu1);
 		HBox.setHgrow(vu1, Priority.SOMETIMES);

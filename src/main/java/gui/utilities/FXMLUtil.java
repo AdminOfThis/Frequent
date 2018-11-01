@@ -35,15 +35,19 @@ public abstract class FXMLUtil {
 	}
 
 	public static Color colorFade(final double percent, final Color... colors) {
-		int index = (int) Math.floor(percent * (colors.length - 1));
-		// if topped (only with 1.0 percent
-		if (index == colors.length)
-			return colors[colors.length - 1];
-		else {
-			Color baseColor = colors[index];
-			Color targetColor = colors[index + 1];
-			double percentNew = (percent - 1.0 / (colors.length - 1) * index) / (1.0 / (colors.length - 1));
-			return colorFade(baseColor, targetColor, percentNew);
+		try {
+			int index = (int) Math.floor(percent * (colors.length - 1));
+			// if topped (only with 1.0 percent
+			if (index == colors.length)
+				return colors[colors.length - 1];
+			else {
+				Color baseColor = colors[index];
+				Color targetColor = colors[index + 1];
+				double percentNew = (percent - 1.0 / (colors.length - 1) * index) / (1.0 / (colors.length - 1));
+				return colorFade(baseColor, targetColor, percentNew);
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return colors[0];
 		}
 	}
 

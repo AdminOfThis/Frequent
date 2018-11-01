@@ -86,11 +86,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 				double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level))
 				        / Math.abs(RTAViewController.FFT_MIN);
 				percent = 1.0 - percent;
-				// double percent = map[1][pointCount] / 10.0;
-				// if (percent < 0 || percent > 1) {
-				// System.out.println(percent);
-				// }
-				// System.out.println(percent);
 				try {
 					content.setFill(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.YELLOW, Color.RED));
 				} catch (ArrayIndexOutOfBoundsException e) {
