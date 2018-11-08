@@ -20,7 +20,7 @@ deploy:
       repo: AdminOfThis/Frequent
       tags: true
   - provider: bintray
-    skip_cleanup: truef
+    skip_cleanup: true
     file_glob: true
     file: "./*.jar"
     user: "AdminOfThis"
