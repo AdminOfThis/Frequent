@@ -19,10 +19,3 @@ deploy:
     on:
       repo: AdminOfThis/Frequent
       tags: true
-  - provider: bintray
-    skip_cleanup: true
-    file_glob: true
-    file: "./*.jar"
-    user: "AdminOfThis"
-    key:
-      secure: M/FzpgsSdlUmlTT884SEujk/ZLJF6sho705MQB+8UnXUW1WZ8kOydGOVoXQT1LqJ4OyMTmL7WMSktKS0hpc/GWZ0BWpEMGZJ/jyREVvTEGZyd6FjFdOIedGVR3/tIWOm65X+VnQIFIeGNPPskRA6wUOzsmAPdfBStwT0H5yaLUDHoMohxVbFdCrbPB0TjthxiH9PdDkUwjbJBSLwIs2x5uh+gXcFRcy8D+c5plnqUeif08eIhYTBxPlCdcWLFb/u+XnwQhtM/zbBsG/eMd8MCiQAJYXsSMlg9Oxp83FZDQfbJNI7KDcTQvP8Oe4fldvlR6vvVjYlyq3K1QrS5IAhp71DowDsgapfprhhqJnTHpvYBp0VSBsVo98FAX93Q7117lL4LVnpNCI0Wt6eBor4LxZax/nk6xPYz1QgTgnWouKrSy/iIvmreOEJCWFBG84LCx+2Lcw7d0DXUnVP6t7LW2Sj+RQ/W0MpoBYJv5kzDddjTuAn74R+vQP6T96/V2nZTfyDUXb4iocO79GTlhQIWW9dDubQIdxDHoXO63uYlbq3EtWFrcENUStGyXDuWWhZrKrhaEi81uSzEOmCfC0uA340pD5wR+O7a4NV1FeNVbeaaNl32uTLZHmExbvh4Nc8uoZ5QZah3ovD/N/f2Xr9pMldwRqdLRDRZ1x8z1r0PXI=
