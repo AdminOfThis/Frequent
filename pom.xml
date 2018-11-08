@@ -15,7 +15,6 @@
 
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -80,8 +79,4 @@
 			<url>file:${project.basedir}/lib</url>
 		</repository>
 	</repositories>
-
-	<modules>
-		<module>beam</module>
-	</modules>
 </project>
