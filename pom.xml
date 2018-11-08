@@ -6,6 +6,7 @@
 	<artifactId>frequent</artifactId>
 	<version>0.2.18</version>
 	<name>Frequent</name>
+	<packaging>pom</packaging>
 
 	<properties>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -80,4 +81,7 @@
 		</repository>
 	</repositories>
 
+	<modules>
+		<module>beam</module>
+	</modules>
 </project>
