@@ -34,6 +34,8 @@ public class Main extends Application {
 	private static String		color_accent	= "#5EBF23";
 	private static String		color_base		= "#1A1A1A";
 	private static String		color_focus		= "#7DFF2F";
+	private static String		style			= "";
+
 
 	private static Logger		LOG;
 	private static final String	VERSION_KEY		= "Implementation-Version";
@@ -42,10 +44,13 @@ public class Main extends Application {
 	private static final String	GUI_IO_CHOOSER	= "/fxml/IOChooser.fxml";
 	private static final String	GUI_MAIN_PATH	= "/fxml/Main.fxml";
 	private static final String	LOGO			= "/logo/logo_64.png";
-	private static String		style			= "";
 	private static boolean		debug			= false, fast = false;
 	private static String		version, title;
 	private static Main			instance;
+
+	private Scene				loginScene;
+	private IOChooserController	loginController;
+
 
 	/**
 	 * stops all running threads and terminates the gui
@@ -223,9 +228,6 @@ public class Main extends Application {
 		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
 	}
 
-	private Scene				loginScene;
-
-	private IOChooserController	loginController;
 
 	@Override
 	public void init() throws Exception {
