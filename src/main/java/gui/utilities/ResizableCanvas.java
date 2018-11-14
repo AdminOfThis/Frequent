@@ -83,11 +83,10 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 				} else if (level >= Math.abs(RTAViewController.FFT_MIN)) {
 					level = Math.abs(RTAViewController.FFT_MIN) - 1;
 				}
-				double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level))
-				        / Math.abs(RTAViewController.FFT_MIN);
+				double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level)) / Math.abs(RTAViewController.FFT_MIN);
 				percent = 1.0 - percent;
 				try {
-					content.setFill(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.YELLOW, Color.RED));
+					content.setFill(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED));
 				} catch (ArrayIndexOutOfBoundsException e) {
 					LOG.error("Out of bounds: " + level, e);
 				}
