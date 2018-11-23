@@ -6,15 +6,16 @@
 	<artifactId>frequent</artifactId>
 	<version>0.2.18</version>
 	<name>Frequent</name>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
 
 	<build>
-		<finalName>frequent</finalName>
+		<finalName>frequent-slim</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -31,7 +32,7 @@
 							<mainClass>main.Main</mainClass>
 						</manifest>
 					</archive>
-
+					<finalName>frequent</finalName>
 				</configuration>
 				<executions>
 					<execution>

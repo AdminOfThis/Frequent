@@ -85,11 +85,21 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		if (ASIOController.getInstance() != null) {
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
 			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
+
 		}
 		StringConverter<Channel> converter = new StringConverter<Channel>() {
 
 			@Override
 			public Channel fromString(final String string) {
+				for (Channel c : cmbChannel1.getItems()) {
+					if (Objects.equals(c.getName(), string))
+						return c;
+				}
+				for (Channel c : cmbChannel2.getItems()) {
+					if (Objects.equals(c.getName(), string))
+						return c;
+				}
+
 				return null;
 			}
 
@@ -103,20 +113,20 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		cmbChannel1.setConverter(converter);
 		cmbChannel2.setConverter(converter);
 		// adding listener
-		cmbChannel1.valueProperty().addListener(e -> {
-			Channel cNew = cmbChannel1.getValue();
-			if (!Objects.equals(c1, cNew) || !c1.equals(cNew)) {
-				c1 = cNew;
-				vectorScope.setChannels(cNew, cmbChannel2.getValue());
-				vu1.setChannel(cNew);
+		cmbChannel1.valueProperty().addListener((obs, old, newV) -> {
+			LOG.info("Change 1");
+			if (!Objects.equals(c1, newV)) {
+				c1 = newV;
+				vectorScope.setChannels(newV, cmbChannel2.getValue());
+				vu1.setChannel(newV);
 			}
 		});
-		cmbChannel2.valueProperty().addListener(e -> {
-			Channel cNew = cmbChannel2.getValue();
-			if (!Objects.equals(c2, cNew) || !c2.equals(cNew)) {
-				c2 = cNew;
-				vectorScope.setChannels(cmbChannel1.getValue(), cNew);
-				vu2.setChannel(cNew);
+		cmbChannel2.valueProperty().addListener((obs, old, newV) -> {
+			LOG.info("Change 2");
+			if (!Objects.equals(c2, newV)) {
+				c2 = newV;
+				vectorScope.setChannels(cmbChannel1.getValue(), newV);
+				vu2.setChannel(newV);
 			}
 		});
 
@@ -140,8 +150,12 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		if (ASIOController.getInstance() != null) {
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
 			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
-			cmbChannel1.setValue(vectorScope.getChannel1());
-			cmbChannel2.setValue(vectorScope.getChannel2());
+			if (Objects.equals(vectorScope.getChannel1(), cmbChannel1.getValue())) {
+				cmbChannel1.setValue(vectorScope.getChannel1());
+			}
+			if (Objects.equals(vectorScope.getChannel2(), cmbChannel2.getValue())) {
+				cmbChannel2.setValue(vectorScope.getChannel2());
+			}
 		}
 	}
 }
