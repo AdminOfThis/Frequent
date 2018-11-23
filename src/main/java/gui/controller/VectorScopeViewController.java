@@ -85,28 +85,23 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		if (ASIOController.getInstance() != null) {
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
 			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
-
 		}
 		StringConverter<Channel> converter = new StringConverter<Channel>() {
 
 			@Override
 			public Channel fromString(final String string) {
 				for (Channel c : cmbChannel1.getItems()) {
-					if (Objects.equals(c.getName(), string))
-						return c;
+					if (Objects.equals(c.getName(), string)) return c;
 				}
 				for (Channel c : cmbChannel2.getItems()) {
-					if (Objects.equals(c.getName(), string))
-						return c;
+					if (Objects.equals(c.getName(), string)) return c;
 				}
-
 				return null;
 			}
 
 			@Override
 			public String toString(final Channel object) {
-				if (object == null)
-					return "- NONE -";
+				if (object == null) return "- NONE -";
 				return object.getName();
 			}
 		};
@@ -114,7 +109,6 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		cmbChannel2.setConverter(converter);
 		// adding listener
 		cmbChannel1.valueProperty().addListener((obs, old, newV) -> {
-			LOG.info("Change 1");
 			if (!Objects.equals(c1, newV)) {
 				c1 = newV;
 				vectorScope.setChannels(newV, cmbChannel2.getValue());
@@ -122,14 +116,12 @@ public class VectorScopeViewController implements Initializable, PausableView {
 			}
 		});
 		cmbChannel2.valueProperty().addListener((obs, old, newV) -> {
-			LOG.info("Change 2");
 			if (!Objects.equals(c2, newV)) {
 				c2 = newV;
 				vectorScope.setChannels(cmbChannel1.getValue(), newV);
 				vu2.setChannel(newV);
 			}
 		});
-
 		// AUTOCOmplete
 		new AutoCompleteComboBoxListener<>(cmbChannel1);
 		new AutoCompleteComboBoxListener<>(cmbChannel2);
