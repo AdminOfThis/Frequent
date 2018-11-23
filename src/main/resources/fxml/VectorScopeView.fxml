@@ -15,12 +15,6 @@
          <children>
             <HBox spacing="5.0">
                <children>
-                  <HBox fx:id="boxZoom" alignment="CENTER" spacing="5.0">
-                     <children>
-                        <Label text="Zoom:" />
-                        <Slider fx:id="zoomSlider" blockIncrement="0.1" majorTickUnit="0.2" max="1.0" min="0.05" minorTickCount="1" showTickMarks="true" value="0.5" />
-                     </children>
-                  </HBox>
                   <HBox fx:id="boxDecay" alignment="CENTER" spacing="5.0">
                      <children>
                         <Label text="Decay-Time:" />
