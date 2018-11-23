@@ -39,9 +39,9 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	@FXML
 	private HBox				bottomPane;
 	@FXML
-	private Slider				zoomSlider, decaySlider;
+	private Slider				decaySlider;
 	@FXML
-	private HBox				boxZoom, boxDecay;
+	private HBox				boxDecay;
 	private VectorScope			vectorScope;
 	private VuMeter				vu1, vu2;
 	private Channel				c1, c2;
@@ -54,7 +54,6 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		// Pane p = new Pane();
 		// HBox.setHgrow(p, Priority.ALWAYS);
 		// list.add(p);
-		list.add(boxZoom);
 		list.add(boxDecay);
 		return list;
 	}
@@ -79,7 +78,6 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		vu2.setParentPausable(this);
 		bottomPane.getChildren().add(vu2);
 		HBox.setHgrow(vu2, Priority.SOMETIMES);
-		zoomSlider.valueProperty().addListener(e -> vectorScope.setMax(zoomSlider.getValue()));
 		decaySlider.valueProperty().addListener(e -> vectorScope.setDecay(decaySlider.getValue()));
 		// updating channels
 		if (ASIOController.getInstance() != null) {

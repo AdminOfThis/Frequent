@@ -104,8 +104,13 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		};
 		chartParent.heightProperty().addListener(lis);
 		chartParent.widthProperty().addListener(lis);
-		chart.getXAxis().setAnimated(false);
-		chart.getYAxis().setAnimated(false);
+		NumberAxis x = (NumberAxis) chart.getXAxis();
+		NumberAxis y = (NumberAxis) chart.getYAxis();
+		x.setAnimated(false);
+		y.setAnimated(false);
+		x.lowerBoundProperty().bindBidirectional(x.upperBoundProperty());
+		y.lowerBoundProperty().bindBidirectional(y.upperBoundProperty());
+		x.lowerBoundProperty().bindBidirectional(y.lowerBoundProperty());
 	}
 
 	@Override
@@ -187,21 +192,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	public void setDecay(final double value) {
 		decay = value;
-	}
-
-	public void setMax(final double max) {
-		double value;
-		if (max == -1) {
-			value = 1.0;
-		} else {
-			value = Math.abs(max);
-		}
-		NumberAxis x = (NumberAxis) chart.getXAxis();
-		x.setUpperBound(value);
-		x.setLowerBound(-value);
-		NumberAxis y = (NumberAxis) chart.getYAxis();
-		y.setUpperBound(value);
-		y.setLowerBound(-value);
 	}
 
 	@Override
