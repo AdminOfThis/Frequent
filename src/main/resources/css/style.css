@@ -132,7 +132,7 @@
 	-fx-background-insets: 0;
 }
 
-.button, .toggle-button, .split-menu-button, .text-field{
+ .button, .toggle-button, .split-menu-button, .text-field, .combo-box{
 	-fx-background-radius: null;
 	-fx-background-insets: 0px 0px 0px 0px, 0px, 1px, 1px;
 	}
