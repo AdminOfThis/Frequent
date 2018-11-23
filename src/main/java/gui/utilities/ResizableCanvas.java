@@ -23,7 +23,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import main.Main;
 
 public class ResizableCanvas extends Canvas implements PausableComponent {
 
@@ -31,7 +30,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 	private static final int	POINTS		= 1024;
 	private int					count		= 0;
 	private boolean				autoscroll	= true;
-	private String				accent		= "#FF0000";
 	private GraphicsContext		content;
 	private ScrollPane			parent;
 	private boolean				pause		= true;
@@ -39,7 +37,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 	private Pausable			pausableParent;
 
 	private ResizableCanvas() {
-		accent = Main.getAccentColor();
 		content = getGraphicsContext2D();
 	}
 
@@ -83,10 +80,12 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 				} else if (level >= Math.abs(RTAViewController.FFT_MIN)) {
 					level = Math.abs(RTAViewController.FFT_MIN) - 1;
 				}
-				double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level)) / Math.abs(RTAViewController.FFT_MIN);
+				double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level))
+				        / Math.abs(RTAViewController.FFT_MIN);
 				percent = 1.0 - percent;
 				try {
-					content.setFill(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED));
+					content.setFill(
+					        FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED));
 				} catch (ArrayIndexOutOfBoundsException e) {
 					LOG.error("Out of bounds: " + level, e);
 				}

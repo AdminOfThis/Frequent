@@ -19,18 +19,12 @@ public class AutoCompleteComboBoxListener<T> implements EventHandler<KeyEvent> {
 		data = comboBox.getItems();
 
 		this.comboBox.setEditable(true);
-		this.comboBox.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent t) {
-				comboBox.hide();
-			}
-		});
+		this.comboBox.setOnKeyPressed(t -> comboBox.hide());
 		this.comboBox.setOnKeyReleased(AutoCompleteComboBoxListener.this);
 	}
 
 	@Override
-	public void handle(KeyEvent event) {
+	public void handle(final KeyEvent event) {
 
 		if (event.getCode() == KeyCode.UP) {
 			caretPos = -1;
@@ -51,19 +45,14 @@ public class AutoCompleteComboBoxListener<T> implements EventHandler<KeyEvent> {
 			caretPos = comboBox.getEditor().getCaretPosition();
 		}
 
-		if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.LEFT || event.isControlDown() || event.getCode() == KeyCode.HOME
-			|| event.getCode() == KeyCode.END || event.getCode() == KeyCode.TAB) {
+		if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.LEFT || event.isControlDown()
+		        || event.getCode() == KeyCode.HOME || event.getCode() == KeyCode.END || event.getCode() == KeyCode.TAB)
 			return;
-		}
 
-		handleResult();
-	}
-
-	private void handleResult() {
 		ObservableList<T> list = FXCollections.observableArrayList();
 		for (int i = 0; i < data.size(); i++) {
 			if (data.get(i).toString().toLowerCase()
-				.startsWith(AutoCompleteComboBoxListener.this.comboBox.getEditor().getText().toLowerCase())) {
+			        .startsWith(AutoCompleteComboBoxListener.this.comboBox.getEditor().getText().toLowerCase())) {
 				list.add(data.get(i));
 			}
 		}
@@ -80,7 +69,7 @@ public class AutoCompleteComboBoxListener<T> implements EventHandler<KeyEvent> {
 		}
 	}
 
-	private void moveCaret(int textLength) {
+	private void moveCaret(final int textLength) {
 		if (caretPos == -1) {
 			comboBox.getEditor().positionCaret(textLength);
 		} else {
@@ -88,4 +77,5 @@ public class AutoCompleteComboBoxListener<T> implements EventHandler<KeyEvent> {
 		}
 		moveCaretToPos = false;
 	}
+
 }

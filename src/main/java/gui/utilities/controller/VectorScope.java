@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -16,7 +17,6 @@ import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
 import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -58,11 +58,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	private List<Float>						buffer1, buffer2;
 	private double							decay			= 1.0;
 
-	public VectorScope(PausableView parent) {
-		this();
-		parentPausable = parent;
-	}
-
 	public VectorScope() {
 		Parent p = FXMLUtil.loadFXML(FXML, this);
 		getChildren().add(p);
@@ -77,53 +72,16 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		timer = new AnimationTimer() {
 
 			@Override
-			public void handle(long now) {
+			public void handle(final long now) {
 				update();
 			}
 		};
 		timer.start();
 	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		chart.getStyleClass().add("vectorscope");
-		chart.getData().add(vectorSeries);
-		chart.prefWidthProperty().bindBidirectional(chart.prefHeightProperty());
-		ChangeListener<Number> lis = new ChangeListener<Number>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				double h = Math.min(chartParent.getWidth(), chartParent.getHeight());
-				double val = Math.sqrt(0.5 * Math.pow(h, 2));
-				chart.setPrefHeight(val);
-			}
-		};
-		chartParent.heightProperty().addListener(lis);
-		chartParent.widthProperty().addListener(lis);
-		chart.getXAxis().setAnimated(false);
-		chart.getYAxis().setAnimated(false);
-	}
-
-	public void setChannels(Channel c1, Channel c2) {
-		if (!c1.equals(channel1) || !c2.equals(channel2)) {
-			if (channel1 != null) {
-				channel1.removeListener(this);
-			}
-			if (channel2 != null) {
-				channel2.removeListener(this);
-			}
-			channel1 = c1;
-			channel2 = c2;
-			if (channel1 != null) {
-				channel1.addListener(this);
-			}
-			if (channel2 != null) {
-				channel2.addListener(this);
-			}
-			if (channel1 != null && channel2 != null) {
-				restarting = true;
-			}
-		}
+	public VectorScope(final PausableView parent) {
+		this();
+		parentPausable = parent;
 	}
 
 	public Channel getChannel1() {
@@ -134,41 +92,34 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		return channel2;
 	}
 
-	public void setTitle(String title) {
-		lblTitle.setText(title);
-	}
-
 	@Override
-	public void pause(boolean pause) {
-		this.pause = pause;
+	public void initialize(final URL location, final ResourceBundle resources) {
+		chart.getStyleClass().add("vectorscope");
+		chart.getData().add(vectorSeries);
+		chart.prefWidthProperty().bindBidirectional(chart.prefHeightProperty());
+		ChangeListener<Number> lis = (observable, oldValue, newValue) -> {
+			double h = Math.min(chartParent.getWidth(), chartParent.getHeight());
+			double val = Math.sqrt(0.5 * Math.pow(h, 2));
+			chart.setPrefHeight(val);
+		};
+		chartParent.heightProperty().addListener(lis);
+		chartParent.widthProperty().addListener(lis);
+		chart.getXAxis().setAnimated(false);
+		chart.getYAxis().setAnimated(false);
 	}
 
 	@Override
 	public boolean isPaused() {
-		return pause || (parentPausable != null && parentPausable.isPaused()) || channel1 == null || channel2 == null;
+		return pause || parentPausable != null && parentPausable.isPaused() || channel1 == null || channel2 == null;
 	}
 
 	@Override
-	public void setParentPausable(Pausable parent) {
-		this.parentPausable = parent;
-	}
-
-	@Override
-	public void levelChanged(double level) throws Exception {
+	public void levelChanged(final double level) throws Exception {
 		// do nothing, don't care
 	}
 
-	private void update() {
-		if (!isPaused()) {
-			showData(buffer1, buffer2);
-			// clear buffers
-			buffer1.clear();
-			buffer2.clear();
-		}
-	}
-
 	@Override
-	public void newBuffer(float[] buffer) {
+	public void newBuffer(final float[] buffer) {
 		if (!isPaused()) {
 			try {
 				if (restarting) {
@@ -206,30 +157,35 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		}
 	}
 
-	private void showData(final List<Float> x, final List<Float> y) {
-		// drawing new data
-		if (x.size() == y.size()) {
-			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
-			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.size() - 2; index = index + 2) {
-				Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
-				dataToAdd.add(data);
+	@Override
+	public void pause(final boolean pause) {
+		this.pause = pause;
+	}
+
+	public void setChannels(final Channel c1, final Channel c2) {
+		if (!Objects.equals(c1, channel1) || !Objects.equals(c2, channel2)) {
+			if (channel1 != null) {
+				channel1.removeListener(this);
 			}
-			vectorSeries.getData().addAll(dataToAdd);
-			for (Data<Number, Number> d : dataToAdd) {
-				double percent = (d.getXValue().doubleValue() / d.getYValue().doubleValue());
-				if (percent > 1 || percent < -1) {
-					percent = 1.0 / percent;
-				}
-				percent = 1 - Math.abs((percent + 1) / 2.0);
-				d.getNode().setStyle("-fx-background-color: "
-					+ FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
+			if (channel2 != null) {
+				channel2.removeListener(this);
 			}
-		} // removing old data points
-		if (vectorSeries.getData().size() > (MAX_DATA_POINTS * decay)) {
-			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0,
-				(int) Math.round(vectorSeries.getData().size() - (MAX_DATA_POINTS * decay)));
-			vectorSeries.getData().removeAll(removeList);
+			channel1 = c1;
+			channel2 = c2;
+			if (channel1 != null) {
+				channel1.addListener(this);
+			}
+			if (channel2 != null) {
+				channel2.addListener(this);
+			}
+			if (channel1 != null && channel2 != null) {
+				restarting = true;
+			}
 		}
+	}
+
+	public void setDecay(final double value) {
+		decay = value;
 	}
 
 	public void setMax(final double max) {
@@ -247,7 +203,47 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		y.setLowerBound(-value);
 	}
 
-	public void setDecay(double value) {
-		decay = value;
+	@Override
+	public void setParentPausable(final Pausable parent) {
+		parentPausable = parent;
+	}
+
+	public void setTitle(final String title) {
+		lblTitle.setText(title);
+	}
+
+	private void showData(final List<Float> x, final List<Float> y) {
+		// drawing new data
+		if (x.size() == y.size()) {
+			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
+			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.size() - 2; index = index + 2) {
+				Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
+				dataToAdd.add(data);
+			}
+			vectorSeries.getData().addAll(dataToAdd);
+			for (Data<Number, Number> d : dataToAdd) {
+				double percent = d.getXValue().doubleValue() / d.getYValue().doubleValue();
+				if (percent > 1 || percent < -1) {
+					percent = 1.0 / percent;
+				}
+				percent = 1 - Math.abs((percent + 1) / 2.0);
+				d.getNode().setStyle("-fx-background-color: "
+				        + FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
+			}
+		} // removing old data points
+		if (vectorSeries.getData().size() > MAX_DATA_POINTS * decay) {
+			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0,
+			        (int) Math.round(vectorSeries.getData().size() - MAX_DATA_POINTS * decay));
+			vectorSeries.getData().removeAll(removeList);
+		}
+	}
+
+	private void update() {
+		if (!isPaused()) {
+			showData(buffer1, buffer2);
+			// clear buffers
+			buffer1.clear();
+			buffer2.clear();
+		}
 	}
 }
