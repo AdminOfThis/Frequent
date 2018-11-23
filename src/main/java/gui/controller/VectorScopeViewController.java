@@ -10,13 +10,14 @@ import org.apache.log4j.Logger;
 import control.ASIOController;
 import data.Channel;
 import gui.pausable.PausableView;
+import gui.utilities.AutoCompleteComboBoxListener;
 import gui.utilities.controller.VectorScope;
 import gui.utilities.controller.VuMeter;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -30,7 +31,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	@FXML
 	private AnchorPane			chartPane;
 	@FXML
-	private ChoiceBox<Channel>	cmbChannel1, cmbChannel2;
+	private ComboBox<Channel>	cmbChannel1, cmbChannel2;
 	@FXML
 	private HBox				box1, box2;
 	@FXML
@@ -94,10 +95,8 @@ public class VectorScopeViewController implements Initializable, PausableView {
 
 			@Override
 			public String toString(final Channel object) {
-				if (object == null) {
-					LOG.info("");
+				if (object == null)
 					return "- NONE -";
-				}
 				return object.getName();
 			}
 		};
@@ -120,6 +119,10 @@ public class VectorScopeViewController implements Initializable, PausableView {
 				vu2.setChannel(cNew);
 			}
 		});
+
+		// AUTOCOmplete
+		new AutoCompleteComboBoxListener<>(cmbChannel1);
+		new AutoCompleteComboBoxListener<>(cmbChannel2);
 	}
 
 	@Override
