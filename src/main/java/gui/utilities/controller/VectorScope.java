@@ -217,7 +217,15 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		if (x.size() == y.size()) {
 			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
 			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.size() - 2; index = index + 2) {
-				Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
+				double valueX = Channel.percentToDB(x.get(index) * 1000.0);
+				if (x.get(index) < 0) {
+					valueX = -valueX;
+				}
+				double valueY = Channel.percentToDB(y.get(index) * 1000.0);
+				if (y.get(index) < 0) {
+					valueY = -valueY;
+				}
+				Data<Number, Number> data = new Data<>(valueX, valueY);
 				dataToAdd.add(data);
 			}
 			vectorSeries.getData().addAll(dataToAdd);
