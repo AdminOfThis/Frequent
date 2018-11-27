@@ -18,9 +18,10 @@ public abstract class Input implements Serializable {
 	public static final Comparator<Input>	COMPARATOR			= (o1, o2) -> {
 																	if (o1 instanceof Channel && o2 instanceof Channel)
 																		return ((Channel) o1).getChannelIndex()
-																			- ((Channel) o2).getChannelIndex();
+																		        - ((Channel) o2).getChannelIndex();
 																	else if (o1 instanceof Group && o2 instanceof Group)
-																		return ((Group) o1).getName().compareTo(((Group) o2).getName());
+																		return ((Group) o1).getName()
+																		        .compareTo(((Group) o2).getName());
 																	return 0;
 																};
 	private String							name;
@@ -33,6 +34,9 @@ public abstract class Input implements Serializable {
 	}
 
 	public void addListener(final InputListener obs) {
+		if (listeners == null) {
+			listeners = Collections.synchronizedList(new ArrayList<>());
+		}
 		if (!listeners.contains(obs)) {
 			synchronized (listeners) {
 				listeners.add(obs);
@@ -62,11 +66,6 @@ public abstract class Input implements Serializable {
 	}
 
 	public String getName() {
-		return name;
-	}
-
-	@Override
-	public String toString() {
 		return name;
 	}
 
@@ -126,5 +125,10 @@ public abstract class Input implements Serializable {
 
 	public void setName(final String name) {
 		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }
