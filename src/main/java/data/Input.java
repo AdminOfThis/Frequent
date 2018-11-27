@@ -30,7 +30,9 @@ public abstract class Input implements Serializable {
 	private String							hexColor;
 
 	public Input() {
-
+		if (listeners == null) {
+			listeners = Collections.synchronizedList(new ArrayList<>());
+		}
 	}
 
 	public void addListener(final InputListener obs) {
