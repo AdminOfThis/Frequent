@@ -16,6 +16,7 @@ class MainTest {
 				public void run() {
 
 					try {
+
 						Main.main(new String[] { "-debug" });
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -24,6 +25,7 @@ class MainTest {
 
 				}
 			});
+
 			thread.start();// Initialize the thread
 			Thread.sleep(10000);
 			Main.close();
