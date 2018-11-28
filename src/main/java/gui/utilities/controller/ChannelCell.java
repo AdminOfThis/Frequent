@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import data.Channel;
 import data.Group;
 import data.Input;
+import gui.controller.MainController;
 import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.FXMLUtil;
 import gui.utilities.GroupCellContextMenu;
@@ -150,5 +151,7 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 				setContentDisplay(ContentDisplay.TEXT_ONLY);
 			});
 		}
+		MainController.getInstance().refresh();
+
 	}
 }
