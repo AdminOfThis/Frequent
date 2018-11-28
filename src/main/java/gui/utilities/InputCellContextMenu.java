@@ -67,6 +67,8 @@ public abstract class InputCellContextMenu extends ContextMenu {
 			}
 		});
 		this.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> hide());
+
+		this.setOnHidden(e -> MainController.getInstance().refresh());
 	}
 
 	public static String toRGBCode(Color color) {
