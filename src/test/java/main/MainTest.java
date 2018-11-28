@@ -17,7 +17,7 @@ class MainTest {
 					Main.main(new String[] { "-debug" });
 				} catch (Exception e) {
 					e.printStackTrace();
-					fail(e.getMessage());
+					fail("Unable to start Application", e);
 				}
 
 			});
@@ -26,7 +26,7 @@ class MainTest {
 			Thread.sleep(10000);
 
 		} catch (Exception e) {
-			fail(e.getMessage());
+			fail("Unable to start Application", e);
 		}
 		return;
 	}
