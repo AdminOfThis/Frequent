@@ -31,15 +31,11 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		this(null, null);
 	}
 
-	public Channel(String name) {
-		this(null, name);
-	}
-
 	public Channel(final AsioChannel channel) {
 		this(channel, null);
 	}
 
-	public Channel(final AsioChannel channel, String name) {
+	public Channel(final AsioChannel channel, final String name) {
 		if (channel != null) {
 			this.channel = channel;
 			setName(channel.getChannelName());
@@ -50,6 +46,9 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		}
 	}
 
+	public Channel(final String name) {
+		this(null, name);
+	}
 
 	@Override
 	public int compare(final Channel o1, final Channel o2) {
@@ -67,16 +66,15 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 			Channel other = (Channel) obj;
 			if (super.equals(obj) && Objects.equals(getChannelIndex(), other.getChannelIndex())) {
 				// if groups don't exist on both
-				if (getGroup() == null && other.getGroup() == null) {
+				if (getGroup() == null && other.getGroup() == null)
 					return true;
-					// if groups exist on both
-				} else if (getGroup() != null && other.getGroup() != null) {
+				// if groups exist on both
+				else if (getGroup() != null && other.getGroup() != null)
 					// check for group equality
 					return Objects.equals(getGroup().getName(), other.getGroup().getName());
-				} else {
+				else
 					// if only one has a group
 					return false;
-				}
 			}
 		}
 		return false;
@@ -116,13 +114,13 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		}
 	}
 
-	public void setBuffer(final float[] buffer) {
+	public void setBuffer(final float[] buffer, final long time) {
 		this.buffer = buffer;
 		for (InputListener l : getListeners()) {
 			if (l instanceof ChannelListener) {
 				// new Thread(() -> ((ChannelListener)
 				// l).newBuffer(buffer)).start();
-				((ChannelListener) l).newBuffer(buffer);
+				((ChannelListener) l).newBuffer(buffer, time);
 			}
 		}
 	}
@@ -143,7 +141,6 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	public void setHidden(final boolean hide) {
 		this.hide = hide;
 	}
-
 
 	public void setStereoChannel(final Channel newChannel) {
 		// if stereo channel is not already equal

@@ -45,6 +45,7 @@
 				<version>2.21.0</version>
 				<configuration>
 					<workingDirectory>./workdir</workingDirectory>
+					<rerunFailingTestsCount>2</rerunFailingTestsCount>
 				</configuration>
 				<dependencies>
 					<dependency>

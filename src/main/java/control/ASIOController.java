@@ -189,7 +189,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 								}
 								if (c != null) {
 									c.setLevel(max);
-									c.setBuffer(Arrays.copyOf(output, output.length));
+									c.setBuffer(Arrays.copyOf(output, output.length), samplePosition);
 								}
 							}
 						} catch (Exception e2) {
@@ -439,7 +439,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		asioDriver.start();
 
 		// creating ThreadPool
-		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS,
+		        new LinkedBlockingQueue<Runnable>());
 		LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
 		LOG.info("Buffer size: " + bufferSize);
 		LOG.info("Samplerate: " + sampleRate);
