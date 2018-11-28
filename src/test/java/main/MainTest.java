@@ -21,7 +21,7 @@ class MainTest {
 				}
 
 			});
-
+			System.setOut(null);
 			thread.start();// Initialize the thread
 			Thread.sleep(10000);
 
