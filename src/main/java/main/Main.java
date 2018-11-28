@@ -37,7 +37,7 @@ public class Main extends Application {
 	private static String		style			= "";
 
 
-	private static Logger		LOG;
+	private static Logger		LOG				= Logger.getLogger(Main.class);
 	private static final String	VERSION_KEY		= "Implementation-Version";
 	private static final String	TITLE_KEY		= "Implementation-Title";
 	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
