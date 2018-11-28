@@ -2,5 +2,5 @@ package control;
 
 public interface ChannelListener extends InputListener {
 
-	public void newBuffer(float[] buffer);
+	public void newBuffer(float[] buffer, long time);
 }
