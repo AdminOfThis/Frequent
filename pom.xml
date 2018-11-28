@@ -45,7 +45,7 @@
 				<version>2.21.0</version>
 				<configuration>
 					<argLine>-Djava.library.path=${basedir}/workdir</argLine>
- 					<workingDirectory>${basedir}/workdir</workingDirectory>
+ 					<workingDirectory>${basedir}/workdir -Djni.library.path=${basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>2</rerunFailingTestsCount>
 				</configuration>
 				<dependencies>
