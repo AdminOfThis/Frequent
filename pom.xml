@@ -44,9 +44,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.21.0</version>
 				<configuration>
-					<argLine>-Djava.library.path=./../lib</argLine>
-
-
+					<argLine>-Djava.library.path=./workdir</argLine>
 					<workingDirectory>./workdir</workingDirectory>
 					<rerunFailingTestsCount>2</rerunFailingTestsCount>
 				</configuration>

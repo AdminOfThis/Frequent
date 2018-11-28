@@ -1,34 +1,36 @@
 package main;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
 class MainTest {
 
+	private Exception e;
+
 	@Test
-	public void launchApplication() {
+	public void launchApplication() throws Exception {
+		CountDownLatch latch = new CountDownLatch(1);
+		Thread thread = new Thread(() -> {
 
-		try {
-			Thread thread = new Thread(() -> {
+			try {
+				Main.main(new String[] { "-debug" });
+			} catch (Exception ex) {
+				e = ex;
+				e.printStackTrace();
+			} finally {
+				latch.countDown();
+			}
+		});
 
-				try {
-
-					Main.main(new String[] { "-debug" });
-				} catch (Exception e) {
-					e.printStackTrace();
-					fail("Unable to start Application", e);
-				}
-
-			});
-			System.setOut(null);
-			thread.start();// Initialize the thread
-			Thread.sleep(10000);
-
-		} catch (Exception e) {
-			fail("Unable to start Application", e);
+		System.setOut(null);
+		thread.start();// Initialize the thread
+		latch.await(15, TimeUnit.SECONDS);
+		if (e != null) {
+			throw e;
 		}
-		return;
+
 	}
 
 }
