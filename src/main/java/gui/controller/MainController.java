@@ -30,6 +30,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -44,6 +46,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
@@ -74,8 +77,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private static final String				DRUM_PATH		= "/fxml/DrumView.fxml";
 	private static final String				PHASE_PATH		= "/fxml/VectorScopeView.fxml";
 	private static final Logger				LOG				= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.getOnlyTitle() + " File",
-	        "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
 
 	public static String deriveColor(final String baseColor, final int index, final int total) {
@@ -136,7 +138,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private TimeKeeperController		timeKeeperController;
 
 	// private DrumController drumController;
-	private WaveFormChart waveFormController;
+	private WaveFormChart				waveFormController;
 
 	private void bindCheckMenuToToggleButton(final CheckMenuItem menu, final ToggleButton button) {
 		menu.setOnAction(e -> button.fire());
@@ -196,21 +198,19 @@ public class MainController implements Initializable, Pausable, CueListener {
 		channelList.setCellFactory(e -> new ChannelCell());
 		// channelList.setOnEditCommit(e ->
 		// timeKeeperController.setChannels(channelList.getItems()));
-		channelList.getSelectionModel().selectedItemProperty()
-		        .addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
-			        if (newValue != null) {
-				        if (newValue instanceof Channel) {
-					        Channel channel = (Channel) newValue;
-					        controller.setActiveChannel(channel.getChannel());
-					        // getting RTA Controller
-					        RTAViewController con = (RTAViewController) controllerMap
-					                .get(contentMap.get(toggleFFTView));
-					        con.setChannel(channel);
-					        LOG.info("Switching to channel " + channel.getName());
-				        }
-				        waveFormController.setChannel(newValue);
-			        }
-		        });
+		channelList.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				if (newValue instanceof Channel) {
+					Channel channel = (Channel) newValue;
+					controller.setActiveChannel(channel.getChannel());
+					// getting RTA Controller
+					RTAViewController con = (RTAViewController) controllerMap.get(contentMap.get(toggleFFTView));
+					con.setChannel(channel);
+					LOG.info("Switching to channel " + channel.getName());
+				}
+				waveFormController.setChannel(newValue);
+			}
+		});
 		// Edit channel list
 		channelList.setEditable(true);
 		toggleGroupChannels.selectedProperty().addListener((obs, oldV, newV) -> {
@@ -460,12 +460,20 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	public void refresh() {
+		ScrollBar scrollBar = (ScrollBar) channelList.lookup(".scroll-bar:" + channelList.getOrientation().toString().toLowerCase());
+		double scrollPos = scrollBar.getValue();
+		ObservableList<Integer> selectedItems = FXCollections.observableArrayList(channelList.getSelectionModel().getSelectedIndices());
 		if (controller != null) {
 			refreshInputs();
 		}
 		for (PausableView v : controllerMap.values()) {
 			v.refresh();
 		}
+		for (Integer i : selectedItems) {
+			channelList.getSelectionModel().select(i);
+		}
+		scrollBar.setValue(scrollPos);
+
 	}
 
 	private void refreshInputs() {
@@ -479,8 +487,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 				for (Channel channel : ASIOController.getInstance().getInputList()) {
 					// if channel is not hidden, or showHidden, and if
 					// sterechannel isn't already added to list
-					if ((!channel.isHidden() || showHidden) && (channel.getStereoChannel() == null
-					        || !channelList.getItems().contains(channel.getStereoChannel()))) {
+					if ((!channel.isHidden() || showHidden)
+						&& (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
 						channelList.getItems().add(channel);
 					}
 				}
