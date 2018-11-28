@@ -36,7 +36,6 @@ public class Main extends Application {
 	private static String		color_focus		= "#7DFF2F";
 	private static String		style			= "";
 
-
 	private static Logger		LOG				= Logger.getLogger(Main.class);
 	private static final String	VERSION_KEY		= "Implementation-Version";
 	private static final String	TITLE_KEY		= "Implementation-Title";
@@ -47,10 +46,6 @@ public class Main extends Application {
 	private static boolean		debug			= false, fast = false;
 	private static String		version, title;
 	private static Main			instance;
-
-	private Scene				loginScene;
-	private IOChooserController	loginController;
-
 
 	/**
 	 * stops all running threads and terminates the gui
@@ -156,7 +151,7 @@ public class Main extends Application {
 		return fast;
 	}
 
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws Exception {
 		initLogger();
 		title = getFromManifest(TITLE_KEY, "Frequent");
 		version = getFromManifest(VERSION_KEY, "Local");
@@ -167,8 +162,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * checks the start parameters for keywords and sets the debug flag to true
-	 * if found
+	 * checks the start parameters for keywords and sets the debug flag to true if found
 	 *
 	 * @param args
 	 */
@@ -228,6 +222,9 @@ public class Main extends Application {
 		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
 	}
 
+	private Scene				loginScene;
+
+	private IOChooserController	loginController;
 
 	@Override
 	public void init() throws Exception {
