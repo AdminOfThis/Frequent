@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.adminofthis</groupId>
 	<artifactId>frequent</artifactId>
-	<version>0.3.2</version>
+	<version>0.3.3</version>
 	<name>frequent</name>
 	<packaging>jar</packaging>
 
