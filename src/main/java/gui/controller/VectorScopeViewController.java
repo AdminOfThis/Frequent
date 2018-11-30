@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
-
 import control.ASIOController;
 import data.Channel;
 import gui.pausable.PausableView;
@@ -26,7 +24,8 @@ import javafx.util.StringConverter;
 
 public class VectorScopeViewController implements Initializable, PausableView {
 
-	private static final Logger	LOG		= Logger.getLogger(VectorScopeViewController.class);
+	// private static final Logger LOG =
+	// Logger.getLogger(VectorScopeViewController.class);
 	private boolean				pause	= false;
 	@FXML
 	private AnchorPane			chartPane;
@@ -89,17 +88,20 @@ public class VectorScopeViewController implements Initializable, PausableView {
 			@Override
 			public Channel fromString(final String string) {
 				for (Channel c : cmbChannel1.getItems()) {
-					if (Objects.equals(c.getName(), string)) return c;
+					if (Objects.equals(c.getName(), string))
+						return c;
 				}
 				for (Channel c : cmbChannel2.getItems()) {
-					if (Objects.equals(c.getName(), string)) return c;
+					if (Objects.equals(c.getName(), string))
+						return c;
 				}
 				return null;
 			}
 
 			@Override
 			public String toString(final Channel object) {
-				if (object == null) return "- NONE -";
+				if (object == null)
+					return "- NONE -";
 				return object.getName();
 			}
 		};
