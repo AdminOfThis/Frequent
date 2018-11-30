@@ -3,8 +3,7 @@ package main;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.jar.Attributes;
+import java.util.Enumeration;
 import java.util.jar.Manifest;
 
 import org.apache.log4j.Logger;
@@ -49,6 +48,11 @@ public class Main extends Application {
 	private static boolean		debug			= false, fast = false;
 	private static String		version, title;
 	private static Main			instance;
+
+	private Scene				loginScene;
+	private Scene				mainScene;
+	private IOChooserController	loginController;
+
 
 	/**
 	 * stops all running threads and terminates the gui
@@ -95,16 +99,19 @@ public class Main extends Application {
 
 	public static String getFromManifest(final String key, final String def) {
 		try {
-			URLClassLoader cl = (URLClassLoader) Main.class.getClassLoader();
-			URL url = cl.findResource("META-INF/MANIFEST.MF");
-			Manifest manifest = new Manifest(url.openStream());
-			Attributes mainAttributes = manifest.getMainAttributes();
-			String value = mainAttributes.getValue(key);
-			if (value != null) {
-				return value;
+			Enumeration<URL> resources = Main.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+			while (resources.hasMoreElements()) {
+				try {
+					Manifest manifest = new Manifest(resources.nextElement().openStream());
+					if (POM_TITLE.equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Title")))
+						// check that this is your manifest and do what you need
+						// or get the next one
+						return manifest.getMainAttributes().getValue(key);
+				} catch (IOException e) {
+					LOG.warn(e);
+				}
 			}
-
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to read version from manifest");
 			LOG.debug("", e);
 		}
@@ -223,9 +230,6 @@ public class Main extends Application {
 		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
 	}
 
-	private Scene				loginScene;
-
-	private IOChooserController	loginController;
 
 	@Override
 	public void init() throws Exception {
@@ -236,7 +240,7 @@ public class Main extends Application {
 		loginController = (IOChooserController) FXMLUtil.getController();
 		loginScene = new Scene(parent);
 		notifyPreloader(new Preloader.ProgressNotification(0.4));
-		Scene mainScene = loadMain();
+		mainScene = loadMain();
 		loginController.setMainScene(mainScene);
 		notifyPreloader(new Preloader.ProgressNotification(0.95));
 		Thread.sleep(100);
@@ -291,5 +295,9 @@ public class Main extends Application {
 			}
 		});
 		primaryStage.show();
+	}
+
+	public Scene getScene() {
+		return mainScene;
 	}
 }
