@@ -3,13 +3,11 @@ package main;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.runners.MethodSorters;
 
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -17,7 +15,6 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class MainTest {
 
 	private static Exception	e;
@@ -54,9 +51,9 @@ class MainTest {
 			throw e;
 		}
 	}
-	
+
 	@AfterAll
-	public static void closeApplication() throws Exception{
+	public static void closeApplication() throws Exception {
 		Thread.sleep(200);
 	}
 
@@ -69,11 +66,11 @@ class MainTest {
 		Thread.sleep(500);
 	}
 
-	@RepeatedTest(100)
+	@RepeatedTest(20)
 	public void randomModules() throws Exception {
 		Object[] o = data()[(int) Math.floor(Math.random() * (data().length - 1))];
 		pushButton((KeyCode) o[0], (boolean) o[1]);
-		Thread.sleep((long) Math.floor(50.0 * Math.random()*10.0)+100);
+		Thread.sleep((long) Math.floor(50.0 * Math.random() * 10.0) + 100);
 	}
 
 	private void pushButton(KeyCode code, boolean control) {
