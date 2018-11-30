@@ -23,7 +23,7 @@ class MainTest {
 				latch.countDown();
 			}
 		});
-
+		System.setOut(null);
 		thread.start();// Initialize the thread
 		latch.await(15, TimeUnit.SECONDS);
 		if (e != null) {
