@@ -5,7 +5,7 @@
 	<groupId>com.github.adminofthis</groupId>
 	<artifactId>frequent</artifactId>
 	<version>0.3.1</version>
-	<name>Frequent</name>
+	<name>frequent</name>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -14,8 +14,8 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
 
+
 	<build>
-		<finalName>frequent-slim</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -67,10 +67,12 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4.1</version>
 				<configuration>
-					<!-- get all project dependencies -->
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
+					<finalName>${project.name}</finalName>
+					<descriptors>
+						<descriptor>${basedir}/src/assembly/assemblyJar.xml</descriptor>
+						<!-- <descriptor>${basedir}/src/assembly/rename.xml</descriptor> -->
+						<descriptor>${basedir}/src/assembly/assemblyZip.xml</descriptor>
+					</descriptors>
 					<!-- MainClass in mainfest make a executable jar -->
 					<archive>
 						<manifest>
@@ -110,6 +112,7 @@
 					</archive>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 
