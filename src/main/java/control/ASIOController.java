@@ -38,8 +38,10 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	public static List<String> getPossibleDrivers() {
-		List<String> preList = AsioDriver.getDriverNames();
 		ArrayList<String> result = new ArrayList<>();
+		
+		try {
+		List<String> preList = AsioDriver.getDriverNames();
 		// checking if connected
 		for (String possibleDriver : preList) {
 			AsioDriver tempDriver = null;
@@ -56,6 +58,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					tempDriver.shutdownAndUnloadDriver();
 				}
 			}
+		}
+		} catch(UnsatisfiedLinkError e) {
+			LOG.warn("The corresponding library jasiohost64.dll was not found");
 		}
 		return result;
 	}
