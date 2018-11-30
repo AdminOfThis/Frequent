@@ -36,12 +36,9 @@ import main.Main;
 
 public class GroupViewController implements Initializable, PausableView {
 
-	private static final Logger			LOG	= Logger.getLogger(GroupViewController.class);
+	private static final Logger			LOG		= Logger.getLogger(GroupViewController.class);
 	private static GroupViewController	instance;
 
-	public static GroupViewController getInstance() {
-		return instance;
-	}
 
 	@FXML
 	private SplitPane					root;
@@ -57,6 +54,11 @@ public class GroupViewController implements Initializable, PausableView {
 	private ToggleButton				tglTimed;
 
 	private boolean						pause	= true;
+
+	public static GroupViewController getInstance() {
+		return instance;
+	}
+
 
 	@Override
 	public ArrayList<Node> getHeader() {
@@ -106,8 +108,7 @@ public class GroupViewController implements Initializable, PausableView {
 	private void redrawGroup(final boolean redrawChart, final ArrayList<Group> groupList, final Group g) {
 		// groups
 		if (g.getColor() == null || g.getColor().isEmpty()) {
-			g.setColor(
-			        MainController.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1, groupList.size() + 1));
+			g.setColor(MainController.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1, groupList.size() + 1));
 		}
 		VuMeter groupMeter = new VuMeter(g, Orientation.VERTICAL);
 		groupMeter.setParentPausable(this);
@@ -132,48 +133,53 @@ public class GroupViewController implements Initializable, PausableView {
 		}
 		// adding chart series
 		if (redrawChart) {
-			Series<Number, Number> series = new Series<>();
-			series.setName(g.getName());
-			chart.getData().add(series);
-			Legend legend = (Legend) chart.lookup(".chart-legend");
-			for (LegendItem i : legend.getItems()) {
-				if (i.getText().equals(g.getName())) {
-					if (g.getColor() == null) {
+			redrawChart(g);
+		}
+	}
+
+
+	private void redrawChart(final Group g) {
+		Series<Number, Number> series = new Series<>();
+		series.setName(g.getName());
+		chart.getData().add(series);
+		Legend legend = (Legend) chart.lookup(".chart-legend");
+		for (LegendItem i : legend.getItems()) {
+			if (i.getText().equals(g.getName())) {
+				if (g.getColor() == null) {
+					i.setSymbol(new Rectangle(10, 4));
+					i.getSymbol().setStyle("-fx-fill: -fx-accent");
+				} else {
+					i.setSymbol(new Rectangle(10, 4, Color.web(g.getColor())));
+				}
+			}
+		}
+		NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+		// adding listener to group for chart
+		g.addListener(level -> Platform.runLater(() -> {
+			if (!series.getNode().getStyle().equals("-fx-stroke: " + g.getColor())) {
+				String color = g.getColor();
+				if (color == null) {
+					color = "-fx-accent";
+				}
+				series.getNode().setStyle("-fx-stroke: " + color);
+				for (LegendItem i : legend.getItems()) {
+					if (i.getText().equals(g.getName())) {
 						i.setSymbol(new Rectangle(10, 4));
-						i.getSymbol().setStyle("-fx-fill: -fx-accent");
-					} else {
-						i.setSymbol(new Rectangle(10, 4, Color.web(g.getColor())));
+						i.getSymbol().setStyle("-fx-fill: " + color);
 					}
 				}
 			}
-			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-			// adding listener to group for chart
-			g.addListener(level -> Platform.runLater(() -> {
-				if (!series.getNode().getStyle().equals("-fx-stroke: " + g.getColor())) {
-					String color = g.getColor();
-					if (color == null) {
-						color = "-fx-accent";
-					}
-					series.getNode().setStyle("-fx-stroke: " + color);
-					for (LegendItem i : legend.getItems()) {
-						if (i.getText().equals(g.getName())) {
-							i.setSymbol(new Rectangle(10, 4));
-							i.getSymbol().setStyle("-fx-fill: " + color);
-						}
-					}
-				}
-				double leveldB = Channel.percentToDB(level);
-				leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
-				long time = System.currentTimeMillis();
-				series.getData().add(new Data<Number, Number>(time, leveldB));
-				// removing old data
-				while (series.getData().size() > 500) {
-					series.getData().remove(0);
-				}
-				xAxis.setUpperBound(time + 100);
-				xAxis.setLowerBound((long) series.getData().get(0).getXValue());
-			}));
-		}
+			double leveldB = Channel.percentToDB(level);
+			leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
+			long time = System.currentTimeMillis();
+			series.getData().add(new Data<Number, Number>(time, leveldB));
+			// removing old data
+			while (series.getData().size() > 500) {
+				series.getData().remove(0);
+			}
+			xAxis.setUpperBound(time + 100);
+			xAxis.setLowerBound((long) series.getData().get(0).getXValue());
+		}));
 	}
 
 	@Override

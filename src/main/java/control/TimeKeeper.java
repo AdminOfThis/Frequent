@@ -21,7 +21,7 @@ public final class TimeKeeper implements DataHolder<Cue> {
 	private List<Cue>							cueList				= new ArrayList<>();
 	private int									activeIndex			= -1;
 	private static final ArrayList<CueListener>	listeners			= new ArrayList<>();
-	boolean										pause				= false;
+	private boolean										pause				= false;
 
 	public static TimeKeeper getInstance() {
 		if (instance == null) {

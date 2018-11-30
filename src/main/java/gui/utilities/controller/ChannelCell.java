@@ -30,20 +30,21 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	private static final Logger	LOG			= Logger.getLogger(ChannelCell.class);
 	private static final String	FXML_PATH	= "/fxml/utilities/ChannelCell.fxml";
 
+
+	@FXML
+	private AnchorPane			chartPane;
+	@FXML
+	private Label				lblNumber;
+	private Input				input;
+
+	private VuMeter				meter;
+
 	public static String toRGBCode(final Color color) {
 		int red = (int) (color.getRed() * 255);
 		int green = (int) (color.getGreen() * 255);
 		int blue = (int) (color.getBlue() * 255);
 		return String.format("#%02X%02X%02X", red, green, blue);
 	}
-
-	@FXML
-	private AnchorPane	chartPane;
-	@FXML
-	private Label		lblNumber;
-	private Input		input;
-
-	private VuMeter		meter;
 
 	public ChannelCell() {
 		super();

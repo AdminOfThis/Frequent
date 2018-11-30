@@ -30,8 +30,31 @@ import main.Main;
 public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	private static ASIOController	instance;
-	private static final Logger		LOG	= Logger.getLogger(ASIOController.class);
+	private static final Logger		LOG				= Logger.getLogger(ASIOController.class);
 	private static int				fftBufferSize;
+
+
+	private String					driverName;
+	private AsioDriver				asioDriver;
+	private int						bufferSize		= 1024;
+	private double					sampleRate;
+	private AsioChannel				activeChannel;
+	private float					lastPeak		= 0, peak = 0, rms = 0;
+	private float					baseFrequency	= -1;
+	// FFT
+	// private float[] output;
+	private int						bufferCount;
+	private DoubleDCT_1D			fft;
+	private int[]					index;
+	private double[][]				fftBuffer;
+	private double[][]				spectrumMap;
+	private List<Channel>			channelList;
+	private List<Group>				groupList		= new ArrayList<>();
+	private List<FFTListener>		fftListeners	= new ArrayList<>();
+
+	private double[][][]			bufferingBuffer	= new double[2][2][1024];
+
+	private ExecutorService			exe;
 
 	public static ASIOController getInstance() {
 		return instance;
@@ -39,53 +62,31 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	public static List<String> getPossibleDrivers() {
 		ArrayList<String> result = new ArrayList<>();
-		
+
 		try {
-		List<String> preList = AsioDriver.getDriverNames();
-		// checking if connected
-		for (String possibleDriver : preList) {
-			AsioDriver tempDriver = null;
-			try {
-				tempDriver = AsioDriver.getDriver(possibleDriver);
-				// adding if inputs avaliable
-				if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
-					result.add(possibleDriver);
-				}
-			} catch (Exception e) {
-				LOG.debug(possibleDriver + " is unavailable");
-			} finally {
-				if (tempDriver != null) {
-					tempDriver.shutdownAndUnloadDriver();
+			List<String> preList = AsioDriver.getDriverNames();
+			// checking if connected
+			for (String possibleDriver : preList) {
+				AsioDriver tempDriver = null;
+				try {
+					tempDriver = AsioDriver.getDriver(possibleDriver);
+					// adding if inputs avaliable
+					if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
+						result.add(possibleDriver);
+					}
+				} catch (Exception e) {
+					LOG.debug(possibleDriver + " is unavailable");
+				} finally {
+					if (tempDriver != null) {
+						tempDriver.shutdownAndUnloadDriver();
+					}
 				}
 			}
-		}
-		} catch(UnsatisfiedLinkError e) {
+		} catch (UnsatisfiedLinkError e) {
 			LOG.warn("The corresponding library jasiohost64.dll was not found");
 		}
 		return result;
 	}
-
-	private String				driverName;
-	private AsioDriver			asioDriver;
-	private int					bufferSize		= 1024;
-	private double				sampleRate;
-	private AsioChannel			activeChannel;
-	private float				lastPeak		= 0, peak = 0, rms = 0;
-	private float				baseFrequency	= -1;
-	// FFT
-	// private float[] output;
-	private int					bufferCount;
-	private DoubleDCT_1D		fft;
-	private int[]				index;
-	private double[][]			fftBuffer;
-	private double[][]			spectrumMap;
-	private List<Channel>		channelList;
-	private List<Group>			groupList		= new ArrayList<>();
-	private List<FFTListener>	fftListeners	= new ArrayList<>();
-
-	private double[][][]		bufferingBuffer	= new double[2][2][1024];
-
-	private ExecutorService		exe;
 
 	public ASIOController(final String ioName) {
 		LOG.info("Created ASIO Controller");
@@ -444,8 +445,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		asioDriver.start();
 
 		// creating ThreadPool
-		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS,
-		        new LinkedBlockingQueue<Runnable>());
+		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 		LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
 		LOG.info("Buffer size: " + bufferSize);
 		LOG.info("Samplerate: " + sampleRate);
