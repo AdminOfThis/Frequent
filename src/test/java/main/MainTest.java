@@ -24,6 +24,7 @@ class MainTest {
 			}
 		});
 		System.setOut(null);
+		System.setErr(null);
 		thread.start();// Initialize the thread
 		latch.await(15, TimeUnit.SECONDS);
 		if (e != null) {
