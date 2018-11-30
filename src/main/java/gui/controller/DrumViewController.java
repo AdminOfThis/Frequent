@@ -297,5 +297,6 @@ public class DrumViewController implements Initializable, PausableView {
 
 	@Override
 	public void refresh() {
+		//not needed
 	}
 }

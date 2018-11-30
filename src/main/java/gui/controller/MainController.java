@@ -69,16 +69,64 @@ import main.Main;
 
 public class MainController implements Initializable, Pausable, CueListener {
 
-	private static final String				FFT_PATH		= "/fxml/RTAView.fxml";
-	private static final String				RTA_PATH		= "/fxml/FFTView.fxml";
-	private static final String				TIMEKEEPER_PATH	= "/fxml/TimeKeeper.fxml";
-	private static final String				GROUP_PATH		= "/fxml/GroupView.fxml";
+	private static final String				FFT_PATH			= "/fxml/RTAView.fxml";
+	private static final String				RTA_PATH			= "/fxml/FFTView.fxml";
+	private static final String				TIMEKEEPER_PATH		= "/fxml/TimeKeeper.fxml";
+	private static final String				GROUP_PATH			= "/fxml/GroupView.fxml";
 	// private static final String BACKGROUND_PATH = "/fxml/Background.fxml";
-	private static final String				DRUM_PATH		= "/fxml/DrumView.fxml";
-	private static final String				PHASE_PATH		= "/fxml/VectorScopeView.fxml";
-	private static final Logger				LOG				= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER			= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
+	private static final String				DRUM_PATH			= "/fxml/DrumView.fxml";
+	private static final String				PHASE_PATH			= "/fxml/VectorScopeView.fxml";
+	private static final Logger				LOG					= Logger.getLogger(MainController.class);
+	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
+
+
+	@FXML
+	private AnchorPane						waveFormPane;
+	@FXML
+	private HBox							buttonBox;
+	@FXML
+	private Node							bottomLabel;
+	/**
+	 * Buttons for cues, get mapped with content to contentMap
+	 */
+	@FXML
+	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView;
+	@FXML
+	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView;
+	@FXML
+	private ToggleButton					toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
+	@FXML
+	private BorderPane						root;
+	@FXML
+	private SplitPane						contentPane;
+	@FXML
+	private MenuItem						closeMenu, menuSave;
+	@FXML
+	private MenuItem						menuTimerStart, menuTimerNext;
+	@FXML
+	private ListView<Input>					channelList;
+	@FXML
+	private CheckMenuItem					menuShowCue, menuShowChannels, menuStartFFT;
+	@FXML
+	private Label							lblDriver, lblLatency, lblCurrentSong, lblNextSong;
+	@FXML
+	private SplitPane						channelPane;
+	@FXML
+	private Label							lblStatus;
+	@FXML
+	private ProgressBar						progStatus;
+	private boolean							showHidden			= false;
+	private boolean							pause				= false;
+	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
+	private HashMap<Node, PausableView>		controllerMap		= new HashMap<>();
+	private double							channelSplitRatio	= 0.8;
+	private ASIOController					controller;
+
+	private TimeKeeperController			timeKeeperController;
+
+	// private DrumController drumController;
+	private WaveFormChart					waveFormController;
 
 	public static String deriveColor(final String baseColor, final int index, final int total) {
 		String result = baseColor;
@@ -92,53 +140,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 	public static MainController getInstance() {
 		return instance;
 	}
-
-	@FXML
-	private AnchorPane					waveFormPane;
-	@FXML
-	private HBox						buttonBox;
-	@FXML
-	private Node						bottomLabel;
-	/**
-	 * Buttons for cues, get mapped with content to contentMap
-	 */
-	@FXML
-	private ToggleButton				toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView;
-	@FXML
-	private CheckMenuItem				menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView;
-	@FXML
-	private ToggleButton				toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
-	@FXML
-	private BorderPane					root;
-	@FXML
-	private SplitPane					contentPane;
-	@FXML
-	private MenuItem					closeMenu, menuSave;
-	@FXML
-	private MenuItem					menuTimerStart, menuTimerNext;
-	@FXML
-	private ListView<Input>				channelList;
-	@FXML
-	private CheckMenuItem				menuShowCue, menuShowChannels, menuStartFFT;
-	@FXML
-	private Label						lblDriver, lblLatency, lblCurrentSong, lblNextSong;
-	@FXML
-	private SplitPane					channelPane;
-	@FXML
-	private Label						lblStatus;
-	@FXML
-	private ProgressBar					progStatus;
-	private boolean						showHidden			= false;
-	private boolean						pause				= false;
-	private HashMap<ToggleButton, Node>	contentMap			= new HashMap<>();
-	private HashMap<Node, PausableView>	controllerMap		= new HashMap<>();
-	private double						channelSplitRatio	= 0.8;
-	private ASIOController				controller;
-
-	private TimeKeeperController		timeKeeperController;
-
-	// private DrumController drumController;
-	private WaveFormChart				waveFormController;
 
 	private void bindCheckMenuToToggleButton(final CheckMenuItem menu, final ToggleButton button) {
 		menu.setOnAction(e -> button.fire());

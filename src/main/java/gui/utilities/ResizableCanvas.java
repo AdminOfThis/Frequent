@@ -72,32 +72,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			}
 			// adding points
 			for (int pointCount = 0; pointCount < map[0].length; pointCount++) {
-				// System.out.println(map[1][pointCount]);
-				double level = Math.abs(map[1][pointCount]);
-				level = Channel.percentToDB(level * 1000.0);
-				if (level <= RTAViewController.FFT_MIN) {
-					level = RTAViewController.FFT_MIN + 1;
-				} else if (level >= Math.abs(RTAViewController.FFT_MIN)) {
-					level = Math.abs(RTAViewController.FFT_MIN) - 1;
-				}
-				double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level))
-				        / Math.abs(RTAViewController.FFT_MIN);
-				percent = 1.0 - percent;
-				try {
-					content.setFill(
-					        FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED));
-				} catch (ArrayIndexOutOfBoundsException e) {
-					LOG.error("Out of bounds: " + level, e);
-				}
-				double startPoint = getWidth() / 2000.0 * map[0][pointCount];
-				// System.out.println(startPoint);
-				double endpoint;
-				if (pointCount < map[0].length - 1) {
-					endpoint = getWidth() / 2000.0 * map[0][pointCount + 1];
-				} else {
-					endpoint = getWidth();
-				}
-				content.fillRect(startPoint, size * count, endpoint - startPoint + 1, size + 1);
+				drawDot(map, size, pointCount);
 			}
 			//
 			count++;
@@ -110,6 +85,35 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			// long after = System.currentTimeMillis();
 			// System.out.println(after - before);
 		}
+	}
+
+	private void drawDot(final double[][] map, double size, int pointCount) {
+		// System.out.println(map[1][pointCount]);
+		double level = Math.abs(map[1][pointCount]);
+		level = Channel.percentToDB(level * 1000.0);
+		if (level <= RTAViewController.FFT_MIN) {
+			level = RTAViewController.FFT_MIN + 1;
+		} else if (level >= Math.abs(RTAViewController.FFT_MIN)) {
+			level = Math.abs(RTAViewController.FFT_MIN) - 1;
+		}
+		double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level))
+		        / Math.abs(RTAViewController.FFT_MIN);
+		percent = 1.0 - percent;
+		try {
+			content.setFill(
+			        FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED));
+		} catch (ArrayIndexOutOfBoundsException e) {
+			LOG.error("Out of bounds: " + level, e);
+		}
+		double startPoint = getWidth() / 2000.0 * map[0][pointCount];
+		// System.out.println(startPoint);
+		double endpoint;
+		if (pointCount < map[0].length - 1) {
+			endpoint = getWidth() / 2000.0 * map[0][pointCount + 1];
+		} else {
+			endpoint = getWidth();
+		}
+		content.fillRect(startPoint, size * count, endpoint - startPoint + 1, size + 1);
 	}
 
 	@Override

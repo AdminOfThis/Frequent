@@ -52,8 +52,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	 * base 10 logarithmic scale.
 	 */
 	private void bindLogBoundsToDefaultBounds() {
-		logLowerBound.bind(new DoubleBinding() {
-
+		DoubleBinding bind1 = new DoubleBinding() {
 			{
 				super.bind(lowerBoundProperty());
 			}
@@ -62,8 +61,10 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 			protected double computeValue() {
 				return Math.log10(lowerBoundProperty().get());
 			}
-		});
-		logUpperBound.bind(new DoubleBinding() {
+		};
+
+		logLowerBound.bind(bind1);
+		DoubleBinding bind2 = new DoubleBinding() {
 
 			{
 				super.bind(upperBoundProperty());
@@ -73,7 +74,8 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 			protected double computeValue() {
 				return Math.log10(upperBoundProperty().get());
 			}
-		});
+		};
+		logUpperBound.bind(bind2);
 	}
 
 	/**

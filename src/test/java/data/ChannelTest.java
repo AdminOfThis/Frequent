@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 public class ChannelTest {
 
-	Channel	c1;
-	Channel	c2;
+	private Channel	c1;
+	private Channel	c2;
 
 	@Test
 	@BeforeEach

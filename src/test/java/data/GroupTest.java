@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class GroupTest {
 
 	private Group	g1;
-	private Group	g2;
+//	private Group	g2;
 
 	private Channel	c1;
 	private Channel	c2;
@@ -26,7 +26,7 @@ public class GroupTest {
 		assertEquals(0, g1.getChannelList().size());
 		assertEquals("Group 1", g1.getName());
 		// Group 2
-		g2 = new Group("Group 2");
+		Group g2 = new Group("Group 2");
 		assertNotNull(g2);
 		assertNotNull(g2.getChannelList());
 		assertEquals(0, g2.getChannelList().size());

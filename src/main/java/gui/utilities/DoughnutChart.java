@@ -49,8 +49,10 @@ public class DoughnutChart extends PieChart {
 	}
 
 	private void updateInnerCircleLayout() {
-		double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
-		double maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
+		double minX = Double.MAX_VALUE;
+		double minY = Double.MAX_VALUE;
+		double maxX = Double.MIN_VALUE;
+		double maxY = Double.MIN_VALUE;
 		for (PieChart.Data data : getData()) {
 			Node node = data.getNode();
 

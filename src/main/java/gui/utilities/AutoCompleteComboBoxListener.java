@@ -45,14 +45,19 @@ public class AutoCompleteComboBoxListener<T> implements EventHandler<KeyEvent> {
 			caretPos = comboBox.getEditor().getCaretPosition();
 		}
 
-		if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.LEFT || event.isControlDown()
-		        || event.getCode() == KeyCode.HOME || event.getCode() == KeyCode.END || event.getCode() == KeyCode.TAB)
+		if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.LEFT || event.isControlDown() || event.getCode() == KeyCode.HOME
+			|| event.getCode() == KeyCode.END || event.getCode() == KeyCode.TAB) {
 			return;
+		}
 
+		handle2();
+	}
+
+	private void handle2() {
 		ObservableList<T> list = FXCollections.observableArrayList();
 		for (int i = 0; i < data.size(); i++) {
 			if (data.get(i).toString().toLowerCase()
-			        .startsWith(AutoCompleteComboBoxListener.this.comboBox.getEditor().getText().toLowerCase())) {
+				.startsWith(AutoCompleteComboBoxListener.this.comboBox.getEditor().getText().toLowerCase())) {
 				list.add(data.get(i));
 			}
 		}
