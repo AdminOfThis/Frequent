@@ -45,7 +45,7 @@
 				<version>2.21.0</version>
 				<configuration>
 					<argLine>-Djava.library.path=. -Djni.library.path=.</argLine>
- 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
+					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>2</rerunFailingTestsCount>
 				</configuration>
 				<dependencies>
@@ -74,6 +74,10 @@
 					<!-- MainClass in mainfest make a executable jar -->
 					<archive>
 						<manifest>
+							<addClasspath>true</addClasspath>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							<addExtensions>true</addExtensions>
 							<mainClass>main.Main</mainClass>
 						</manifest>
 					</archive>
@@ -97,6 +101,10 @@
 				<configuration>
 					<archive>
 						<manifest>
+							<addClasspath>true</addClasspath>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							<addExtensions>true</addExtensions>
 							<mainClass>main.Main</mainClass>
 						</manifest>
 					</archive>
