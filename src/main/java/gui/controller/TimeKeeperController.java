@@ -96,7 +96,6 @@ public class TimeKeeperController implements Initializable {
 	private Label						lblTime;
 	@FXML
 	private GridPane					infoPane;
-
 	/**************
 	 * contextmenu
 	 *************/
@@ -109,7 +108,6 @@ public class TimeKeeperController implements Initializable {
 		infoPane.setVisible(false);
 		btnInfo.selectedProperty().bindBidirectional(infoPane.visibleProperty());
 		btnInfo.selectedProperty().addListener((o, oldV, newV) -> {
-
 			if (newV) {
 				refreshAdditionalInfos();
 			}
@@ -120,7 +118,6 @@ public class TimeKeeperController implements Initializable {
 
 	private void refreshAdditionalInfos() {
 		LinkedHashMap<String, String> map = ChurchToolsAdapter.getInstance().getAdditionalInfos();
-
 		StackPane p = (StackPane) infoPane.getParent();
 		p.getChildren().remove(infoPane);
 		infoPane = new GridPane();
@@ -128,7 +125,6 @@ public class TimeKeeperController implements Initializable {
 		infoPane.setVgap(5.0);
 		infoPane.setStyle("-fx-background-color: -fx-background");
 		btnInfo.selectedProperty().bindBidirectional(infoPane.visibleProperty());
-
 		infoPane.addColumn(1);
 		infoPane.getColumnConstraints().add(new ColumnConstraints());
 		infoPane.getColumnConstraints().add(new ColumnConstraints());
@@ -138,9 +134,7 @@ public class TimeKeeperController implements Initializable {
 		top.setAlignment(Pos.CENTER);
 		top.setSpacing(20.0);
 		Label lblEvent = new Label(map.get("Event"));
-
 		lblEvent.setStyle("-fx-font-size: 20px");
-
 		top.getChildren().add(lblEvent);
 		Label lblTime = new Label(map.get("Time"));
 		top.getChildren().add(lblTime);
@@ -250,12 +244,17 @@ public class TimeKeeperController implements Initializable {
 		btnStart.setOnAction(e -> {
 			if (TimeKeeper.getInstance().getActiveIndex() < 0) {
 				startTimer();
+				btnStart.setText("Pause");
 			} else {
 				TimeKeeper.getInstance().pause();
+				if (btnStart.getText().equals("Pause")) {
+					btnStart.setText("Continue");
+				} else {
+					btnStart.setText("Pause");
+				}
 			}
 			e.consume();
 		});
-
 		btnStop.setOnAction(e -> stopTimer());
 		txtCue.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
@@ -272,7 +271,6 @@ public class TimeKeeperController implements Initializable {
 	}
 
 	private void stopTimer() {
-
 		LOG.info("Stopping timer");
 		txtCueName.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
 		choiceCueChannel.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
@@ -288,8 +286,6 @@ public class TimeKeeperController implements Initializable {
 		timeChart.getData().clear();
 		TimeKeeper.getInstance().reset();
 		TimeKeeper.getInstance().round();
-
-
 		AnimationTimer timer = new AnimationTimer() {
 
 			@Override
@@ -319,10 +315,8 @@ public class TimeKeeperController implements Initializable {
 				}
 			}
 		};
-
 		timer.start();
-		while (TimeKeeper.getInstance().getActiveIndex() < 0) {
-		}
+		while (TimeKeeper.getInstance().getActiveIndex() < 0) {}
 		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
 		cueTable.getSelectionModel().select(0);
 		cueTable.refresh();
@@ -330,7 +324,6 @@ public class TimeKeeperController implements Initializable {
 			MainController.getInstance().setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
 		}
 		// Updating GUI
-		btnStart.setText("Pause");
 		if (!cueTable.getItems().isEmpty()) {
 			cueTable.getSelectionModel().select(0);
 		}
@@ -368,7 +361,6 @@ public class TimeKeeperController implements Initializable {
 				MenuItem btnClear = new MenuItem("Clear Chart");
 				btnClear.setDisable(timeChart.getData().isEmpty() || TimeKeeper.getInstance().getTimeRunning() > 0);
 				btnClear.setOnAction(ex -> {
-
 					timeChart.getData().clear();
 					lblTime.setText("--:--");
 				});
@@ -393,11 +385,6 @@ public class TimeKeeperController implements Initializable {
 
 	public void round() {
 		btnTime.fire();
-	}
-
-	@FXML
-	private void toggleTimerStart(ActionEvent e) {
-
 	}
 
 	@FXML
@@ -483,7 +470,6 @@ public class TimeKeeperController implements Initializable {
 	@FXML
 	private void loadFromChurchTools(ActionEvent e) {
 		MainController.getInstance().setStatus("Loading from Churchtools", -1);
-
 		boolean isLoginSet = ChurchToolsAdapter.getInstance().isLoggedIn();
 		if (!isLoginSet) {
 			Pair<String, String> loginCredentials = getLoginData();
@@ -499,7 +485,6 @@ public class TimeKeeperController implements Initializable {
 
 			@Override
 			protected Void call() {
-
 				ArrayList<Cue> cues = ChurchToolsAdapter.getInstance().loadCues();
 				if (cues != null) {
 					TimeKeeper.getInstance().set(cues);
@@ -521,7 +506,6 @@ public class TimeKeeperController implements Initializable {
 
 	private Pair<String, String> getLoginData() {
 		Dialog<Pair<String, String>> dialog = new Dialog<>();
-
 		dialog.setTitle("Login ChurchTools");
 		dialog.setHeaderText("Please enter your ChurchTools Login Credentials");
 		dialog.initModality(Modality.NONE);
@@ -529,7 +513,8 @@ public class TimeKeeperController implements Initializable {
 		try {
 			DialogPane dialogPane = dialog.getDialogPane();
 			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to style dialog");
 			LOG.debug("", e);
 		}
@@ -561,13 +546,10 @@ public class TimeKeeperController implements Initializable {
 			loginButton.setDisable(newValue.trim().isEmpty());
 		});
 		dialog.getDialogPane().setContent(grid);
-
 		// Convert the result to a username-password-pair when the login button
 		// is clicked.
 		dialog.setResultConverter(dialogButton -> {
-			if (dialogButton == loginButtonType) {
-				return new Pair<>(username.getText(), password.getText());
-			}
+			if (dialogButton == loginButtonType) { return new Pair<>(username.getText(), password.getText()); }
 			return null;
 		});
 		// Request focus on the username field by default.
@@ -577,9 +559,7 @@ public class TimeKeeperController implements Initializable {
 			Platform.runLater(() -> password.requestFocus());
 		}
 		Optional<Pair<String, String>> result = dialog.showAndWait();
-		if (result.isPresent()) {
-			return result.get();
-		}
+		if (result.isPresent()) { return result.get(); }
 		return null;
 	}
 }
