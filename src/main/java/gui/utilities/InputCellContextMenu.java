@@ -39,6 +39,7 @@ public abstract class InputCellContextMenu extends ContextMenu {
 				Optional<String> result = dialog.showAndWait();
 				if (result.isPresent()) {
 					input.setName(result.get());
+					MainController.getInstance().refresh();
 				}
 			});
 			for (int i = 0; i < COLORS; i++) {
@@ -56,10 +57,8 @@ public abstract class InputCellContextMenu extends ContextMenu {
 					MainController.getInstance().refresh();
 				});
 			}
-
 			getItems().add(name);
 			getItems().add(colorMenu);
-
 		}
 		this.focusedProperty().addListener((obs, o, n) -> {
 			if (!n) {
@@ -67,7 +66,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 			}
 		});
 		this.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> hide());
-
 		this.setOnHidden(e -> MainController.getInstance().refresh());
 	}
 

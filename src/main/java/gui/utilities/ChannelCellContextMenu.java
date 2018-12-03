@@ -47,6 +47,7 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 			getItems().add(groupMenu);
 			getItems().add(pairingMenu);
 			pairingMenu.getItems().add(noPair);
+			pairingMenu.getItems().add(new SeparatorMenuItem());
 			noPair.selectedProperty().addListener((obs, old, newValue) -> {
 				if (newValue) {
 					in.setStereoChannel(null);
@@ -135,6 +136,7 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 					if (newValue) {
 						LOG.info("Setting Stereo Channel of " + channel.getName() + " to " + c.getName());
 						channel.setStereoChannel(c);
+						MainController.getInstance().refresh();
 					}
 				});
 			}

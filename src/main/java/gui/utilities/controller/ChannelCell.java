@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import data.Channel;
 import data.Group;
 import data.Input;
-import gui.controller.MainController;
 import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.FXMLUtil;
 import gui.utilities.GroupCellContextMenu;
@@ -16,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
@@ -29,15 +29,12 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 
 	private static final Logger	LOG			= Logger.getLogger(ChannelCell.class);
 	private static final String	FXML_PATH	= "/fxml/utilities/ChannelCell.fxml";
-
-
 	@FXML
 	private AnchorPane			chartPane;
 	@FXML
 	private Label				lblNumber;
 	private Input				input;
-
-	private VuMeter				meter;
+	private VuMeterIntf			meter;
 
 	public static String toRGBCode(final Color color) {
 		int red = (int) (color.getRed() * 255);
@@ -102,22 +99,10 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	// }
 	// };
 	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {
-		initVuMeter();
-	}
-
-	private void initVuMeter() {
-		meter = new VuMeter(null, Orientation.HORIZONTAL);
-		// meter.setRotate(90.0);
-		chartPane.getChildren().add(meter);
-		AnchorPane.setTopAnchor(meter, 0.0);
-		AnchorPane.setBottomAnchor(meter, 0.0);
-		AnchorPane.setLeftAnchor(meter, 0.0);
-		AnchorPane.setRightAnchor(meter, 0.0);
-	}
+	public void initialize(final URL location, final ResourceBundle resources) {}
 
 	private void update(final Input item) {
-		meter.setChannel(item);
+		changeMeter(item);
 		lblNumber.setText("");
 		if (item == null || item.getColor() == null) {
 			setStyle("");
@@ -152,7 +137,32 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 				setContentDisplay(ContentDisplay.TEXT_ONLY);
 			});
 		}
-		MainController.getInstance().refresh();
+	}
 
+	private void changeMeter(Input channel) {
+		boolean refresh = false;
+		if (channel != null && channel instanceof Channel && ((Channel) channel).getStereoChannel() != null) {
+			// stereo
+			if (meter == null || meter instanceof VuMeterMono) {
+				meter = new VuMeterStereo(channel, ((Channel) channel).getStereoChannel(), Orientation.HORIZONTAL);
+				refresh = true;
+			}
+		} else {
+			// monoVu
+			if (meter == null || meter instanceof VuMeterStereo) {
+				meter = new VuMeterMono(channel, Orientation.HORIZONTAL);
+				refresh = true;
+			}
+		}
+		if (refresh) {
+			chartPane.getChildren().clear();
+			chartPane.getChildren().add((Node) meter);
+			AnchorPane.setTopAnchor((Node) meter, 0.0);
+			AnchorPane.setBottomAnchor((Node) meter, 0.0);
+			AnchorPane.setLeftAnchor((Node) meter, 0.0);
+			AnchorPane.setRightAnchor((Node) meter, 0.0);
+		} else {
+			meter.setChannel(channel);
+		}
 	}
 }

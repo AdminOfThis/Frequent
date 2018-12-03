@@ -33,7 +33,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	private static final Logger			LOG			= Logger.getLogger(WaveFormChart.class);
 	private static final String			FXML		= "/fxml/utilities/WaveFormChart.fxml";
 	private static final long			TIME_FRAME	= 5000000000l;
-
 	@FXML
 	private LineChart<Number, Number>	chart;
 	private Series<Number, Number>		series		= new Series<>();
@@ -82,7 +81,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 				return null;
 			}
 		});
-
 	}
 
 	@Override
@@ -109,7 +107,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		}
 	}
 
-	public void setChannel(final Input c) {
+	public void setSelectedChannel(final Input c) {
 		try {
 			if (!c.equals(channel)) {
 				if (channel != null) {
@@ -124,7 +122,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					c.addListener(this);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}
@@ -154,8 +153,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 						negative = !negative;
 						Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 						dataList.add(newData);
-
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						LOG.warn("", e);
 					}
 				}
@@ -166,7 +165,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 				xAxis.setLowerBound(time - TIME_FRAME);
 				xAxis.setUpperBound(time);
 				pendingMap.clear();
-
 			}
 			boolean continueFlag = true;
 			int count = 0;
@@ -184,7 +182,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					}
 					count++;
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				// LOG.error("", e);
 			}
 			if (removeList != null) {
