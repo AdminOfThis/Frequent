@@ -7,10 +7,12 @@ import java.util.ResourceBundle;
 
 import control.ASIOController;
 import data.Channel;
+import data.Group;
+import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.AutoCompleteComboBoxListener;
 import gui.utilities.controller.VectorScope;
-import gui.utilities.controller.VuMeter;
+import gui.utilities.controller.VuMeterMono;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
@@ -42,7 +44,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	@FXML
 	private HBox				boxDecay;
 	private VectorScope			vectorScope;
-	private VuMeter				vu1, vu2;
+	private VuMeterMono			vu1, vu2;
 	private Channel				c1, c2;
 
 	@Override
@@ -66,13 +68,13 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		AnchorPane.setTopAnchor(vectorScope, .0);
 		AnchorPane.setLeftAnchor(vectorScope, .0);
 		AnchorPane.setRightAnchor(vectorScope, .0);
-		vu1 = new VuMeter(null, Orientation.HORIZONTAL);
+		vu1 = new VuMeterMono(null, Orientation.HORIZONTAL);
 		vu1.setRotate(180.0);
 		vu1.showLabels(false);
 		vu1.setParentPausable(this);
 		bottomPane.getChildren().add(vu1);
 		HBox.setHgrow(vu1, Priority.SOMETIMES);
-		vu2 = new VuMeter(null, Orientation.HORIZONTAL);
+		vu2 = new VuMeterMono(null, Orientation.HORIZONTAL);
 		vu2.showLabels(false);
 		vu2.setParentPausable(this);
 		bottomPane.getChildren().add(vu2);
@@ -88,20 +90,17 @@ public class VectorScopeViewController implements Initializable, PausableView {
 			@Override
 			public Channel fromString(final String string) {
 				for (Channel c : cmbChannel1.getItems()) {
-					if (Objects.equals(c.getName(), string))
-						return c;
+					if (Objects.equals(c.getName(), string)) return c;
 				}
 				for (Channel c : cmbChannel2.getItems()) {
-					if (Objects.equals(c.getName(), string))
-						return c;
+					if (Objects.equals(c.getName(), string)) return c;
 				}
 				return null;
 			}
 
 			@Override
 			public String toString(final Channel object) {
-				if (object == null)
-					return "- NONE -";
+				if (object == null) return "- NONE -";
 				return object.getName();
 			}
 		};
@@ -139,6 +138,11 @@ public class VectorScopeViewController implements Initializable, PausableView {
 
 	@Override
 	public void refresh() {
+		refreshComboBoxes();
+	}
+
+	private void refreshComboBoxes() {
+		// refreshing combo boxes
 		if (ASIOController.getInstance() != null) {
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
 			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
@@ -147,6 +151,26 @@ public class VectorScopeViewController implements Initializable, PausableView {
 			}
 			if (Objects.equals(vectorScope.getChannel2(), cmbChannel2.getValue())) {
 				cmbChannel2.setValue(vectorScope.getChannel2());
+			}
+		}
+	}
+
+	@Override
+	public void setSelectedChannel(Input in) {
+		if (MainController.getInstance().getSelectedChannels().size() >= 1) {
+			for (Input i : MainController.getInstance().getSelectedChannels()) {
+				if (i instanceof Channel && ((Channel) i).getStereoChannel() != null) {
+					cmbChannel1.setValue((Channel) i);
+					cmbChannel2.setValue(((Channel) i).getStereoChannel());
+				}
+			}
+		} else if (cmbChannel1.getValue() == null && cmbChannel2.getValue() == null) {
+			if (MainController.getInstance().getSelectedChannels().size() == 2) {
+				for (Input i : MainController.getInstance().getSelectedChannels()) {
+					if (i instanceof Group) { return; }
+				}
+				cmbChannel1.setValue((Channel) MainController.getInstance().getSelectedChannels().get(0));
+				cmbChannel2.setValue((Channel) MainController.getInstance().getSelectedChannels().get(1));
 			}
 		}
 	}

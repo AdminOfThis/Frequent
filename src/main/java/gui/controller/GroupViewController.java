@@ -12,8 +12,9 @@ import com.sun.javafx.charts.Legend.LegendItem;
 import control.ASIOController;
 import data.Channel;
 import data.Group;
+import data.Input;
 import gui.pausable.PausableView;
-import gui.utilities.controller.VuMeter;
+import gui.utilities.controller.VuMeterMono;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -38,8 +39,6 @@ public class GroupViewController implements Initializable, PausableView {
 
 	private static final Logger			LOG		= Logger.getLogger(GroupViewController.class);
 	private static GroupViewController	instance;
-
-
 	@FXML
 	private SplitPane					root;
 	@FXML
@@ -52,13 +51,11 @@ public class GroupViewController implements Initializable, PausableView {
 	private LineChart<Number, Number>	chart;
 	@FXML
 	private ToggleButton				tglTimed;
-
 	private boolean						pause	= true;
 
 	public static GroupViewController getInstance() {
 		return instance;
 	}
-
 
 	@Override
 	public ArrayList<Node> getHeader() {
@@ -110,7 +107,7 @@ public class GroupViewController implements Initializable, PausableView {
 		if (g.getColor() == null || g.getColor().isEmpty()) {
 			g.setColor(MainController.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1, groupList.size() + 1));
 		}
-		VuMeter groupMeter = new VuMeter(g, Orientation.VERTICAL);
+		VuMeterMono groupMeter = new VuMeterMono(g, Orientation.VERTICAL);
 		groupMeter.setParentPausable(this);
 		groupMeter.setMinWidth(40.0);
 		vuPane.getChildren().add(groupMeter);
@@ -124,7 +121,7 @@ public class GroupViewController implements Initializable, PausableView {
 		groupPane.getItems().add(scroll);
 		SplitPane.setResizableWithParent(scroll, false);
 		for (Channel c : g.getChannelList()) {
-			VuMeter channelMeter = new VuMeter(c, Orientation.VERTICAL);
+			VuMeterMono channelMeter = new VuMeterMono(c, Orientation.VERTICAL);
 			channelMeter.setParentPausable(this);
 			channelMeter.setMinWidth(40.0);
 			VBox.setVgrow(channelMeter, Priority.ALWAYS);
@@ -136,7 +133,6 @@ public class GroupViewController implements Initializable, PausableView {
 			redrawChart(g);
 		}
 	}
-
 
 	private void redrawChart(final Group g) {
 		Series<Number, Number> series = new Series<>();
@@ -220,4 +216,7 @@ public class GroupViewController implements Initializable, PausableView {
 			groupPane.setDividerPositions(divPosValues);
 		}
 	}
+
+	@Override
+	public void setSelectedChannel(Input in) {}
 }

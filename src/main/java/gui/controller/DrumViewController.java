@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import data.Channel;
 import data.DrumTrigger;
+import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
 import gui.utilities.NegativeAreaChart;
@@ -202,20 +203,16 @@ public class DrumViewController implements Initializable, PausableView {
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
-				} catch (Exception e) {
 				}
-				if (trig != null) {
-					return trig.getName();
-				}
+				catch (Exception e) {}
+				if (trig != null) { return trig.getName(); }
 				return null;
 			}
 
 			@Override
 			public Number fromString(String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) {
-						return triggerList.indexOf(trig);
-					}
+					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
 				}
 				return null;
 			}
@@ -266,7 +263,6 @@ public class DrumViewController implements Initializable, PausableView {
 				Data<Number, Number> data = new XYChart.Data<>(System.currentTimeMillis(), triggerList.indexOf(trig) + 1);
 				series.getData().add(data);
 			}
-
 		});
 	}
 
@@ -297,6 +293,9 @@ public class DrumViewController implements Initializable, PausableView {
 
 	@Override
 	public void refresh() {
-		//not needed
+		// not needed
 	}
+
+	@Override
+	public void setSelectedChannel(Input in) {}
 }

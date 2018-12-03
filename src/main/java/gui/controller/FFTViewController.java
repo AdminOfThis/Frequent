@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 
 import control.FFTListener;
+import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.ResizableCanvas;
 import javafx.application.Platform;
@@ -105,4 +106,7 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	public void refresh() {
 		// nothing to do
 	}
+
+	@Override
+	public void setSelectedChannel(Input in) {}
 }

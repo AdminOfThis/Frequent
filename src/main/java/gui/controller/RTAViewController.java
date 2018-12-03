@@ -8,10 +8,11 @@ import org.apache.log4j.Logger;
 
 import control.FFTListener;
 import data.Channel;
+import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
-import gui.utilities.controller.VuMeter;
+import gui.utilities.controller.VuMeterMono;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -52,7 +53,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	private XYChart<Number, Number>	chart;
 	@FXML
 	private HBox					topPane, topRight, topLeft;
-	private VuMeter					meter;
+	private VuMeterMono				meter;
 	private boolean					pause		= true;
 	private Series<Number, Number>	series		= new Series<>();
 	private Series<Number, Number>	maxSeries	= new Series<>();
@@ -131,6 +132,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		initButtons();
 		// initTuner();
 		AnimationTimer timer = new AnimationTimer() {
+
 			@Override
 			public void handle(final long now) {
 				if (buffer != null && !isPaused()) {
@@ -142,7 +144,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	}
 
 	private void initVuMeter() {
-		meter = new VuMeter(null, Orientation.VERTICAL);
+		meter = new VuMeterMono(null, Orientation.VERTICAL);
 		meter.setParentPausable(this);
 		meter.setPrefWidth(50.0);
 		chartPane.getChildren().add(0, meter);
@@ -179,13 +181,17 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		}
 	}
 
-	public void setChannel(final Channel channel) {
-		this.channel = channel;
-		meter.setChannel(channel);
-		if (channel == null) {
-			chart.setTitle(null);
-		} else {
-			chart.setTitle(channel.getName());
+	@Override
+	public void setSelectedChannel(final Input input) {
+		if (input instanceof Channel) {
+			Channel channel = (Channel) input;
+			this.channel = channel;
+			meter.setChannel(channel);
+			if (channel == null) {
+				chart.setTitle(null);
+			} else {
+				chart.setTitle(channel.getName());
+			}
 		}
 	}
 

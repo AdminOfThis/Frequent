@@ -2,7 +2,9 @@ package gui.utilities.controller;
 
 import java.util.Objects;
 
+import data.Channel;
 import data.Input;
+import gui.pausable.Pausable;
 import javafx.geometry.Orientation;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -10,10 +12,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class VuMeterStereo extends AnchorPane {
+public class VuMeterStereo extends AnchorPane implements VuMeterIntf {
 
-	private Pane	root;
-	private VuMeter	meter1, meter2;
+	private Pane		root;
+	private VuMeterMono	meter1, meter2;
+	private Pausable	parentPausable;
+	private boolean		pause;
 
 	public VuMeterStereo(final Input channel1, final Input channel2, final Orientation o) {
 		if (o == Orientation.HORIZONTAL) {
@@ -26,8 +30,8 @@ public class VuMeterStereo extends AnchorPane {
 		AnchorPane.setTopAnchor(root, 0.0);
 		AnchorPane.setLeftAnchor(root, 0.0);
 		AnchorPane.setRightAnchor(root, 0.0);
-		meter1 = new VuMeter(channel1, o);
-		meter2 = new VuMeter(channel2, o);
+		meter1 = new VuMeterMono(channel1, o);
+		meter2 = new VuMeterMono(channel2, o);
 		HBox.setHgrow(meter1, Priority.SOMETIMES);
 		HBox.setHgrow(meter2, Priority.SOMETIMES);
 		VBox.setVgrow(meter1, Priority.SOMETIMES);
@@ -56,5 +60,33 @@ public class VuMeterStereo extends AnchorPane {
 			meter1.setChannel(c1);
 			meter2.setChannel(c2);
 		}
+	}
+
+	@Override
+	public void setParentPausable(final Pausable parent) {
+		parentPausable = parent;
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		this.pause = pause;;
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause || parentPausable != null && parentPausable.isPaused();
+	}
+
+	@Override
+	public void setChannel(Input c) {
+		meter1.setChannel(c);
+		if (((Channel) c).getStereoChannel() != null) {
+			meter2.setChannel(((Channel) c).getStereoChannel());
+		}
+	}
+
+	@Override
+	public void setTitle(String title) {
+		// TODO Auto-generated method stub
 	}
 }
