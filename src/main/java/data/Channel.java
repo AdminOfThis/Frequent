@@ -11,20 +11,16 @@ import control.InputListener;
 public class Channel extends Input implements Comparable<Channel>, Comparator<Channel> {
 
 	private static final long		serialVersionUID	= 1L;
-
-
 	private transient AsioChannel	channel;
 	private int						channelIndex		= -1;
 	private Group					group;
 	private boolean					hide				= false;
 	private float[]					buffer;
-
 	private Channel					stereoChannel;
 
 	public static double percentToDB(final double level) {
 		return 20.0 * Math.log10(level /* / 1000.0 */);
 	}
-
 
 	public Channel() {
 		this(null, null);
@@ -65,15 +61,17 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 			Channel other = (Channel) obj;
 			if (super.equals(obj) && Objects.equals(getChannelIndex(), other.getChannelIndex())) {
 				// if groups don't exist on both
-				if (getGroup() == null && other.getGroup() == null)
+				if (getGroup() == null && other.getGroup() == null) {
 					return true;
+				}
 				// if groups exist on both
-				else if (getGroup() != null && other.getGroup() != null)
+				else if (getGroup() != null && other.getGroup() != null) {
 					// check for group equality
 					return Objects.equals(getGroup().getName(), other.getGroup().getName());
-				else
+				} else {
 					// if only one has a group
 					return false;
+				}
 			}
 		}
 		return false;

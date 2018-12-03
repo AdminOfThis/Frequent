@@ -16,12 +16,9 @@ public abstract class Input implements Serializable {
 	private static final long				serialVersionUID	= 1L;
 	private static final Logger				LOG					= Logger.getLogger(Input.class);
 	public static final Comparator<Input>	COMPARATOR			= (o1, o2) -> {
-																	if (o1 instanceof Channel && o2 instanceof Channel)
-																		return ((Channel) o1).getChannelIndex()
-																		        - ((Channel) o2).getChannelIndex();
-																	else if (o1 instanceof Group && o2 instanceof Group)
-																		return ((Group) o1).getName()
-																		        .compareTo(((Group) o2).getName());
+																	if (o1 instanceof Channel && o2 instanceof Channel) {
+																		return ((Channel) o1).getChannelIndex() - ((Channel) o2).getChannelIndex();
+																	} else if (o1 instanceof Group && o2 instanceof Group) { return ((Group) o1).getName().compareTo(((Group) o2).getName()); }
 																	return 0;
 																};
 	private String							name;
@@ -83,7 +80,8 @@ public abstract class Input implements Serializable {
 				// public void run() {
 				try {
 					obs.levelChanged(level);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					LOG.warn("Unable to notify Level Listener", e);
 					LOG.debug("", e);
 				}
@@ -114,7 +112,8 @@ public abstract class Input implements Serializable {
 					c.setColor(hexColor);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return false;
 		}
 		return true;
