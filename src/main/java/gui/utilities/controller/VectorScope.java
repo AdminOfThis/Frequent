@@ -118,7 +118,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	@Override
-	public void levelChanged(final double level) throws Exception {
+	public void levelChanged(final double level) {
 		// do nothing, don't care
 	}
 

@@ -19,7 +19,6 @@ public abstract class FXMLUtil {
 
 	private static Color colorFade(final Color baseColor, final Color targetColor, final double percent) {
 		Color result = null;
-
 		double deltaRed = targetColor.getRed() - baseColor.getRed();
 		double deltaGreen = targetColor.getGreen() - baseColor.getGreen();
 		double deltaBlue = targetColor.getBlue() - baseColor.getBlue();
@@ -29,7 +28,6 @@ public abstract class FXMLUtil {
 		int red = (int) Math.floor(redD * 255.0);
 		int green = (int) Math.floor(greenD * 255.0);
 		int blue = (int) Math.floor(blueD * 255.0);
-
 		result = Color.rgb(red, green, blue);
 		return result;
 	}
@@ -38,15 +36,16 @@ public abstract class FXMLUtil {
 		try {
 			int index = (int) Math.floor(percent * (colors.length - 1));
 			// if topped (only with 1.0 percent
-			if (index == colors.length)
+			if (index == colors.length) {
 				return colors[colors.length - 1];
-			else {
+			} else {
 				Color baseColor = colors[index];
 				Color targetColor = colors[index + 1];
 				double percentNew = (percent - 1.0 / (colors.length - 1) * index) / (1.0 / (colors.length - 1));
 				return colorFade(baseColor, targetColor, percentNew);
 			}
-		} catch (ArrayIndexOutOfBoundsException e) {
+		}
+		catch (ArrayIndexOutOfBoundsException e) {
 			return colors[0];
 		}
 	}
@@ -67,14 +66,17 @@ public abstract class FXMLUtil {
 					break;
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to load css value " + value);
 			LOG.debug("", e);
-		} finally {
+		}
+		finally {
 			if (reader != null) {
 				try {
 					reader.close();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					LOG.error("Problem closing file reader", e);
 				}
 			}
@@ -91,7 +93,8 @@ public abstract class FXMLUtil {
 			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
 			parent = loader.load();
 			controller = loader.getController();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("Unable to load FXMLFile");
 			LOG.info("", e);
 		}
@@ -104,7 +107,8 @@ public abstract class FXMLUtil {
 			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
 			loader.setController(controller);
 			parent = loader.load();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("Unable to load FXMLFile", e);
 		}
 		return parent;
