@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
+import control.ASIOController;
 import data.Channel;
 import data.RTAIO;
 import gui.controller.MainController;
@@ -27,7 +28,8 @@ import javafx.scene.paint.Color;
 public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	private static final Logger	LOG			= Logger.getLogger(ResizableCanvas.class);
-	private static final int	POINTS		= 1024;
+	private static final int	MICROSTEPS	= 10;
+	private static int			points		= 1024;
 	private int					count		= 0;
 	private boolean				autoscroll	= true;
 	private GraphicsContext		content;
@@ -38,6 +40,9 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	private ResizableCanvas() {
 		content = getGraphicsContext2D();
+		if (ASIOController.getInstance() != null) {
+			points = ASIOController.getInstance().getBufferSize();
+		}
 	}
 
 	private ResizableCanvas(final double width, final double heigth) {
@@ -66,14 +71,14 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 				RTAIO.writeToFile(map);
 			}
 			// long before = System.currentTimeMillis();
-			double size = getWidth() / POINTS;
+			double size = getWidth() / points;
 			if (getHeight() < size * count + size) {
 				setHeight(getHeight() + size);
 			}
 			// adding points
-			for (int pointCount = 0; pointCount < map[0].length; pointCount++) {
-				drawDot(map, size, pointCount);
-			}
+			ArrayList<Color> baseColors = createBaseColorList(map[1]);
+
+			drawDots(baseColors);
 			//
 			count++;
 			if (count > 5000 && !toExport) {
@@ -82,38 +87,46 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			if (autoscroll && parent != null) {
 				parent.setVvalue(parent.getVmax());
 			}
-			// long after = System.currentTimeMillis();
-			// System.out.println(after - before);
 		}
 	}
 
-	private void drawDot(final double[][] map, double size, int pointCount) {
+	private void drawDots(final ArrayList<Color> list) {
 		// System.out.println(map[1][pointCount]);
-		double level = Math.abs(map[1][pointCount]);
+		for (int i = 0; i < (list.size() - 1) * MICROSTEPS; i++) {
+			Color baseColor = list.get(Math.floorDiv(i, MICROSTEPS));
+			Color targetColor = list.get(Math.floorDiv(i, MICROSTEPS) + 1);
+			double percent = (i % MICROSTEPS) / (double) MICROSTEPS;
+			Color resultColor = FXMLUtil.colorFade(percent, baseColor, targetColor);
+
+			content.setFill(resultColor);
+			double squareSize = (getWidth() / (list.size() * MICROSTEPS));
+			double startPoint = squareSize * i;
+			content.fillRect(startPoint, squareSize * count, squareSize, squareSize);
+		}
+
+
+	}
+
+	private ArrayList<Color> createBaseColorList(final double[] map) {
+		ArrayList<Color> result = new ArrayList<>();
+		for (double value : map) {
+			double percent = percentFromRawValue(value);
+			result.add(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED));
+		}
+		return result;
+	}
+
+	private double percentFromRawValue(final double raw) {
+		double level = Math.abs(raw);
 		level = Channel.percentToDB(level * 1000.0);
 		if (level <= RTAViewController.FFT_MIN) {
 			level = RTAViewController.FFT_MIN + 1;
 		} else if (level >= Math.abs(RTAViewController.FFT_MIN)) {
 			level = Math.abs(RTAViewController.FFT_MIN) - 1;
 		}
-		double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level))
-		        / Math.abs(RTAViewController.FFT_MIN);
+		double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level)) / Math.abs(RTAViewController.FFT_MIN);
 		percent = 1.0 - percent;
-		try {
-			content.setFill(
-			        FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED));
-		} catch (ArrayIndexOutOfBoundsException e) {
-			LOG.error("Out of bounds: " + level, e);
-		}
-		double startPoint = getWidth() / 2000.0 * map[0][pointCount];
-		// System.out.println(startPoint);
-		double endpoint;
-		if (pointCount < map[0].length - 1) {
-			endpoint = getWidth() / 2000.0 * map[0][pointCount + 1];
-		} else {
-			endpoint = getWidth();
-		}
-		content.fillRect(startPoint, size * count, endpoint - startPoint + 1, size + 1);
+		return percent;
 	}
 
 	@Override
