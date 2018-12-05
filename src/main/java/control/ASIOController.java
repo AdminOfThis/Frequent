@@ -147,7 +147,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	// taken from Bachelor thesis at
 	// https://www.vutbr.cz/studium/zaverecne-prace?zp_id=88462
-	public double[] applyHannWindow(final double[] input) {
+	private double[] applyHannWindow(final double[] input) {
 		double[] out = new double[input.length];
 		for (int i = 0; i < input.length; i++) {
 			double mul = 0.5 * (1 - Math.cos(2 * Math.PI * i / input.length - 1));
