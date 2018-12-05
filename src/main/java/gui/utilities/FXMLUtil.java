@@ -36,7 +36,7 @@ public abstract class FXMLUtil {
 		try {
 			int index = (int) Math.floor(percent * (colors.length - 1));
 			// if topped (only with 1.0 percent
-			if (index == colors.length) {
+			if (index == colors.length - 1) {
 				return colors[colors.length - 1];
 			} else {
 				Color baseColor = colors[index];
@@ -44,8 +44,7 @@ public abstract class FXMLUtil {
 				double percentNew = (percent - 1.0 / (colors.length - 1) * index) / (1.0 / (colors.length - 1));
 				return colorFade(baseColor, targetColor, percentNew);
 			}
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
+		} catch (ArrayIndexOutOfBoundsException e) {
 			return colors[0];
 		}
 	}
@@ -66,17 +65,14 @@ public abstract class FXMLUtil {
 					break;
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to load css value " + value);
 			LOG.debug("", e);
-		}
-		finally {
+		} finally {
 			if (reader != null) {
 				try {
 					reader.close();
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 					LOG.error("Problem closing file reader", e);
 				}
 			}
@@ -93,8 +89,7 @@ public abstract class FXMLUtil {
 			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
 			parent = loader.load();
 			controller = loader.getController();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.error("Unable to load FXMLFile");
 			LOG.info("", e);
 		}
@@ -107,8 +102,7 @@ public abstract class FXMLUtil {
 			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
 			loader.setController(controller);
 			parent = loader.load();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.error("Unable to load FXMLFile", e);
 		}
 		return parent;
