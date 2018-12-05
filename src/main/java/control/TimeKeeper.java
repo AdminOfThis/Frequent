@@ -12,7 +12,7 @@ public final class TimeKeeper implements DataHolder<Cue> {
 
 	private static final Logger					LOG					= Logger.getLogger(TimeKeeper.class);
 
-	private static final String					DEFAULT_CUE_NAME	= "Song #";
+	public static final String					DEFAULT_CUE_NAME	= "Song #";
 	private static TimeKeeper					instance;
 	private long								startTime;
 	private long								roundStartTime;
