@@ -483,4 +483,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 			asioDriver.shutdownAndUnloadDriver();
 		}
 	}
+
+	public int getBufferSize() {
+		return bufferSize;
+	}
 }
