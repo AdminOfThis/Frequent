@@ -3,7 +3,9 @@ package gui.utilities.controller;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -50,11 +52,13 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	private Pausable						parentPausable;
 	// data
 	private Channel							channel1, channel2;
-	private boolean							restarting		= true;
+	// private boolean restarting = true;
 	// vars to align the buffers, instead of beeing of by one
-	private long							timeFirstBuffer, timeSecondBuffer;
+	// private long timeFirstBuffer, timeSecondBuffer;
 	// buffers
-	private List<Float>						buffer1, buffer2;
+	// private List<Float> buffer1, buffer2;
+	private Map<Long, float[]>				map1, map2;
+
 	private double							decay			= 1.0;
 
 	public VectorScope() {
@@ -65,8 +69,10 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		AnchorPane.setLeftAnchor(p, 0.0);
 		AnchorPane.setRightAnchor(p, 0.0);
 		// initialize synchronized lists
-		buffer1 = Collections.synchronizedList(new ArrayList<Float>());
-		buffer2 = Collections.synchronizedList(new ArrayList<Float>());
+		map1 = Collections.synchronizedMap(new LinkedHashMap<>());
+		map2 = Collections.synchronizedMap(new LinkedHashMap<>());
+		// buffer1 = Collections.synchronizedList(new ArrayList<Float>());
+		// buffer2 = Collections.synchronizedList(new ArrayList<Float>());
 		// initialize timer
 		AnimationTimer timer = new AnimationTimer() {
 
@@ -123,43 +129,25 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	@Override
-	public void newBuffer(final float[] buffer, final long time) {
+	public void newBuffer(final float[] buffer, final long position) {
 		if (!isPaused()) {
 			try {
-				if (restarting) {
-					if (timeFirstBuffer == 0) {
-						timeFirstBuffer = System.nanoTime();
-					} else if (timeSecondBuffer == 0) {
-						timeSecondBuffer = System.nanoTime();
-					} else {
-						// Checking timings to get synched
-						long timeThirdBuffer = System.nanoTime();
-						if (timeSecondBuffer - timeFirstBuffer < timeThirdBuffer - timeSecondBuffer) {
-							for (float f : buffer) {
-								buffer1.add(f);
-							}
-						}
-						restarting = false;
-						timeFirstBuffer = 0;
-						timeSecondBuffer = 0;
+				if (!map1.containsKey(position)) {
+					synchronized (map1) {
+						map1.put(position, buffer);
+					}
+				} else if (!map2.containsKey(position)) {
+					synchronized (map2) {
+						map2.put(position, buffer);
 					}
 				} else {
-					// Restarting done
-					ArrayList<Float> tempList = new ArrayList<>(buffer.length);
-					for (float f : buffer) {
-						tempList.add(f);
-					}
-					if (buffer1.size() < buffer2.size()) {
-						buffer1.addAll(tempList);
-					} else {
-						buffer2.addAll(tempList);
-					}
+					throw new IllegalArgumentException("Both buffers are filled with this sample position already");
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.error("Problem showing vectorscope", e);
 			}
 		}
+
 	}
 
 	@Override
@@ -183,9 +171,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			if (channel2 != null) {
 				channel2.addListener(this);
 			}
-			if (channel1 != null && channel2 != null) {
-				restarting = true;
-			}
 		}
 	}
 
@@ -202,12 +187,12 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		lblTitle.setText(title);
 	}
 
-	private void showData(final List<Float> x, final List<Float> y) {
+	private void showData(final float[] x, final float[] y) {
 		// drawing new data
-		if (x.size() == y.size()) {
+		if (x.length == y.length) {
 			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
-			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.size(); index = index + 2) {
-				Data<Number, Number> data = new Data<>(x.get(index), y.get(index));
+			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.length - 1; index = index + 2) {
+				Data<Number, Number> data = new Data<>(x[index], y[index]);
 				dataToAdd.add(data);
 			}
 			vectorSeries.getData().addAll(dataToAdd);
@@ -217,21 +202,46 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					percent = 1.0 / percent;
 				}
 				percent = 1 - Math.abs((percent + 1) / 2.0);
-				d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
+				d.getNode().setStyle("-fx-background-color: "
+					+ FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
 			}
 		} // removing old data points
 		if (vectorSeries.getData().size() > MAX_DATA_POINTS * decay) {
-			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0, (int) Math.round(vectorSeries.getData().size() - MAX_DATA_POINTS * decay));
+			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0,
+				(int) Math.round(vectorSeries.getData().size() - MAX_DATA_POINTS * decay));
 			vectorSeries.getData().removeAll(removeList);
 		}
 	}
 
 	private void update() {
 		if (!isPaused()) {
-			showData(buffer1, buffer2);
+			ArrayList<Long> clearedKeys = null;
+			synchronized (map1) {
+
+				for (long key : map1.keySet()) {
+					if (map2.containsKey(key)) {
+						synchronized (map2) {
+							showData(map1.get(key), map2.get(key));
+							if (clearedKeys == null) {
+								clearedKeys = new ArrayList<>();
+							}
+							clearedKeys.add(key);
+						}
+					}
+				}
+
+			}
 			// clear buffers
-			buffer1.clear();
-			buffer2.clear();
+			if (clearedKeys != null) {
+				for (long key : clearedKeys) {
+					synchronized (map1) {
+						map1.remove(key);
+					}
+					synchronized (map2) {
+						map1.remove(key);
+					}
+				}
+			}
 		}
 	}
 }
