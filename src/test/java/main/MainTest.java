@@ -45,7 +45,7 @@ class MainTest {
 		System.setOut(null);
 		System.setErr(null);
 		thread.start();// Initialize the thread
-		latch.await(15, TimeUnit.SECONDS);
+		latch.await(10, TimeUnit.SECONDS);
 		scene = Main.getInstance().getScene();
 		if (e != null) {
 			throw e;
