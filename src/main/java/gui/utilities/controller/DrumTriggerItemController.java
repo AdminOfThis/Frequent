@@ -10,6 +10,7 @@ import data.Channel;
 import data.DrumTrigger;
 import gui.controller.DrumViewController;
 import gui.utilities.DrumTriggerListener;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -75,8 +76,8 @@ public class DrumTriggerItemController implements Initializable, DrumTriggerList
 		AnchorPane.setLeftAnchor(chart, .0);
 		AnchorPane.setRightAnchor(chart, .0);
 
-		threshold.prefHeightProperty()
-		        .bind(slider.valueProperty().divide(slider.maxProperty()).multiply(waveFormPane.heightProperty()));
+		threshold.prefHeightProperty().bind(new SimpleDoubleProperty(1.0)
+		        .subtract(slider.valueProperty().divide(slider.minProperty())).multiply(waveFormPane.heightProperty()));
 
 	}
 

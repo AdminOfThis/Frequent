@@ -43,7 +43,6 @@ public class DrumViewController implements Initializable, PausableView {
 	private static final String										DRUM_ITEM_PATH		= "/fxml/utilities/DrumTriggerItem.fxml";
 	private static final int										REFRESH_RATE		= 10;
 	private static final double										DRUM_TIME_FRAME		= 5000;
-	private static final double										MIN_HEIGHT_TRESHOLD	= 38.0;
 	private static final double										CHART_SYMBOL_SIZE	= 25.0;
 	@FXML
 	private AnchorPane												chartPane;
