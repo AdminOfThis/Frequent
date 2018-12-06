@@ -11,20 +11,18 @@ import data.DrumTrigger;
 import gui.controller.DrumViewController;
 import gui.utilities.DrumTriggerListener;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.util.StringConverter;
 
 public class DrumTriggerItemController implements Initializable, DrumTriggerListener {
 
-	private static final Logger	LOG		= Logger.getLogger(DrumTrigger.class);
-	private static ToggleGroup	group	= new ToggleGroup();
+	private static final Logger	LOG	= Logger.getLogger(DrumTrigger.class);
 	@FXML
 	private Label				label;
 	@FXML
@@ -32,67 +30,75 @@ public class DrumTriggerItemController implements Initializable, DrumTriggerList
 	@FXML
 	private Slider				slider;
 	@FXML
-	private ToggleButton		view;
-	private DrumViewController		controller;
+	private AnchorPane			waveFormPane;
+	@FXML
+	private Pane				threshold;
+	private WaveFormChart		chart;
+	private DrumViewController	controller;
 	private DrumTrigger			trigger;
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		group.getToggles().add(view);
+	public void initialize(final URL location, final ResourceBundle resources) {
 		combo.setOnShowing(e -> {
 			if (ASIOController.getInstance() != null) {
 				combo.getItems().setAll(ASIOController.getInstance().getInputList());
 			}
 		});
-		combo.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Channel>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Channel> observable, Channel oldValue, Channel newValue) {
-				if (trigger != null) {
-					trigger.setChannel(newValue);
-				}
-			}
-		});
+		combo.getSelectionModel().selectedItemProperty()
+		        .addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
+			        if (trigger != null) {
+				        trigger.setChannel(newValue);
+				        chart.setChannel(newValue);
+			        }
+		        });
 		combo.setConverter(new StringConverter<Channel>() {
 
 			@Override
-			public String toString(Channel object) {
+			public Channel fromString(final String string) {
+				return null;
+			}
+
+			@Override
+			public String toString(final Channel object) {
 				if (object == null) {
 					LOG.info("");
 					return "- NONE -";
 				}
 				return object.getName();
 			}
+		});
 
-			@Override
-			public Channel fromString(String string) {
-				return null;
-			}
-		});
-		slider.valueProperty().addListener(new ChangeListener<Number>() {
+		chart = new WaveFormChart();
+		waveFormPane.getChildren().add(chart);
+		AnchorPane.setBottomAnchor(chart, .0);
+		AnchorPane.setTopAnchor(chart, .0);
+		AnchorPane.setLeftAnchor(chart, .0);
+		AnchorPane.setRightAnchor(chart, .0);
 
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				if (trigger != null) {
-					// LOG.info("Setting Treshold on Trigger " +
-					// trigger.getName() + " to " + slider.getValue());
-					trigger.setTreshold(slider.getValue());
-					controller.redrawThreshold();
-				}
-			}
-		});
-		view.setOnAction(e -> {
-			if (trigger != null) {
-				controller.setActiveTrigger(trigger);
-			}
-		});
+		threshold.prefHeightProperty()
+		        .bind(slider.valueProperty().divide(slider.maxProperty()).multiply(waveFormPane.heightProperty()));
+
 	}
 
-	public void setDrumController(DrumViewController con) {
-		this.controller = con;
+	private void refresh() {
+		if (trigger == null) {
+			label.setText("");
+			combo.getSelectionModel().select(null);
+			slider.setValue(0.0);
+		} else {
+			label.setText(trigger.getName());
+			if (trigger.getChannel() != null) {
+				combo.getSelectionModel().select(trigger.getChannel());
+			}
+			slider.setValue(trigger.getTreshold());
+		}
 	}
 
-	public void setTrigger(DrumTrigger trigger) {
+	public void setDrumController(final DrumViewController con) {
+		controller = con;
+	}
+
+	public void setTrigger(final DrumTrigger trigger) {
 		if (this.trigger != null) {
 			this.trigger.setObs(null);
 		}
@@ -103,23 +109,8 @@ public class DrumTriggerItemController implements Initializable, DrumTriggerList
 		refresh();
 	}
 
-	private void refresh() {
-		if (trigger == null) {
-			label.setText("");
-			combo.getSelectionModel().select(null);
-			slider.setValue(0.0);
-			view.setSelected(false);
-		} else {
-			label.setText(trigger.getName());
-			if (trigger.getChannel() != null) {
-				combo.getSelectionModel().select(trigger.getChannel());
-			}
-			slider.setValue(trigger.getTreshold());
-		}
-	}
-
 	@Override
-	public void tresholdReached(double level, double treshold) {
+	public void tresholdReached(final double level, final double treshold) {
 		controller.addEntry(trigger, level);
 	}
 }

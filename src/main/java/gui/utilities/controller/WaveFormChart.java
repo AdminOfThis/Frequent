@@ -107,7 +107,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		}
 	}
 
-	public void setSelectedChannel(final Input c) {
+	public void setChannel(final Input c) {
 		try {
 			if (!c.equals(channel)) {
 				if (channel != null) {

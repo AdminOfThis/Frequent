@@ -187,11 +187,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 			Channel channel = (Channel) input;
 			this.channel = channel;
 			meter.setChannel(channel);
-			if (channel == null) {
-				chart.setTitle(null);
-			} else {
-				chart.setTitle(channel.getName());
-			}
+			chart.setTitle(channel.getName());
 		}
 	}
 
