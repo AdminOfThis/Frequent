@@ -29,12 +29,6 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 
 	private static final Logger	LOG			= Logger.getLogger(ChannelCell.class);
 	private static final String	FXML_PATH	= "/fxml/utilities/ChannelCell.fxml";
-	@FXML
-	private AnchorPane			chartPane;
-	@FXML
-	private Label				lblNumber;
-	private Input				input;
-	private VuMeterIntf			meter;
 
 	public static String toRGBCode(final Color color) {
 		int red = (int) (color.getRed() * 255);
@@ -42,6 +36,14 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 		int blue = (int) (color.getBlue() * 255);
 		return String.format("#%02X%02X%02X", red, green, blue);
 	}
+
+	@FXML
+	private AnchorPane	chartPane;
+	@FXML
+	private Label		lblNumber;
+	private Input		input;
+
+	private VuMeterIntf	meter;
 
 	public ChannelCell() {
 		super();
@@ -65,6 +67,33 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 				}
 			}
 		});
+	}
+
+	private void changeMeter(final Input channel) {
+		boolean refresh = false;
+		if (channel != null && channel instanceof Channel && ((Channel) channel).getStereoChannel() != null) {
+			// stereo
+			if (meter == null || meter instanceof VuMeterMono) {
+				meter = new VuMeterStereo(channel, ((Channel) channel).getStereoChannel(), Orientation.HORIZONTAL);
+				refresh = true;
+			}
+		} else {
+			// monoVu
+			if (meter == null || meter instanceof VuMeterStereo) {
+				meter = new VuMeterMono(channel, Orientation.HORIZONTAL);
+				refresh = true;
+			}
+		}
+		if (refresh) {
+			chartPane.getChildren().clear();
+			chartPane.getChildren().add((Node) meter);
+			AnchorPane.setTopAnchor((Node) meter, 0.0);
+			AnchorPane.setBottomAnchor((Node) meter, 0.0);
+			AnchorPane.setLeftAnchor((Node) meter, 0.0);
+			AnchorPane.setRightAnchor((Node) meter, 0.0);
+		} else {
+			meter.setChannel(channel);
+		}
 	}
 
 	private void initContextMenu() {
@@ -99,7 +128,8 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	// }
 	// };
 	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {}
+	public void initialize(final URL location, final ResourceBundle resources) {
+	}
 
 	private void update(final Input item) {
 		changeMeter(item);
@@ -136,33 +166,6 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 				setText(field.getText());
 				setContentDisplay(ContentDisplay.TEXT_ONLY);
 			});
-		}
-	}
-
-	private void changeMeter(Input channel) {
-		boolean refresh = false;
-		if (channel != null && channel instanceof Channel && ((Channel) channel).getStereoChannel() != null) {
-			// stereo
-			if (meter == null || meter instanceof VuMeterMono) {
-				meter = new VuMeterStereo(channel, ((Channel) channel).getStereoChannel(), Orientation.HORIZONTAL);
-				refresh = true;
-			}
-		} else {
-			// monoVu
-			if (meter == null || meter instanceof VuMeterStereo) {
-				meter = new VuMeterMono(channel, Orientation.HORIZONTAL);
-				refresh = true;
-			}
-		}
-		if (refresh) {
-			chartPane.getChildren().clear();
-			chartPane.getChildren().add((Node) meter);
-			AnchorPane.setTopAnchor((Node) meter, 0.0);
-			AnchorPane.setBottomAnchor((Node) meter, 0.0);
-			AnchorPane.setLeftAnchor((Node) meter, 0.0);
-			AnchorPane.setRightAnchor((Node) meter, 0.0);
-		} else {
-			meter.setChannel(channel);
 		}
 	}
 }

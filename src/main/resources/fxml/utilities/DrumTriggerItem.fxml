@@ -4,17 +4,39 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<HBox alignment="CENTER_LEFT" spacing="5.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.DrumTriggerItemController">
+
+<VBox stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.utilities.controller.DrumTriggerItemController">
    <children>
-      <Label fx:id="label" prefWidth="50.0" text="Label" />
-      <ComboBox fx:id="combo" prefWidth="150.0" />
-      <Slider fx:id="slider" blockIncrement="6.0" majorTickUnit="12.0" max="0.0" min="-60.0" showTickLabels="true" showTickMarks="true" />
-      <ToggleButton fx:id="view" mnemonicParsing="false" text="View" />
+      <HBox alignment="CENTER_RIGHT" spacing="5.0">
+         <children>
+            <Label fx:id="label" prefWidth="50.0" text="Name" />
+            <ComboBox fx:id="combo" prefWidth="150.0" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <HBox prefHeight="75.0" spacing="5.0">
+         <children>
+            <StackPane>
+               <children>
+                  <AnchorPane fx:id="waveFormPane" prefHeight="200.0" prefWidth="200.0" />
+                  <VBox alignment="BOTTOM_CENTER" StackPane.alignment="BOTTOM_CENTER">
+                     <children>
+                        <Pane maxHeight="2.0" minHeight="2.0" prefHeight="2.0" style="-fx-background-color: red;" />
+                        <Pane fx:id="threshold" prefHeight="50.0" />
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+            <Slider fx:id="slider" blockIncrement="6.0" majorTickUnit="12.0" max="0.0" min="-60.0" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" />
+         </children>
+      </HBox>
    </children>
-   <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-   </padding>
-</HBox>
+</VBox>
