@@ -17,7 +17,7 @@ import data.Cue;
 class TimeKeeperTest {
 
 	@BeforeAll
-	static void clearSyso() {
+	public static void clearSyso() {
 		System.setOut(new PrintStream(new OutputStream() {
 
 			@Override
@@ -34,12 +34,12 @@ class TimeKeeperTest {
 	}
 
 	@Test
-	void instance() {
+	public void instance() {
 		assertNotNull(TimeKeeper.getInstance());
 	}
 
 	@Test()
-	void start() throws InterruptedException {
+	public void start() throws InterruptedException {
 		TimeKeeper.getInstance().round();
 		// assertEquals(0, TimeKeeper.getInstance().getActiveIndex());
 		Thread.sleep(100);
@@ -50,7 +50,7 @@ class TimeKeeperTest {
 	}
 
 	@Test()
-	void round() {
+	public void round() {
 		TimeKeeper.getInstance().round();
 		// assertEquals(1, TimeKeeper.getInstance().getActiveIndex());#
 		assertNotEquals(TimeKeeper.getInstance().getStartTime(), TimeKeeper.getInstance().getRoundTime() > 0);
@@ -61,7 +61,7 @@ class TimeKeeperTest {
 	}
 
 	@Test
-	void addCue() {
+	public void addCue() {
 		Cue cue = new Cue("TestCue");
 		TimeKeeper.getInstance().add(cue);
 		assertEquals(cue, TimeKeeper.getInstance().getNextCue());

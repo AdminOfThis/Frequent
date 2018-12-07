@@ -12,29 +12,30 @@ import org.junit.jupiter.api.Test;
 class ASIOControllerTest {
 
 	@BeforeAll
-	static void clearSyso() {
+	public static void clearSyso() {
 		System.setOut(new PrintStream(new OutputStream() {
 
 			@Override
 			public void write(int b) throws IOException {
+				// do nothing
 			}
 		}));
 		System.setErr(new PrintStream(new OutputStream() {
 
 			@Override
 			public void write(int b) throws IOException {
-
+				// do nothing
 			}
 		}));
 	}
 
 	@Test
-	void possibleDrivers() {
+	public void possibleDrivers() {
 		assertNotNull(ASIOController.getPossibleDrivers());
 	}
 
 	@Test
-	void instance() {
+	public void instance() {
 		if (ASIOController.getInstance() == null) {
 			return;
 		}

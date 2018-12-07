@@ -90,17 +90,20 @@ public class VectorScopeViewController implements Initializable, PausableView {
 			@Override
 			public Channel fromString(final String string) {
 				for (Channel c : cmbChannel1.getItems()) {
-					if (Objects.equals(c.getName(), string)) return c;
+					if (Objects.equals(c.getName(), string))
+						return c;
 				}
 				for (Channel c : cmbChannel2.getItems()) {
-					if (Objects.equals(c.getName(), string)) return c;
+					if (Objects.equals(c.getName(), string))
+						return c;
 				}
 				return null;
 			}
 
 			@Override
 			public String toString(final Channel object) {
-				if (object == null) return "- NONE -";
+				if (object == null)
+					return "- NONE -";
 				return object.getName();
 			}
 		};
@@ -164,14 +167,15 @@ public class VectorScopeViewController implements Initializable, PausableView {
 					cmbChannel2.setValue(((Channel) i).getStereoChannel());
 				}
 			}
-		} else if (cmbChannel1.getValue() == null && cmbChannel2.getValue() == null) {
-			if (MainController.getInstance().getSelectedChannels().size() == 2) {
-				for (Input i : MainController.getInstance().getSelectedChannels()) {
-					if (i instanceof Group) { return; }
+		} else if (cmbChannel1.getValue() == null && cmbChannel2.getValue() == null
+			&& MainController.getInstance().getSelectedChannels().size() == 2) {
+			for (Input i : MainController.getInstance().getSelectedChannels()) {
+				if (i instanceof Group) {
+					return;
 				}
-				cmbChannel1.setValue((Channel) MainController.getInstance().getSelectedChannels().get(0));
-				cmbChannel2.setValue((Channel) MainController.getInstance().getSelectedChannels().get(1));
 			}
+			cmbChannel1.setValue((Channel) MainController.getInstance().getSelectedChannels().get(0));
+			cmbChannel2.setValue((Channel) MainController.getInstance().getSelectedChannels().get(1));
 		}
 	}
 }

@@ -218,5 +218,7 @@ public class GroupViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public void setSelectedChannel(Input in) {}
+	public void setSelectedChannel(Input in) {
+		//nothing do do, shows all channels anyway
+	}
 }
