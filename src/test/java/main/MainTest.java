@@ -31,7 +31,7 @@ class MainTest {
 
 	// @Test
 	@BeforeAll
-	public static void launchApplication() throws Exception {
+	public static void launchApplication() throws Exception  {
 		CountDownLatch latch = new CountDownLatch(1);
 		Thread thread = new Thread(() -> {
 
