@@ -10,8 +10,7 @@ import org.apache.log4j.Logger;
 import data.DrumTrigger;
 import data.Input;
 import gui.pausable.PausableView;
-import gui.utilities.FXMLUtil;
-import gui.utilities.controller.DrumTriggerItemController;
+import gui.utilities.controller.DrumTriggerItem;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -19,17 +18,17 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -38,9 +37,7 @@ import javafx.util.StringConverter;
 
 public class DrumViewController implements Initializable, PausableView {
 
-	private static final Logger										LOG					= Logger
-	        .getLogger(DrumViewController.class);
-	private static final String										DRUM_ITEM_PATH		= "/fxml/utilities/DrumTriggerItem.fxml";
+	private static final Logger										LOG					= Logger.getLogger(DrumViewController.class);
 	private static final int										REFRESH_RATE		= 10;
 	private static final double										DRUM_TIME_FRAME		= 5000;
 	private static final double										CHART_SYMBOL_SIZE	= 25.0;
@@ -51,9 +48,9 @@ public class DrumViewController implements Initializable, PausableView {
 	@FXML
 	private Pane													treshold;
 	@FXML
-	private VBox													triggerPane, sidePane;
+	private VBox													triggerPane;
 	@FXML
-	private Label													label;
+	private ScrollPane												sidePane;
 	@FXML
 	private ToggleButton											btnSetup;
 	private ArrayList<DrumTrigger>									triggerList			= new ArrayList<>();
@@ -65,8 +62,7 @@ public class DrumViewController implements Initializable, PausableView {
 		Platform.runLater(() -> {
 			Series<Number, Number> series = seriesMap.get(trig);
 			if (series != null) {
-				Data<Number, Number> data = new XYChart.Data<>(System.currentTimeMillis(),
-				        triggerList.indexOf(trig) + 1);
+				Data<Number, Number> data = new XYChart.Data<>(System.currentTimeMillis(), triggerList.indexOf(trig) + 1);
 				series.getData().add(data);
 			}
 		});
@@ -74,11 +70,10 @@ public class DrumViewController implements Initializable, PausableView {
 
 	private void addTrigger(final DrumTrigger trigger) {
 		triggerList.add(trigger);
-		Parent p = FXMLUtil.loadFXML(DRUM_ITEM_PATH);
-		triggerPane.getChildren().add(p);
-		DrumTriggerItemController con = (DrumTriggerItemController) FXMLUtil.getController();
-		con.setDrumController(this);
-		con.setTrigger(trigger);
+		DrumTriggerItem triggerItem = new DrumTriggerItem(trigger);
+		triggerItem.setDrumController(this);
+		triggerPane.getChildren().add(triggerItem);
+		VBox.setVgrow(triggerItem, Priority.SOMETIMES);
 		if (seriesMap.get(trigger) == null) {
 			Series<Number, Number> series = new Series<>();
 			seriesMap.put(trigger, series);

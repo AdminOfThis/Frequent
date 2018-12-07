@@ -17,34 +17,46 @@ import gui.controller.RTAViewController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.utilities.FXMLUtil;
+import gui.utilities.NegativeAreaChart;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.StringConverter;
+import javafx.scene.layout.BorderPane;
 
 public class WaveFormChart extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
-	private static final Logger			LOG			= Logger.getLogger(WaveFormChart.class);
-	private static final String			FXML		= "/fxml/utilities/WaveFormChart.fxml";
-	private static final long			TIME_FRAME	= 5000000000l;
-	@FXML
-	private LineChart<Number, Number>	chart;
-	private Series<Number, Number>		series		= new Series<>();
-	private Input						channel;
-	private double						value		= 1;
-	private boolean						negative	= false;
-	private boolean						pause		= false;
-	private Pausable					pausableParent;
-	private boolean						styleSet	= false;
-	private Map<Long, Double>			pendingMap;
+	public enum Style {
+		WAVEFORM, AREA
+	};
 
-	public WaveFormChart() {
+	private static final Logger		LOG			= Logger.getLogger(WaveFormChart.class);
+	private static final String		FXML		= "/fxml/utilities/WaveFormChart.fxml";
+	private static final long		TIME_FRAME	= 5000000000l;
+	@FXML
+	private BorderPane				root;
+	private XYChart<Number, Number>	chart;
+	private Series<Number, Number>	series		= new Series<>();
+	private Input					channel;
+	private double					value		= 1;
+	private boolean					negative	= false;
+	private boolean					pause		= false;
+	private Pausable				pausableParent;
+	private boolean					styleSet	= false;
+	private Map<Long, Double>		pendingMap;
+
+	private Style					style;
+
+
+	public WaveFormChart(Style style) {
+		this.style = style;
 		Parent p = FXMLUtil.loadFXML(FXML, this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, 0.0);
@@ -64,28 +76,51 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		chart.getData().add(series);
-		NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-		xAxis.setAutoRanging(false);
-		xAxis.setTickUnit(TIME_FRAME / 10.0);
+		NumberAxis xAxis = new NumberAxis();
+		xAxis.setPrefHeight(0.0);
 		xAxis.setForceZeroInRange(false);
-		xAxis.setTickLabelFormatter(new StringConverter<Number>() {
 
-			@Override
-			public Number fromString(final String string) {
-				return null;
-			}
+		NumberAxis yAxis = new NumberAxis();
+		yAxis.setPrefWidth(0.0);
+		for (NumberAxis axis : new NumberAxis[] { xAxis, yAxis }) {
+			axis.setAutoRanging(false);
+			axis.setTickUnit(TIME_FRAME / 10.0);
+			axis.setOpacity(.0);
+		}
+		switch (style) {
+		case AREA:
+			initArea(xAxis, yAxis);
+			break;
+		case WAVEFORM:
+			initWaveForm(xAxis, yAxis);
+			break;
+		}
 
-			@Override
-			public String toString(final Number object) {
-				return null;
-			}
-		});
+		chart.setLegendVisible(false);
+		chart.setHorizontalZeroLineVisible(false);
+		chart.setVerticalZeroLineVisible(false);
+		chart.setHorizontalGridLinesVisible(false);
+		chart.setVerticalGridLinesVisible(false);
+
+		chart.getData().add(series);
+		root.setCenter(chart);
+	}
+
+
+	private void initWaveForm(NumberAxis xAxis, NumberAxis yAxis) {
+		chart = new LineChart<>(xAxis, yAxis);
+		yAxis.setAutoRanging(true);
+
+	}
+
+	private void initArea(NumberAxis xAxis, NumberAxis yAxis) {
+		chart = new NegativeAreaChart(xAxis, yAxis);
+
 	}
 
 	@Override
 	public boolean isPaused() {
-		return pause || pausableParent != null && pausableParent.isPaused() || channel == null || pendingMap == null;
+		return pause || (pausableParent != null && pausableParent.isPaused()) || channel == null || pendingMap == null;
 	}
 
 	@Override
@@ -122,8 +157,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					c.addListener(this);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}
@@ -153,8 +187,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 						negative = !negative;
 						Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 						dataList.add(newData);
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						LOG.warn("", e);
 					}
 				}
@@ -166,29 +199,28 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 				xAxis.setUpperBound(time);
 				pendingMap.clear();
 			}
-			boolean continueFlag = true;
-			int count = 0;
 			ArrayList<Data<Number, Number>> removeList = null;
 			try {
-				while (continueFlag) {
-					Data<Number, Number> data = series.getData().get(count);
+				for (Data<Number, Number> data : series.getData()) {
 					if ((long) data.getXValue() < ((NumberAxis) chart.getXAxis()).getLowerBound() - 100) {
 						if (removeList == null) {
 							removeList = new ArrayList<>();
 						}
 						removeList.add(data);
 					} else {
-						continueFlag = false;
+						break;
 					}
-					count++;
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				// LOG.error("", e);
 			}
 			if (removeList != null) {
 				series.getData().removeAll(removeList);
 			}
 		}
+	}
+
+	public Axis<Number> getYAxis() {
+		return chart.getYAxis();
 	}
 }

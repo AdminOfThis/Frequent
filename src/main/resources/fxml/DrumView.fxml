@@ -3,14 +3,13 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.ScatterChart?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.DrumViewController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.DrumViewController">
    <center>
       <ScatterChart fx:id="drumChart" horizontalZeroLineVisible="false" legendVisible="false" BorderPane.alignment="CENTER">
         <xAxis>
@@ -22,19 +21,15 @@
       </ScatterChart>
    </center>
    <right>
-      <VBox fx:id="sidePane" alignment="TOP_CENTER" BorderPane.alignment="CENTER">
-         <children>
-            <VBox fx:id="triggerPane" VBox.vgrow="SOMETIMES">
+      <ScrollPane fx:id="sidePane" fitToHeight="true" fitToWidth="true">
+         <content>
+            <VBox fx:id="triggerPane">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding></VBox>
-            <Label fx:id="label">
-               <font>
-                  <Font size="15.0" />
-               </font>
-            </Label>
-         </children>
-      </VBox>
+               </padding>
+            </VBox>
+         </content>
+      </ScrollPane>
    </right>
    <top>
       <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
