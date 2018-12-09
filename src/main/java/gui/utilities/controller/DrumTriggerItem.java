@@ -9,6 +9,7 @@ import data.DrumTrigger;
 import gui.controller.DrumViewController;
 import gui.controller.RTAViewController;
 import gui.utilities.AutoCompleteComboBoxListener;
+import gui.utilities.Constants;
 import gui.utilities.DrumTriggerListener;
 import gui.utilities.FXMLUtil;
 import gui.utilities.controller.WaveFormChart.Style;
@@ -21,7 +22,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.util.StringConverter;
 
 public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTriggerListener {
 
@@ -43,8 +43,7 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTr
 	private DrumViewController	controller;
 	private DrumTrigger			trigger;
 
-
-	public DrumTriggerItem(DrumTrigger trigger) {
+	public DrumTriggerItem(final DrumTrigger trigger) {
 
 		this.trigger = trigger;
 		Parent p = FXMLUtil.loadFXML(DRUM_ITEM_PATH, this);
@@ -54,7 +53,6 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTr
 		AnchorPane.setLeftAnchor(p, .0);
 		AnchorPane.setRightAnchor(p, .0);
 	}
-
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
@@ -70,40 +68,30 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTr
 				combo.getItems().setAll(ASIOController.getInstance().getInputList());
 			}
 		});
-		combo.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
-			if (trigger != null) {
-				trigger.setChannel(newValue);
-			}
-			if (chart != null) {
-				chart.setChannel(newValue);
-			}
-		});
-		combo.setConverter(new StringConverter<Channel>() {
-
-			@Override
-			public Channel fromString(final String string) {
-				return null;
-			}
-
-			@Override
-			public String toString(final Channel object) {
-				if (object == null) {
-					return "- NONE -";
-				}
-				return object.getName();
-			}
-		});
+		combo.getSelectionModel().selectedItemProperty()
+		        .addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
+			        if (trigger != null) {
+				        trigger.setChannel(newValue);
+			        }
+			        if (chart != null) {
+				        chart.setChannel(newValue);
+			        }
+		        });
+		combo.setConverter(Constants.CHANNEL_CONVERTER);
 		slider.setMin(RTAViewController.FFT_MIN);
 		slider.valueProperty().addListener(e -> {
-			double percent = (1.0 - slider.getValue() / slider.getMin());
+			double percent = 1.0 - slider.getValue() / slider.getMin();
 			double percentValue = percent * chart.getYAxis().getHeight();
-			double value = Math.abs(slider.getBoundsInParent().getMaxY() - chart.getYAxis().getBoundsInParent().getMaxY());
+			double value = Math
+			        .abs(slider.getBoundsInParent().getMaxY() - chart.getYAxis().getBoundsInParent().getMaxY());
 			threshold.setPrefHeight(percentValue + value);
 		});
 		slider.prefHeightProperty().bind(chart.getYAxis().heightProperty());
 		new AutoCompleteComboBoxListener<>(combo);
+		if (trigger != null) {
+			label.setText(trigger.getName());
+		}
 	}
-
 
 	private void refresh() {
 		if (trigger == null) {

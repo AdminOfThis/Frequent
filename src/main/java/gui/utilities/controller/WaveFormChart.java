@@ -21,7 +21,9 @@ import gui.utilities.NegativeAreaChart;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.Parent;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -39,7 +41,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	private static final Logger		LOG			= Logger.getLogger(WaveFormChart.class);
 	private static final String		FXML		= "/fxml/utilities/WaveFormChart.fxml";
-	private static final long		TIME_FRAME	= 5000000000l;
+	private static final long		TIME_FRAME	= 3000000000l;
 	@FXML
 	private BorderPane				root;
 	private XYChart<Number, Number>	chart;
@@ -54,8 +56,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	private Style					style;
 
-
-	public WaveFormChart(Style style) {
+	public WaveFormChart(final Style style) {
 		this.style = style;
 		Parent p = FXMLUtil.loadFXML(FXML, this);
 		getChildren().add(p);
@@ -72,6 +73,20 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 			}
 		};
 		timer.start();
+	}
+
+	public Axis<Number> getYAxis() {
+		return chart.getYAxis();
+	}
+
+	private void initArea(final NumberAxis xAxis, final NumberAxis yAxis) {
+		chart = new NegativeAreaChart(xAxis, yAxis);
+		chart.setAnimated(false);
+		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
+		chart.setTitleSide(Side.TOP);
+		chart.setLegendVisible(false);
+		chart.setHorizontalZeroLineVisible(false);
+
 	}
 
 	@Override
@@ -106,21 +121,15 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		root.setCenter(chart);
 	}
 
-
-	private void initWaveForm(NumberAxis xAxis, NumberAxis yAxis) {
+	private void initWaveForm(final NumberAxis xAxis, final NumberAxis yAxis) {
 		chart = new LineChart<>(xAxis, yAxis);
 		yAxis.setAutoRanging(true);
 
 	}
 
-	private void initArea(NumberAxis xAxis, NumberAxis yAxis) {
-		chart = new NegativeAreaChart(xAxis, yAxis);
-
-	}
-
 	@Override
 	public boolean isPaused() {
-		return pause || (pausableParent != null && pausableParent.isPaused()) || channel == null || pendingMap == null;
+		return pause || pausableParent != null && pausableParent.isPaused() || channel == null || pendingMap == null;
 	}
 
 	@Override
@@ -218,9 +227,5 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 				series.getData().removeAll(removeList);
 			}
 		}
-	}
-
-	public Axis<Number> getYAxis() {
-		return chart.getYAxis();
 	}
 }
