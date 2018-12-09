@@ -11,6 +11,7 @@ import data.Group;
 import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.AutoCompleteComboBoxListener;
+import gui.utilities.Constants;
 import gui.utilities.controller.VectorScope;
 import gui.utilities.controller.VuMeterMono;
 import javafx.fxml.FXML;
@@ -22,7 +23,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.util.StringConverter;
 
 public class VectorScopeViewController implements Initializable, PausableView {
 
@@ -85,30 +85,8 @@ public class VectorScopeViewController implements Initializable, PausableView {
 			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
 			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
 		}
-		StringConverter<Channel> converter = new StringConverter<Channel>() {
-
-			@Override
-			public Channel fromString(final String string) {
-				for (Channel c : cmbChannel1.getItems()) {
-					if (Objects.equals(c.getName(), string))
-						return c;
-				}
-				for (Channel c : cmbChannel2.getItems()) {
-					if (Objects.equals(c.getName(), string))
-						return c;
-				}
-				return null;
-			}
-
-			@Override
-			public String toString(final Channel object) {
-				if (object == null)
-					return "- NONE -";
-				return object.getName();
-			}
-		};
-		cmbChannel1.setConverter(converter);
-		cmbChannel2.setConverter(converter);
+		cmbChannel1.setConverter(Constants.CHANNEL_CONVERTER);
+		cmbChannel2.setConverter(Constants.CHANNEL_CONVERTER);
 		// adding listener
 		cmbChannel1.valueProperty().addListener((obs, old, newV) -> {
 			if (!Objects.equals(c1, newV)) {
@@ -159,7 +137,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public void setSelectedChannel(Input in) {
+	public void setSelectedChannel(final Input in) {
 		if (MainController.getInstance().getSelectedChannels().size() >= 1) {
 			for (Input i : MainController.getInstance().getSelectedChannels()) {
 				if (i instanceof Channel && ((Channel) i).getStereoChannel() != null) {
@@ -168,7 +146,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 				}
 			}
 		} else if (cmbChannel1.getValue() == null && cmbChannel2.getValue() == null
-			&& MainController.getInstance().getSelectedChannels().size() == 2) {
+		        && MainController.getInstance().getSelectedChannels().size() == 2) {
 			for (Input i : MainController.getInstance().getSelectedChannels()) {
 				if (i instanceof Group) {
 					return;

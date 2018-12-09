@@ -12,15 +12,7 @@ public class DrumTrigger implements InputListener {
 	private DrumTriggerListener		obs;
 	private boolean					below			= true;
 
-	public DrumTrigger(String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
+	public DrumTrigger(final String name) {
 		this.name = name;
 	}
 
@@ -28,26 +20,20 @@ public class DrumTrigger implements InputListener {
 		return channel;
 	}
 
-	public void setChannel(Channel channel) {
-		if (this.channel != null) {
-			channel.removeListener(this);
-		}
-		this.channel = channel;
-		if (this.channel != null) {
-			this.channel.addListener(this);
-		}
+	public String getName() {
+		return name;
+	}
+
+	public DrumTriggerListener getObs() {
+		return obs;
 	}
 
 	public double getTreshold() {
 		return treshold;
 	}
 
-	public void setTreshold(double treshold) {
-		this.treshold = treshold;
-	}
-
 	@Override
-	public void levelChanged(double level) {
+	public void levelChanged(final double level) {
 		if (Channel.percentToDB(level) >= treshold && below) {
 			if (obs != null) {
 				obs.tresholdReached(level, treshold);
@@ -58,11 +44,25 @@ public class DrumTrigger implements InputListener {
 		}
 	}
 
-	public DrumTriggerListener getObs() {
-		return obs;
+	public void setChannel(final Channel channel) {
+		if (this.channel != null) {
+			this.channel.removeListener(this);
+		}
+		this.channel = channel;
+		if (this.channel != null) {
+			this.channel.addListener(this);
+		}
 	}
 
-	public void setObs(DrumTriggerListener obs) {
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	public void setObs(final DrumTriggerListener obs) {
 		this.obs = obs;
+	}
+
+	public void setTreshold(final double treshold) {
+		this.treshold = treshold;
 	}
 }
