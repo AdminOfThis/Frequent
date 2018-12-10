@@ -21,14 +21,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 
 public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTriggerListener {
 
 	// private static final Logger LOG =
 	// Logger.getLogger(DrumTriggerItem.class);
 	private static final String	DRUM_ITEM_PATH	= "/fxml/utilities/DrumTriggerItem.fxml";
-
 	@FXML
 	private Label				label;
 	@FXML
@@ -37,15 +35,13 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTr
 	private Slider				slider;
 	@FXML
 	private AnchorPane			waveFormPane;
-	@FXML
-	private Pane				threshold;
 	private WaveFormChart		chart;
 	private DrumViewController	controller;
 	private DrumTrigger			trigger;
 
 	public DrumTriggerItem(final DrumTrigger trigger) {
-
 		this.trigger = trigger;
+		trigger.setObs(this);
 		Parent p = FXMLUtil.loadFXML(DRUM_ITEM_PATH, this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, .0);
@@ -56,9 +52,9 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTr
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		chart = new WaveFormChart(Style.AREA);
+		chart = new WaveFormChart(Style.ABSOLUTE);
+		chart.showTreshold(true);
 		waveFormPane.getChildren().add(chart);
-
 		AnchorPane.setTopAnchor(chart, .0);
 		AnchorPane.setBottomAnchor(chart, .0);
 		AnchorPane.setLeftAnchor(chart, .0);
@@ -68,23 +64,19 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTr
 				combo.getItems().setAll(ASIOController.getInstance().getInputList());
 			}
 		});
-		combo.getSelectionModel().selectedItemProperty()
-		        .addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
-			        if (trigger != null) {
-				        trigger.setChannel(newValue);
-			        }
-			        if (chart != null) {
-				        chart.setChannel(newValue);
-			        }
-		        });
+		combo.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
+			if (trigger != null) {
+				trigger.setChannel(newValue);
+			}
+			if (chart != null) {
+				chart.setChannel(newValue);
+			}
+		});
 		combo.setConverter(Constants.CHANNEL_CONVERTER);
 		slider.setMin(RTAViewController.FFT_MIN);
 		slider.valueProperty().addListener(e -> {
-			double percent = 1.0 - slider.getValue() / slider.getMin();
-			double percentValue = percent * chart.getYAxis().getHeight();
-			double value = Math
-			        .abs(slider.getBoundsInParent().getMaxY() - chart.getYAxis().getBoundsInParent().getMaxY());
-			threshold.setPrefHeight(percentValue + value);
+			trigger.setTreshold(slider.getValue());
+			chart.setThreshold(Math.abs(slider.getValue()));
 		});
 		slider.prefHeightProperty().bind(chart.getYAxis().heightProperty());
 		new AutoCompleteComboBoxListener<>(combo);
@@ -93,35 +85,33 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTr
 		}
 	}
 
-	private void refresh() {
-		if (trigger == null) {
-			label.setText("");
-			combo.getSelectionModel().select(null);
-			slider.setValue(0.0);
-		} else {
-			label.setText(trigger.getName());
-			if (trigger.getChannel() != null) {
-				combo.getSelectionModel().select(trigger.getChannel());
-			}
-			slider.setValue(trigger.getTreshold());
-		}
-	}
-
+// private void refresh() {
+// if (trigger == null) {
+// label.setText("");
+// combo.getSelectionModel().select(null);
+// slider.setValue(0.0);
+// } else {
+// label.setText(trigger.getName());
+// if (trigger.getChannel() != null) {
+// combo.getSelectionModel().select(trigger.getChannel());
+// }
+// slider.setValue(trigger.getTreshold());
+// }
+// }
 	public void setDrumController(final DrumViewController con) {
 		controller = con;
 	}
 
-	public void setTrigger(final DrumTrigger trigger) {
-		if (this.trigger != null) {
-			this.trigger.setObs(null);
-		}
-		this.trigger = trigger;
-		if (this.trigger != null) {
-			this.trigger.setObs(this);
-		}
-		refresh();
-	}
-
+// public void setTrigger(final DrumTrigger trigger) {
+// if (this.trigger != null) {
+// this.trigger.setObs(null);
+// }
+// this.trigger = trigger;
+// if (this.trigger != null) {
+// this.trigger.setObs(this);
+// }
+// refresh();
+// }
 	@Override
 	public void tresholdReached(final double level, final double treshold) {
 		controller.addEntry(trigger, level);

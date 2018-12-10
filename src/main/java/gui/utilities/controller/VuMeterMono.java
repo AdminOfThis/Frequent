@@ -115,6 +115,7 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 		this.pause = pause;
 	}
 
+	@Override
 	public void setChannel(final Input c) {
 		if (!Objects.equals(c, channel)) {
 			if (channel != null) {
@@ -156,6 +157,7 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 		parentPausable = parent;
 	}
 
+	@Override
 	public void setTitle(final String title) {
 		if (lblTitle != null) {
 			lblTitle.setText(title);

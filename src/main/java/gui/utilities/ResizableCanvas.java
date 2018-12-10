@@ -77,7 +77,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			}
 			// adding points
 			ArrayList<Color> baseColors = createBaseColorList(map[1]);
-
 			drawDots(baseColors);
 			//
 			count++;
@@ -97,14 +96,11 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			Color targetColor = list.get(Math.floorDiv(i, MICROSTEPS) + 1);
 			double percent = (i % MICROSTEPS) / (double) MICROSTEPS;
 			Color resultColor = FXMLUtil.colorFade(percent, baseColor, targetColor);
-
 			content.setFill(resultColor);
 			double squareSize = (getWidth() / (list.size() * MICROSTEPS));
 			double startPoint = squareSize * i;
 			content.fillRect(startPoint, squareSize * count, squareSize, squareSize);
 		}
-
-
 	}
 
 	private ArrayList<Color> createBaseColorList(final double[] map) {
@@ -118,7 +114,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	private double percentFromRawValue(final double raw) {
 		double level = Math.abs(raw);
-		level = Channel.percentToDB(level * 1000.0);
+		level = Channel.percentToDB(level);
 		if (level <= RTAViewController.FFT_MIN) {
 			level = RTAViewController.FFT_MIN + 1;
 		} else if (level >= Math.abs(RTAViewController.FFT_MIN)) {
@@ -191,13 +187,16 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 							WritableImage image = canvas.snapshot(params, null);
 							RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
 							ImageIO.write(renderedImage, "png", file);
-						} catch (Exception e) {
+						}
+						catch (Exception e) {
 							LOG.warn("Unable to export image", e);
-						} finally {
+						}
+						finally {
 							MainController.getInstance().resetStatus();
 						}
 					});
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					LOG.warn("Unable to export image", ex);
 					MainController.getInstance().resetStatus();
 				}

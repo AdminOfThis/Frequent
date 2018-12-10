@@ -98,6 +98,12 @@
     -fx-padding: 2px ;
 }
 
+.drumChart .chart-symbol {
+    -fx-pref-height: 50px ;
+    -fx-padding: 2px ;
+    -fx-border-radius: 0px;
+}
+
 .vuMeter-background {
     -fx-background-color: derive(-fx-base, -10%);
 }

@@ -396,7 +396,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	private void initWaveForm() {
 		LOG.debug("Loading WaveForm");
-		waveFormController = new WaveFormChart(Style.WAVEFORM);
+		waveFormController = new WaveFormChart(Style.NORMAL);
 		waveFormController.setParentPausable(this);
 		waveFormPane.getChildren().add(waveFormController);
 		AnchorPane.setTopAnchor(waveFormController, .0);
@@ -480,8 +480,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 				for (Channel channel : ASIOController.getInstance().getInputList()) {
 					// if channel is not hidden, or showHidden, and if
 					// sterechannel isn't already added to list
-					if ((!channel.isHidden() || showHidden)
-						&& (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
+					if ((!channel.isHidden() || showHidden) && (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
 						channelList.getItems().add(channel);
 					}
 				}
@@ -526,8 +525,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
-		if (result != null && timeKeeperController != null)
-			return FileIO.save(result);
+		if (result != null && timeKeeperController != null) return FileIO.save(result);
 		e.consume();
 		return false;
 	}
@@ -628,7 +626,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		try {
 			DialogPane dialogPane = alert.getDialogPane();
 			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to style dialog");
 			LOG.debug("", e);
 		}
@@ -643,8 +642,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		alert.getButtonTypes().add(ButtonType.CANCEL);
 		alert.getButtonTypes().add(ButtonType.OK);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent())
-			return result.get();
+		if (result.isPresent()) return result.get();
 		return ButtonType.CANCEL;
 	}
 

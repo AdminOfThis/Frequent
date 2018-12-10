@@ -29,7 +29,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -37,10 +36,9 @@ import javafx.util.StringConverter;
 
 public class DrumViewController implements Initializable, PausableView {
 
-	private static final Logger										LOG					= Logger.getLogger(DrumViewController.class);
-	private static final int										REFRESH_RATE		= 10;
-	private static final double										DRUM_TIME_FRAME		= 5000;
-	private static final double										CHART_SYMBOL_SIZE	= 25.0;
+	private static final Logger										LOG				= Logger.getLogger(DrumViewController.class);
+	private static final int										REFRESH_RATE	= 10;
+	private static final double										DRUM_TIME_FRAME	= 5000;
 	@FXML
 	private AnchorPane												chartPane;
 	@FXML
@@ -53,9 +51,20 @@ public class DrumViewController implements Initializable, PausableView {
 	private ScrollPane												sidePane;
 	@FXML
 	private ToggleButton											btnSetup;
-	private ArrayList<DrumTrigger>									triggerList			= new ArrayList<>();
-	private HashMap<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap			= new HashMap<>();
-	private boolean													paused				= false;
+	private ArrayList<DrumTrigger>									triggerList		= new ArrayList<>();
+	private HashMap<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap		= new HashMap<>();
+	private boolean													paused			= false;
+
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		LOG.debug("Loading DrumController");
+		// MainController.getInstance().setDrumController(this);
+		sidePane.visibleProperty().bind(btnSetup.selectedProperty());
+		sidePane.managedProperty().bind(btnSetup.selectedProperty());
+		initData();
+		initChart();
+		initTimer();
+	}
 
 	public void addEntry(final DrumTrigger trig, final double value) {
 		// LOG.info("Adding Drum Entry " + trig.getName() + ", " + value);
@@ -107,9 +116,7 @@ public class DrumViewController implements Initializable, PausableView {
 			@Override
 			public Number fromString(final String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) {
-						return triggerList.indexOf(trig);
-					}
+					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
 				}
 				return null;
 			}
@@ -119,14 +126,13 @@ public class DrumViewController implements Initializable, PausableView {
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
-				} catch (Exception e) {
 				}
-				if (trig != null) {
-					return trig.getName();
-				}
+				catch (Exception e) {}
+				if (trig != null) { return trig.getName(); }
 				return null;
 			}
 		});
+		drumChart.getStyleClass().add("drumChart");
 	}
 
 	private void initData() {
@@ -134,17 +140,6 @@ public class DrumViewController implements Initializable, PausableView {
 			DrumTrigger trigger = new DrumTrigger(name);
 			addTrigger(trigger);
 		}
-	}
-
-	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {
-		LOG.debug("Loading DrumController");
-		// MainController.getInstance().setDrumController(this);
-		sidePane.visibleProperty().bind(btnSetup.selectedProperty());
-		sidePane.managedProperty().bind(btnSetup.selectedProperty());
-		initData();
-		initChart();
-		initTimer();
 	}
 
 	private void initTimer() {
@@ -173,8 +168,7 @@ public class DrumViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public void setSelectedChannel(final Input in) {
-	}
+	public void setSelectedChannel(final Input in) {}
 
 	public void show() {
 		Stage stage = (Stage) btnSetup.getScene().getWindow();
@@ -193,24 +187,15 @@ public class DrumViewController implements Initializable, PausableView {
 		for (Series<Number, Number> series : drumChart.getData()) {
 			if (!series.getData().isEmpty()) {
 				ArrayList<Data<Number, Number>> removeList = null;
-				boolean continueFlag = true;
-				int count = 0;
-				while (continueFlag) {
-					Data<Number, Number> data = series.getData().get(count);
-					StackPane stackPane = (StackPane) data.getNode();
-					if (stackPane != null) {
-						stackPane.setPrefWidth(CHART_SYMBOL_SIZE);
-						stackPane.setPrefHeight(CHART_SYMBOL_SIZE);
-					}
+				for (Data<Number, Number> data : series.getData()) {
 					if ((long) data.getXValue() < time - DRUM_TIME_FRAME - 1000) {
 						if (removeList == null) {
 							removeList = new ArrayList<>();
 						}
 						removeList.add(data);
 					} else {
-						continueFlag = false;
+						break;
 					}
-					count++;
 				}
 				if (removeList != null) {
 					series.getData().removeAll(removeList);
