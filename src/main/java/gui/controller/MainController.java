@@ -122,7 +122,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private ASIOController					controller;
 	private TimeKeeperController			timeKeeperController;
 	// private DrumController drumController;
-	private WaveFormChart					waveFormController;
+	private WaveFormChart					waveFormChart;
 
 	public static String deriveColor(final String baseColor, final int index, final int total) {
 		String result = baseColor;
@@ -180,7 +180,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
 		toggleChannels.selectedProperty().addListener(e -> pause(!toggleChannels.isSelected()));
 		toggleWaveForm.selectedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
-			waveFormController.pause(newValue);
+			waveFormChart.pause(newValue);
 			if (newValue) {
 				if (!channelPane.getItems().contains(waveFormPane)) {
 					channelPane.getItems().add(waveFormPane);
@@ -196,7 +196,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 		// channelList.setOnEditCommit(e ->
 		// timeKeeperController.setChannels(channelList.getItems()));
 		channelList.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
+			waveFormChart.setChannel(newValue);
 			if (newValue != null) {
+				waveFormChart.setChannel(newValue);
 				LOG.info("Switching to channel " + newValue.getName());
 				for (PausableView v : controllerMap.values()) {
 					v.setSelectedChannel(newValue);
@@ -396,13 +398,13 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	private void initWaveForm() {
 		LOG.debug("Loading WaveForm");
-		waveFormController = new WaveFormChart(Style.NORMAL);
-		waveFormController.setParentPausable(this);
-		waveFormPane.getChildren().add(waveFormController);
-		AnchorPane.setTopAnchor(waveFormController, .0);
-		AnchorPane.setBottomAnchor(waveFormController, .0);
-		AnchorPane.setLeftAnchor(waveFormController, .0);
-		AnchorPane.setRightAnchor(waveFormController, .0);
+		waveFormChart = new WaveFormChart(Style.NORMAL);
+		waveFormChart.setParentPausable(this);
+		waveFormPane.getChildren().add(waveFormChart);
+		AnchorPane.setTopAnchor(waveFormChart, .0);
+		AnchorPane.setBottomAnchor(waveFormChart, .0);
+		AnchorPane.setLeftAnchor(waveFormChart, .0);
+		AnchorPane.setRightAnchor(waveFormChart, .0);
 	}
 
 	@Override
