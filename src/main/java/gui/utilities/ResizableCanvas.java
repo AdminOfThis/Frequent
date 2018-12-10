@@ -71,7 +71,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 				RTAIO.writeToFile(map);
 			}
 			// long before = System.currentTimeMillis();
-			double size = getWidth() / points;
+			double size = (getWidth() / (map[1].length * MICROSTEPS));
 			if (getHeight() < size * count + size) {
 				setHeight(getHeight() + size);
 			}
@@ -80,9 +80,9 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			drawDots(baseColors);
 			//
 			count++;
-			if (count > 5000 && !toExport) {
-				reset();
-			}
+// if (count > 5000 && !toExport) {
+// reset();
+// }
 			if (autoscroll && parent != null) {
 				parent.setVvalue(parent.getVmax());
 			}
@@ -115,13 +115,11 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 	private double percentFromRawValue(final double raw) {
 		double level = Math.abs(raw);
 		level = Channel.percentToDB(level);
-		if (level <= RTAViewController.FFT_MIN) {
-			level = RTAViewController.FFT_MIN + 1;
-		} else if (level >= Math.abs(RTAViewController.FFT_MIN)) {
+		level = Math.abs(level);
+		if (level >= Math.abs(RTAViewController.FFT_MIN)) {
 			level = Math.abs(RTAViewController.FFT_MIN) - 1;
 		}
 		double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level)) / Math.abs(RTAViewController.FFT_MIN);
-		percent = 1.0 - percent;
 		return percent;
 	}
 
@@ -166,7 +164,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 		return printCanvas;
 	}
 
-	private void reset() {
+	public void reset() {
 		content.clearRect(0, 0, getWidth(), getHeight());
 		count = 0;
 		setHeight(10);

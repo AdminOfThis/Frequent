@@ -109,6 +109,6 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 
 	@Override
 	public void setSelectedChannel(Input in) {
-		// nothing to do, gets handled by ASIOcontroller
+		canvas.reset();
 	}
 }
