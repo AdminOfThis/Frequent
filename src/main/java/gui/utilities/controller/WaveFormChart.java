@@ -104,6 +104,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		chart.setAnimated(false);
 		chart.setLegendVisible(false);
 		chart.setVerticalZeroLineVisible(false);
+		chart.setHorizontalZeroLineVisible(true);
 		chart.setHorizontalGridLinesVisible(false);
 		chart.setVerticalGridLinesVisible(false);
 		chart.getData().add(series);
@@ -121,7 +122,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	private void initWaveForm(final NumberAxis xAxis, final NumberAxis yAxis) {
 		chart = new LineChart<>(xAxis, yAxis);
 		((LineChart<Number, Number>) chart).setCreateSymbols(false);
-		chart.setHorizontalZeroLineVisible(false);
 	}
 
 	@Override
@@ -191,8 +191,11 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 						}
 						if (style == Style.ABSOLUTE) {
 							value = Math.abs(RTAViewController.FFT_MIN) - Math.abs(value);
-						} else if (negative) {
-							value = -value;
+						} else {
+							value = Math.abs(RTAViewController.FFT_MIN) - Math.abs(value);
+							if (negative) {
+								value = -value;
+							}
 						}
 						negative = !negative;
 						Data<Number, Number> newData = new Data<>(entry.getKey(), value);
