@@ -88,10 +88,11 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		yAxis.setPrefWidth(0.0);
 		yAxis.setAutoRanging(true);
 		for (NumberAxis axis : new NumberAxis[] { xAxis, yAxis }) {
-			axis.setAutoRanging(false);
 			axis.setTickUnit(TIME_FRAME / 10.0);
 			axis.setOpacity(.0);
 		}
+		xAxis.setAutoRanging(false);
+		yAxis.setAutoRanging(true);
 		switch (style) {
 		case NORMAL:
 			initWaveForm(xAxis, yAxis);
