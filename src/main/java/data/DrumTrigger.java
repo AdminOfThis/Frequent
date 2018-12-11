@@ -1,16 +1,20 @@
 package data;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import control.InputListener;
 import gui.utilities.DrumTriggerListener;
 
 public class DrumTrigger implements InputListener {
 
-	public static final String[]	DEFAULT_NAMES	= new String[] { "Base", "Snare", "Tom1", "Tom2" };
-	private String					name;
-	private Channel					channel;
-	private double					treshold;
-	private DrumTriggerListener		obs;
-	private boolean					below			= true;
+	public static final String[]		DEFAULT_NAMES	= new String[] { "Base", "Snare", "Tom1", "Tom2" };
+	private String						name;
+	private Channel						channel;
+	private double						treshold;
+	private List<DrumTriggerListener>	listeners		= Collections.synchronizedList(new ArrayList<>());
+	private boolean						below			= true;
 
 	public DrumTrigger(final String name) {
 		this.name = name;
@@ -24,8 +28,8 @@ public class DrumTrigger implements InputListener {
 		return name;
 	}
 
-	public DrumTriggerListener getObs() {
-		return obs;
+	public List<DrumTriggerListener> getObs() {
+		return listeners;
 	}
 
 	public double getTreshold() {
@@ -36,8 +40,10 @@ public class DrumTrigger implements InputListener {
 	public void levelChanged(final double level) {
 		double leveldB = Channel.percentToDB(level);
 		if (leveldB >= treshold && below) {
-			if (obs != null) {
-				obs.tresholdReached(level, treshold);
+			synchronized (listeners) {
+				for (DrumTriggerListener obs : listeners) {
+					obs.tresholdReached(this, level, treshold);
+				}
 			}
 			below = false;
 		} else {
@@ -59,8 +65,18 @@ public class DrumTrigger implements InputListener {
 		this.name = name;
 	}
 
-	public void setObs(final DrumTriggerListener obs) {
-		this.obs = obs;
+	public void addListeners(final DrumTriggerListener obs) {
+		synchronized (listeners) {
+			if (!listeners.contains(obs)) {
+				this.listeners.add(obs);
+			}
+		}
+	}
+
+	public void removeListeners(DrumTriggerListener obs) {
+		synchronized (listeners) {
+			listeners.remove(obs);
+		}
 	}
 
 	public void setTreshold(final double treshold) {
