@@ -37,12 +37,12 @@ public class DrumTrigger implements InputListener {
 	}
 
 	@Override
-	public void levelChanged(final double level) {
+	public void levelChanged(final double level, long time) {
 		double leveldB = Channel.percentToDB(level);
 		if (leveldB >= treshold && below) {
 			synchronized (listeners) {
 				for (DrumTriggerListener obs : listeners) {
-					obs.tresholdReached(this, level, treshold);
+					obs.tresholdReached(this, level, treshold, time);
 				}
 			}
 			below = false;

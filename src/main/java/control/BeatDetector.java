@@ -2,7 +2,9 @@ package control;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -11,10 +13,12 @@ import gui.utilities.DrumTriggerListener;
 
 public class BeatDetector extends Thread implements DrumTriggerListener {
 
-	private static final Logger	LOG			= Logger.getLogger(BeatDetector.class);
-	private static BeatDetector	instance;
-	private List<DrumTrigger>	triggerList	= Collections.synchronizedList(new ArrayList<>());
-	private double				bpm			= 0;
+	private static final Logger					LOG			= Logger.getLogger(BeatDetector.class);
+	private static BeatDetector					instance;
+	private static boolean						initialized	= false;
+	private List<DrumTrigger>					triggerList	= Collections.synchronizedList(new ArrayList<>());
+	private double								bpm			= 0;
+	private Map<DrumTrigger, ArrayList<Long>>	seriesMap	= Collections.synchronizedMap(new HashMap<>());
 
 	public static BeatDetector getInstance() {
 		if (instance == null) {
@@ -23,13 +27,16 @@ public class BeatDetector extends Thread implements DrumTriggerListener {
 		return instance;
 	}
 
-	public static void initialize() {
-		for (String s : DrumTrigger.DEFAULT_NAMES) {
-			DrumTrigger trigger = new DrumTrigger(s);
-			trigger.addListeners(getInstance());
-			getInstance().addDrumTrigger(trigger);
+	public static synchronized void initialize() {
+		if (!initialized) {
+			for (String s : DrumTrigger.DEFAULT_NAMES) {
+				DrumTrigger trigger = new DrumTrigger(s);
+				trigger.addListeners(getInstance());
+				getInstance().addDrumTrigger(trigger);
+			}
+			LOG.info("BeatDetector initialized");
+			initialized = true;
 		}
-		LOG.info("BeatDetector initialized");
 	}
 
 	private BeatDetector() {
@@ -63,15 +70,20 @@ public class BeatDetector extends Thread implements DrumTriggerListener {
 
 	@Override
 	public void run() {
-		while (true) {
-
-		}
+		while (true) {}
 	}
 
 	@Override
-	public void tresholdReached(DrumTrigger trigger, double level, double treshold) {
-		// TODO Auto-generated method stub
-
+	public void tresholdReached(DrumTrigger trigger, double level, double treshold, long time) {
+		synchronized (seriesMap) {
+			if (seriesMap.get(trigger) == null) {
+				seriesMap.put(trigger, new ArrayList<>());
+			}
+			seriesMap.get(trigger).add(time);
+		}
 	}
 
+	public static synchronized boolean isInitialized() {
+		return initialized;
+	}
 }

@@ -2,5 +2,5 @@ package control;
 
 public interface InputListener {
 
-	public void levelChanged(double level);
+	public void levelChanged(double level, long time);
 }
