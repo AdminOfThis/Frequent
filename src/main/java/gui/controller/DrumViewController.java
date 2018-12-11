@@ -27,6 +27,7 @@ import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
@@ -39,7 +40,6 @@ import javafx.util.StringConverter;
 public class DrumViewController implements Initializable, PausableView, DrumTriggerListener {
 
 	private static final Logger									LOG				= Logger.getLogger(DrumViewController.class);
-	private static final int									REFRESH_RATE	= 10;
 	private static final double									DRUM_TIME_FRAME	= 5000000000l;
 	@FXML
 	private AnchorPane											chartPane;
@@ -53,6 +53,8 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 	private ScrollPane											sidePane;
 	@FXML
 	private ToggleButton										btnSetup;
+	@FXML
+	private Label												lblBPM;
 	private List<DrumTrigger>									triggerList		= Collections.synchronizedList(new ArrayList<>());
 	private Map<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap		= Collections.synchronizedMap(new HashMap<>());
 	private Map<DrumTrigger, ArrayList<Data<Number, Number>>>	pendingMap		= Collections.synchronizedMap(new HashMap<>());
@@ -207,6 +209,7 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 					}
 				}
 			}
+			lblBPM.setText(BeatDetector.getInstance().getBPMString());
 		}
 	}
 
