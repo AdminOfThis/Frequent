@@ -13,6 +13,7 @@ import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
+import control.BeatDetector;
 import control.CueListener;
 import control.FFTListener;
 import control.TimeKeeper;
@@ -77,7 +78,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private static final String				DRUM_PATH			= "/fxml/DrumView.fxml";
 	private static final String				PHASE_PATH			= "/fxml/VectorScopeView.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
+	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File",
+	        "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
 	private AnchorPane						waveFormPane;
@@ -89,7 +91,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
 	@FXML
-	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView;
+	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView,
+	        togglePhaseView;
 	@FXML
 	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView;
 	@FXML
@@ -195,20 +198,21 @@ public class MainController implements Initializable, Pausable, CueListener {
 		channelList.setCellFactory(e -> new ChannelCell());
 		// channelList.setOnEditCommit(e ->
 		// timeKeeperController.setChannels(channelList.getItems()));
-		channelList.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
-			waveFormChart.setChannel(newValue);
-			if (newValue != null) {
-				waveFormChart.setChannel(newValue);
-				LOG.info("Switching to channel " + newValue.getName());
-				for (PausableView v : controllerMap.values()) {
-					v.setSelectedChannel(newValue);
-				}
-				if (newValue instanceof Channel) {
-					Channel channel = (Channel) newValue;
-					controller.setActiveChannel(channel.getChannel());
-				}
-			}
-		});
+		channelList.getSelectionModel().selectedItemProperty()
+		        .addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
+			        waveFormChart.setChannel(newValue);
+			        if (newValue != null) {
+				        waveFormChart.setChannel(newValue);
+				        LOG.info("Switching to channel " + newValue.getName());
+				        for (PausableView v : controllerMap.values()) {
+					        v.setSelectedChannel(newValue);
+				        }
+				        if (newValue instanceof Channel) {
+					        Channel channel = (Channel) newValue;
+					        controller.setActiveChannel(channel.getChannel());
+				        }
+			        }
+		        });
 		// Edit channel list
 		channelList.setEditable(true);
 		toggleGroupChannels.selectedProperty().addListener((obs, oldV, newV) -> {
@@ -299,6 +303,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		if (channelList.getItems().size() > 0) {
 			channelList.getSelectionModel().select(0);
 		}
+		BeatDetector.initialize();
+
 	}
 
 	private void initListener() {
@@ -459,7 +465,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	public void refresh() {
-		ObservableList<Integer> selectedItems = FXCollections.observableArrayList(channelList.getSelectionModel().getSelectedIndices());
+		ObservableList<Integer> selectedItems = FXCollections
+		        .observableArrayList(channelList.getSelectionModel().getSelectedIndices());
 		if (controller != null) {
 			refreshInputs();
 		}
@@ -482,7 +489,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 				for (Channel channel : ASIOController.getInstance().getInputList()) {
 					// if channel is not hidden, or showHidden, and if
 					// sterechannel isn't already added to list
-					if ((!channel.isHidden() || showHidden) && (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
+					if ((!channel.isHidden() || showHidden) && (channel.getStereoChannel() == null
+					        || !channelList.getItems().contains(channel.getStereoChannel()))) {
 						channelList.getItems().add(channel);
 					}
 				}
@@ -527,7 +535,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
-		if (result != null && timeKeeperController != null) return FileIO.save(result);
+		if (result != null && timeKeeperController != null)
+			return FileIO.save(result);
 		e.consume();
 		return false;
 	}
@@ -628,8 +637,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		try {
 			DialogPane dialogPane = alert.getDialogPane();
 			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to style dialog");
 			LOG.debug("", e);
 		}
@@ -644,7 +652,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		alert.getButtonTypes().add(ButtonType.CANCEL);
 		alert.getButtonTypes().add(ButtonType.OK);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent()) return result.get();
+		if (result.isPresent())
+			return result.get();
 		return ButtonType.CANCEL;
 	}
 

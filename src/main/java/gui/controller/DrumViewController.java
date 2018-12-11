@@ -7,9 +7,11 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import control.BeatDetector;
 import data.DrumTrigger;
 import data.Input;
 import gui.pausable.PausableView;
+import gui.utilities.DrumTriggerListener;
 import gui.utilities.controller.DrumTriggerItem;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -34,9 +36,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
-public class DrumViewController implements Initializable, PausableView {
+public class DrumViewController implements Initializable, PausableView, DrumTriggerListener {
 
-	private static final Logger										LOG				= Logger.getLogger(DrumViewController.class);
+	private static final Logger										LOG				= Logger
+	        .getLogger(DrumViewController.class);
 	private static final int										REFRESH_RATE	= 10;
 	private static final double										DRUM_TIME_FRAME	= 5000;
 	@FXML
@@ -66,21 +69,10 @@ public class DrumViewController implements Initializable, PausableView {
 		initTimer();
 	}
 
-	public void addEntry(final DrumTrigger trig, final double value) {
-		// LOG.info("Adding Drum Entry " + trig.getName() + ", " + value);
-		Platform.runLater(() -> {
-			Series<Number, Number> series = seriesMap.get(trig);
-			if (series != null) {
-				Data<Number, Number> data = new XYChart.Data<>(System.currentTimeMillis(), triggerList.indexOf(trig) + 1);
-				series.getData().add(data);
-			}
-		});
-	}
-
 	private void addTrigger(final DrumTrigger trigger) {
 		triggerList.add(trigger);
+		trigger.addListeners(this);
 		DrumTriggerItem triggerItem = new DrumTriggerItem(trigger);
-		triggerItem.setDrumController(this);
 		triggerPane.getChildren().add(triggerItem);
 		VBox.setVgrow(triggerItem, Priority.SOMETIMES);
 		if (seriesMap.get(trigger) == null) {
@@ -116,7 +108,9 @@ public class DrumViewController implements Initializable, PausableView {
 			@Override
 			public Number fromString(final String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
+					if (trig.getName().equals(string)) {
+						return triggerList.indexOf(trig);
+					}
 				}
 				return null;
 			}
@@ -126,9 +120,11 @@ public class DrumViewController implements Initializable, PausableView {
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
+				} catch (Exception e) {
 				}
-				catch (Exception e) {}
-				if (trig != null) { return trig.getName(); }
+				if (trig != null) {
+					return trig.getName();
+				}
 				return null;
 			}
 		});
@@ -136,8 +132,7 @@ public class DrumViewController implements Initializable, PausableView {
 	}
 
 	private void initData() {
-		for (String name : DrumTrigger.DEFAULT_NAMES) {
-			DrumTrigger trigger = new DrumTrigger(name);
+		for (DrumTrigger trigger : BeatDetector.getInstance().getTriggerList()) {
 			addTrigger(trigger);
 		}
 	}
@@ -168,7 +163,8 @@ public class DrumViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public void setSelectedChannel(final Input in) {}
+	public void setSelectedChannel(final Input in) {
+	}
 
 	public void show() {
 		Stage stage = (Stage) btnSetup.getScene().getWindow();
@@ -202,5 +198,18 @@ public class DrumViewController implements Initializable, PausableView {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void tresholdReached(DrumTrigger trigger, double level, double treshold) {
+		// LOG.info("Adding Drum Entry " + trig.getName() + ", " + value);
+		Platform.runLater(() -> {
+			Series<Number, Number> series = seriesMap.get(trigger);
+			if (series != null) {
+				Data<Number, Number> data = new XYChart.Data<>(System.currentTimeMillis(),
+				        triggerList.indexOf(trigger) + 1);
+				series.getData().add(data);
+			}
+		});
 	}
 }

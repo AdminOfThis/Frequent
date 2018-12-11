@@ -6,11 +6,9 @@ import java.util.ResourceBundle;
 import control.ASIOController;
 import data.Channel;
 import data.DrumTrigger;
-import gui.controller.DrumViewController;
 import gui.controller.RTAViewController;
 import gui.utilities.AutoCompleteComboBoxListener;
 import gui.utilities.Constants;
-import gui.utilities.DrumTriggerListener;
 import gui.utilities.FXMLUtil;
 import gui.utilities.controller.WaveFormChart.Style;
 import javafx.beans.value.ChangeListener;
@@ -22,7 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 
-public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTriggerListener {
+public class DrumTriggerItem extends AnchorPane implements Initializable {
 
 	// private static final Logger LOG =
 	// Logger.getLogger(DrumTriggerItem.class);
@@ -36,12 +34,10 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTr
 	@FXML
 	private AnchorPane			waveFormPane;
 	private WaveFormChart		chart;
-	private DrumViewController	controller;
 	private DrumTrigger			trigger;
 
 	public DrumTriggerItem(final DrumTrigger trigger) {
 		this.trigger = trigger;
-		trigger.setObs(this);
 		Parent p = FXMLUtil.loadFXML(DRUM_ITEM_PATH, this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, .0);
@@ -64,14 +60,15 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTr
 				combo.getItems().setAll(ASIOController.getInstance().getInputList());
 			}
 		});
-		combo.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
-			if (trigger != null) {
-				trigger.setChannel(newValue);
-			}
-			if (chart != null) {
-				chart.setChannel(newValue);
-			}
-		});
+		combo.getSelectionModel().selectedItemProperty()
+		        .addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
+			        if (trigger != null) {
+				        trigger.setChannel(newValue);
+			        }
+			        if (chart != null) {
+				        chart.setChannel(newValue);
+			        }
+		        });
 		combo.setConverter(Constants.CHANNEL_CONVERTER);
 		slider.setMin(RTAViewController.FFT_MIN);
 		slider.valueProperty().addListener(e -> {
@@ -85,35 +82,4 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, DrumTr
 		}
 	}
 
-// private void refresh() {
-// if (trigger == null) {
-// label.setText("");
-// combo.getSelectionModel().select(null);
-// slider.setValue(0.0);
-// } else {
-// label.setText(trigger.getName());
-// if (trigger.getChannel() != null) {
-// combo.getSelectionModel().select(trigger.getChannel());
-// }
-// slider.setValue(trigger.getTreshold());
-// }
-// }
-	public void setDrumController(final DrumViewController con) {
-		controller = con;
-	}
-
-// public void setTrigger(final DrumTrigger trigger) {
-// if (this.trigger != null) {
-// this.trigger.setObs(null);
-// }
-// this.trigger = trigger;
-// if (this.trigger != null) {
-// this.trigger.setObs(this);
-// }
-// refresh();
-// }
-	@Override
-	public void tresholdReached(final double level, final double treshold) {
-		controller.addEntry(trigger, level);
-	}
 }
