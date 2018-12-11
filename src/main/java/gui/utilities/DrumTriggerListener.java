@@ -4,5 +4,5 @@ import data.DrumTrigger;
 
 public interface DrumTriggerListener {
 
-	public void tresholdReached(DrumTrigger trigger, double level, double treshold);
+	public void tresholdReached(DrumTrigger trigger, double level, double treshold, long time);
 }

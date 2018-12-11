@@ -106,7 +106,7 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 	}
 
 	@Override
-	public void levelChanged(final double level) {
+	public void levelChanged(final double level, long time) {
 		pendingLevelList.add(Channel.percentToDB(level));
 	}
 

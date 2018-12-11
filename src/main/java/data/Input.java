@@ -22,7 +22,8 @@ public abstract class Input implements Serializable {
 																	return 0;
 																};
 	private String							name;
-	private float							level				= 0;
+	private float							level;
+	private long							time;
 	private transient List<InputListener>	listeners			= Collections.synchronizedList(new ArrayList<>());
 	private String							hexColor;
 
@@ -79,7 +80,7 @@ public abstract class Input implements Serializable {
 				// @Override
 				// public void run() {
 				try {
-					obs.levelChanged(level);
+					obs.levelChanged(level, time);
 				}
 				catch (Exception e) {
 					LOG.warn("Unable to notify Level Listener", e);
@@ -119,8 +120,9 @@ public abstract class Input implements Serializable {
 		return true;
 	}
 
-	public void setLevel(final float level) {
+	public void setLevel(final float level, long time) {
 		this.level = level;
+		this.time = time;
 		notifyListeners();
 	}
 

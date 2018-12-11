@@ -56,7 +56,7 @@ public class Group extends Input implements InputListener {
 	}
 
 	@Override
-	public void levelChanged(double level) {
+	public void levelChanged(double level, long time) {
 		synchronized (channelList) {
 			channelLevel.add(level);
 			if (channelLevel.size() == channelList.size()) {
@@ -66,7 +66,7 @@ public class Group extends Input implements InputListener {
 				}
 				median = median / channelLevel.size();
 				channelLevel.clear();
-				this.setLevel((float) median);
+				this.setLevel((float) median, time);
 			}
 		}
 	}

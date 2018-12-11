@@ -29,7 +29,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	private static final Logger	LOG			= Logger.getLogger(ResizableCanvas.class);
 	private static final int	MICROSTEPS	= 10;
-	private static int			points		= 1024;
 	private int					count		= 0;
 	private boolean				autoscroll	= true;
 	private GraphicsContext		content;
@@ -40,9 +39,7 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	private ResizableCanvas() {
 		content = getGraphicsContext2D();
-		if (ASIOController.getInstance() != null) {
-			points = ASIOController.getInstance().getBufferSize();
-		}
+		if (ASIOController.getInstance() != null) {}
 	}
 
 	private ResizableCanvas(final double width, final double heigth) {

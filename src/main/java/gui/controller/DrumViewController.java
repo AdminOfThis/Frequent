@@ -2,27 +2,28 @@ package gui.controller;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import control.ASIOController;
 import control.BeatDetector;
 import data.DrumTrigger;
 import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.DrumTriggerListener;
 import gui.utilities.controller.DrumTriggerItem;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
+import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
-import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
@@ -33,30 +34,29 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
 
 public class DrumViewController implements Initializable, PausableView, DrumTriggerListener {
 
-	private static final Logger										LOG				= Logger
-	        .getLogger(DrumViewController.class);
-	private static final int										REFRESH_RATE	= 10;
-	private static final double										DRUM_TIME_FRAME	= 5000;
+	private static final Logger									LOG				= Logger.getLogger(DrumViewController.class);
+	private static final int									REFRESH_RATE	= 10;
+	private static final double									DRUM_TIME_FRAME	= 5000000000l;
 	@FXML
-	private AnchorPane												chartPane;
+	private AnchorPane											chartPane;
 	@FXML
-	private ScatterChart<Number, Number>							drumChart;
+	private ScatterChart<Number, Number>						drumChart;
 	@FXML
-	private Pane													treshold;
+	private Pane												treshold;
 	@FXML
-	private VBox													triggerPane;
+	private VBox												triggerPane;
 	@FXML
-	private ScrollPane												sidePane;
+	private ScrollPane											sidePane;
 	@FXML
-	private ToggleButton											btnSetup;
-	private ArrayList<DrumTrigger>									triggerList		= new ArrayList<>();
-	private HashMap<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap		= new HashMap<>();
-	private boolean													paused			= false;
+	private ToggleButton										btnSetup;
+	private List<DrumTrigger>									triggerList		= Collections.synchronizedList(new ArrayList<>());
+	private Map<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap		= Collections.synchronizedMap(new HashMap<>());
+	private Map<DrumTrigger, ArrayList<Data<Number, Number>>>	pendingMap		= Collections.synchronizedMap(new HashMap<>());
+	private boolean												paused			= false;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
@@ -90,16 +90,12 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 	}
 
 	private void initChart() {
-		ValueAxis<Number> yaxis = new NumberAxis(-60, 0, 6);
-		yaxis.setPrefWidth(20.0);
-		// yaxis.setAutoRanging(true);
-		// yaxis.setOpacity(0.0);
-		yaxis.setAnimated(true);
-		NumberAxis timeAxis = new NumberAxis();
+		NumberAxis timeAxis = (NumberAxis) drumChart.getXAxis();
 		timeAxis.setForceZeroInRange(false);
 		timeAxis.setAutoRanging(false);
-		timeAxis.setTickUnit(5000);
+		timeAxis.setTickUnit(DRUM_TIME_FRAME / 10.0);
 		timeAxis.setOpacity(0.0);
+		timeAxis.setPrefHeight(0.0);
 		// drumchart
 		NumberAxis y = (NumberAxis) drumChart.getYAxis();
 		y.setUpperBound(triggerList.size() + 0.5);
@@ -108,9 +104,7 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 			@Override
 			public Number fromString(final String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) {
-						return triggerList.indexOf(trig);
-					}
+					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
 				}
 				return null;
 			}
@@ -120,11 +114,9 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
-				} catch (Exception e) {
 				}
-				if (trig != null) {
-					return trig.getName();
-				}
+				catch (Exception e) {}
+				if (trig != null) { return trig.getName(); }
 				return null;
 			}
 		});
@@ -132,19 +124,23 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 	}
 
 	private void initData() {
+		if (!BeatDetector.isInitialized()) {
+			BeatDetector.initialize();
+		}
 		for (DrumTrigger trigger : BeatDetector.getInstance().getTriggerList()) {
 			addTrigger(trigger);
 		}
 	}
 
 	private void initTimer() {
-		Timeline line = new Timeline();
-		KeyFrame frame = new KeyFrame(Duration.millis(REFRESH_RATE), e -> {
-			updateDrumChart();
-		});
-		line.getKeyFrames().add(frame);
-		line.setCycleCount(Animation.INDEFINITE);
-		line.play();
+		AnimationTimer timer = new AnimationTimer() {
+
+			@Override
+			public void handle(final long now) {
+				updateDrumChart();
+			}
+		};
+		timer.start();
 	}
 
 	@Override
@@ -164,6 +160,7 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 
 	@Override
 	public void setSelectedChannel(final Input in) {
+		// not needed
 	}
 
 	public void show() {
@@ -175,41 +172,52 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 	}
 
 	private void updateDrumChart() {
-		long time = System.currentTimeMillis();
-		NumberAxis xAxis = (NumberAxis) drumChart.getXAxis();
-		xAxis.setLowerBound(time - DRUM_TIME_FRAME);
-		xAxis.setUpperBound(time);
-		// HashMap<Series, ArrayList<Data>> removeMap = new HashMap<>(6);
-		for (Series<Number, Number> series : drumChart.getData()) {
-			if (!series.getData().isEmpty()) {
-				ArrayList<Data<Number, Number>> removeList = null;
-				for (Data<Number, Number> data : series.getData()) {
-					if ((long) data.getXValue() < time - DRUM_TIME_FRAME - 1000) {
-						if (removeList == null) {
-							removeList = new ArrayList<>();
-						}
-						removeList.add(data);
-					} else {
-						break;
+		if (ASIOController.getInstance() != null) {
+			// Adding pending entries
+			synchronized (pendingMap) {
+				for (Entry<DrumTrigger, ArrayList<Data<Number, Number>>> listEntry : pendingMap.entrySet()) {
+					Series<Number, Number> series = seriesMap.get(listEntry.getKey());
+					for (Data<Number, Number> data : listEntry.getValue()) {
+						series.getData().add(data);
 					}
 				}
-				if (removeList != null) {
-					series.getData().removeAll(removeList);
+				pendingMap.clear();
+			}
+			// udating xAxis
+			long time = ASIOController.getInstance().getTime();
+			NumberAxis xAxis = (NumberAxis) drumChart.getXAxis();
+			xAxis.setLowerBound(time - DRUM_TIME_FRAME);
+			xAxis.setUpperBound(time);
+			// removing old data
+			for (Series<Number, Number> series : drumChart.getData()) {
+				if (!series.getData().isEmpty()) {
+					ArrayList<Data<Number, Number>> removeList = null;
+					for (Data<Number, Number> data : series.getData()) {
+						if ((long) data.getXValue() < time - DRUM_TIME_FRAME - 1000) {
+							if (removeList == null) {
+								removeList = new ArrayList<>();
+							}
+							removeList.add(data);
+						} else {
+							break;
+						}
+					}
+					if (removeList != null) {
+						series.getData().removeAll(removeList);
+					}
 				}
 			}
 		}
 	}
 
 	@Override
-	public void tresholdReached(DrumTrigger trigger, double level, double treshold) {
+	public void tresholdReached(DrumTrigger trigger, double level, double treshold, long time) {
 		// LOG.info("Adding Drum Entry " + trig.getName() + ", " + value);
-		Platform.runLater(() -> {
-			Series<Number, Number> series = seriesMap.get(trigger);
-			if (series != null) {
-				Data<Number, Number> data = new XYChart.Data<>(System.currentTimeMillis(),
-				        triggerList.indexOf(trigger) + 1);
-				series.getData().add(data);
+		synchronized (pendingMap) {
+			if (pendingMap.get(trigger) == null) {
+				pendingMap.put(trigger, new ArrayList<>());
 			}
-		});
+			pendingMap.get(trigger).add(new XYChart.Data<>(time, triggerList.indexOf(trigger) + 1));
+		}
 	}
 }

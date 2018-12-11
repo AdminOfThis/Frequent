@@ -151,7 +151,7 @@ public class GroupViewController implements Initializable, PausableView {
 		}
 		NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 		// adding listener to group for chart
-		g.addListener(level -> Platform.runLater(() -> {
+		g.addListener((level, time) -> Platform.runLater(() -> {
 			if (!series.getNode().getStyle().equals("-fx-stroke: " + g.getColor())) {
 				String color = g.getColor();
 				if (color == null) {
@@ -167,7 +167,6 @@ public class GroupViewController implements Initializable, PausableView {
 			}
 			double leveldB = Channel.percentToDB(level);
 			leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
-			long time = System.currentTimeMillis();
 			series.getData().add(new Data<Number, Number>(time, leveldB));
 			// removing old data
 			while (series.getData().size() > 500) {

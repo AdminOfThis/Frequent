@@ -41,7 +41,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	private static final Logger		LOG			= Logger.getLogger(WaveFormChart.class);
 	private static final String		FXML		= "/fxml/utilities/WaveFormChart.fxml";
-	private static final long		TIME_FRAME	= 3000000000l;
+	private static final long		TIME_FRAME	= 5000000000l;
 	@FXML
 	private BorderPane				root;
 	private XYChart<Number, Number>	chart;
@@ -84,6 +84,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		NumberAxis xAxis = new NumberAxis();
 		xAxis.setPrefHeight(0.0);
 		xAxis.setForceZeroInRange(false);
+		xAxis.setTickUnit(TIME_FRAME / 10.0);
 		NumberAxis yAxis = new NumberAxis();
 		yAxis.setPrefWidth(0.0);
 		yAxis.setAutoRanging(true);
@@ -113,6 +114,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	private void initArea(final NumberAxis xAxis, final NumberAxis yAxis) {
 		chart = new NegativeAreaChart(xAxis, yAxis);
+		xAxis.setTickUnit(TIME_FRAME / 10.0);
 		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
 		chart.setTitleSide(Side.TOP);
 		chart.setLegendVisible(false);
@@ -130,12 +132,12 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	}
 
 	@Override
-	public void levelChanged(final double level) {
+	public void levelChanged(final double level, long time) {
 		double value = Channel.percentToDB(level);
 		if (value < RTAViewController.FFT_MIN) {
 			value = RTAViewController.FFT_MIN;
 		}
-		pendingMap.put(System.nanoTime(), value);
+		pendingMap.put(time, value);
 	}
 
 	@Override
@@ -206,30 +208,32 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					}
 				}
 				series.getData().addAll(dataList);
-				long time = System.nanoTime();
-				// axis
-				xAxis.setLowerBound(time - TIME_FRAME);
-				xAxis.setUpperBound(time);
-				pendingMap.clear();
-			}
-			ArrayList<Data<Number, Number>> removeList = null;
-			try {
-				for (Data<Number, Number> data : series.getData()) {
-					if ((long) data.getXValue() < ((NumberAxis) chart.getXAxis()).getLowerBound() - 100) {
-						if (removeList == null) {
-							removeList = new ArrayList<>();
+				if (series.getData().size() > 1) {
+					long time = series.getData().get(series.getData().size() - 1).getXValue().longValue();
+					// axis
+					xAxis.setLowerBound(time - TIME_FRAME);
+					xAxis.setUpperBound(time);
+					pendingMap.clear();
+				}
+				ArrayList<Data<Number, Number>> removeList = null;
+				try {
+					for (Data<Number, Number> data : series.getData()) {
+						if ((long) data.getXValue() < ((NumberAxis) chart.getXAxis()).getLowerBound() - 100) {
+							if (removeList == null) {
+								removeList = new ArrayList<>();
+							}
+							removeList.add(data);
+						} else {
+							break;
 						}
-						removeList.add(data);
-					} else {
-						break;
 					}
 				}
-			}
-			catch (Exception e) {
-				// LOG.error("", e);
-			}
-			if (removeList != null) {
-				series.getData().removeAll(removeList);
+				catch (Exception e) {
+					// LOG.error("", e);
+				}
+				if (removeList != null) {
+					series.getData().removeAll(removeList);
+				}
 			}
 			if (treshold.getData().size() >= 2) {
 				treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
