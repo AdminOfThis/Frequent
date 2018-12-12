@@ -70,18 +70,15 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
 						result.add(possibleDriver);
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOG.debug(possibleDriver + " is unavailable");
-				}
-				finally {
+				} finally {
 					if (tempDriver != null) {
 						tempDriver.shutdownAndUnloadDriver();
 					}
 				}
 			}
-		}
-		catch (UnsatisfiedLinkError e) {
+		} catch (UnsatisfiedLinkError e) {
 			LOG.warn("The corresponding library jasiohost64.dll was not found");
 		}
 		return result;
@@ -173,8 +170,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 							if (activeChannel != null) {
 								try {
 									channel.read(output);
-								}
-								catch (BufferUnderflowException e1) {
+								} catch (BufferUnderflowException e1) {
 									LOG.debug("Underflow Exception", e1);
 								}
 								if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
@@ -199,8 +195,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 									c.setBuffer(Arrays.copyOf(output, output.length), samplePosition);
 								}
 							}
-						}
-						catch (Exception e2) {
+						} catch (Exception e2) {
 							e2.printStackTrace();
 						}
 					};
@@ -208,8 +203,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 						exe.submit(runnable);
 					}
 				}
+			} catch (ConcurrentModificationException e) {
 			}
-			catch (ConcurrentModificationException e) {}
 		}
 	}
 
@@ -275,16 +270,14 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					new Thread(() -> {
 						try {
 							l.newFFT(spectrumMap);
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							LOG.warn("Unable to notify FFTListener");
 							LOG.debug("", e);
 						}
 					}).start();
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.debug("Problem on FFT", e);
 		}
 	}
@@ -356,7 +349,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	public int getNoOfInputs() {
-		if (asioDriver != null) return asioDriver.getNumChannelsInput();
+		if (asioDriver != null)
+			return asioDriver.getNumChannelsInput();
 		return -1;
 	}
 
@@ -422,8 +416,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		}
-		catch (AsioException e) {
+		} catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -492,5 +485,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	public long getTime() {
 		return time;
+	}
+
+	public int getSampleRate() {
+		return (int) Math.floor(sampleRate);
 	}
 }
