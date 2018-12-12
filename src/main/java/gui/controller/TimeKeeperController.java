@@ -17,6 +17,7 @@ import control.TimeKeeper;
 import data.Channel;
 import data.Cue;
 import data.FileIO;
+import dialog.InformationDialog;
 import gui.utilities.DoughnutChart;
 import gui.utilities.FXMLUtil;
 import javafx.animation.AnimationTimer;
@@ -486,6 +487,13 @@ public class TimeKeeperController implements Initializable {
 
 			@Override
 			protected Void call() {
+
+				if (!ChurchToolsAdapter.getInstance().isLoggedIn()) {
+					Platform.runLater(() -> {
+						Dialog<?> dialog = new InformationDialog("Unable to log into ChurchTools");
+						dialog.showAndWait();
+					});
+				}
 				ArrayList<Cue> cues = ChurchToolsAdapter.getInstance().loadCues();
 				if (cues != null) {
 					TimeKeeper.getInstance().set(cues);
