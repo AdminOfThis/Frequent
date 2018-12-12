@@ -522,7 +522,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 			result = saveAs(e);
 		}
 		if (result) {
-			InformationDialog dialog = new InformationDialog("Successfully saved", "Successfully saved");
+			InformationDialog dialog = new InformationDialog("Successfully saved");
 			dialog.showAndWait();
 		}
 		resetStatus();

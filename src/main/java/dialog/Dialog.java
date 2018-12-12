@@ -7,9 +7,7 @@ import javafx.stage.StageStyle;
 
 public abstract class Dialog<T> extends javafx.scene.control.Dialog<T> {
 
-	public Dialog(String text, String title) {
-		setTitle(title);
-
+	public Dialog(String text) {
 		setContentText(text);
 		initStyle(StageStyle.UNDECORATED);
 		initModality(Modality.APPLICATION_MODAL);

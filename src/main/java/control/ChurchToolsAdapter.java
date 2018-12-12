@@ -99,7 +99,7 @@ public final class ChurchToolsAdapter {
 		return res;
 	}
 
-	private int loadTime(int agendaId, int songID) throws UnsupportedEncodingException{
+	private int loadTime(int agendaId, int songID) throws UnsupportedEncodingException {
 		String allData = getData("GET", "churchservice/ajax",
 			"func=" + URLEncoder.encode("loadAgendaItems", "UTF-8") + "&" + "agenda_id=" + URLEncoder.encode(agendaId + "", "UTF-8"));
 		JSONObject json = new JSONObject(allData);
@@ -181,10 +181,10 @@ public final class ChurchToolsAdapter {
 	 * 
 	 * @param agendaId
 	 * @return
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 * @throws Exception
 	 */
-	private ArrayList<Cue> loadSongs(int agendaId) throws UnsupportedEncodingException  {
+	private ArrayList<Cue> loadSongs(int agendaId) throws UnsupportedEncodingException {
 		ArrayList<Cue> res = new ArrayList<>();
 		TreeMap<Integer, Cue> map = new TreeMap<>();
 		String allData = getData("GET", "churchservice/ajax",
@@ -230,7 +230,7 @@ public final class ChurchToolsAdapter {
 		return res;
 	}
 
-	private int loadAgendaId(int eventId) throws UnsupportedEncodingException  {
+	private int loadAgendaId(int eventId) throws UnsupportedEncodingException {
 		String allData = getData("GET", "churchservice/ajax",
 			"func=" + URLEncoder.encode("loadAgendaForEvent", "UTF-8") + "&" + "event_id=" + URLEncoder.encode(eventId + "", "UTF-8"));
 		JSONObject json = new JSONObject(allData);

@@ -64,7 +64,7 @@ public class Main extends Application {
 			LOG.info("Checking for unsaved changes");
 			if (FileIO.unsavedChanges()) {
 				LOG.info("Unsaved changes found");
-				ConfirmationDialog dialog = new ConfirmationDialog("Save changes before exit?", "Unsaved Changes", true);
+				ConfirmationDialog dialog = new ConfirmationDialog("Save changes before exit?", true);
 				Optional<ButtonType> result = dialog.showAndWait();
 				if (!result.isPresent()) {
 					return false;
