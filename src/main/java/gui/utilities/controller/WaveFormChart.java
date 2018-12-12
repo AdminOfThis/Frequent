@@ -105,7 +105,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		chart.setAnimated(false);
 		chart.setLegendVisible(false);
 		chart.setVerticalZeroLineVisible(false);
-		chart.setHorizontalZeroLineVisible(true);
+		chart.setHorizontalZeroLineVisible(false);
 		chart.setHorizontalGridLinesVisible(false);
 		chart.setVerticalGridLinesVisible(false);
 		chart.getData().add(series);
@@ -117,8 +117,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		xAxis.setTickUnit(TIME_FRAME / 10.0);
 		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
 		chart.setTitleSide(Side.TOP);
-		chart.setLegendVisible(false);
-		chart.setHorizontalZeroLineVisible(false);
 	}
 
 	private void initWaveForm(final NumberAxis xAxis, final NumberAxis yAxis) {
@@ -165,8 +163,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					c.addListener(this);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}
@@ -202,8 +199,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 						negative = !negative;
 						Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 						dataList.add(newData);
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						LOG.warn("", e);
 					}
 				}
@@ -227,8 +223,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 							break;
 						}
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					// LOG.error("", e);
 				}
 				if (removeList != null) {
