@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.omg.PortableInterceptor.IORInfoOperations;
-
-
+/**
+ * 
+ * @author https://github.com/widget-/bpm-detect
+ *
+ */
 public class BPMBestGuess {
 
 	private HashMap<Double, Double>	bpmEntries			= new HashMap<Double, Double>();

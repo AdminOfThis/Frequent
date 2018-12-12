@@ -5,7 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-
+/**
+ * 
+ * 
+ * @author https://github.com/widget-/bpm-detect
+ *
+ */
 public class BPMDetect {
 
 	public static final int		sampleRate		= 500;
