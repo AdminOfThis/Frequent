@@ -14,6 +14,7 @@ import data.Channel;
 import data.Group;
 import data.Input;
 import gui.pausable.PausableView;
+import gui.utilities.Constants;
 import gui.utilities.controller.VuMeterMono;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -76,7 +77,7 @@ public class GroupViewController implements Initializable, PausableView {
 		NumberAxis yAxis = (NumberAxis) chart.getYAxis();
 		yAxis.setAutoRanging(false);
 		yAxis.setUpperBound(0.0);
-		yAxis.setLowerBound(RTAViewController.FFT_MIN);
+		yAxis.setLowerBound(Constants.FFT_MIN);
 	}
 
 	@Override
@@ -166,7 +167,7 @@ public class GroupViewController implements Initializable, PausableView {
 				}
 			}
 			double leveldB = Channel.percentToDB(level);
-			leveldB = Math.max(leveldB, RTAViewController.FFT_MIN);
+			leveldB = Math.max(leveldB, Constants.FFT_MIN);
 			series.getData().add(new Data<Number, Number>(time, leveldB));
 			// removing old data
 			while (series.getData().size() > 500) {

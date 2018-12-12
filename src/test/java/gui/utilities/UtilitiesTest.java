@@ -1,26 +1,26 @@
 package gui.utilities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
-import java.awt.Label;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import gui.utilities.controller.VuMeterMono;
+import gui.utilities.controller.VuMeterStereo;
+import gui.utilities.controller.WaveFormChart;
+import gui.utilities.controller.WaveFormChart.Style;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -41,9 +41,14 @@ public class UtilitiesTest extends Application {
 		latch.await(5, TimeUnit.SECONDS);
 	}
 
+	@AfterEach
+	public void sleep() throws InterruptedException {
+		Thread.sleep(500);
+	}
+
+
 	@AfterAll
 	public static void shutdown() throws Exception {
-		Thread.sleep(2000);
 		Platform.exit();
 	}
 
@@ -58,17 +63,70 @@ public class UtilitiesTest extends Application {
 
 
 	@Test
-	public void test1() throws InterruptedException, ExecutionException {
+	public void meterMonoHorizontal() throws InterruptedException, ExecutionException {
+		Node node = new VuMeterMono(null, Orientation.HORIZONTAL);
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
+	}
+
+	@Test
+	public void meterMonoVertical() throws InterruptedException, ExecutionException {
+		Node node = new VuMeterMono(null, Orientation.VERTICAL);
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
+	}
+
+	@Test
+	public void meterStereoHorizontal() throws InterruptedException, ExecutionException {
+		Node node = new VuMeterStereo(null, null, Orientation.HORIZONTAL);
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
+	}
+
+	@Test
+	public void meterStereoVertical() throws InterruptedException, ExecutionException {
+		Node node = new VuMeterStereo(null, null, Orientation.VERTICAL);
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
+	}
+
+	@Test
+	public void vectorScope() throws InterruptedException, ExecutionException {
+		Node node = new VuMeterStereo(null, null, Orientation.VERTICAL);
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
+	}
+
+	@Test
+	public void waveFormChartNormal() throws InterruptedException, ExecutionException {
+		Node node = new WaveFormChart(Style.NORMAL);
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
+	}
+
+	@Test
+	public void waveFormChartAbsoute() throws InterruptedException, ExecutionException {
+		Node node = new WaveFormChart(Style.ABSOLUTE);
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
+	}
+
+	@Test
+	public void doughnutChart() throws InterruptedException, ExecutionException {
+		Node node = new DoughnutChart(FXCollections.observableArrayList());
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
+	}
+
+
+	private void setAsRoot(Node node) throws InterruptedException {
 		CountDownLatch latch = new CountDownLatch(1);
-		VuMeterMono meterMono = new VuMeterMono(null, Orientation.HORIZONTAL);
 		Platform.runLater(() -> {
-			root.setCenter(meterMono);
+			root.setCenter(node);
 			latch.countDown();
 		});
 		latch.await(1000, TimeUnit.SECONDS);
-		assertEquals(meterMono, root.getCenter());
 
 	}
-
 
 }

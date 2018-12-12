@@ -16,6 +16,7 @@ import data.Input;
 import gui.controller.RTAViewController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
+import gui.utilities.Constants;
 import gui.utilities.FXMLUtil;
 import gui.utilities.NegativeAreaChart;
 import javafx.animation.AnimationTimer;
@@ -132,8 +133,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	@Override
 	public void levelChanged(final double level, long time) {
 		double value = Channel.percentToDB(level);
-		if (value < RTAViewController.FFT_MIN) {
-			value = RTAViewController.FFT_MIN;
+		if (value < Constants.FFT_MIN) {
+			value = Constants.FFT_MIN;
 		}
 		pendingMap.put(time, value);
 	}
@@ -189,9 +190,9 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 							value = entry.getValue();
 						}
 						if (style == Style.ABSOLUTE) {
-							value = Math.abs(RTAViewController.FFT_MIN) - Math.abs(value);
+							value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
 						} else {
-							value = Math.abs(RTAViewController.FFT_MIN) - Math.abs(value);
+							value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
 							if (negative) {
 								value = -value;
 							}
@@ -247,7 +248,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	}
 
 	public void setThreshold(double value) {
-		value = Math.abs(RTAViewController.FFT_MIN) - value;
+		value = Math.abs(Constants.FFT_MIN) - value;
 		NumberAxis time = (NumberAxis) chart.getXAxis();
 		treshold.getData().clear();
 		treshold.getData().add(new Data<>(time.getLowerBound(), value));

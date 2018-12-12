@@ -39,7 +39,8 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	private ResizableCanvas() {
 		content = getGraphicsContext2D();
-		if (ASIOController.getInstance() != null) {}
+		if (ASIOController.getInstance() != null) {
+		}
 	}
 
 	private ResizableCanvas(final double width, final double heigth) {
@@ -77,9 +78,9 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 			drawDots(baseColors);
 			//
 			count++;
-// if (count > 5000 && !toExport) {
-// reset();
-// }
+			// if (count > 5000 && !toExport) {
+			// reset();
+			// }
 			if (autoscroll && parent != null) {
 				parent.setVvalue(parent.getVmax());
 			}
@@ -113,10 +114,10 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 		double level = Math.abs(raw);
 		level = Channel.percentToDB(level);
 		level = Math.abs(level);
-		if (level >= Math.abs(RTAViewController.FFT_MIN)) {
-			level = Math.abs(RTAViewController.FFT_MIN) - 1;
+		if (level >= Math.abs(Constants.FFT_MIN)) {
+			level = Math.abs(Constants.FFT_MIN) - 1;
 		}
-		double percent = (Math.abs(RTAViewController.FFT_MIN) - Math.abs(level)) / Math.abs(RTAViewController.FFT_MIN);
+		double percent = (Math.abs(Constants.FFT_MIN) - Math.abs(level)) / Math.abs(Constants.FFT_MIN);
 		return percent;
 	}
 
@@ -182,16 +183,13 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 							WritableImage image = canvas.snapshot(params, null);
 							RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
 							ImageIO.write(renderedImage, "png", file);
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							LOG.warn("Unable to export image", e);
-						}
-						finally {
+						} finally {
 							MainController.getInstance().resetStatus();
 						}
 					});
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					LOG.warn("Unable to export image", ex);
 					MainController.getInstance().resetStatus();
 				}
