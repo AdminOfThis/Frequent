@@ -14,6 +14,10 @@ import gui.utilities.DrumTriggerListener;
 
 public class BeatDetector extends Thread implements DrumTriggerListener {
 
+	private enum Mode {
+		CLASSIC, BPM_DETECT
+	};
+
 	private static final Logger				LOG			= Logger.getLogger(BeatDetector.class);
 	private static final int				LIST_SIZE	= 20;
 	private static BeatDetector				instance;
@@ -21,6 +25,7 @@ public class BeatDetector extends Thread implements DrumTriggerListener {
 	private List<DrumTrigger>				triggerList	= Collections.synchronizedList(new ArrayList<>());
 	private double							bpm			= 0;
 	private Map<DrumTrigger, List<Long>>	seriesMap	= Collections.synchronizedMap(new HashMap<>());
+	private Mode							mode		= Mode.CLASSIC;
 
 	public static BeatDetector getInstance() {
 		if (instance == null) {
@@ -73,9 +78,16 @@ public class BeatDetector extends Thread implements DrumTriggerListener {
 	@Override
 	public void run() {
 		while (true) {
-			calcBPM();
-			clearData();
-			Thread.yield();
+			if (mode == Mode.CLASSIC) {
+				calcBPM();
+				clearData();
+				Thread.yield();
+			} else if (mode == Mode.BPM_DETECT) {
+				for (DrumTrigger trigger : triggerList) {
+					BPMDetect.detectBPM(trigger.getChannel().getBuffer(), ASIOController.getInstance().getSampleRate());
+				}
+				bpm = BPMBestGuess.getInstance().getBPM();
+			}
 		}
 	}
 
