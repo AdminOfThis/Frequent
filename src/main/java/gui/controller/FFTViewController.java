@@ -40,6 +40,7 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 		canvas = new ResizableCanvas(canvasParent);
 		canvas.setParentPausable(this);
 		canvasParent.setContent(canvas);
+		canvas.pause(true);
 		// if (ASIOController.getInstance() != null) {
 		// ASIOController.getInstance().addFFTListener(this);
 		// }

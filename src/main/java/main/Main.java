@@ -138,7 +138,7 @@ public class Main extends Application {
 		if (title == null || title.isEmpty()) {
 			return "";
 		}
-		return title.substring(0, 1).toUpperCase() + title.substring(1);
+		return title.substring(0, 1).toUpperCase() + title.substring(1).toLowerCase();
 	}
 
 	public static String getStyle() {
@@ -146,7 +146,7 @@ public class Main extends Application {
 	}
 
 	public static String getTitle() {
-		return title + " " + version;
+		return getOnlyTitle() + " " + getVersion();
 	}
 
 	public static String getVersion() {
