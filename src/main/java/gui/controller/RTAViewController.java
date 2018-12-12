@@ -10,6 +10,7 @@ import control.FFTListener;
 import data.Channel;
 import data.Input;
 import gui.pausable.PausableView;
+import gui.utilities.Constants;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeterMono;
@@ -36,7 +37,6 @@ import javafx.scene.layout.Priority;
 public class RTAViewController implements Initializable, FFTListener, PausableView {
 
 	private static final double		DECAY		= 1.01;
-	public static final double		FFT_MIN		= -90;
 	private static final Logger		LOG			= Logger.getLogger(RTAViewController.class);
 	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
 	private static final int		X_MIN		= 25;
@@ -104,7 +104,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	}
 
 	private void initChart() {
-		ValueAxis<Number> yaxis = new NumberAxis(FFT_MIN, 0, 6);
+		ValueAxis<Number> yaxis = new NumberAxis(Constants.FFT_MIN, 0, 6);
 		yaxis.setPrefWidth(20.0);
 		// yaxis.setAutoRanging(true);
 		// yaxis.setOpacity(0.0);

@@ -14,6 +14,7 @@ import data.Input;
 import gui.controller.RTAViewController;
 import gui.pausable.Pausable;
 import gui.utilities.ChannelCellContextMenu;
+import gui.utilities.Constants;
 import gui.utilities.FXMLUtil;
 import gui.utilities.GroupCellContextMenu;
 import javafx.animation.AnimationTimer;
@@ -43,7 +44,7 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 	@FXML
 	private Label					lblPeak, lblTitle;
 	private Input					channel;
-	private double					peak			= RTAViewController.FFT_MIN;
+	private double					peak			= Constants.FFT_MIN;
 	private Orientation				orientation;
 	private boolean					pause			= false;
 	private Pausable				parentPausable;
@@ -180,13 +181,14 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 						timeSincePeak++;
 					}
 					if (orientation == Orientation.VERTICAL) {
-						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-						vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						vuLastPeakPane
+							.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
 					} else {
-						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
-						vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(RTAViewController.FFT_MIN)) / Math.abs(RTAViewController.FFT_MIN));
+						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
 					}
-					if (peakdB >= RTAViewController.FFT_MIN) {
+					if (peakdB >= Constants.FFT_MIN) {
 						lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
 					} else {
 						lblPeak.setText("-\u221E");

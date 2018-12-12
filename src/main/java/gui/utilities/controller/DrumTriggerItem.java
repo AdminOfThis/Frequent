@@ -70,7 +70,7 @@ public class DrumTriggerItem extends AnchorPane implements Initializable {
 			        }
 		        });
 		combo.setConverter(Constants.CHANNEL_CONVERTER);
-		slider.setMin(RTAViewController.FFT_MIN);
+		slider.setMin(Constants.FFT_MIN);
 		slider.valueProperty().addListener(e -> {
 			trigger.setTreshold(slider.getValue());
 			chart.setThreshold(Math.abs(slider.getValue()));
