@@ -123,7 +123,10 @@ public class Main extends Application {
 	}
 
 	public static String getOnlyTitle() {
-		return title;
+		if (title == null || title.isEmpty()) {
+			return "";
+		}
+		return title.substring(0, 1).toUpperCase() + title.substring(1);
 	}
 
 	public static String getStyle() {

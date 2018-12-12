@@ -1,4 +1,4 @@
-package control;
+package control.bpmdetect;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import control.ASIOController;
 import data.DrumTrigger;
 import gui.utilities.DrumTriggerListener;
 
@@ -25,7 +26,7 @@ public class BeatDetector extends Thread implements DrumTriggerListener {
 	private List<DrumTrigger>				triggerList	= Collections.synchronizedList(new ArrayList<>());
 	private double							bpm			= 0;
 	private Map<DrumTrigger, List<Long>>	seriesMap	= Collections.synchronizedMap(new HashMap<>());
-	private Mode							mode		= Mode.CLASSIC;
+	private Mode							mode		= Mode.BPM_DETECT;
 
 	public static BeatDetector getInstance() {
 		if (instance == null) {
@@ -84,7 +85,9 @@ public class BeatDetector extends Thread implements DrumTriggerListener {
 				Thread.yield();
 			} else if (mode == Mode.BPM_DETECT) {
 				for (DrumTrigger trigger : triggerList) {
-					BPMDetect.detectBPM(trigger.getChannel().getBuffer(), ASIOController.getInstance().getSampleRate());
+					if (ASIOController.getInstance() != null) {
+						BPMDetect.detectBPM(trigger.getChannel().getBuffer(), ASIOController.getInstance().getSampleRate());
+					}
 				}
 				bpm = BPMBestGuess.getInstance().getBPM();
 			}

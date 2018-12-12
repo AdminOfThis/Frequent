@@ -1,4 +1,4 @@
-package control;
+package control.bpmdetect;
 
 import java.util.HashMap;
 import java.util.Iterator;
