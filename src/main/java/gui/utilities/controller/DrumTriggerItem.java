@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import control.ASIOController;
 import data.Channel;
 import data.DrumTrigger;
-import gui.controller.RTAViewController;
 import gui.utilities.AutoCompleteComboBoxListener;
 import gui.utilities.Constants;
 import gui.utilities.FXMLUtil;
@@ -60,15 +59,14 @@ public class DrumTriggerItem extends AnchorPane implements Initializable {
 				combo.getItems().setAll(ASIOController.getInstance().getInputList());
 			}
 		});
-		combo.getSelectionModel().selectedItemProperty()
-		        .addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
-			        if (trigger != null) {
-				        trigger.setChannel(newValue);
-			        }
-			        if (chart != null) {
-				        chart.setChannel(newValue);
-			        }
-		        });
+		combo.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
+			if (trigger != null) {
+				trigger.setChannel(newValue);
+			}
+			if (chart != null) {
+				chart.setChannel(newValue);
+			}
+		});
 		combo.setConverter(Constants.CHANNEL_CONVERTER);
 		slider.setMin(Constants.FFT_MIN);
 		slider.valueProperty().addListener(e -> {

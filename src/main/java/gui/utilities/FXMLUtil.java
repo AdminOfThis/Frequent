@@ -6,11 +6,9 @@ import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.DialogPane;
 import javafx.scene.paint.Color;
 import main.Main;
 

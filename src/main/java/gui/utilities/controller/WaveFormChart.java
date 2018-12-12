@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import control.InputListener;
 import data.Channel;
 import data.Input;
-import gui.controller.RTAViewController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.utilities.Constants;

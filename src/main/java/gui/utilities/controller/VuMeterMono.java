@@ -11,7 +11,6 @@ import control.InputListener;
 import data.Channel;
 import data.Group;
 import data.Input;
-import gui.controller.RTAViewController;
 import gui.pausable.Pausable;
 import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.Constants;
