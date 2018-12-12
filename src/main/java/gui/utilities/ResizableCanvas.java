@@ -12,7 +12,6 @@ import control.ASIOController;
 import data.Channel;
 import data.RTAIO;
 import gui.controller.MainController;
-import gui.controller.RTAViewController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import javafx.application.Platform;
