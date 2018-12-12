@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
-import control.BeatDetector;
+import control.bpmdetect.BeatDetector;
 import data.DrumTrigger;
 import data.Input;
 import gui.pausable.PausableView;

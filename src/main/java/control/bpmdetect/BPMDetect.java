@@ -1,4 +1,4 @@
-package control;
+package control.bpmdetect;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,9 +20,6 @@ public class BPMDetect {
 	public static List<Integer>	flags			= new ArrayList<Integer>();
 	public static double		bpm				= -1;
 	public static double		confidence		= 0;
-
-	private static double		shortAmplitudes;
-	private static double		longAmplitudes;
 
 	private static int			ramp			= sampleRate / 60;
 	public static double		rampRequired	= 0.35;
@@ -50,12 +47,10 @@ public class BPMDetect {
 			}
 		}
 
-		shortAmplitudes = 0;
-		for (int i = samples.length - (int) (sampleRate * 0.3); i < samples.length - 1; i++)
-			shortAmplitudes += samples[i];
-		longAmplitudes = 0;
-		for (int i = samples.length - sampleRate * 5; i < samples.length - 1; i++)
-			longAmplitudes += samples[i];
+		for (int i = samples.length - (int) (sampleRate * 0.3); i < samples.length - 1; i++) {
+		}
+		for (int i = samples.length - sampleRate * 5; i < samples.length - 1; i++) {
+		}
 
 		bpm = bpmFromFlags(sampleRate);
 
@@ -166,32 +161,13 @@ public class BPMDetect {
 	}
 
 	public static float[] filterSamplesDecay(float[] samples) {
-		final int DECAY_LOOKBACK = 5;
-		boolean keepGoing = true;
-		int cnt = 0;
 		float[] s = new float[samples.length];
 		s = samples.clone();
-		// for (int i = samples.length - 1; i >= 0; i--) {
-		// while (keepGoing) {
-		// if (cnt < DECAY_LOOKBACK) {
-		// if (i - cnt > 0 && s[i-cnt] < s[i]) {
-		// s[i] = s[i-cnt];
-		// } else {
-		// cnt++;
-		// }
-		// } else {
-		// cnt = 0;
-		// keepGoing = false;
-		// }
-		// }
-		// keepGoing = true;
-		// cnt = 0;
-		// }
+
 		for (int i = s.length - 1; i > 0; i--)
 			for (int j = 0; j < 5; j++)
 				if (i > 5 && s[i] < s[i - j])
 					s[i] = s[i - j];
-		// s[s.length - 1] = s[s.length - 2];
 		return s;
 	}
 

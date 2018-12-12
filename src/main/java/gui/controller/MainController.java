@@ -13,15 +13,16 @@ import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 
 import control.ASIOController;
-import control.BeatDetector;
 import control.CueListener;
 import control.FFTListener;
 import control.TimeKeeper;
+import control.bpmdetect.BeatDetector;
 import data.Channel;
 import data.Cue;
 import data.FileIO;
 import data.Group;
 import data.Input;
+import dialog.InformationDialog;
 import gui.pausable.Pausable;
 import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
@@ -65,6 +66,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import main.Main;
 
@@ -486,7 +488,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 				for (Channel channel : ASIOController.getInstance().getInputList()) {
 					// if channel is not hidden, or showHidden, and if
 					// sterechannel isn't already added to list
-					if ((!channel.isHidden() || showHidden) && (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
+					if ((!channel.isHidden() || showHidden)
+						&& (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
 						channelList.getItems().add(channel);
 					}
 				}
@@ -518,6 +521,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		} else {
 			result = saveAs(e);
 		}
+		InformationDialog dialog = new InformationDialog("Successfully saved", "Successfully saved");
+		dialog.showAndWait();
 		resetStatus();
 		e.consume();
 		return result;
@@ -531,7 +536,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
-		if (result != null && timeKeeperController != null) return FileIO.save(result);
+		if (result != null && timeKeeperController != null)
+			return FileIO.save(result);
 		e.consume();
 		return false;
 	}
@@ -629,14 +635,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	public ButtonType showConfirmDialog(final String confirm) {
 		Alert alert = new Alert(AlertType.NONE);
-		try {
-			DialogPane dialogPane = alert.getDialogPane();
-			dialogPane.getStylesheets().add(getClass().getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
-		}
-		catch (Exception e) {
-			LOG.warn("Unable to style dialog");
-			LOG.debug("", e);
-		}
+		FXMLUtil.setStyleSheet(alert.getDialogPane());
 		alert.getDialogPane().setStyle(Main.getStyle());
 		alert.initOwner(root.getScene().getWindow());
 		alert.initModality(Modality.APPLICATION_MODAL);
@@ -648,7 +647,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		alert.getButtonTypes().add(ButtonType.CANCEL);
 		alert.getButtonTypes().add(ButtonType.OK);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent()) return result.get();
+		if (result.isPresent())
+			return result.get();
 		return ButtonType.CANCEL;
 	}
 
@@ -664,5 +664,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 		}
 		boolean hide = lblCurrentSong.getText().isEmpty() && lblNextSong.getText().isEmpty();
 		bottomLabel.setVisible(!hide);
+	}
+
+	public Stage getStage() {
+		return (Stage) channelList.getScene().getWindow();
 	}
 }

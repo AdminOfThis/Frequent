@@ -6,15 +6,18 @@ import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.DialogPane;
 import javafx.scene.paint.Color;
+import main.Main;
 
 public abstract class FXMLUtil {
 
 	private static final Logger		LOG			= Logger.getLogger(FXMLUtil.class);
-	public static final String		STYLE_SHEET	= "/gui/style.css";
+	public static final String		STYLE_SHEET	= "/css/style.css";
 	private static Initializable	controller;
 
 	private static Color colorFade(final Color baseColor, final Color targetColor, final double percent) {
@@ -113,5 +116,15 @@ public abstract class FXMLUtil {
 		int green = (int) (color.getGreen() * 255);
 		int blue = (int) (color.getBlue() * 255);
 		return String.format("#%02X%02X%02X", red, green, blue);
+	}
+
+	public static void setStyleSheet(Parent p) {
+		try {
+			p.getStylesheets().add(FXMLUtil.class.getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
+			p.setStyle(Main.getStyle());
+		} catch (Exception e) {
+			LOG.warn("Unable to style dialog", e);
+			LOG.debug("", e);
+		}
 	}
 }
