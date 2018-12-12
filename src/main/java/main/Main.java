@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Optional;
 import java.util.jar.Manifest;
 
 import org.apache.log4j.Logger;
@@ -14,6 +15,7 @@ import com.sun.javafx.application.LauncherImpl;
 import control.ASIOController;
 import data.FileIO;
 import data.RTAIO;
+import dialog.ConfirmationDialog;
 import gui.controller.IOChooserController;
 import gui.controller.MainController;
 import gui.preloader.PreLoader;
@@ -61,15 +63,25 @@ public class Main extends Application {
 		if (!Main.isDebug()) {
 			LOG.info("Checking for unsaved changes");
 			if (FileIO.unsavedChanges()) {
-				ButtonType type = MainController.getInstance().showConfirmDialog("Save changes before exit?");
-				if (type == ButtonType.OK) {
-					boolean result = MainController.getInstance().save(new ActionEvent());
-					if (!result) {
+				LOG.info("Unsaved changes found");
+				ConfirmationDialog dialog = new ConfirmationDialog("Save changes before exit?", "Unsaved Changes", true);
+				Optional<ButtonType> result = dialog.showAndWait();
+				if (!result.isPresent()) {
+					return false;
+				}
+				if (result.get() == ButtonType.YES) {
+					boolean saveResult = MainController.getInstance().save(new ActionEvent());
+					if (!saveResult) {
 						LOG.info("Saving cancelled");
 						return false;
 					}
-				} else if (type == ButtonType.CANCEL)
+				} else if (result.get() == ButtonType.NO) {
+					LOG.info("Closing without saving unfinished changes");
+				} else if (result.get() == ButtonType.CANCEL) {
+					LOG.info("Cancelled closing of program");
 					return false;
+				}
+
 			}
 		}
 		LOG.info("Stopping GUI");
