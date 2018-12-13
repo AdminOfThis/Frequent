@@ -29,13 +29,11 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 
 	private static final Logger	LOG			= Logger.getLogger(ChannelCell.class);
 	private static final String	FXML_PATH	= "/fxml/utilities/ChannelCell.fxml";
-
 	@FXML
 	private AnchorPane			chartPane;
 	@FXML
 	private Label				lblNumber;
 	private Input				input;
-
 	private VuMeterIntf			meter;
 
 	public static String toRGBCode(final Color color) {
@@ -44,7 +42,6 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 		int blue = (int) (color.getBlue() * 255);
 		return String.format("#%02X%02X%02X", red, green, blue);
 	}
-
 
 	public ChannelCell() {
 		super();
@@ -109,27 +106,9 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 		});
 	}
 
-	// private EventHandler<ActionEvent> newGroup = new
-	// EventHandler<ActionEvent>() {
-	//
-	// @Override
-	// public void handle(ActionEvent event) {
-	// TextInputDialog newGroupDialog = new TextInputDialog();
-	// Optional<String> result = newGroupDialog.showAndWait();
-	// if (result.isPresent()) {
-	// Group g = new Group(result.get());
-	// LOG.info("Created new group: " + g.getName());
-	// ASIOController.getInstance().addGroup(g);
-	// Input in = ChannelCell.this.getItem();
-	// if (in != null && in instanceof Channel) {
-	// g.addChannel((Channel) in);
-	// }
-	// MainController.getInstance().refresh();
-	// }
-	// }
-	// };
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
+		// nothing to do
 	}
 
 	private void update(final Input item) {

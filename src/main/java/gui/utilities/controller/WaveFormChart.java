@@ -94,13 +94,10 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		}
 		xAxis.setAutoRanging(false);
 		yAxis.setAutoRanging(true);
-		switch (style) {
-		case NORMAL:
+		if (style == Style.NORMAL) {
 			initWaveForm(xAxis, yAxis);
-			break;
-		case ABSOLUTE:
+		} else if (style == Style.ABSOLUTE) {
 			initArea(xAxis, yAxis);
-			break;
 		}
 		chart.setAnimated(false);
 		chart.setLegendVisible(false);
@@ -163,7 +160,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					c.addListener(this);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}
@@ -177,62 +175,76 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		if (!isPaused()) {
 			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 			synchronized (pendingMap) {
-				ArrayList<Data<Number, Number>> dataList = new ArrayList<>();
-				for (Entry<Long, Double> entry : pendingMap.entrySet()) {
-					try {
-						if (!styleSet) {
-							series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
-							styleSet = true;
-						}
-						value = 0;
-						if (channel != null) {
-							value = entry.getValue();
-						}
-						if (style == Style.ABSOLUTE) {
-							value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
-						} else {
-							value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
-							if (negative) {
-								value = -value;
-							}
-						}
-						negative = !negative;
-						Data<Number, Number> newData = new Data<>(entry.getKey(), value);
-						dataList.add(newData);
-					} catch (Exception e) {
-						LOG.warn("", e);
-					}
-				}
-				series.getData().addAll(dataList);
-				if (series.getData().size() > 1) {
-					long time = series.getData().get(series.getData().size() - 1).getXValue().longValue();
-					// axis
-					xAxis.setLowerBound(time - TIME_FRAME);
-					xAxis.setUpperBound(time);
-					pendingMap.clear();
-				}
-				ArrayList<Data<Number, Number>> removeList = null;
-				try {
-					for (Data<Number, Number> data : series.getData()) {
-						if ((long) data.getXValue() < ((NumberAxis) chart.getXAxis()).getLowerBound() - 100) {
-							if (removeList == null) {
-								removeList = new ArrayList<>();
-							}
-							removeList.add(data);
-						} else {
-							break;
-						}
-					}
-				} catch (Exception e) {
-					// LOG.error("", e);
-				}
-				if (removeList != null) {
-					series.getData().removeAll(removeList);
-				}
+				addNewData();
+				updateAxis(xAxis);
+				removeOldData();
 			}
 			if (treshold.getData().size() >= 2) {
 				treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
 			}
+		}
+	}
+
+	private void updateAxis(NumberAxis xAxis) {
+		if (series.getData().size() > 1) {
+			long time = series.getData().get(series.getData().size() - 1).getXValue().longValue();
+			// axis
+			xAxis.setLowerBound(time - TIME_FRAME);
+			xAxis.setUpperBound(time);
+			pendingMap.clear();
+		}
+	}
+
+	private void addNewData() {
+		ArrayList<Data<Number, Number>> dataList = new ArrayList<>();
+		for (Entry<Long, Double> entry : pendingMap.entrySet()) {
+			try {
+				if (!styleSet) {
+					series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
+					styleSet = true;
+				}
+				value = 0;
+				if (channel != null) {
+					value = entry.getValue();
+				}
+				if (style == Style.ABSOLUTE) {
+					value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
+				} else {
+					value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
+					if (negative) {
+						value = -value;
+					}
+				}
+				negative = !negative;
+				Data<Number, Number> newData = new Data<>(entry.getKey(), value);
+				dataList.add(newData);
+			}
+			catch (Exception e) {
+				LOG.warn("", e);
+			}
+		}
+		series.getData().addAll(dataList);
+	}
+
+	private void removeOldData() {
+		ArrayList<Data<Number, Number>> removeList = null;
+		try {
+			for (Data<Number, Number> data : series.getData()) {
+				if ((long) data.getXValue() < ((NumberAxis) chart.getXAxis()).getLowerBound() - 100) {
+					if (removeList == null) {
+						removeList = new ArrayList<>();
+					}
+					removeList.add(data);
+				} else {
+					break;
+				}
+			}
+		}
+		catch (Exception e) {
+			// LOG.error("", e);
+		}
+		if (removeList != null) {
+			series.getData().removeAll(removeList);
 		}
 	}
 
@@ -246,8 +258,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		}
 	}
 
-	public void setThreshold(double value) {
-		value = Math.abs(Constants.FFT_MIN) - value;
+	public void setThreshold(final double value1) {
+		double value = Math.abs(Constants.FFT_MIN) - value1;
 		NumberAxis time = (NumberAxis) chart.getXAxis();
 		treshold.getData().clear();
 		treshold.getData().add(new Data<>(time.getLowerBound(), value));

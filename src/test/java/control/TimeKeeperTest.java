@@ -22,13 +22,14 @@ class TimeKeeperTest {
 
 			@Override
 			public void write(int b) throws IOException {
+				// do nothing
 			}
 		}));
 		System.setErr(new PrintStream(new OutputStream() {
 
 			@Override
 			public void write(int b) throws IOException {
-
+				// do nothing
 			}
 		}));
 	}
@@ -57,7 +58,6 @@ class TimeKeeperTest {
 		// assertEquals(new Cue(TimeKeeper.DEFAULT_CUE_NAME + "2"),
 		// TimeKeeper.getInstance().getActiveCue());
 		assertEquals(null, TimeKeeper.getInstance().getNextCue());
-
 	}
 
 	@Test
@@ -68,5 +68,4 @@ class TimeKeeperTest {
 		TimeKeeper.getInstance().round();
 		assertEquals(cue, TimeKeeper.getInstance().getActiveCue());
 	}
-
 }

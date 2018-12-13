@@ -10,19 +10,12 @@ import control.InputListener;
 
 public class Channel extends Input implements Comparable<Channel>, Comparator<Channel> {
 
-	private static final long serialVersionUID = 1L;
-
-	public static double percentToDB(final double level) {
-		return 20.0 * Math.log10(level /* / 1000.0 */);
-	}
-
+	private static final long		serialVersionUID	= 1L;
 	private transient AsioChannel	channel;
-	private int						channelIndex	= -1;
+	private int						channelIndex		= -1;
 	private Group					group;
-	private boolean					hide			= false;
-
+	private boolean					hide				= false;
 	private float[]					buffer;
-
 	private Channel					stereoChannel;
 
 	public Channel() {
@@ -46,6 +39,10 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 
 	public Channel(final String name) {
 		this(null, name);
+	}
+
+	public static double percentToDB(final double level) {
+		return 20.0 * Math.log10(level /* / 1000.0 */);
 	}
 
 	@Override
@@ -160,5 +157,4 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 			}
 		}
 	}
-
 }

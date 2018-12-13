@@ -13,7 +13,7 @@ import control.ASIOController;
 import data.DrumTrigger;
 import gui.utilities.DrumTriggerListener;
 
-public class BeatDetector extends Thread implements DrumTriggerListener {
+public final class BeatDetector extends Thread implements DrumTriggerListener {
 
 	private enum Mode {
 		CLASSIC, BPM_DETECT
