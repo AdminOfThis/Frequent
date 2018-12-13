@@ -24,24 +24,23 @@ class MainTest {
 	private static Scene		scene;
 
 	public static Object[][] data() {
-		return new Object[][] { { KeyCode.DIGIT1, false }, { KeyCode.DIGIT2, false }, { KeyCode.DIGIT3, false }, { KeyCode.DIGIT4, false },
-			{ KeyCode.DIGIT5, false }, { KeyCode.DIGIT1, true }, { KeyCode.DIGIT2, true } };
+		return new Object[][] { { KeyCode.DIGIT1, false }, { KeyCode.DIGIT2, false }, { KeyCode.DIGIT3, false }, { KeyCode.DIGIT4, false }, { KeyCode.DIGIT5, false }, { KeyCode.DIGIT1, true },
+			{ KeyCode.DIGIT2, true } };
 	}
-
 
 	// @Test
 	@BeforeAll
-	public static void launchApplication() throws Exception  {
+	public static void launchApplication() throws Exception {
 		CountDownLatch latch = new CountDownLatch(1);
 		Thread thread = new Thread(() -> {
-
 			try {
 				Main.main(new String[] { "-debug" });
-
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				e = ex;
 				e.printStackTrace();
-			} finally {
+			}
+			finally {
 				latch.countDown();
 			}
 		});
@@ -49,9 +48,7 @@ class MainTest {
 		thread.start();// Initialize the thread
 		latch.await(10, TimeUnit.SECONDS);
 		scene = Main.getInstance().getScene();
-		if (e != null) {
-			throw e;
-		}
+		if (e != null) { throw e; }
 	}
 
 	static void clearSyso() {
@@ -59,13 +56,14 @@ class MainTest {
 
 			@Override
 			public void write(int b) throws IOException {
+				// do nothing
 			}
 		}));
 		System.setErr(new PrintStream(new OutputStream() {
 
 			@Override
 			public void write(int b) throws IOException {
-
+				// do nothing
 			}
 		}));
 	}
@@ -75,11 +73,9 @@ class MainTest {
 		Thread.sleep(200);
 	}
 
-
 	@ParameterizedTest
 	@MethodSource("data")
 	public void openModules(KeyCode code, boolean control) throws Exception {
-
 		pushButton(code, control);
 		Thread.sleep(500);
 	}
@@ -92,16 +88,13 @@ class MainTest {
 	}
 
 	private void pushButton(KeyCode code, boolean control) {
-		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(),
-			new KeyEvent(null, scene, KeyEvent.KEY_PRESSED, "", "", code, false, control, false, false)));
+		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(), new KeyEvent(null, scene, KeyEvent.KEY_PRESSED, "", "", code, false, control, false, false)));
 		try {
 			Thread.sleep(50);
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(),
-			new KeyEvent(null, scene, KeyEvent.KEY_RELEASED, "", "", code, false, control, false, false)));
+		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(), new KeyEvent(null, scene, KeyEvent.KEY_RELEASED, "", "", code, false, control, false, false)));
 	}
-
-
 }

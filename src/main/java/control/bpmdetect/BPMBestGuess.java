@@ -9,19 +9,15 @@ import java.util.Map.Entry;
  * @author https://github.com/widget-/bpm-detect
  *
  */
-public class BPMBestGuess {
+public final class BPMBestGuess {
 
-	private HashMap<Double, Double>	bpmEntries			= new HashMap<Double, Double>();
-
+	private HashMap<Double, Double>	bpmEntries			= new HashMap<>();
 	private static double			DECAY_RATE			= 0.999;
 	private static double			DELETE_THRESHHOLD	= 0.01;
 	private double					confidence			= 0;
-
 	private static BPMBestGuess		instance;
 
-	private BPMBestGuess() {
-
-	}
+	private BPMBestGuess() {}
 
 	public static BPMBestGuess getInstance() {
 		if (instance == null) {
@@ -35,14 +31,10 @@ public class BPMBestGuess {
 		while (it.hasNext()) {
 			Entry<Double, Double> e = it.next();
 			e.setValue(e.getValue() * DECAY_RATE);
-			if (e.getValue() < DELETE_THRESHHOLD)
-				it.remove();
+			if (e.getValue() < DELETE_THRESHHOLD) it.remove();
 		}
-
-		if (bpmEntries.containsKey(bpm))
-			bpmEntries.put(bpm, bpmEntries.get(bpm) + confidence);
-		else
-			bpmEntries.put(bpm, confidence);
+		if (bpmEntries.containsKey(bpm)) bpmEntries.put(bpm, bpmEntries.get(bpm) + confidence);
+		else bpmEntries.put(bpm, confidence);
 	}
 
 	private double calculateGuess() {
@@ -75,7 +67,6 @@ public class BPMBestGuess {
 			}
 		}
 		// System.out.println("---------------------");
-
 		confidence = bestGuessValue;
 		return bestGuessStart;
 	}
