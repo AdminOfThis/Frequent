@@ -8,7 +8,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
-import control.ASIOController;
 import data.Channel;
 import data.RTAIO;
 import gui.controller.MainController;

@@ -15,7 +15,6 @@ import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeterMono;
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

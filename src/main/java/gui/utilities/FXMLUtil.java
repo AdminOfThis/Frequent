@@ -7,12 +7,10 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import control.ASIOController;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.paint.Color;
@@ -132,28 +130,28 @@ public abstract class FXMLUtil {
 		}
 	}
 
-	public static void updateAxis(final NumberAxis xAxis, final long timeFrame) {
-		long time = ASIOController.getInstance().getTime();
-		xAxis.setLowerBound(time - timeFrame);
-		xAxis.setUpperBound(time);
-		xAxis.setTickUnit((time - timeFrame) / 10.0);
+	public static void updateAxis(final NumberAxis xAxis, final long timeFrame, long currentTime) {
+		long lower = currentTime - timeFrame;
+		xAxis.setLowerBound(lower);
+		xAxis.setUpperBound(currentTime);
+		if ((currentTime - lower) / xAxis.getTickUnit() > 10) {
+			xAxis.setTickUnit(Math.ceil(currentTime - lower) / 10.0);
+		}
 	}
 
-	public static void removeOldData(final NumberAxis xAxis, final Series<Number, Number> series) {
+	public static void removeOldData(final long lowerBound, final Series<Number, Number> series) {
 		ArrayList<Data<Number, Number>> removeList = null;
 		try {
 			for (Data<Number, Number> data : series.getData()) {
-				if ((long) data.getXValue() < (xAxis.getLowerBound() - 100)) {
+				if (data.getXValue().longValue() < (lowerBound - 100)) {
 					if (removeList == null) {
 						removeList = new ArrayList<>();
 					}
 					removeList.add(data);
-				} else {
-					break;
 				}
 			}
 		} catch (Exception e) {
-			// LOG.error("", e);
+			LOG.error("", e);
 		}
 		if (removeList != null) {
 			series.getData().removeAll(removeList);
