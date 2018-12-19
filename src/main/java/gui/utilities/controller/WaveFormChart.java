@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
+import control.ASIOController;
 import control.InputListener;
 import data.Channel;
 import data.Input;
@@ -173,8 +174,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 			synchronized (pendingMap) {
 				addNewData();
-				FXMLUtil.updateAxis(xAxis, TIME_FRAME);
-				FXMLUtil.removeOldData(xAxis, series);
+				FXMLUtil.updateAxis(xAxis, TIME_FRAME, ASIOController.getInstance().getTime());
+				FXMLUtil.removeOldData((long) xAxis.getLowerBound(), series);
 			}
 			if (treshold.getData().size() >= 2) {
 				treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
@@ -212,27 +213,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 			}
 		}
 		series.getData().addAll(dataList);
-	}
-
-	private void removeOldData() {
-		ArrayList<Data<Number, Number>> removeList = null;
-		try {
-			for (Data<Number, Number> data : series.getData()) {
-				if ((long) data.getXValue() < ((NumberAxis) chart.getXAxis()).getLowerBound() - 100) {
-					if (removeList == null) {
-						removeList = new ArrayList<>();
-					}
-					removeList.add(data);
-				} else {
-					break;
-				}
-			}
-		} catch (Exception e) {
-			// LOG.error("", e);
-		}
-		if (removeList != null) {
-			series.getData().removeAll(removeList);
-		}
 	}
 
 	public void showTreshold(boolean value) {

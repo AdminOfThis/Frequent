@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
@@ -22,9 +22,7 @@ import gui.pausable.PausableView;
 import gui.utilities.Constants;
 import gui.utilities.FXMLUtil;
 import gui.utilities.controller.VuMeterMono;
-import gui.utilities.controller.WaveFormChart.Style;
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -111,8 +109,8 @@ public class GroupViewController implements Initializable, PausableView {
 				synchronized (pendingMap.get(g)) {
 					addNewData(pendingMap.get(g), series, g);
 				}
-				FXMLUtil.updateAxis(xAxis, TIME_FRAME);
-				FXMLUtil.removeOldData(xAxis, series);
+				FXMLUtil.updateAxis(xAxis, TIME_FRAME, ASIOController.getInstance().getTime());
+				FXMLUtil.removeOldData((long) xAxis.getLowerBound(), series);
 			}
 		}
 	}

@@ -193,10 +193,10 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 			}
 			// udating xAxis
 			NumberAxis xAxis = (NumberAxis) drumChart.getXAxis();
-			FXMLUtil.updateAxis(xAxis, DRUM_TIME_FRAME);
+			FXMLUtil.updateAxis(xAxis, DRUM_TIME_FRAME, ASIOController.getInstance().getTime());
 			// removing old data
 			for (Series<Number, Number> series : drumChart.getData()) {
-				FXMLUtil.removeOldData(xAxis, series);
+				FXMLUtil.removeOldData((long) xAxis.getLowerBound(), series);
 			}
 			double bpm = BeatDetector.getInstance().getBPM();
 			if (bpm > 0) {
