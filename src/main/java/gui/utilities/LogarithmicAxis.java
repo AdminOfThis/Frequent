@@ -41,14 +41,14 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 		try {
 			validateBounds(lowerBound, upperBound);
 			bindLogBoundsToDefaultBounds();
-		}
-		catch (IllegalLogarithmicRangeException e) {
+		} catch (IllegalLogarithmicRangeException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Bind our logarithmic bounds with the super class bounds, consider the base 10 logarithmic scale.
+	 * Bind our logarithmic bounds with the super class bounds, consider the
+	 * base 10 logarithmic scale.
 	 */
 	private void bindLogBoundsToDefaultBounds() {
 		DoubleBinding bind1 = new DoubleBinding() {
@@ -56,6 +56,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 			{
 				super.bind(lowerBoundProperty());
 			}
+
 
 			@Override
 			protected double computeValue() {
@@ -78,15 +79,18 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	}
 
 	/**
-	 * Validate the bounds by throwing an exception if the values are not conform to the mathematics log interval: ]0,Double.MAX_VALUE]
+	 * Validate the bounds by throwing an exception if the values are not
+	 * conform to the mathematics log interval: ]0,Double.MAX_VALUE]
 	 * 
 	 * @param lowerBound
 	 * @param upperBound
 	 * @throws IllegalLogarithmicRangeException
 	 */
 	private void validateBounds(double lowerBound, double upperBound) throws IllegalLogarithmicRangeException {
-		if (lowerBound <= 0 || upperBound < 0 || lowerBound > upperBound) { throw new IllegalLogarithmicRangeException(
-			"The logarithmic range should be include to ]0,Double.MAX_VALUE] and the lowerBound should be less than the upperBound"); }
+		if (lowerBound <= 0 || upperBound < 0 || lowerBound > upperBound) {
+			throw new IllegalLogarithmicRangeException(
+				"The logarithmic range should be include to ]0,Double.MAX_VALUE] and the lowerBound should be less than the upperBound");
+		}
 	}
 
 	/**
@@ -154,22 +158,22 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 			Number upperBound = ((Number[]) range)[1];
 			try {
 				validateBounds(lowerBound.doubleValue(), upperBound.doubleValue());
-			}
-			catch (IllegalLogarithmicRangeException e) {
+			} catch (IllegalLogarithmicRangeException e) {
 				e.printStackTrace();
 			}
 			if (animate) {
 				try {
 					lowerRangeTimeline.getKeyFrames().clear();
 					upperRangeTimeline.getKeyFrames().clear();
-					lowerRangeTimeline.getKeyFrames().addAll(new KeyFrame(Duration.ZERO, new KeyValue(lowerBoundProperty(), lowerBoundProperty().get())),
+					lowerRangeTimeline.getKeyFrames().addAll(
+						new KeyFrame(Duration.ZERO, new KeyValue(lowerBoundProperty(), lowerBoundProperty().get())),
 						new KeyFrame(new Duration(ANIMATION_TIME), new KeyValue(lowerBoundProperty(), lowerBound.doubleValue())));
-					upperRangeTimeline.getKeyFrames().addAll(new KeyFrame(Duration.ZERO, new KeyValue(upperBoundProperty(), upperBoundProperty().get())),
+					upperRangeTimeline.getKeyFrames().addAll(
+						new KeyFrame(Duration.ZERO, new KeyValue(upperBoundProperty(), upperBoundProperty().get())),
 						new KeyFrame(new Duration(ANIMATION_TIME), new KeyValue(upperBoundProperty(), upperBound.doubleValue())));
 					lowerRangeTimeline.play();
 					upperRangeTimeline.play();
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					lowerBoundProperty().set(lowerBound.doubleValue());
 					upperBoundProperty().set(upperBound.doubleValue());
 				}
@@ -201,7 +205,8 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	}
 
 	/**
-	 * Exception to be thrown when a bound value isn't supported by the logarithmic axis<br>
+	 * Exception to be thrown when a bound value isn't supported by the
+	 * logarithmic axis<br>
 	 * <br>
 	 * 
 	 * @author Kevin Senechal mailto: kevin.senechal@dooapp.com

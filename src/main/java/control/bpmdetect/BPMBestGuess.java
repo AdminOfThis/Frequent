@@ -17,7 +17,8 @@ public final class BPMBestGuess {
 	private double					confidence			= 0;
 	private static BPMBestGuess		instance;
 
-	private BPMBestGuess() {}
+	private BPMBestGuess() {
+	}
 
 	public static BPMBestGuess getInstance() {
 		if (instance == null) {
@@ -31,10 +32,14 @@ public final class BPMBestGuess {
 		while (it.hasNext()) {
 			Entry<Double, Double> e = it.next();
 			e.setValue(e.getValue() * DECAY_RATE);
-			if (e.getValue() < DELETE_THRESHHOLD) it.remove();
+			if (e.getValue() < DELETE_THRESHHOLD)
+				it.remove();
 		}
-		if (bpmEntries.containsKey(bpm)) bpmEntries.put(bpm, bpmEntries.get(bpm) + confidence);
-		else bpmEntries.put(bpm, confidence);
+		if (bpmEntries.containsKey(bpm)) {
+			bpmEntries.put(bpm, bpmEntries.get(bpm) + confidence);
+		} else {
+			bpmEntries.put(bpm, confidence);
+		}
 	}
 
 	private double calculateGuess() {
