@@ -41,7 +41,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	private static final Logger		LOG			= Logger.getLogger(WaveFormChart.class);
 	private static final String		FXML		= "/fxml/utilities/WaveFormChart.fxml";
-	private static final long		TIME_FRAME	= 5000000000l;
+	private static final long		TIME_FRAME	= 3000000000l;
 	@FXML
 	private BorderPane				root;
 	private XYChart<Number, Number>	chart;
@@ -52,7 +52,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	private boolean					pause		= false;
 	private Pausable				pausableParent;
 	private boolean					styleSet	= false;
-	private Map<Long, Double>		pendingMap;
+	private Map<Long, Double>		pendingMap	= Collections.synchronizedMap(new HashMap<Long, Double>());
 	private Style					style;
 
 	public WaveFormChart(final Style style) {
@@ -63,7 +63,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		AnchorPane.setBottomAnchor(p, 0.0);
 		AnchorPane.setLeftAnchor(p, 0.0);
 		AnchorPane.setRightAnchor(p, 0.0);
-		pendingMap = Collections.synchronizedMap(new HashMap<Long, Double>());
 		AnimationTimer timer = new AnimationTimer() {
 
 			@Override
@@ -174,8 +173,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 			synchronized (pendingMap) {
 				addNewData();
-				updateAxis(xAxis);
-				removeOldData();
+				FXMLUtil.updateAxis(xAxis, TIME_FRAME);
+				FXMLUtil.removeOldData(xAxis, series);
 			}
 			if (treshold.getData().size() >= 2) {
 				treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
@@ -183,15 +182,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		}
 	}
 
-	private void updateAxis(NumberAxis xAxis) {
-		if (series.getData().size() > 1) {
-			long time = series.getData().get(series.getData().size() - 1).getXValue().longValue();
-			// axis
-			xAxis.setLowerBound(time - TIME_FRAME);
-			xAxis.setUpperBound(time);
-			pendingMap.clear();
-		}
-	}
 
 	private void addNewData() {
 		ArrayList<Data<Number, Number>> dataList = new ArrayList<>();

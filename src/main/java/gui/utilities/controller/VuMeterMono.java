@@ -193,13 +193,19 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 						lblPeak.setText("-\u221E");
 					}
 					if (peakdB > -5.0) {
-						if (peakdB >= -1.0) {
+						if (peakdB >= -2.0) {
 							vuPeakPane.setStyle("-fx-background-color: red");
 						} else {
 							vuPeakPane.setStyle("-fx-background-color: yellow");
 						}
 						Timeline line = new Timeline();
-						KeyFrame frame = new KeyFrame(Duration.seconds(5.0), e -> {
+						double duration;
+						if (peakdB >= -2.0) {
+							duration = 10;
+						} else {
+							duration = 3;
+						}
+						KeyFrame frame = new KeyFrame(Duration.seconds(duration), e -> {
 							vuPeakPane.setStyle("");
 						});
 						line.getKeyFrames().add(frame);

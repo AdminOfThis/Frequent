@@ -2,7 +2,12 @@ package gui.controller;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -15,15 +20,18 @@ import data.Group;
 import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.Constants;
+import gui.utilities.FXMLUtil;
 import gui.utilities.controller.VuMeterMono;
+import gui.utilities.controller.WaveFormChart.Style;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.ScrollPane;
@@ -38,21 +46,26 @@ import main.Main;
 
 public class GroupViewController implements Initializable, PausableView {
 
-	private static final Logger			LOG		= Logger.getLogger(GroupViewController.class);
-	private static GroupViewController	instance;
+	private static final Logger					LOG				= Logger.getLogger(GroupViewController.class);
+	private static final long					TIME_FRAME		= 6000000000l;
+
+	private static GroupViewController			instance;
 	@FXML
-	private SplitPane					root;
+	private SplitPane							root;
 	@FXML
-	private SplitPane					rootSplit;
+	private SplitPane							groupPane;
 	@FXML
-	private SplitPane					groupPane;
+	private HBox								vuPane;
 	@FXML
-	private HBox						vuPane;
+	private StackedAreaChart<Number, Number>	chart;
 	@FXML
-	private LineChart<Number, Number>	chart;
-	@FXML
-	private ToggleButton				tglTimed;
-	private boolean						pause	= true;
+	private ToggleButton						tglTimed;
+
+	private Map<Group, Map<Long, Double>>		pendingMap		= Collections.synchronizedMap(new HashMap<>());
+
+	private Map<Group, Series<Number, Number>>	groupSeriesMap	= Collections.synchronizedMap(new HashMap<>());
+	private boolean								pause			= true;
+
 
 	public static GroupViewController getInstance() {
 		return instance;
@@ -78,6 +91,58 @@ public class GroupViewController implements Initializable, PausableView {
 		yAxis.setAutoRanging(false);
 		yAxis.setUpperBound(0.0);
 		yAxis.setLowerBound(Constants.FFT_MIN);
+
+		AnimationTimer timer = new AnimationTimer() {
+
+			@Override
+			public void handle(final long now) {
+				update();
+			}
+		};
+		timer.start();
+	}
+
+	private void update() {
+		if (!isPaused()) {
+			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+			for (Group g : pendingMap.keySet()) {
+				Series<Number, Number> series = groupSeriesMap.get(g);
+
+				synchronized (pendingMap.get(g)) {
+					addNewData(pendingMap.get(g), series, g);
+				}
+				FXMLUtil.updateAxis(xAxis, TIME_FRAME);
+				FXMLUtil.removeOldData(xAxis, series);
+			}
+		}
+	}
+
+	private void addNewData(Map<Long, Double> pendingMap, final Series<Number, Number> series, final Group group) {
+		ArrayList<Data<Number, Number>> dataList = new ArrayList<>();
+		for (Entry<Long, Double> entry : pendingMap.entrySet()) {
+			try {
+				double level = entry.getValue();
+				long time = entry.getKey();
+
+				if (!series.getNode().getStyle().equals("-fx-stroke: " + group.getColor())) {
+					String color = group.getColor();
+					if (color == null) {
+						color = "-fx-accent";
+					}
+					series.getNode().setStyle("-fx-stroke: " + color);
+				}
+				double leveldB = Channel.percentToDB(level);
+				leveldB = Math.max(leveldB, Constants.FFT_MIN);
+				Data<Number, Number> data = new Data<Number, Number>(time, leveldB);
+
+
+				dataList.add(data);
+			} catch (Exception e) {
+				LOG.warn("", e);
+			}
+		}
+		pendingMap.clear();
+		series.getData().addAll(dataList);
 	}
 
 	@Override
@@ -135,48 +200,38 @@ public class GroupViewController implements Initializable, PausableView {
 		}
 	}
 
-	private void redrawChart(final Group g) {
+	private void redrawChart(final Group group) {
 		Series<Number, Number> series = new Series<>();
-		series.setName(g.getName());
+		groupSeriesMap.put(group, series);
+		series.setName(group.getName());
 		chart.getData().add(series);
 		Legend legend = (Legend) chart.lookup(".chart-legend");
 		for (LegendItem i : legend.getItems()) {
-			if (i.getText().equals(g.getName())) {
-				if (g.getColor() == null) {
+			if (i.getText().equals(group.getName())) {
+				if (group.getColor() == null) {
 					i.setSymbol(new Rectangle(10, 4));
 					i.getSymbol().setStyle("-fx-fill: -fx-accent");
 				} else {
-					i.setSymbol(new Rectangle(10, 4, Color.web(g.getColor())));
+					i.setSymbol(new Rectangle(10, 4, Color.web(group.getColor())));
 				}
 			}
 		}
-		NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-		// adding listener to group for chart
-		g.addListener((level, time) -> Platform.runLater(() -> {
-			if (!series.getNode().getStyle().equals("-fx-stroke: " + g.getColor())) {
-				String color = g.getColor();
-				if (color == null) {
-					color = "-fx-accent";
-				}
-				series.getNode().setStyle("-fx-stroke: " + color);
-				for (LegendItem i : legend.getItems()) {
-					if (i.getText().equals(g.getName())) {
-						i.setSymbol(new Rectangle(10, 4));
-						i.getSymbol().setStyle("-fx-fill: " + color);
-					}
-				}
+
+		synchronized (pendingMap) {
+			// pendingMap for new group added
+			if (pendingMap.get(group) == null) {
+				pendingMap.put(group, Collections.synchronizedMap(new LinkedHashMap<Long, Double>()));
+			} else {
+				pendingMap.get(group).clear();
 			}
-			double leveldB = Channel.percentToDB(level);
-			leveldB = Math.max(leveldB, Constants.FFT_MIN);
-			series.getData().add(new Data<Number, Number>(time, leveldB));
-			// removing old data
-			while (series.getData().size() > 500) {
-				series.getData().remove(0);
+		}
+		group.addListener((level, time) -> {
+			synchronized (pendingMap.get(group)) {
+				pendingMap.get(group).put(time, level);
 			}
-			xAxis.setUpperBound(time + 100);
-			xAxis.setLowerBound((long) series.getData().get(0).getXValue());
-		}));
+		});
 	}
+
 
 	@Override
 	public void refresh() {
