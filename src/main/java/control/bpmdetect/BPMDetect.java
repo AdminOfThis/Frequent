@@ -26,23 +26,31 @@ public abstract class BPMDetect {
 
 	public static double detectBPM(float[] samples, int sampleRate) {
 		int crossoverSize = sampleRate * 60 / 130 * 4; // 4 beats at 130BPM
-		if (crossoverSize > sampleRate * 10.0) return -1; // whoops
+		if (crossoverSize > sampleRate * 10.0)
+			return -1; // whoops
 		float max = getMaxInArray(samples);
 		int lastBeat = 0;
 		for (int i = 1; i < samples.length; i++) {
 			if ((samples[i] - samples[i - 1]) / max > rampRequired) {
-				if (i - lastBeat < rampSeperation) continue;
-				else lastBeat = i;
+				if (i - lastBeat < rampSeperation) {
+					continue;
+				} else
+					lastBeat = i;
+
 			}
 		}
-		for (int i = samples.length - (int) (sampleRate * 0.3); i < samples.length - 1; i++) {}
-		for (int i = samples.length - sampleRate * 5; i < samples.length - 1; i++) {}
+		for (int i = samples.length - (int) (sampleRate * 0.3); i < samples.length - 1; i++) {
+		}
+		for (int i = samples.length - sampleRate * 5; i < samples.length - 1; i++) {
+		}
 		bpm = bpmFromFlags(sampleRate);
 		if (bpm > 0) {
-			while (bpm > 180)
+			while (bpm > 180) {
 				bpm /= 2.0;
-			while (bpm < 90)
+			}
+			while (bpm < 90) {
 				bpm *= 2.0;
+			}
 		}
 		BPMBestGuess.getInstance().appendBPMGuess(bpm, confidence);
 		return bpm;
@@ -61,8 +69,11 @@ public abstract class BPMDetect {
 		HashMap<Integer, Double> distanceMap = new HashMap<>();
 		for (int distance : distances) {
 			for (int i = -2; i < 3; i++)
-				if (distanceMap.containsKey(distance + i)) distanceMap.put(distance + i, distanceMap.get(distance + i) + 1 - Math.abs(i) / 4.0);
-				else distanceMap.put(distance + i, 1 - Math.abs(i) / 4.0);
+				if (distanceMap.containsKey(distance + i)) {
+					distanceMap.put(distance + i, distanceMap.get(distance + i) + 1 - Math.abs(i) / 4.0);
+				} else {
+					distanceMap.put(distance + i, 1 - Math.abs(i) / 4.0);
+				}
 			// System.out.print(distance+" ");
 		}
 		// System.out.println(distanceMap.size());
@@ -84,16 +95,24 @@ public abstract class BPMDetect {
 		// confidence[sampleType] = ((bestGuess.y / nextBestGuess.y));
 		confidence = bestGuess.y / scoreTotal * 100;
 		confidence = Math.min((confidence - 10) * (100f / 25), 100);
-		if (flags.size() == 0) confidence = 0;
-		else if (flags.size() < 10) confidence *= flags.size() / 10;
-		if (bestGuess.x == 0) return -1;
-		else {
+		if (flags.size() == 0) {
+			confidence = 0;
+		} else if (flags.size() < 10) {
+			confidence *= flags.size() / 10;
+		}
+		if (bestGuess.x == 0) {
+			return -1;
+		} else {
 			double bpm = sampleRate * 60.0 / (bestGuess.x - 1);
-			if (bpm <= 0) return bpm;
-			while (bpm < 70)
+			if (bpm <= 0) {
+				return bpm;
+			}
+			while (bpm < 70) {
 				bpm *= 2.0;
-			while (bpm > 180)
+			}
+			while (bpm > 180) {
 				bpm /= 2.0;
+			}
 			return bpm;
 		}
 	}
@@ -108,7 +127,8 @@ public abstract class BPMDetect {
 			if (sums[i + sampleRate] - sums[i] > bestGuess.y) {
 				bestGuess = new Pair<>(i + sampleRate, sums[i + sampleRate]);
 			}
-		if (sums[bestGuess.x - sampleRate] * 5 < sums[bestGuess.x] && Math.abs(downbeatTime - (System.currentTimeMillis() - (samples.length - bestGuess.x) * 1000 / sampleRate)) > 100) {
+		if (sums[bestGuess.x - sampleRate] * 5 < sums[bestGuess.x]
+			&& Math.abs(downbeatTime - (System.currentTimeMillis() - (samples.length - bestGuess.x) * 1000 / sampleRate)) > 100) {
 			downbeatTime = System.currentTimeMillis() - (samples.length - bestGuess.x) * 1000 / sampleRate;
 		}
 		return downbeatTime;
@@ -132,7 +152,8 @@ public abstract class BPMDetect {
 		s = samples.clone();
 		for (int i = s.length - 1; i > 0; i--)
 			for (int j = 0; j < 5; j++)
-				if (i > 5 && s[i] < s[i - j]) s[i] = s[i - j];
+				if (i > 5 && s[i] < s[i - j])
+					s[i] = s[i - j];
 		return s;
 	}
 
@@ -140,8 +161,10 @@ public abstract class BPMDetect {
 		float[] s = new float[samples.length];
 		s[0] = 0;
 		for (int i = 1; i < s.length; i++)
-			if (samples[i] - samples[i - 1] > 0) s[i] = samples[i] - samples[i - 1];
-			else s[i] = 0;
+			if (samples[i] - samples[i - 1] > 0)
+				s[i] = samples[i] - samples[i - 1];
+			else
+				s[i] = 0;
 		return s;
 	}
 
@@ -152,7 +175,8 @@ public abstract class BPMDetect {
 	public static float getMaxInArray(float[] array) {
 		float max = 0;
 		for (int i = 0; i < array.length; i++)
-			if (array[i] > max) max = array[i];
+			if (array[i] > max)
+				max = array[i];
 		return max;
 	}
 }
