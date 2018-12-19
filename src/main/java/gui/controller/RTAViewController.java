@@ -192,32 +192,32 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	}
 
 	private void updateChart(final double[][] map) {
-		Platform.runLater(() -> {
-			ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
-			for (int count = 0; count < map[0].length; count++) {
-				double frequency = map[0][count];
-				if (frequency >= 20 && frequency <= X_MAX) {
-					double level = Math.abs(map[1][count]);
-					level = Channel.percentToDB(level / 1000.0);
-					Data<Number, Number> data = new XYChart.Data<>(frequency, level);
-					dataList.add(data);
+
+		ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
+		for (int count = 0; count < map[0].length; count++) {
+			double frequency = map[0][count];
+			if (frequency >= 20 && frequency <= X_MAX) {
+				double level = Math.abs(map[1][count]);
+				level = Channel.percentToDB(level / 1000.0);
+				Data<Number, Number> data = new XYChart.Data<>(frequency, level);
+				dataList.add(data);
+			}
+		}
+		// max
+		if (series.getData().size() != maxSeries.getData().size()) {
+			maxSeries.getData().setAll(FXCollections.observableArrayList(series.getData()));
+		} else {
+			for (int i = 0; i < maxSeries.getData().size(); i++) {
+				Data<Number, Number> maxData = maxSeries.getData().get(i);
+				Data<Number, Number> data = series.getData().get(i);
+				if (data.getYValue().doubleValue() >= maxData.getYValue().doubleValue()) {
+					maxData.setYValue(data.getYValue());
+				} else {
+					maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
 				}
 			}
-			// max
-			if (series.getData().size() != maxSeries.getData().size()) {
-				maxSeries.getData().setAll(FXCollections.observableArrayList(series.getData()));
-			} else {
-				for (int i = 0; i < maxSeries.getData().size(); i++) {
-					Data<Number, Number> maxData = maxSeries.getData().get(i);
-					Data<Number, Number> data = series.getData().get(i);
-					if (data.getYValue().doubleValue() >= maxData.getYValue().doubleValue()) {
-						maxData.setYValue(data.getYValue());
-					} else {
-						maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
-					}
-				}
-			}
-			series.getData().setAll(dataList);
-		});
+		}
+		series.getData().setAll(dataList);
+
 	}
 }
