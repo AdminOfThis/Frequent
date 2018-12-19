@@ -38,8 +38,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	private ResizableCanvas() {
 		content = getGraphicsContext2D();
-		if (ASIOController.getInstance() != null) {
-		}
 	}
 
 	private ResizableCanvas(final double width, final double heigth) {

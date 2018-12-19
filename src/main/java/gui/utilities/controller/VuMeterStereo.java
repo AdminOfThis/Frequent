@@ -69,7 +69,7 @@ public class VuMeterStereo extends AnchorPane implements VuMeterIntf {
 
 	@Override
 	public void pause(boolean pause) {
-		this.pause = pause;;
+		this.pause = pause;
 	}
 
 	@Override
