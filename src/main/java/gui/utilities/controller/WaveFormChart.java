@@ -48,7 +48,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	private Series<Number, Number>	series		= new Series<>();
 	private Series<Number, Number>	treshold	= new Series<>();
 	private Input					channel;
-	private double					value		= 1;
 	private boolean					negative	= false;
 	private boolean					pause		= false;
 	private Pausable				pausableParent;
@@ -160,8 +159,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					c.addListener(this);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}
@@ -203,7 +201,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
 					styleSet = true;
 				}
-				value = 0;
+
+				double value = 0;
 				if (channel != null) {
 					value = entry.getValue();
 				}
@@ -218,8 +217,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 				negative = !negative;
 				Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 				dataList.add(newData);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.warn("", e);
 			}
 		}
@@ -239,8 +237,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					break;
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// LOG.error("", e);
 		}
 		if (removeList != null) {
