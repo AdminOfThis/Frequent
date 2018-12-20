@@ -1,7 +1,9 @@
 package control.bpmdetect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -11,14 +13,15 @@ import java.util.Map.Entry;
  */
 public final class BPMBestGuess {
 
-	private HashMap<Double, Double>	bpmEntries			= new HashMap<>();
-	private static double			DECAY_RATE			= 0.999;
-	private static double			DELETE_THRESHHOLD	= 0.01;
-	private double					confidence			= 0;
-	private static BPMBestGuess		instance;
+	private Map<Double, Double>	bpmEntries			= Collections.synchronizedMap(new HashMap<Double, Double>());
+	private static double		DECAY_RATE			= 0.999;
+	private static double		DELETE_THRESHHOLD	= 0.01;
+	private double				confidence			= 0;
+	private long				lastCalc;
+	private double				bpm;
+	private static BPMBestGuess	instance;
 
-	private BPMBestGuess() {
-	}
+	private BPMBestGuess() {}
 
 	public static BPMBestGuess getInstance() {
 		if (instance == null) {
@@ -28,17 +31,22 @@ public final class BPMBestGuess {
 	}
 
 	public void appendBPMGuess(double bpm, double confidence) {
-		Iterator<Entry<Double, Double>> it = bpmEntries.entrySet().iterator();
-		while (it.hasNext()) {
-			Entry<Double, Double> e = it.next();
-			e.setValue(e.getValue() * DECAY_RATE);
-			if (e.getValue() < DELETE_THRESHHOLD)
-				it.remove();
-		}
-		if (bpmEntries.containsKey(bpm)) {
-			bpmEntries.put(bpm, bpmEntries.get(bpm) + confidence);
-		} else {
-			bpmEntries.put(bpm, confidence);
+		if (bpm > 0) {
+			synchronized (bpmEntries) {
+				Iterator<Entry<Double, Double>> it = bpmEntries.entrySet().iterator();
+				while (it.hasNext()) {
+					Entry<Double, Double> e = it.next();
+					e.setValue(e.getValue() * DECAY_RATE);
+					if (e.getValue() < DELETE_THRESHHOLD) {
+						it.remove();
+					}
+				}
+				if (bpmEntries.containsKey(bpm)) {
+					bpmEntries.put(bpm, bpmEntries.get(bpm) + confidence);
+				} else {
+					bpmEntries.put(bpm, confidence);
+				}
+			}
 		}
 	}
 
@@ -64,11 +72,12 @@ public final class BPMBestGuess {
 		// currentGuessStart = e.getKey();
 		// }
 		// }
-		for (Entry<Double, Double> e : bpmEntries.entrySet()) {
-			// System.out.println(e.getKey()+"\t"+e.getValue());
-			if (e.getValue() > bestGuessValue) {
-				bestGuessStart = e.getKey();
-				bestGuessValue = e.getValue();
+		synchronized (bpmEntries) {
+			for (Entry<Double, Double> e : bpmEntries.entrySet()) {
+				if (e.getValue() > bestGuessValue) {
+					bestGuessStart = e.getKey();
+					bestGuessValue = e.getValue();
+				}
 			}
 		}
 		// System.out.println("---------------------");
@@ -81,6 +90,12 @@ public final class BPMBestGuess {
 	}
 
 	public double getBPM() {
-		return calculateGuess();
+		long time = System.currentTimeMillis();
+		if (time - lastCalc > 1000) {
+			// calc new every second
+			bpm = calculateGuess();
+			lastCalc = time;
+		}
+		return bpm;
 	}
 }

@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import control.ASIOController;
 import data.DrumTrigger;
 import gui.utilities.DrumTriggerListener;
 
@@ -85,11 +84,16 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 				Thread.yield();
 			} else if (mode == Mode.BPM_DETECT) {
 				for (DrumTrigger trigger : triggerList) {
-					if (ASIOController.getInstance() != null) {
-						BPMDetect.detectBPM(trigger.getChannel().getBuffer(), ASIOController.getInstance().getSampleRate());
-					}
+					trigger.calcBPM();
 				}
 				bpm = BPMBestGuess.getInstance().getBPM();
+			}
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}

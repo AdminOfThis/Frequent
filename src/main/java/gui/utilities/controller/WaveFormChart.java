@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -146,7 +147,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	public void setChannel(final Input c) {
 		try {
-			if (!c.equals(channel)) {
+			if (!Objects.equals(c, channel)) {
 				if (channel != null) {
 					channel.removeListener(this);
 				}
@@ -159,7 +160,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					c.addListener(this);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}
@@ -183,7 +185,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		}
 	}
 
-
 	private void addNewData() {
 		ArrayList<Data<Number, Number>> dataList = new ArrayList<>();
 		for (Entry<Long, Double> entry : pendingMap.entrySet()) {
@@ -192,7 +193,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
 					styleSet = true;
 				}
-
 				double value = 0;
 				if (channel != null) {
 					value = entry.getValue();
@@ -208,7 +208,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 				negative = !negative;
 				Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 				dataList.add(newData);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.warn("", e);
 			}
 		}
