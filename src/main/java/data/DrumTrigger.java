@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import control.ASIOController;
 import control.InputListener;
+import control.bpmdetect.BPMDetect;
 import gui.utilities.DrumTriggerListener;
 
 public class DrumTrigger implements InputListener {
@@ -15,9 +17,11 @@ public class DrumTrigger implements InputListener {
 	private double						treshold;
 	private List<DrumTriggerListener>	listeners		= Collections.synchronizedList(new ArrayList<>());
 	private boolean						below			= true;
+	private BPMDetect					bpmDetect;
 
 	public DrumTrigger(final String name) {
 		this.name = name;
+		this.bpmDetect = new BPMDetect();
 	}
 
 	public Channel getChannel() {
@@ -81,5 +85,11 @@ public class DrumTrigger implements InputListener {
 
 	public void setTreshold(final double treshold) {
 		this.treshold = treshold;
+	}
+
+	public void calcBPM() {
+		if (ASIOController.getInstance() != null && getChannel() != null) {
+			bpmDetect.detect(getChannel().getBuffer(), ASIOController.getInstance().getSampleRate());
+		}
 	}
 }

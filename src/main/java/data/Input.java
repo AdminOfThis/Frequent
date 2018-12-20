@@ -75,10 +75,6 @@ public abstract class Input implements Serializable {
 		}
 		synchronized (listeners) {
 			for (InputListener obs : listeners) {
-				// new Thread(new Runnable() {
-				//
-				// @Override
-				// public void run() {
 				try {
 					obs.levelChanged(level, time);
 				}
@@ -86,8 +82,6 @@ public abstract class Input implements Serializable {
 					LOG.warn("Unable to notify Level Listener", e);
 					LOG.debug("", e);
 				}
-				// }
-				// }).start();
 			}
 		}
 	}
@@ -121,9 +115,11 @@ public abstract class Input implements Serializable {
 	}
 
 	public void setLevel(final float level, long time) {
-		this.level = level;
-		this.time = time;
-		notifyListeners();
+		if (level > 0) {
+			this.level = level;
+			this.time = time;
+			notifyListeners();
+		}
 	}
 
 	public void setName(final String name) {
