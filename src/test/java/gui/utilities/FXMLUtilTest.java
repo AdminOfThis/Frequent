@@ -37,7 +37,7 @@ public class FXMLUtilTest {
 
 		series.getData().add(dataNew);
 		series.getData().add(dataOld);
-		FXMLUtil.removeOldData(System.nanoTime() - 300000000000l, series);
+		FXMLUtil.removeOldData(System.nanoTime() - 30000000000l, series);
 		assertEquals(1, series.getData().size());
 		assertTrue(series.getData().contains(dataNew));
 		assertFalse(series.getData().contains(dataOld));

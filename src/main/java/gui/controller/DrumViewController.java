@@ -31,6 +31,7 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -38,7 +39,8 @@ import javafx.util.StringConverter;
 
 public class DrumViewController implements Initializable, PausableView, DrumTriggerListener {
 
-	private static final Logger									LOG				= Logger.getLogger(DrumViewController.class);
+	private static final Logger									LOG				= Logger
+	        .getLogger(DrumViewController.class);
 	private static final long									DRUM_TIME_FRAME	= 5000000000l;
 
 	@FXML
@@ -52,9 +54,14 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 	private ToggleButton										btnSetup;
 	@FXML
 	private Label												lblBPM;
-	private List<DrumTrigger>									triggerList		= Collections.synchronizedList(new ArrayList<>());
-	private Map<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap		= Collections.synchronizedMap(new HashMap<>());
-	private Map<DrumTrigger, ArrayList<Data<Number, Number>>>	pendingMap		= Collections.synchronizedMap(new HashMap<>());
+	@FXML
+	private HBox												bpmBox;
+	private List<DrumTrigger>									triggerList		= Collections
+	        .synchronizedList(new ArrayList<>());
+	private Map<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap		= Collections
+	        .synchronizedMap(new HashMap<>());
+	private Map<DrumTrigger, ArrayList<Data<Number, Number>>>	pendingMap		= Collections
+	        .synchronizedMap(new HashMap<>());
 	private boolean												paused			= false;
 
 	@Override
@@ -63,6 +70,10 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 		// MainController.getInstance().setDrumController(this);
 		sidePane.visibleProperty().bind(btnSetup.selectedProperty());
 		sidePane.managedProperty().bind(btnSetup.selectedProperty());
+		if (ASIOController.getInstance() == null) {
+			bpmBox.setVisible(false);
+			bpmBox.setManaged(false);
+		}
 		initData();
 		initChart();
 		initTimer();

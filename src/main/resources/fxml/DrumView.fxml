@@ -11,8 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.DrumViewController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.DrumViewController">
    <center>
       <ScatterChart fx:id="drumChart" animated="false" horizontalZeroLineVisible="false" legendVisible="false" BorderPane.alignment="CENTER">
         <xAxis>
@@ -45,7 +44,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER">
+            <HBox fx:id="bpmBox" alignment="CENTER">
                <children>
                   <Label fx:id="lblBPM" text="##.#">
                      <font>
