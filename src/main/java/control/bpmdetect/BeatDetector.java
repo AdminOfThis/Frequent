@@ -25,7 +25,7 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 	private List<DrumTrigger>				triggerList	= Collections.synchronizedList(new ArrayList<>());
 	private double							bpm			= 0;
 	private Map<DrumTrigger, List<Long>>	seriesMap	= Collections.synchronizedMap(new HashMap<>());
-	private Mode							mode		= Mode.BPM_DETECT;
+	private Mode							mode		= Mode.CLASSIC;
 
 	public static BeatDetector getInstance() {
 		if (instance == null) {
@@ -90,8 +90,7 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 			}
 			try {
 				Thread.sleep(1000);
-			}
-			catch (InterruptedException e) {
+			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
