@@ -32,7 +32,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 	private static final Logger							LOG				= Logger.getLogger(ResizableCanvas.class);
 	private static final WritablePixelFormat<IntBuffer>	PIXEL_FORMAT	= PixelFormat.getIntArgbPreInstance();
 	private int											count			= 0;
-	private boolean										autoscroll		= true;
 	private GraphicsContext								content;
 	private ScrollPane									parent;
 	private boolean										pause			= true;
@@ -81,9 +80,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 // long drawTime = System.currentTimeMillis();
 //
 			count++;
-			if (autoscroll && parent != null) {
-				parent.setVvalue(parent.getVmax());
-			}
 // long after = System.currentTimeMillis();
 // System.out.println("Size: " + (sizeTime - before) + " Create: " + (creatTime - sizeTime) + " Draw: " + (drawTime - creatTime) + " After: " + (after - before));
 		}
