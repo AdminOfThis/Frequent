@@ -58,6 +58,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	private Style					style;
 
 	public WaveFormChart(final Style style) {
+		LOG.debug("Creating new WaveFormChart");
 		this.style = style;
 		Parent p = FXMLUtil.loadFXML(FXML, this);
 		getChildren().add(p);
@@ -99,6 +100,11 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		} else if (style == Style.ABSOLUTE) {
 			initArea(xAxis, yAxis);
 		}
+		if (chart instanceof LineChart) {
+			((LineChart<Number, Number>) chart).setCreateSymbols(false);
+		} else if (chart instanceof AreaChart) {
+			((AreaChart<Number, Number>) chart).setCreateSymbols(false);
+		}
 		chart.setAnimated(false);
 		chart.setLegendVisible(false);
 		chart.setVerticalZeroLineVisible(false);
@@ -112,13 +118,11 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	private void initArea(final NumberAxis xAxis, final NumberAxis yAxis) {
 		chart = new NegativeAreaChart(xAxis, yAxis);
 		xAxis.setTickUnit(TIME_FRAME / 10.0);
-		((AreaChart<Number, Number>) chart).setCreateSymbols(false);
 		chart.setTitleSide(Side.TOP);
 	}
 
 	private void initWaveForm(final NumberAxis xAxis, final NumberAxis yAxis) {
 		chart = new LineChart<>(xAxis, yAxis);
-		((LineChart<Number, Number>) chart).setCreateSymbols(false);
 	}
 
 	@Override

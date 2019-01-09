@@ -21,7 +21,11 @@
 }
 
 .default-color0.chart-series-area-line {
-	-fx-stroke: -fx-accent
+	-fx-stroke: -fx-accent;
+}
+.default-color0.chart-series-line {
+	-fx-stroke: -fx-accent;
+    -fx-stroke-width: 2px;
 }
 
 .default-color0.chart-series-area-fill {
@@ -80,6 +84,16 @@
 	-fx-stroke: derive(-fx-accent, -60%);
 }
 
+.chart {
+    -fx-padding: 0px;
+}
+
+.chart .chart-content {
+    -fx-padding: 0
+}
+
+
+
 .chart .chart-title .text {
 	-fx-font-size: 20px;
 }
@@ -98,7 +112,7 @@
 	-fx-fill: transparent;
 }
 
-.transparent  .chart-content .chart-plot-background {
+.transparent .chart-content .chart-plot-background {
 	-fx-background-color: transparent;
 }
 
