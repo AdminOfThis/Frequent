@@ -3,6 +3,8 @@ package gui.controller;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -11,6 +13,7 @@ import control.FFTListener;
 import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.ResizableCanvas;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,16 +27,16 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 public class FFTViewController implements Initializable, FFTListener, PausableView {
 
-	@SuppressWarnings("unused")
-	private static final Logger	LOG		= Logger.getLogger(FFTViewController.class);
+	private static final Logger	LOG			= Logger.getLogger(FFTViewController.class);
 	@FXML
 	private ScrollPane			canvasParent;
-	private boolean				pause	= true;
+	private boolean				pause		= true;
 	private ResizableCanvas		canvas;
 	@FXML
 	private ToggleButton		tglPlay;
 	@FXML
 	private Button				btnExport;
+	private List<double[][]>	pendingMap	= Collections.synchronizedList(new ArrayList<>());
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -41,16 +44,34 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 		canvas.setParentPausable(this);
 		canvasParent.setContent(canvas);
 		canvas.pause(true);
-		// if (ASIOController.getInstance() != null) {
-		// ASIOController.getInstance().addFFTListener(this);
-		// }
+		AnimationTimer timer = new AnimationTimer() {
+
+			@Override
+			public void handle(long now) {
+				update();
+			}
+		};
+		timer.start();
+	}
+
+	private void update() {
+		Platform.runLater(() -> {
+			synchronized (pendingMap) {
+				for (double[][] map : pendingMap) {
+					canvas.addLine(map);
+				}
+				pendingMap.clear();
+			}
+		});
 	}
 
 	@Override
 	public void newFFT(double[][] map) {
-		Platform.runLater(() -> {
-			canvas.addLine(map);
-		});
+		if (!isPaused()) {
+			synchronized (pendingMap) {
+				pendingMap.add(map);
+			}
+		}
 	}
 
 	@Override
@@ -111,5 +132,8 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	@Override
 	public void setSelectedChannel(Input in) {
 		canvas.reset();
+		synchronized (pendingMap) {
+			pendingMap.clear();
+		}
 	}
 }
