@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -24,9 +25,11 @@ import data.Group;
 import data.Input;
 import dialog.InformationDialog;
 import gui.pausable.Pausable;
+import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
 import gui.utilities.controller.ChannelCell;
+import gui.utilities.controller.DataChart;
 import gui.utilities.controller.WaveFormChart;
 import gui.utilities.controller.WaveFormChart.Style;
 import javafx.animation.KeyFrame;
@@ -60,7 +63,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
@@ -124,14 +126,36 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private TimeKeeperController			timeKeeperController;
 	// private DrumController drumController;
 	private WaveFormChart					waveFormChart;
+	private DataChart						dataChart;
 
-	public static String deriveColor(final String baseColor, final int index, final int total) {
-		String result = baseColor;
-		Color color = Color.web(baseColor);
-		double value = (double) index / (double) total;
-		color = color.deriveColor(1, 1, value, 1);
-		result = FXMLUtil.toRGBCode(color);
-		return result;
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		instance = this;
+		setStatus("Loading GUI", -1);
+		root.setStyle(Main.getStyle());
+		Main.getInstance().setProgress(0.45);
+		initWaveForm();
+		Main.getInstance().setProgress(0.5);
+		initTimekeeper();
+		initMenu();
+		initChannelList();
+		Main.getInstance().setProgress(0.55);
+		initFullScreen();
+		initChart();
+		Main.getInstance().setProgress(0.6);
+		initRTA();
+		Main.getInstance().setProgress(0.65);
+		initDrumMonitor();
+		Main.getInstance().setProgress(0.7);
+		initPhaseMonitor();
+		Main.getInstance().setProgress(0.75);
+		initGroups();
+		Main.getInstance().setProgress(0.8);
+		initListener();
+		Main.getInstance().setProgress(0.9);
+		resetStatus();
+		bottomLabel.setVisible(false);
+		TimeKeeper.getInstance().addListener(this);
 	}
 
 	public static MainController getInstance() {
@@ -198,6 +222,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 		// timeKeeperController.setChannels(channelList.getItems()));
 		channelList.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
 			waveFormChart.setChannel(newValue);
+			if (newValue instanceof Channel) {
+				dataChart.setChannel((Channel) newValue);
+			}
 			if (newValue != null) {
 				waveFormChart.setChannel(newValue);
 				LOG.info("Switching to channel " + newValue.getName());
@@ -257,36 +284,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 		} else {
 			LOG.warn("Unable to load FFT Chart");
 		}
-	}
-
-	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {
-		instance = this;
-		setStatus("Loading GUI", -1);
-		root.setStyle(Main.getStyle());
-		Main.getInstance().setProgress(0.45);
-		initWaveForm();
-		Main.getInstance().setProgress(0.5);
-		initTimekeeper();
-		initMenu();
-		initChannelList();
-		Main.getInstance().setProgress(0.55);
-		initFullScreen();
-		initChart();
-		Main.getInstance().setProgress(0.6);
-		initRTA();
-		Main.getInstance().setProgress(0.65);
-		initDrumMonitor();
-		Main.getInstance().setProgress(0.7);
-		initPhaseMonitor();
-		Main.getInstance().setProgress(0.75);
-		initGroups();
-		Main.getInstance().setProgress(0.8);
-		initListener();
-		Main.getInstance().setProgress(0.9);
-		resetStatus();
-		bottomLabel.setVisible(false);
-		TimeKeeper.getInstance().addListener(this);
 	}
 
 	public void initIO(final String ioName) {
@@ -403,12 +400,25 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private void initWaveForm() {
 		LOG.debug("Loading WaveForm");
 		waveFormChart = new WaveFormChart(Style.NORMAL);
-		waveFormChart.setParentPausable(this);
-		waveFormPane.getChildren().add(waveFormChart);
-		AnchorPane.setTopAnchor(waveFormChart, .0);
-		AnchorPane.setBottomAnchor(waveFormChart, .0);
-		AnchorPane.setLeftAnchor(waveFormChart, .0);
-		AnchorPane.setRightAnchor(waveFormChart, .0);
+		dataChart = new DataChart();
+		for (PausableComponent n : new PausableComponent[] { dataChart, waveFormChart }) {
+			n.setParentPausable(this);
+			AnchorPane.setTopAnchor((Node) n, .0);
+			AnchorPane.setBottomAnchor((Node) n, .0);
+			AnchorPane.setLeftAnchor((Node) n, .0);
+			AnchorPane.setRightAnchor((Node) n, .0);
+			((Node) n).setOnMouseClicked(e -> {
+				waveFormPane.getChildren().clear();
+				if (n == dataChart) {
+					waveFormPane.getChildren().add(waveFormChart);
+				} else if (n == waveFormChart) {
+					waveFormPane.getChildren().add(dataChart);
+				}
+				dataChart.pause(Objects.equals(e.getSource(), dataChart));
+				waveFormChart.pause(Objects.equals(e.getSource(), waveFormChart));
+			});
+		}
+		waveFormPane.getChildren().add(dataChart);
 	}
 
 	@Override
@@ -486,8 +496,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 				for (Channel channel : ASIOController.getInstance().getInputList()) {
 					// if channel is not hidden, or showHidden, and if
 					// sterechannel isn't already added to list
-					if ((!channel.isHidden() || showHidden)
-						&& (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
+					if ((!channel.isHidden() || showHidden) && (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
 						channelList.getItems().add(channel);
 					}
 				}
@@ -536,8 +545,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
-		if (result != null && timeKeeperController != null)
-			return FileIO.save(result);
+		if (result != null && timeKeeperController != null) return FileIO.save(result);
 		e.consume();
 		return false;
 	}
@@ -647,8 +655,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		alert.getButtonTypes().add(ButtonType.CANCEL);
 		alert.getButtonTypes().add(ButtonType.OK);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent())
-			return result.get();
+		if (result.isPresent()) return result.get();
 		return ButtonType.CANCEL;
 	}
 

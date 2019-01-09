@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.StackedAreaChart?>
+<?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToggleButton?>
@@ -18,7 +18,7 @@
                   <SplitPane fx:id="groupPane" orientation="VERTICAL" prefHeight="200.0" prefWidth="200.0" />
                </items>
             </SplitPane>
-            <StackedAreaChart fx:id="chart" animated="false" createSymbols="false" horizontalZeroLineVisible="false" legendSide="RIGHT" verticalZeroLineVisible="false">
+            <LineChart fx:id="chart" animated="false" createSymbols="false" horizontalZeroLineVisible="false" legendSide="RIGHT" verticalZeroLineVisible="false">
               <xAxis>
                 <NumberAxis autoRanging="false" forceZeroInRange="false" side="BOTTOM" tickLabelsVisible="false" tickUnit="5000.0" />
               </xAxis>
@@ -28,7 +28,7 @@
                <padding>
                   <Insets bottom="-10.0" />
                </padding>
-            </StackedAreaChart>
+            </LineChart>
          </items>
       </SplitPane>
    </center>

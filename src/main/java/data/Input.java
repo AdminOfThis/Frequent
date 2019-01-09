@@ -37,8 +37,8 @@ public abstract class Input implements Serializable {
 		if (listeners == null) {
 			listeners = Collections.synchronizedList(new ArrayList<>());
 		}
-		if (!listeners.contains(obs)) {
-			synchronized (listeners) {
+		synchronized (listeners) {
+			if (!listeners.contains(obs)) {
 				listeners.add(obs);
 			}
 		}

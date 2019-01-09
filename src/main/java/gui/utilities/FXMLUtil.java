@@ -49,7 +49,8 @@ public abstract class FXMLUtil {
 				double percentNew = (percent - 1.0 / (colors.length - 1) * index) / (1.0 / (colors.length - 1));
 				return colorFade(baseColor, targetColor, percentNew);
 			}
-		} catch (ArrayIndexOutOfBoundsException e) {
+		}
+		catch (ArrayIndexOutOfBoundsException e) {
 			return colors[0];
 		}
 	}
@@ -70,14 +71,17 @@ public abstract class FXMLUtil {
 					break;
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to load css value " + value);
 			LOG.debug("", e);
-		} finally {
+		}
+		finally {
 			if (reader != null) {
 				try {
 					reader.close();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					LOG.error("Problem closing file reader", e);
 				}
 			}
@@ -94,7 +98,8 @@ public abstract class FXMLUtil {
 			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
 			parent = loader.load();
 			controller = loader.getController();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("Unable to load FXMLFile");
 			LOG.info("", e);
 		}
@@ -107,7 +112,8 @@ public abstract class FXMLUtil {
 			FXMLLoader loader = new FXMLLoader(FXMLUtil.class.getResource(string));
 			loader.setController(controller);
 			parent = loader.load();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("Unable to load FXMLFile", e);
 		}
 		return parent;
@@ -124,7 +130,8 @@ public abstract class FXMLUtil {
 		try {
 			p.getStylesheets().add(FXMLUtil.class.getResource(FXMLUtil.STYLE_SHEET).toExternalForm());
 			p.setStyle(Main.getStyle());
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to style dialog", e);
 			LOG.debug("", e);
 		}
@@ -150,7 +157,8 @@ public abstract class FXMLUtil {
 					removeList.add(data);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("", e);
 		}
 		if (removeList != null) {
@@ -158,4 +166,12 @@ public abstract class FXMLUtil {
 		}
 	}
 
+	public static String deriveColor(final String baseColor, final int index, final int total) {
+		String result = baseColor;
+		Color color = Color.web(baseColor);
+		double value = (double) index / (double) total;
+		color = color.deriveColor(1, 1, value, 1);
+		result = FXMLUtil.toRGBCode(color);
+		return result;
+	}
 }

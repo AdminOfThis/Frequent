@@ -28,8 +28,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.ScrollPane;
@@ -46,7 +46,6 @@ public class GroupViewController implements Initializable, PausableView {
 
 	private static final Logger					LOG				= Logger.getLogger(GroupViewController.class);
 	private static final long					TIME_FRAME		= 6000000000l;
-
 	private static GroupViewController			instance;
 	@FXML
 	private SplitPane							root;
@@ -55,15 +54,12 @@ public class GroupViewController implements Initializable, PausableView {
 	@FXML
 	private HBox								vuPane;
 	@FXML
-	private StackedAreaChart<Number, Number>	chart;
+	private LineChart<Number, Number>			chart;
 	@FXML
 	private ToggleButton						tglTimed;
-
 	private Map<Group, Map<Long, Double>>		pendingMap		= Collections.synchronizedMap(new HashMap<>());
-
 	private Map<Group, Series<Number, Number>>	groupSeriesMap	= Collections.synchronizedMap(new HashMap<>());
 	private boolean								pause			= true;
-
 
 	public static GroupViewController getInstance() {
 		return instance;
@@ -89,7 +85,6 @@ public class GroupViewController implements Initializable, PausableView {
 		yAxis.setAutoRanging(false);
 		yAxis.setUpperBound(0.0);
 		yAxis.setLowerBound(Constants.FFT_MIN);
-
 		AnimationTimer timer = new AnimationTimer() {
 
 			@Override
@@ -105,7 +100,6 @@ public class GroupViewController implements Initializable, PausableView {
 			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
 			for (Group g : pendingMap.keySet()) {
 				Series<Number, Number> series = groupSeriesMap.get(g);
-
 				synchronized (pendingMap.get(g)) {
 					addNewData(pendingMap.get(g), series, g);
 				}
@@ -121,7 +115,6 @@ public class GroupViewController implements Initializable, PausableView {
 			try {
 				double level = entry.getValue();
 				long time = entry.getKey();
-
 				if (!series.getNode().getStyle().equals("-fx-stroke: " + group.getColor())) {
 					String color = group.getColor();
 					if (color == null) {
@@ -131,11 +124,10 @@ public class GroupViewController implements Initializable, PausableView {
 				}
 				double leveldB = Channel.percentToDB(level);
 				leveldB = Math.max(leveldB, Constants.FFT_MIN);
-				Data<Number, Number> data = new Data<Number, Number>(time, leveldB);
-
-
+				Data<Number, Number> data = new Data<>(time, leveldB);
 				dataList.add(data);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.warn("", e);
 			}
 		}
@@ -169,7 +161,7 @@ public class GroupViewController implements Initializable, PausableView {
 	private void redrawGroup(final boolean redrawChart, final ArrayList<Group> groupList, final Group g) {
 		// groups
 		if (g.getColor() == null || g.getColor().isEmpty()) {
-			g.setColor(MainController.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1, groupList.size() + 1));
+			g.setColor(FXMLUtil.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1, groupList.size() + 1));
 		}
 		VuMeterMono groupMeter = new VuMeterMono(g, Orientation.VERTICAL);
 		groupMeter.setParentPausable(this);
@@ -214,7 +206,6 @@ public class GroupViewController implements Initializable, PausableView {
 				}
 			}
 		}
-
 		synchronized (pendingMap) {
 			// pendingMap for new group added
 			if (pendingMap.get(group) == null) {
@@ -229,7 +220,6 @@ public class GroupViewController implements Initializable, PausableView {
 			}
 		});
 	}
-
 
 	@Override
 	public void refresh() {
