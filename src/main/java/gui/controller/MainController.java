@@ -408,14 +408,20 @@ public class MainController implements Initializable, Pausable, CueListener {
 			AnchorPane.setLeftAnchor((Node) n, .0);
 			AnchorPane.setRightAnchor((Node) n, .0);
 			((Node) n).setOnMouseClicked(e -> {
-				waveFormPane.getChildren().clear();
-				if (n == dataChart) {
-					waveFormPane.getChildren().add(waveFormChart);
-				} else if (n == waveFormChart) {
-					waveFormPane.getChildren().add(dataChart);
+				if (e.getClickCount() == 2) {
+					LOG.info("Swaping WaveForm and DataChart");
+					waveFormPane.getChildren().clear();
+					if (n == dataChart) {
+						waveFormPane.getChildren().add(waveFormChart);
+					} else if (n == waveFormChart) {
+						waveFormPane.getChildren().add(dataChart);
+					}
+					dataChart.pause(Objects.equals(e.getSource(), dataChart));
+					waveFormChart.pause(Objects.equals(e.getSource(), waveFormChart));
 				}
-				dataChart.pause(Objects.equals(e.getSource(), dataChart));
-				waveFormChart.pause(Objects.equals(e.getSource(), waveFormChart));
+				if (e.getClickCount() == 1) {
+					n.pause(!n.isPaused());
+				}
 			});
 		}
 		waveFormPane.getChildren().add(dataChart);
