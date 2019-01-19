@@ -56,7 +56,7 @@ public class Group extends Input implements InputListener {
 	}
 
 	@Override
-	public void levelChanged(double level, long time) {
+	public void levelChanged(final Input input, final double level, final long time) {
 		synchronized (channelList) {
 			channelLevel.add(level);
 			if (channelLevel.size() == channelList.size()) {

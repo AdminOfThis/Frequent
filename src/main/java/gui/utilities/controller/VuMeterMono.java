@@ -106,7 +106,7 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 	}
 
 	@Override
-	public void levelChanged(final double level, long time) {
+	public void levelChanged(final Input input, final double level, final long time) {
 		pendingLevelList.add(Channel.percentToDB(level));
 	}
 
@@ -181,8 +181,7 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 					}
 					if (orientation == Orientation.VERTICAL) {
 						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
-						vuLastPeakPane
-							.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
 					} else {
 						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
 						vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
