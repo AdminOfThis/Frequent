@@ -46,7 +46,6 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 
 			@Override
 			public void run() {
-				System.out.println("Starting subtract");
 				while (true) {
 					if (confidence > MIN_CONFIDENCE && !isPaused()) {
 						float[] original = Arrays.copyOfRange(originalSeries, 0, originalSeries.length - delay);
