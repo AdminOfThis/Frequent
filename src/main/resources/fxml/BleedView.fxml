@@ -9,21 +9,13 @@
 
 <BorderPane prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.BleedViewController">
    <center>
-      <HBox fx:id="content" spacing="5.0" BorderPane.alignment="CENTER">
-         <children>
-            <HBox onMouseClicked="#click" prefWidth="50.0" style="-fx-border-color: red;" HBox.hgrow="SOMETIMES" />
-            <HBox onMouseClicked="#click" prefWidth="50.0" style="-fx-border-color: red;" HBox.hgrow="SOMETIMES" />
-            <HBox onMouseClicked="#click" prefWidth="50.0" style="-fx-border-color: red;" HBox.hgrow="SOMETIMES" />
-            <HBox onMouseClicked="#click" prefWidth="50.0" style="-fx-border-color: red;" HBox.hgrow="SOMETIMES" />
-            <HBox onMouseClicked="#click" prefWidth="50.0" style="-fx-border-color: red;" HBox.hgrow="SOMETIMES" />
-         </children>
-      </HBox>
+      <HBox fx:id="content" spacing="5.0" BorderPane.alignment="CENTER_LEFT" />
    </center>
    <top>
       <HBox fx:id="topBox" maxHeight="0.0" minHeight="0.0" prefHeight="0.0" BorderPane.alignment="CENTER">
          <children>
-            <ComboBox fx:id="primaryCombo" prefWidth="150.0" />
             <Button mnemonicParsing="false" onAction="#addSecondary" prefWidth="70.0" text="+" />
+            <ComboBox fx:id="primaryCombo" prefWidth="150.0" />
          </children>
       </HBox>
    </top>
