@@ -18,10 +18,10 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 	private Pausable			parent;
 	private Channel				primaryChannel, secondaryChannel;
 	// data
-	private float				newData1[]		= new float[ASIOController.getInstance().getSampleRate() / 8];
-	private float				newData2[]		= new float[ASIOController.getInstance().getSampleRate() / 8];
-	private float[]				originalSeries	= new float[ASIOController.getInstance().getSampleRate() / 8];
-	private float[]				otherSeries		= new float[ASIOController.getInstance().getSampleRate() / 8];
+	private float[]				newData1;
+	private float[]				newData2;
+	private float[]				originalSeries;
+	private float[]				otherSeries;
 	private double				minDiff			= Double.MAX_VALUE;
 	private double				confidence;
 	private int					delay			= 0;
@@ -31,8 +31,14 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 
 	public BleedAnalyzer() {
 		LOG.info("New BleedAnalyzer");
-		startSubtractor();
-		start();
+		if (ASIOController.getInstance() != null) {
+			newData1 = new float[ASIOController.getInstance().getSampleRate() / 8];
+			newData2 = new float[ASIOController.getInstance().getSampleRate() / 8];
+			originalSeries = new float[ASIOController.getInstance().getSampleRate() / 8];
+			otherSeries = new float[ASIOController.getInstance().getSampleRate() / 8];
+			startSubtractor();
+			start();
+		}
 	}
 
 	private void startSubtractor() {
@@ -42,7 +48,7 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 			public void run() {
 				System.out.println("Starting subtract");
 				while (true) {
-					if (confidence > MIN_CONFIDENCE) {
+					if (confidence > MIN_CONFIDENCE && !isPaused()) {
 						float[] original = Arrays.copyOfRange(originalSeries, 0, originalSeries.length - delay);
 						float[] other = Arrays.copyOfRange(otherSeries, delay, otherSeries.length);
 						float diffTotal = 0f;
@@ -128,7 +134,7 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 
 	@Override
 	public boolean isPaused() {
-		return pause || (parent != null && parent.isPaused());
+		return pause || (parent != null && parent.isPaused()) || primaryChannel == null || secondaryChannel == null;
 	}
 
 	@Override

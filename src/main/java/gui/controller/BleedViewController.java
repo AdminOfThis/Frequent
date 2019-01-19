@@ -2,7 +2,6 @@ package gui.controller;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -13,6 +12,7 @@ import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.AutoCompleteComboBoxListener;
 import gui.utilities.Constants;
+import gui.utilities.controller.BleedMonitor;
 import gui.utilities.controller.VuMeterMono;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,7 +20,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -78,7 +77,14 @@ public class BleedViewController implements Initializable, PausableView {
 
 	@Override
 	public void refresh() {
-		// nothing to do yet
+		if (ASIOController.getInstance() != null) {
+			primaryCombo.getItems().setAll(ASIOController.getInstance().getInputList());
+		}
+		for (Node n : content.getChildren()) {
+			if (n instanceof BleedMonitor) {
+				((BleedMonitor) n).refresh();
+			}
+		}
 	}
 
 	@Override
@@ -87,25 +93,17 @@ public class BleedViewController implements Initializable, PausableView {
 	}
 
 	@FXML
-	private void addSecondary(ActionEvent e) {}
+	private void addSecondary(ActionEvent e) {
+		if (content.getChildren().size() < 5) {
+			BleedMonitor monitor = new BleedMonitor();
+			monitor.setParentPausable(this);
+			HBox.setHgrow(monitor, Priority.SOMETIMES);
+			monitor.setPrimaryChannel(primaryCombo.getValue());
+			content.getChildren().add(monitor);
+		}
+	}
 
 	public Channel getPrimary() {
 		return primaryCombo.getValue();
-	}
-
-	@FXML
-	private void click(MouseEvent e) {
-		HBox source = (HBox) e.getSource();
-		if (HBox.getHgrow(source) == Priority.ALWAYS) {
-			HBox.setHgrow(source, Priority.SOMETIMES);
-		} else {
-			for (Node n : content.getChildren()) {
-				if (!Objects.equals(n, source)) {
-					HBox.setHgrow(n, Priority.SOMETIMES);
-				} else {
-					HBox.setHgrow(n, Priority.ALWAYS);
-				}
-			}
-		}
 	}
 }
