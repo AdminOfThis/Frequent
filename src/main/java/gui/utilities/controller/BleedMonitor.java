@@ -1,6 +1,8 @@
 package gui.utilities.controller;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -8,6 +10,7 @@ import org.apache.log4j.Logger;
 import control.ASIOController;
 import control.BleedAnalyzer;
 import data.Channel;
+import gui.controller.BleedViewController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.utilities.AutoCompleteComboBoxListener;
@@ -18,27 +21,39 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.Parent;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public class BleedMonitor extends AnchorPane implements Initializable, PausableComponent {
 
-	private static final Logger	LOG		= Logger.getLogger(BleedMonitor.class);
-	private static final String	FXML	= "/fxml/utilities/BleedMonitor.fxml";
-	private boolean				pause	= false;
-	private Pausable			parent;
+	private static final Logger			LOG			= Logger.getLogger(BleedMonitor.class);
+	private static final String			FXML		= "/fxml/utilities/BleedMonitor.fxml";
+	private boolean						pause		= false;
+	private Pausable					parent;
 	@FXML
-	private AnchorPane			vuPane;
+	private AnchorPane					vuPane;
 	@FXML
-	private Pane				bleedPane;
+	private Pane						bleedPane;
 	@FXML
-	private VBox				bleedTopPane;
+	private VBox						bleedTopPane;
 	@FXML
-	private ComboBox<Channel>	combo;
-	private VuMeterMono			vuMeter;
-	private BleedAnalyzer		analyzer;
+	private ComboBox<Channel>			combo;
+	@FXML
+	private HBox						root;
+	@FXML
+	private LineChart<Number, Number>	chart;
+	private Series<Number, Number>		series1		= new Series<>();
+	private Series<Number, Number>		series2		= new Series<>();
+	private boolean						maximized	= false;
+	private VuMeterMono					vuMeter;
+	private BleedAnalyzer				analyzer;
 
 	public BleedMonitor() {
 		analyzer = new BleedAnalyzer();
@@ -60,6 +75,13 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 			}
 		};
 		timer.start();
+		this.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 1) {
+				boolean currentMax = maximized;
+				BleedViewController.getInstance().minimizeAll();
+				maximize(!currentMax);
+			}
+		});
 	}
 
 	@Override
@@ -79,6 +101,9 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 		AnchorPane.setTopAnchor(vuMeter, .0);
 		AnchorPane.setLeftAnchor(vuMeter, .0);
 		AnchorPane.setRightAnchor(vuMeter, .0);
+		chart.getData().add(series1);
+		chart.getData().add(series2);
+		maximize(false);
 	}
 
 	public void setChannel(Channel channel) {
@@ -97,6 +122,20 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 	}
 
 	private void update() {
+		series1.getData().clear();
+		series2.getData().clear();
+		ArrayList<Data<Number, Number>> toDo1 = new ArrayList<>();
+		float[] newData1 = Arrays.copyOf(analyzer.getNewData1(), analyzer.getNewData1().length);
+		for (int i = 0; i < ASIOController.getInstance().getBufferSize(); i++) {
+			toDo1.add(new Data<>(i, newData1[newData1.length - ASIOController.getInstance().getBufferSize() + i]));
+		}
+		series1.getData().addAll(toDo1);
+		float[] newData2 = Arrays.copyOf(analyzer.getNewData2(), analyzer.getNewData2().length);
+		ArrayList<Data<Number, Number>> toDo2 = new ArrayList<>();
+		for (int i = 0; i < ASIOController.getInstance().getBufferSize(); i++) {
+			toDo2.add(new Data<>(i, newData2[newData2.length - ASIOController.getInstance().getBufferSize() + i]));
+		}
+		series2.getData().addAll(toDo2);
 		updateBleedMonitor(analyzer.getEqual());
 	}
 
@@ -121,5 +160,18 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 	@Override
 	public void setParentPausable(Pausable parent) {
 		this.parent = parent;
+	}
+
+	public void maximize(boolean value) {
+		maximized = value;
+		if (maximized) {
+			HBox.setHgrow(this, Priority.ALWAYS);
+			if (!root.getChildren().contains(chart)) {
+				root.getChildren().add(chart);
+			}
+		} else {
+			HBox.setHgrow(this, Priority.NEVER);
+			root.getChildren().remove(chart);
+		}
 	}
 }
