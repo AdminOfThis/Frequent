@@ -149,9 +149,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		Main.getInstance().setProgress(0.55);
 		initPhaseMonitor();
 		Main.getInstance().setProgress(0.6);
-		if (Main.isDebug()) {
-			initBleedView();
-		}
+		initBleedView();
 		Main.getInstance().setProgress(0.8);
 		initGroups();
 		Main.getInstance().setProgress(0.85);
@@ -353,12 +351,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		bindCheckMenuToToggleButton(menuGroupsView, toggleGroupsView);
 		bindCheckMenuToToggleButton(menuDrumView, toggleDrumView);
 		bindCheckMenuToToggleButton(menuPhaseView, togglePhaseView);
-		if (Main.isDebug()) {
-			bindCheckMenuToToggleButton(menuBleedView, toggleBleedView);
-		} else {
-			menuBleedView.setDisable(true);
-			toggleBleedView.setDisable(true);
-		}
+		bindCheckMenuToToggleButton(menuBleedView, toggleBleedView);
 		menuTimerStart.setOnAction(e -> TimeKeeperController.getInstance().toggleTimer());
 		menuTimerNext.setOnAction(e -> TimeKeeperController.getInstance().round());
 		menuTimerStart.disableProperty().bind(TimeKeeperController.getInstance().getStartButton().disabledProperty());
