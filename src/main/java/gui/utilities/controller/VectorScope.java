@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import control.ChannelListener;
 import data.Channel;
+import data.Input;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
@@ -123,12 +124,12 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	@Override
-	public void levelChanged(final double level, long time) {
+	public void levelChanged(final Input input, final double level, final long time) {
 		// do nothing, don't care
 	}
 
 	@Override
-	public void newBuffer(final float[] buffer, final long position) {
+	public void newBuffer(final Channel channel, final float[] buffer, final long position) {
 		if (!isPaused()) {
 			try {
 				if (!map1.containsKey(position)) {

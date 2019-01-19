@@ -1,6 +1,8 @@
 package control;
 
+import data.Channel;
+
 public interface ChannelListener extends InputListener {
 
-	public void newBuffer(float[] buffer, long time);
+	public void newBuffer(Channel channel, float[] buffer, long time);
 }

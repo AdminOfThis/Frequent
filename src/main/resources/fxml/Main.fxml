@@ -29,119 +29,142 @@
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <MenuBar>
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                        <MenuItem mnemonicParsing="false" onAction="#open" text="Open">
-                           <accelerator>
-                              <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator>
-                        </MenuItem>
-                        <MenuItem fx:id="menuSave" mnemonicParsing="false" onAction="#save" text="Save" />
-                        <Menu mnemonicParsing="false" text="Save ...">
-                          <items>
-                            <MenuItem mnemonicParsing="false" onAction="#saveCues" text="Cues" />
-                              <MenuItem mnemonicParsing="false" onAction="#saveChannels" text="Channels" />
-                          </items>
-                        </Menu>
-                        <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As">
-                           <accelerator>
-                              <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
-                           </accelerator>
-                        </MenuItem>
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                    <MenuItem fx:id="closeMenu" mnemonicParsing="false" text="Quit" />
-                  </items>
-                </Menu>
-                  <Menu mnemonicParsing="false" text="View">
-                    <items>
+            <HBox alignment="BOTTOM_CENTER" style="-fx-padding: 0;" styleClass="menu-bar">
+               <children>
+                  <MenuBar>
+                    <menus>
+                      <Menu mnemonicParsing="false" text="File">
+                        <items>
+                              <MenuItem mnemonicParsing="false" onAction="#open" text="Open">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                                 </accelerator>
+                              </MenuItem>
+                              <MenuItem fx:id="menuSave" mnemonicParsing="false" onAction="#save" text="Save" />
+                              <Menu mnemonicParsing="false" text="Save ...">
+                                <items>
+                                  <MenuItem mnemonicParsing="false" onAction="#saveCues" text="Cues" />
+                                    <MenuItem mnemonicParsing="false" onAction="#saveChannels" text="Channels" />
+                                </items>
+                              </Menu>
+                              <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                                 </accelerator>
+                              </MenuItem>
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                          <MenuItem fx:id="closeMenu" mnemonicParsing="false" text="Quit" />
+                        </items>
+                      </Menu>
                         <Menu mnemonicParsing="false" text="View">
                           <items>
-							  <CheckMenuItem fx:id="menuSpectrumView" mnemonicParsing="false" text="Spectrum">
+                              <Menu mnemonicParsing="false" text="View">
+                                <items>
+      							  <CheckMenuItem fx:id="menuSpectrumView" mnemonicParsing="false" text="Spectrum">
+                                       <accelerator>
+                                          <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                       </accelerator>
+                                    </CheckMenuItem>
+                                    <CheckMenuItem fx:id="menuRTAView" mnemonicParsing="false" text="RTA">
+                                       <accelerator>
+                                          <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                       </accelerator>
+                                    </CheckMenuItem>
+                                    <CheckMenuItem fx:id="menuDrumView" mnemonicParsing="false" text="Drum">
+                                       <accelerator>
+                                          <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                       </accelerator>
+                                    </CheckMenuItem>
+                                    <CheckMenuItem fx:id="menuGroupsView" mnemonicParsing="false" text="Groups">
+                                       <accelerator>
+                                          <KeyCodeCombination alt="UP" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                       </accelerator>
+                                    </CheckMenuItem>
+                                    <CheckMenuItem fx:id="menuPhaseView" mnemonicParsing="false" text="Phase">
+                                       <accelerator>
+                                          <KeyCodeCombination alt="UP" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                       </accelerator>
+                                    </CheckMenuItem>
+                                    <CheckMenuItem fx:id="menuBleedView" mnemonicParsing="false" text="Bleed">
+                                       <accelerator>
+                                          <KeyCodeCombination alt="UP" code="DIGIT6" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                       </accelerator>
+                                    </CheckMenuItem>
+                                </items>
+                              </Menu>
+                              <CheckMenuItem fx:id="menuShowChannels" mnemonicParsing="false" text="Show ChannelList">
                                  <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                    <KeyCodeCombination alt="UP" code="DIGIT1" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                                  </accelerator>
                               </CheckMenuItem>
-                              <CheckMenuItem fx:id="menuRTAView" mnemonicParsing="false" text="RTA">
+                              <CheckMenuItem fx:id="menuShowCue" mnemonicParsing="false" text="Show CueList">
                                  <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                 </accelerator>
-                              </CheckMenuItem>
-                              <CheckMenuItem fx:id="menuDrumView" mnemonicParsing="false" text="Drum">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                 </accelerator>
-                              </CheckMenuItem>
-                              <CheckMenuItem fx:id="menuGroupsView" mnemonicParsing="false" text="Groups">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                 </accelerator>
-                              </CheckMenuItem>
-                              <CheckMenuItem fx:id="menuPhaseView" mnemonicParsing="false" text="Phase">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                                    <KeyCodeCombination alt="UP" code="DIGIT2" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                                  </accelerator>
                               </CheckMenuItem>
                           </items>
                         </Menu>
-                        <CheckMenuItem fx:id="menuShowChannels" mnemonicParsing="false" text="Show ChannelList">
-                           <accelerator>
-                              <KeyCodeCombination alt="UP" code="DIGIT1" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator>
-                        </CheckMenuItem>
-                        <CheckMenuItem fx:id="menuShowCue" mnemonicParsing="false" text="Show CueList">
-                           <accelerator>
-                              <KeyCodeCombination alt="UP" code="DIGIT2" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator>
-                        </CheckMenuItem>
-                    </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Timer">
-                    <items>
-                      <MenuItem fx:id="menuTimerStart" mnemonicParsing="false" text="Start/Stop">
-                           <accelerator>
-                              <KeyCodeCombination alt="UP" code="ENTER" control="ANY" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator>
-                        </MenuItem>
-                        <MenuItem fx:id="menuTimerNext" mnemonicParsing="false" text="Next">
-                           <accelerator>
-                              <KeyCodeCombination alt="UP" code="SPACE" control="ANY" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator>
-                        </MenuItem>
-                    </items>
-                  </Menu>
-              </menus>
-            </MenuBar>
-            <HBox alignment="CENTER_LEFT" spacing="5.0">
-               <children>
-                  <ToggleButton fx:id="toggleChannels" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Channels">
-                     <tooltip>
-                        <Tooltip text="Shows/hides the channellist" />
-                     </tooltip></ToggleButton>
-                  <ToggleButton fx:id="toggleCue" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" text="Cues">
-                     <tooltip>
-                        <Tooltip text="Shows/hides the cue manager" />
-                     </tooltip></ToggleButton>
-                  <Separator orientation="VERTICAL" />
+                        <Menu mnemonicParsing="false" text="Timer">
+                          <items>
+                            <MenuItem fx:id="menuTimerStart" mnemonicParsing="false" text="Start/Stop">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="ENTER" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                                 </accelerator>
+                              </MenuItem>
+                              <MenuItem fx:id="menuTimerNext" mnemonicParsing="false" text="Next">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="SPACE" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                                 </accelerator>
+                              </MenuItem>
+                          </items>
+                        </Menu>
+                    </menus>
+                  </MenuBar>
                   <Pane HBox.hgrow="SOMETIMES" />
-                  <HBox fx:id="buttonBox" alignment="CENTER_RIGHT" spacing="5.0" HBox.hgrow="ALWAYS" />
-                  <Separator orientation="VERTICAL" />
-                  <ToggleButton fx:id="toggleFFTView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Spectrum">
-                     <toggleGroup>
-                        <ToggleGroup fx:id="viewGroup" />
-                     </toggleGroup></ToggleButton>
-                  <ToggleButton fx:id="toggleRTAView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="RTA" toggleGroup="$viewGroup" />
-                  <ToggleButton fx:id="toggleDrumView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Drum" toggleGroup="$viewGroup" />
-                  <ToggleButton fx:id="toggleGroupsView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Groups" toggleGroup="$viewGroup" />
-                  <ToggleButton fx:id="togglePhaseView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Phase" toggleGroup="$viewGroup" />
+                  <HBox>
+                     <children>
+                        <ToggleButton fx:id="toggleChannels" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Channels">
+                           <tooltip>
+                              <Tooltip text="Shows/hides the channellist" />
+                           </tooltip>
+                        </ToggleButton>
+                        <ToggleButton fx:id="toggleCue" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" text="Cues">
+                           <tooltip>
+                              <Tooltip text="Shows/hides the cue manager" />
+                           </tooltip>
+                        </ToggleButton>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </HBox>
+                  <Pane HBox.hgrow="SOMETIMES" />
+                  <HBox alignment="BOTTOM_CENTER">
+                     <children>
+                        <ToggleButton fx:id="toggleFFTView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Spectrum">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="viewGroup" />
+                           </toggleGroup>
+                        </ToggleButton>
+                        <ToggleButton fx:id="toggleRTAView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="RTA" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleDrumView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Drum" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleGroupsView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Groups" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="togglePhaseView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Phase" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleBleedView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Bleed" toggleGroup="$viewGroup" />
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </HBox>
                </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" maxHeight="25.0" minHeight="25.0" prefHeight="25.0" spacing="5.0">
                <VBox.margin>
                   <Insets />
                </VBox.margin>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
+               <children>
+                  <HBox fx:id="buttonBox" alignment="TOP_RIGHT" HBox.hgrow="ALWAYS" />
+               </children>
             </HBox>
          </children>
       </VBox>
@@ -216,11 +239,11 @@
    <left>
       <VBox>
          <children>
-            <SplitPane fx:id="channelPane" dividerPositions="0.8" orientation="VERTICAL" VBox.vgrow="ALWAYS">
+            <SplitPane fx:id="channelPane" dividerPositions="0.8" orientation="VERTICAL" style="-fx-padding: 0;" VBox.vgrow="ALWAYS">
                <items>
-                  <VBox spacing="5.0">
+                  <VBox>
                      <children>
-                        <HBox spacing="5.0">
+                        <HBox>
                            <children>
                               <ToggleButton fx:id="toggleWaveForm" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Wave">
                                  <tooltip>
@@ -231,6 +254,9 @@
                                     <Tooltip text="Groups the channels by groups if selected" />
                                  </tooltip></ToggleButton>
                            </children>
+                           <VBox.margin>
+                              <Insets bottom="-1.0" top="-1.0" />
+                           </VBox.margin>
                         </HBox>
                         <ListView fx:id="channelList" VBox.vgrow="ALWAYS" />
                      </children>
@@ -239,9 +265,9 @@
                </items>
             </SplitPane>
          </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
+         <BorderPane.margin>
+            <Insets top="-25.0" />
+         </BorderPane.margin>
       </VBox>
    </left>
 </BorderPane>

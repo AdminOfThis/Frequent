@@ -76,7 +76,7 @@ public abstract class Input implements Serializable {
 		synchronized (listeners) {
 			for (InputListener obs : listeners) {
 				try {
-					obs.levelChanged(level, time);
+					obs.levelChanged(this, level, time);
 				}
 				catch (Exception e) {
 					LOG.warn("Unable to notify Level Listener", e);

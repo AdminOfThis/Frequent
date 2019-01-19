@@ -76,9 +76,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private static final String				RTA_PATH			= "/fxml/FFTView.fxml";
 	private static final String				TIMEKEEPER_PATH		= "/fxml/TimeKeeper.fxml";
 	private static final String				GROUP_PATH			= "/fxml/GroupView.fxml";
-	// private static final String BACKGROUND_PATH = "/fxml/Background.fxml";
 	private static final String				DRUM_PATH			= "/fxml/DrumView.fxml";
 	private static final String				PHASE_PATH			= "/fxml/VectorScopeView.fxml";
+	private static final String				BLEED_PATH			= "/fxml/BleedView.fxml";
 	private static final Logger				LOG					= Logger.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
@@ -92,9 +92,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
 	@FXML
-	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView;
+	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView, toggleBleedView;
 	@FXML
-	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView;
+	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView, menuBleedView;
 	@FXML
 	private ToggleButton					toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
 	@FXML
@@ -133,24 +133,28 @@ public class MainController implements Initializable, Pausable, CueListener {
 		instance = this;
 		setStatus("Loading GUI", -1);
 		root.setStyle(Main.getStyle());
-		Main.getInstance().setProgress(0.45);
+		Main.getInstance().setProgress(0.3);
 		initWaveForm();
-		Main.getInstance().setProgress(0.5);
+		Main.getInstance().setProgress(0.35);
 		initTimekeeper();
 		initMenu();
 		initChannelList();
-		Main.getInstance().setProgress(0.55);
+		Main.getInstance().setProgress(0.4);
 		initFullScreen();
 		initChart();
-		Main.getInstance().setProgress(0.6);
+		Main.getInstance().setProgress(0.45);
 		initRTA();
-		Main.getInstance().setProgress(0.65);
+		Main.getInstance().setProgress(0.5);
 		initDrumMonitor();
-		Main.getInstance().setProgress(0.7);
+		Main.getInstance().setProgress(0.55);
 		initPhaseMonitor();
-		Main.getInstance().setProgress(0.75);
-		initGroups();
+		Main.getInstance().setProgress(0.6);
+		if (Main.isDebug()) {
+			initBleedView();
+		}
 		Main.getInstance().setProgress(0.8);
+		initGroups();
+		Main.getInstance().setProgress(0.85);
 		initListener();
 		Main.getInstance().setProgress(0.9);
 		resetStatus();
@@ -349,6 +353,12 @@ public class MainController implements Initializable, Pausable, CueListener {
 		bindCheckMenuToToggleButton(menuGroupsView, toggleGroupsView);
 		bindCheckMenuToToggleButton(menuDrumView, toggleDrumView);
 		bindCheckMenuToToggleButton(menuPhaseView, togglePhaseView);
+		if (Main.isDebug()) {
+			bindCheckMenuToToggleButton(menuBleedView, toggleBleedView);
+		} else {
+			menuBleedView.setDisable(true);
+			toggleBleedView.setDisable(true);
+		}
 		menuTimerStart.setOnAction(e -> TimeKeeperController.getInstance().toggleTimer());
 		menuTimerNext.setOnAction(e -> TimeKeeperController.getInstance().round());
 		menuTimerStart.disableProperty().bind(TimeKeeperController.getInstance().getStartButton().disabledProperty());
@@ -359,6 +369,16 @@ public class MainController implements Initializable, Pausable, CueListener {
 		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
 		// Close Button
 		closeMenu.setOnAction(e -> Main.close());
+	}
+
+	private void initBleedView() {
+		Parent p = FXMLUtil.loadFXML(BLEED_PATH);
+		if (p != null) {
+			contentMap.put(toggleBleedView, p);
+			controllerMap.put(p, (PausableView) FXMLUtil.getController());
+		} else {
+			LOG.warn("Unable to load Bleed View");
+		}
 	}
 
 	private void initPhaseMonitor() {

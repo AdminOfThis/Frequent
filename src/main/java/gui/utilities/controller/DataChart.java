@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import control.ChannelListener;
 import data.Channel;
+import data.Input;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.utilities.FXMLUtil;
@@ -110,12 +111,12 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 	}
 
 	@Override
-	public void levelChanged(double level, long time) {
+	public void levelChanged(final Input input, final double level, final long time) {
 		// do nothing
 	}
 
 	@Override
-	public void newBuffer(float[] buffer, long time) {
+	public void newBuffer(final Channel channel, final float[] buffer, final long time) {
 		synchronized (pendingData) {
 			pendingData.clear();
 			for (float buf : buffer) {

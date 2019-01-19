@@ -131,7 +131,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	}
 
 	@Override
-	public void levelChanged(final double level, long time) {
+	public void levelChanged(final Input input, final double level, final long time) {
 		double value = Channel.percentToDB(level);
 		if (value < Constants.FFT_MIN) {
 			value = Constants.FFT_MIN;

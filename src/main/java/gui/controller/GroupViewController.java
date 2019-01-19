@@ -214,7 +214,7 @@ public class GroupViewController implements Initializable, PausableView {
 				pendingMap.get(group).clear();
 			}
 		}
-		group.addListener((level, time) -> {
+		group.addListener((input, level, time) -> {
 			synchronized (pendingMap.get(group)) {
 				pendingMap.get(group).put(time, level);
 			}

@@ -37,9 +37,7 @@ public class Main extends Application {
 	private static String		color_base		= "#1A1A1A";
 	private static String		color_focus		= "#7DFF2F";
 	private static String		style			= "";
-
 	private static Logger		LOG				= Logger.getLogger(Main.class);
-
 	private static final String	POM_TITLE		= "Frequent";
 	private static final String	VERSION_KEY		= "Implementation-Version";
 	private static final String	TITLE_KEY		= "Implementation-Title";
@@ -50,11 +48,9 @@ public class Main extends Application {
 	private static boolean		debug			= false, fast = false;
 	private static String		version, title;
 	private static Main			instance;
-
 	private Scene				loginScene;
 	private Scene				mainScene;
 	private IOChooserController	loginController;
-
 
 	/**
 	 * stops all running threads and terminates the gui
@@ -66,9 +62,7 @@ public class Main extends Application {
 				LOG.info("Unsaved changes found");
 				ConfirmationDialog dialog = new ConfirmationDialog("Save changes before exit?", true);
 				Optional<ButtonType> result = dialog.showAndWait();
-				if (!result.isPresent()) {
-					return false;
-				}
+				if (!result.isPresent()) { return false; }
 				if (result.get() == ButtonType.YES) {
 					boolean saveResult = MainController.getInstance().save(new ActionEvent());
 					if (!saveResult) {
@@ -81,7 +75,6 @@ public class Main extends Application {
 					LOG.info("Cancelled closing of program");
 					return false;
 				}
-
 			}
 		}
 		LOG.info("Stopping GUI");
@@ -119,11 +112,13 @@ public class Main extends Application {
 						// check that this is your manifest and do what you need
 						// or get the next one
 						return manifest.getMainAttributes().getValue(key);
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					LOG.warn(e);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to read version from manifest");
 			LOG.debug("", e);
 		}
@@ -135,9 +130,7 @@ public class Main extends Application {
 	}
 
 	public static String getOnlyTitle() {
-		if (title == null || title.isEmpty()) {
-			return "";
-		}
+		if (title == null || title.isEmpty()) { return ""; }
 		return title.substring(0, 1).toUpperCase() + title.substring(1).toLowerCase();
 	}
 
@@ -160,7 +153,8 @@ public class Main extends Application {
 		try {
 			PropertyConfigurator.configure(LOG_CONFIG_FILE);
 			LOG = Logger.getLogger(Main.class);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.fatal("Unexpected error while initializing logging", e);
 		}
 	}
@@ -184,8 +178,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * checks the start parameters for keywords and sets the debug flag to true
-	 * if found
+	 * checks the start parameters for keywords and sets the debug flag to true if found
 	 *
 	 * @param args
 	 */
@@ -205,7 +198,6 @@ public class Main extends Application {
 			} else if (arg.toLowerCase().startsWith("-focus-color=")) {
 				color_focus = arg.replace("-focus-color=", "");
 			} else if (arg.toLowerCase().startsWith("-style=")) {
-
 				LOG.info("Loading custom style");
 				try {
 					style = arg.substring(arg.indexOf("=") + 1);
@@ -233,7 +225,8 @@ public class Main extends Application {
 						a = args[index];
 					}
 					LOG.info("Loaded style as: " + style);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					LOG.warn("Unable to load style from commandline");
 					LOG.debug("", e);
 				}
@@ -245,16 +238,15 @@ public class Main extends Application {
 		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
 	}
 
-
 	@Override
 	public void init() throws Exception {
 		super.init();
 		instance = this;
-		notifyPreloader(new Preloader.ProgressNotification(0.25));
+		notifyPreloader(new Preloader.ProgressNotification(0.1));
 		Parent parent = FXMLUtil.loadFXML(GUI_IO_CHOOSER);
 		loginController = (IOChooserController) FXMLUtil.getController();
 		loginScene = new Scene(parent);
-		notifyPreloader(new Preloader.ProgressNotification(0.4));
+		notifyPreloader(new Preloader.ProgressNotification(0.2));
 		mainScene = loadMain();
 		loginController.setMainScene(mainScene);
 		notifyPreloader(new Preloader.ProgressNotification(0.95));
@@ -272,7 +264,8 @@ public class Main extends Application {
 			// }
 			LOG.info("Main Window loaded");
 			return new Scene(p);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			LOG.error("Unable to load Main GUI", e);
 			Main.close();
 		}
@@ -282,8 +275,8 @@ public class Main extends Application {
 	public void setProgress(final double prog) {
 		try {
 			notifyPreloader(new Preloader.ProgressNotification(prog));
-		} catch (Exception e) {
 		}
+		catch (Exception e) {}
 	}
 
 	@Override
@@ -300,7 +293,8 @@ public class Main extends Application {
 		primaryStage.setResizable(false);
 		try {
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO)));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("Unable to load logo");
 			LOG.debug("", e);
 		}

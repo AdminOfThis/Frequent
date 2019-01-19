@@ -1,6 +1,8 @@
 package control;
 
+import data.Input;
+
 public interface InputListener {
 
-	public void levelChanged(double level, long time);
+	public void levelChanged(final Input input, final double level, final long time);
 }
