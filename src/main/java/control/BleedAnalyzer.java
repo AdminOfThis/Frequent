@@ -133,7 +133,7 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 
 	@Override
 	public boolean isPaused() {
-		return pause || (parent != null && parent.isPaused()) || primaryChannel == null || secondaryChannel == null;
+		return pause || (parent != null && parent.isPaused()) || primaryChannel == null || secondaryChannel == null || Objects.equals(primaryChannel, secondaryChannel);
 	}
 
 	@Override
@@ -171,6 +171,14 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 
 	public double getEqual() {
 		return equal;
+	}
+
+	public float[] getNewData1() {
+		return newData1;
+	}
+
+	public float[] getNewData2() {
+		return newData2;
 	}
 
 	@Override

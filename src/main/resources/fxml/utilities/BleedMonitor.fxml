@@ -1,24 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox alignment="CENTER" spacing="5.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-border-width: 0.1em; -fx-border-color: derive(-fx-base, 50%);" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox alignment="CENTER" prefHeight="400.0" VBox.vgrow="ALWAYS">
+      <HBox fx:id="root" alignment="CENTER" prefHeight="400.0" VBox.vgrow="ALWAYS">
          <children>
-            <AnchorPane fx:id="vuPane" prefWidth="50.0" />
-            <VBox fx:id="bleedTopPane" alignment="BOTTOM_CENTER" prefWidth="20.0" styleClass="vuMeter-background" stylesheets="@../../css/style.css">
+            <AnchorPane fx:id="vuPane" minWidth="30.0" HBox.hgrow="SOMETIMES" />
+            <VBox fx:id="bleedTopPane" alignment="BOTTOM_CENTER" minWidth="20.0" styleClass="vuMeter-background" stylesheets="@../../css/style.css">
                <children>
                   <Pane fx:id="bleedPane" prefHeight="50.0" style="-fx-background-color: #992200;" />
                </children>
             </VBox>
+            <LineChart fx:id="chart" animated="false" createSymbols="false" legendVisible="false" HBox.hgrow="ALWAYS">
+              <xAxis>
+                <NumberAxis animated="false" autoRanging="false" maxHeight="0.0" minHeight="0.0" opacity="0.0" prefHeight="0.0" side="BOTTOM" tickUnit="500.0" upperBound="1024.0" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis animated="false" autoRanging="false" lowerBound="-1.0" opacity="0.0" prefWidth="0.0" side="LEFT" tickUnit="0.25" upperBound="1.0" />
+              </yAxis>
+            </LineChart>
          </children>
       </HBox>
       <ComboBox fx:id="combo" prefWidth="100.0" />
    </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
 </VBox>

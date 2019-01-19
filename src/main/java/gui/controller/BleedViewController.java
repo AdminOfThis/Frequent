@@ -26,20 +26,26 @@ import javafx.scene.layout.Priority;
 
 public class BleedViewController implements Initializable, PausableView {
 
-	private static final Logger	LOG		= Logger.getLogger(BleedViewController.class);
-	private boolean				pause	= true;
+	private static final Logger			LOG		= Logger.getLogger(BleedViewController.class);
+	private boolean						pause	= true;
 	@FXML
-	private HBox				topBox;
+	private HBox						topBox;
 	@FXML
-	private AnchorPane			primaryVuPane;
+	private AnchorPane					primaryVuPane;
 	@FXML
-	private HBox				content;
+	private HBox						content;
 	@FXML
-	private ComboBox<Channel>	primaryCombo;
-	private VuMeterMono			primaryMeter;
+	private ComboBox<Channel>			primaryCombo;
+	private VuMeterMono					primaryMeter;
+	private static BleedViewController	instance;
+
+	public static BleedViewController getInstance() {
+		return instance;
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		instance = this;
 		LOG.info("Initializing BleedView");
 		primaryMeter = new VuMeterMono(null, Orientation.VERTICAL);
 		primaryMeter.setTitle("Primary");
@@ -54,6 +60,11 @@ public class BleedViewController implements Initializable, PausableView {
 		primaryCombo.setConverter(Constants.CHANNEL_CONVERTER);
 		primaryCombo.valueProperty().addListener(e -> {
 			primaryMeter.setChannel(primaryCombo.getValue());
+			for (Node n : content.getChildren()) {
+				if (n instanceof BleedMonitor) {
+					((BleedMonitor) n).setPrimaryChannel(primaryCombo.getValue());
+				}
+			}
 		});
 		new AutoCompleteComboBoxListener<>(primaryCombo);
 	}
@@ -97,7 +108,7 @@ public class BleedViewController implements Initializable, PausableView {
 		if (content.getChildren().size() < 5) {
 			BleedMonitor monitor = new BleedMonitor();
 			monitor.setParentPausable(this);
-			HBox.setHgrow(monitor, Priority.SOMETIMES);
+			HBox.setHgrow(monitor, Priority.NEVER);
 			monitor.setPrimaryChannel(primaryCombo.getValue());
 			content.getChildren().add(monitor);
 		}
@@ -105,5 +116,13 @@ public class BleedViewController implements Initializable, PausableView {
 
 	public Channel getPrimary() {
 		return primaryCombo.getValue();
+	}
+
+	public void minimizeAll() {
+		for (Node n : content.getChildren()) {
+			if (n instanceof BleedMonitor) {
+				((BleedMonitor) n).maximize(false);
+			}
+		}
 	}
 }
