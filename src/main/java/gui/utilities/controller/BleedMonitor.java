@@ -139,11 +139,10 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 		updateBleedMonitor(analyzer.getEqual());
 	}
 
-	private void updateBleedMonitor(double percent) {
+	private void updateBleedMonitor(final double percent) {
 		// making sure percent is between 0 and 1
-		percent = Math.min(1.0, percent);
-		percent = Math.max(0.0, percent);
-		bleedPane.setPrefHeight(percent * bleedTopPane.getHeight());
+		double percentCorr = Math.min(1.0, Math.max(0.0, percent));
+		bleedPane.setPrefHeight(percentCorr * bleedTopPane.getHeight());
 	}
 
 	@Override
