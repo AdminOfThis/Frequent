@@ -108,7 +108,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	@FXML
 	private ListView<Input>					channelList;
 	@FXML
-	private CheckMenuItem					menuShowCue, menuShowChannels, menuStartFFT;
+	private CheckMenuItem					menuShowCue, menuShowChannels;
 	@FXML
 	private Label							lblDriver, lblLatency, lblCurrentSong, lblNextSong;
 	@FXML

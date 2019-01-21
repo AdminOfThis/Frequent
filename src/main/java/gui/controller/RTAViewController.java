@@ -29,7 +29,6 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
@@ -41,8 +40,6 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	private static final int		X_MIN		= 25;
 	private static final int		X_MAX		= 20000;
 	@FXML
-	private BorderPane				root;
-	@FXML
 	private HBox					chartPane;
 	@FXML
 	private ToggleButton			toggleSlowCurve, toggleVPad;
@@ -51,7 +48,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	@FXML
 	private XYChart<Number, Number>	chart;
 	@FXML
-	private HBox					topPane, topRight, topLeft;
+	private HBox					topRight, topLeft;
 	private VuMeterMono				meter;
 	private boolean					pause		= true;
 	private Series<Number, Number>	series		= new Series<>();
@@ -191,7 +188,6 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	}
 
 	private void updateChart(final double[][] map) {
-
 		ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
 		for (int count = 0; count < map[0].length; count++) {
 			double frequency = map[0][count];
@@ -217,6 +213,5 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 			}
 		}
 		series.getData().setAll(dataList);
-
 	}
 }

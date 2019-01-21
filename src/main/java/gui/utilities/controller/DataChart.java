@@ -23,14 +23,11 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 
 public class DataChart extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
 	private static final Logger			LOG			= Logger.getLogger(WaveFormChart.class);
 	private static final String			FXML		= "/fxml/utilities/DataChart.fxml";
-	@FXML
-	private BorderPane					root;
 	@FXML
 	private LineChart<Number, Number>	chart;
 	private Series<Number, Number>		series		= new Series<>();

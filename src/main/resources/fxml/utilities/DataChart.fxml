@@ -5,7 +5,7 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="root" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="200.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="200.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <LineChart fx:id="chart" alternativeRowFillVisible="false" animated="false" createSymbols="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" legendVisible="false" minHeight="0.0" minWidth="0.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false" BorderPane.alignment="CENTER">
         <xAxis>

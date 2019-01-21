@@ -7,8 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
-
 import control.FFTListener;
 import data.Input;
 import gui.pausable.PausableView;
@@ -27,7 +25,6 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 public class FFTViewController implements Initializable, FFTListener, PausableView {
 
-	private static final Logger	LOG			= Logger.getLogger(FFTViewController.class);
 	@FXML
 	private ScrollPane			canvasParent;
 	private boolean				pause		= true;

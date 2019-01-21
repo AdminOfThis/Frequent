@@ -14,7 +14,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import main.Main;
@@ -29,8 +28,6 @@ public class PreLoader extends Preloader implements Initializable {
 	private ProgressBar			progress;
 	@FXML
 	private Label				status;
-	@FXML
-	private BorderPane			root;
 	@FXML
 	private Label				title, version;
 
@@ -47,7 +44,8 @@ public class PreLoader extends Preloader implements Initializable {
 		stage = primaryStage;
 		try {
 			stage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO_SMALL)));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.error("Unable to load logo", e);
 		}
 		stage.initStyle(StageStyle.UNDECORATED);
