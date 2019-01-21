@@ -112,6 +112,7 @@ public class BleedViewController implements Initializable, PausableView {
 			monitor.setPrimaryChannel(primaryCombo.getValue());
 			content.getChildren().add(monitor);
 		}
+		e.consume();
 	}
 
 	public Channel getPrimary() {

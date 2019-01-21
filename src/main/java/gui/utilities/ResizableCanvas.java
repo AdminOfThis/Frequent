@@ -33,7 +33,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 	private static final WritablePixelFormat<IntBuffer>	PIXEL_FORMAT	= PixelFormat.getIntArgbPreInstance();
 	private int											count			= 0;
 	private GraphicsContext								content;
-	private ScrollPane									parent;
 	private boolean										pause			= true;
 	private boolean										exporting		= false;
 	private Pausable									pausableParent;
@@ -50,7 +49,6 @@ public class ResizableCanvas extends Canvas implements PausableComponent {
 
 	public ResizableCanvas(final ScrollPane parent) {
 		this();
-		this.parent = parent;
 		widthProperty().bind(parent.widthProperty());
 		widthProperty().addListener(e -> reset());
 		setHeight(10.0);

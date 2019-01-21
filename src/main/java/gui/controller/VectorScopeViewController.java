@@ -36,8 +36,6 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	@FXML
 	private HBox				box1, box2;
 	@FXML
-	private HBox				paneParent;
-	@FXML
 	private HBox				bottomPane;
 	@FXML
 	private Slider				decaySlider;
@@ -145,12 +143,9 @@ public class VectorScopeViewController implements Initializable, PausableView {
 					cmbChannel2.setValue(((Channel) i).getStereoChannel());
 				}
 			}
-		} else if (cmbChannel1.getValue() == null && cmbChannel2.getValue() == null
-		        && MainController.getInstance().getSelectedChannels().size() == 2) {
+		} else if (cmbChannel1.getValue() == null && cmbChannel2.getValue() == null && MainController.getInstance().getSelectedChannels().size() == 2) {
 			for (Input i : MainController.getInstance().getSelectedChannels()) {
-				if (i instanceof Group) {
-					return;
-				}
+				if (i instanceof Group) { return; }
 			}
 			cmbChannel1.setValue((Channel) MainController.getInstance().getSelectedChannels().get(0));
 			cmbChannel2.setValue((Channel) MainController.getInstance().getSelectedChannels().get(1));
