@@ -38,7 +38,9 @@ public class BPMDetect {
 			if ((samples[i] - samples[i - 1]) / max > rampRequired) {
 				if (i - lastBeat < rampSeperation) {
 					continue;
-				} else lastBeat = i;
+				} else {
+					lastBeat = i;
+				}
 				flags.add(i - 1);
 			}
 		}
@@ -156,8 +158,11 @@ public class BPMDetect {
 		float[] s = new float[samples.length];
 		s[0] = 0;
 		for (int i = 1; i < s.length; i++)
-			if (samples[i] - samples[i - 1] > 0) s[i] = samples[i] - samples[i - 1];
-			else s[i] = 0;
+			if (samples[i] - samples[i - 1] > 0) {
+				s[i] = samples[i] - samples[i - 1];
+			} else {
+				s[i] = 0;
+			}
 		return s;
 	}
 
