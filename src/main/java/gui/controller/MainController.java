@@ -424,9 +424,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 				if (e.getClickCount() == 2) {
 					LOG.info("Swaping WaveForm and DataChart");
 					waveFormPane.getChildren().clear();
-					if (n == dataChart) {
+					if (Objects.equals(n, dataChart)) {
 						waveFormPane.getChildren().add(waveFormChart);
-					} else if (n == waveFormChart) {
+					} else if (Objects.equals(n, waveFormChart)) {
 						waveFormPane.getChildren().add(dataChart);
 					}
 					dataChart.pause(Objects.equals(e.getSource(), dataChart));
