@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import gui.utilities.controller.BleedMonitor;
 import gui.utilities.controller.VuMeterMono;
 import gui.utilities.controller.VuMeterStereo;
 import gui.utilities.controller.WaveFormChart;
@@ -31,11 +32,10 @@ public class UtilitiesTest extends Application {
 	@BeforeAll
 	public static void startApplication() throws Exception {
 		CountDownLatch latch = new CountDownLatch(1);
-
 		try {
 			new Thread(() -> launch()).start();
-
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		latch.await(5, TimeUnit.SECONDS);
@@ -45,7 +45,6 @@ public class UtilitiesTest extends Application {
 	public void sleep() throws InterruptedException {
 		Thread.sleep(500);
 	}
-
 
 	@AfterAll
 	public static void shutdown() throws Exception {
@@ -60,7 +59,6 @@ public class UtilitiesTest extends Application {
 		primaryStage.setHeight(600);
 		primaryStage.show();
 	}
-
 
 	@Test
 	public void meterMonoHorizontal() throws InterruptedException, ExecutionException {
@@ -118,6 +116,12 @@ public class UtilitiesTest extends Application {
 		assertEquals(node, root.getCenter());
 	}
 
+	@Test
+	public void bleedMonitor() throws InterruptedException, ExecutionException {
+		Node node = new BleedMonitor();
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
+	}
 
 	private void setAsRoot(Node node) throws InterruptedException {
 		CountDownLatch latch = new CountDownLatch(1);
@@ -126,7 +130,5 @@ public class UtilitiesTest extends Application {
 			latch.countDown();
 		});
 		latch.await(1000, TimeUnit.SECONDS);
-
 	}
-
 }
