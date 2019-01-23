@@ -9,7 +9,6 @@ import data.DrumTrigger;
 import gui.utilities.AutoCompleteComboBoxListener;
 import gui.utilities.Constants;
 import gui.utilities.FXMLUtil;
-import gui.utilities.controller.WaveFormChart.Style;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -47,7 +46,7 @@ public class DrumTriggerItem extends AnchorPane implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		chart = new WaveFormChart(Style.ABSOLUTE);
+		chart = new WaveFormChart();
 		chart.showTreshold(true);
 		waveFormPane.getChildren().add(chart);
 		AnchorPane.setTopAnchor(chart, .0);
@@ -79,5 +78,4 @@ public class DrumTriggerItem extends AnchorPane implements Initializable {
 			label.setText(trigger.getName());
 		}
 	}
-
 }

@@ -191,8 +191,8 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 					} else {
 						lblPeak.setText("-\u221E");
 					}
-					if (peakdB > -5.0) {
-						if (peakdB >= -2.0) {
+					if (peakdB > Constants.YELLOW) {
+						if (peakdB >= Constants.RED) {
 							vuPeakPane.setStyle("-fx-background-color: red");
 						} else {
 							vuPeakPane.setStyle("-fx-background-color: yellow");

@@ -15,7 +15,6 @@ import gui.utilities.controller.BleedMonitor;
 import gui.utilities.controller.VuMeterMono;
 import gui.utilities.controller.VuMeterStereo;
 import gui.utilities.controller.WaveFormChart;
-import gui.utilities.controller.WaveFormChart.Style;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -96,15 +95,8 @@ public class UtilitiesTest extends Application {
 	}
 
 	@Test
-	public void waveFormChartNormal() throws InterruptedException, ExecutionException {
-		Node node = new WaveFormChart(Style.NORMAL);
-		setAsRoot(node);
-		assertEquals(node, root.getCenter());
-	}
-
-	@Test
-	public void waveFormChartAbsoute() throws InterruptedException, ExecutionException {
-		Node node = new WaveFormChart(Style.ABSOLUTE);
+	public void waveFormChart() throws InterruptedException, ExecutionException {
+		Node node = new WaveFormChart();
 		setAsRoot(node);
 		assertEquals(node, root.getCenter());
 	}
