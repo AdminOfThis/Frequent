@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
 import control.FFTListener;
 import data.Input;
 import gui.pausable.PausableView;
-import gui.utilities.ResizableCanvas;
+import gui.utilities.RTACanvas;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -28,7 +28,7 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	@FXML
 	private ScrollPane			canvasParent;
 	private boolean				pause		= true;
-	private ResizableCanvas		canvas;
+	private RTACanvas			canvas;
 	@FXML
 	private ToggleButton		tglPlay;
 	@FXML
@@ -37,10 +37,9 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		canvas = new ResizableCanvas(canvasParent);
+		canvas = new RTACanvas(canvasParent);
 		canvas.setParentPausable(this);
 		canvasParent.setContent(canvas);
-		canvas.pause(true);
 		AnimationTimer timer = new AnimationTimer() {
 
 			@Override
@@ -68,6 +67,7 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 			synchronized (pendingMap) {
 				pendingMap.add(map);
 			}
+			canvasParent.setVvalue(1.0);
 		}
 	}
 

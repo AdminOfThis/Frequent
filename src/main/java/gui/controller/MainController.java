@@ -28,10 +28,9 @@ import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
 import gui.utilities.FXMLUtil;
+import gui.utilities.WaveFormPane;
 import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.DataChart;
-import gui.utilities.controller.WaveFormChart;
-import gui.utilities.controller.WaveFormChart.Style;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -125,7 +124,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private ASIOController					controller;
 	private TimeKeeperController			timeKeeperController;
 	// private DrumController drumController;
-	private WaveFormChart					waveFormChart;
+	private WaveFormPane					waveFormChart;
 	private DataChart						dataChart;
 
 	@Override
@@ -207,7 +206,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
 		toggleChannels.selectedProperty().addListener(e -> pause(!toggleChannels.isSelected()));
 		toggleWaveForm.selectedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
-			waveFormChart.pause(newValue);
 			if (newValue) {
 				if (!channelPane.getItems().contains(waveFormPane)) {
 					channelPane.getItems().add(waveFormPane);
@@ -228,7 +226,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 				dataChart.setChannel((Channel) newValue);
 			}
 			if (newValue != null) {
-				waveFormChart.setChannel(newValue);
 				LOG.info("Switching to channel " + newValue.getName());
 				for (PausableView v : controllerMap.values()) {
 					v.setSelectedChannel(newValue);
@@ -412,8 +409,10 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	private void initWaveForm() {
 		LOG.debug("Loading WaveForm");
-		waveFormChart = new WaveFormChart(Style.NORMAL);
+		waveFormChart = new WaveFormPane();
+		waveFormChart.setParentPausable(this);
 		dataChart = new DataChart();
+		dataChart.setParentPausable(this);
 		for (PausableComponent n : new PausableComponent[] { dataChart, waveFormChart }) {
 			n.setParentPausable(this);
 			AnchorPane.setTopAnchor((Node) n, .0);

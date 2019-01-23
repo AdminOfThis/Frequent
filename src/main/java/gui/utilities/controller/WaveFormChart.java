@@ -37,10 +37,6 @@ import javafx.scene.layout.BorderPane;
 
 public class WaveFormChart extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
-	public enum Style {
-		NORMAL, ABSOLUTE
-	};
-
 	private static final Logger		LOG			= Logger.getLogger(WaveFormChart.class);
 	private static final String		FXML		= "/fxml/utilities/WaveFormChart.fxml";
 	private static final long		TIME_FRAME	= 3000000000l;
@@ -50,16 +46,13 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	private Series<Number, Number>	series		= new Series<>();
 	private Series<Number, Number>	treshold	= new Series<>();
 	private Input					channel;
-	private boolean					negative	= false;
 	private boolean					pause		= false;
 	private Pausable				pausableParent;
 	private boolean					styleSet	= false;
 	private Map<Long, Double>		pendingMap	= Collections.synchronizedMap(new HashMap<Long, Double>());
-	private Style					style;
 
-	public WaveFormChart(final Style style) {
+	public WaveFormChart() {
 		LOG.debug("Creating new WaveFormChart");
-		this.style = style;
 		Parent p = FXMLUtil.loadFXML(FXML, this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, 0.0);
@@ -95,11 +88,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		}
 		xAxis.setAutoRanging(false);
 		yAxis.setAutoRanging(true);
-		if (style == Style.NORMAL) {
-			initWaveForm(xAxis, yAxis);
-		} else if (style == Style.ABSOLUTE) {
-			initArea(xAxis, yAxis);
-		}
+		initArea(xAxis, yAxis);
 		if (chart instanceof LineChart) {
 			((LineChart<Number, Number>) chart).setCreateSymbols(false);
 		} else if (chart instanceof AreaChart) {
@@ -119,10 +108,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		chart = new NegativeAreaChart(xAxis, yAxis);
 		xAxis.setTickUnit(TIME_FRAME / 10.0);
 		chart.setTitleSide(Side.TOP);
-	}
-
-	private void initWaveForm(final NumberAxis xAxis, final NumberAxis yAxis) {
-		chart = new LineChart<>(xAxis, yAxis);
 	}
 
 	@Override
@@ -201,15 +186,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 				if (channel != null) {
 					value = entry.getValue();
 				}
-				if (style == Style.ABSOLUTE) {
-					value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
-				} else {
-					value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
-					if (negative) {
-						value = -value;
-					}
-				}
-				negative = !negative;
+				value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
 				Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 				dataList.add(newData);
 			}
