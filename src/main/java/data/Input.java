@@ -114,7 +114,7 @@ public abstract class Input implements Serializable {
 		return true;
 	}
 
-	public void setLevel(final float level, long time) {
+	protected void setLevel(final float level, long time) {
 		if (level > 0) {
 			this.level = level;
 			this.time = time;

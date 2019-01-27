@@ -3,10 +3,10 @@ package control;
 import java.io.Serializable;
 import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -29,16 +29,16 @@ import main.Main;
 
 public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
+	public static final int			DESIRED_BUFFER_SIZE	= 1024;
 	private static ASIOController	instance;
-	private static final Logger		LOG				= Logger.getLogger(ASIOController.class);
+	private static final Logger		LOG					= Logger.getLogger(ASIOController.class);
 	private static int				fftBufferSize;
 	private String					driverName;
 	private AsioDriver				asioDriver;
-	private int						bufferSize		= 1024;
+	private int						bufferSize			= 1024;
 	private double					sampleRate;
-	private AsioChannel				activeChannel;
-	private float					lastPeak		= 0, peak = 0, rms = 0;
-	private float					baseFrequency	= -1;
+	private Channel					activeChannel;
+	private float					baseFrequency		= -1;
 	// FFT
 	// private float[] output;
 	private int						bufferCount;
@@ -47,11 +47,13 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private double[][]				fftBuffer;
 	private double[][]				spectrumMap;
 	private List<Channel>			channelList;
-	private List<Group>				groupList		= new ArrayList<>();
-	private List<FFTListener>		fftListeners	= new ArrayList<>();
-	private double[][][]			bufferingBuffer	= new double[2][2][1024];
+	private List<Group>				groupList			= new ArrayList<>();
+	private List<FFTListener>		fftListeners		= new ArrayList<>();
+	private double[][][]			bufferingBuffer		= new double[2][2][1024];
 	private ExecutorService			exe;
 	private long					time;
+	private boolean					isFFTing			= false;
+	private Object					lastCompleteBuffer;;
 
 	public static ASIOController getInstance() {
 		return instance;
@@ -96,6 +98,60 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		LOG.info("ASIO driver started");
 		initFFT();
 		LOG.info("FFT Analysis started");
+	}
+
+	@Override
+	public void bufferSwitch(final long sampleTime, final long samplePosition, final Set<AsioChannel> channels) {
+		time = sampleTime;
+		for (AsioChannel channel : channels) {
+			try {
+				if (channel.isInput() && channel.isActive() && exe != null) {
+					Runnable runnable = () -> {
+						try {
+							float[] output = new float[bufferSize];
+							if (activeChannel != null) {
+								try {
+									channel.read(output);
+								}
+								catch (BufferUnderflowException e1) {
+									LOG.debug("Underflow Exception", e1);
+								}
+								if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
+									if (!Objects.equals(channel.getByteBuffer(), lastCompleteBuffer)) {
+										if (!isFFTing) {
+											isFFTing = true;
+// System.out.println("FFT");
+											lastCompleteBuffer = activeChannel.getBuffer();
+											fftThis(activeChannel.getBuffer());
+											isFFTing = false;
+										}
+									}
+								}
+							}
+							if (channelList != null) {
+								Channel c = null;
+								for (Channel cTemp : channelList) {
+									if (cTemp.getChannel().equals(channel)) {
+										c = cTemp;
+										break;
+									}
+								}
+								if (c != null) {
+									c.setBuffer(output, samplePosition);
+								}
+							}
+						}
+						catch (Exception e2) {
+							e2.printStackTrace();
+						}
+					};
+					exe.submit(runnable);
+				}
+			}
+			catch (ConcurrentModificationException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -162,84 +218,14 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	@Override
-	public void bufferSwitch(final long sampleTime, final long samplePosition, final Set<AsioChannel> channels) {
-		time = sampleTime;
-		for (AsioChannel channel : channels) {
-			try {
-				if (channel.isInput() && channel.isActive()) {
-					Runnable runnable = () -> {
-						try {
-							float[] output = new float[bufferSize];
-							if (activeChannel != null) {
-								try {
-									channel.read(output);
-								}
-								catch (BufferUnderflowException e1) {
-									LOG.debug("Underflow Exception", e1);
-								}
-								if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
-									calculatePeaks(output);
-									fftThis(output);
-								}
-								float max = 0;
-								for (float f : output) {
-									if (f > max) {
-										max = f;
-									}
-								}
-								Channel c = null;
-								for (Channel cTemp : channelList) {
-									if (cTemp.getChannel().equals(channel)) {
-										c = cTemp;
-										break;
-									}
-								}
-								if (c != null) {
-									c.setLevel(max, sampleTime);
-									c.setBuffer(Arrays.copyOf(output, output.length), samplePosition);
-								}
-							}
-						}
-						catch (Exception e2) {
-							e2.printStackTrace();
-						}
-					};
-					if (exe != null) {
-						exe.submit(runnable);
-					}
-				}
-			}
-			catch (ConcurrentModificationException e) {}
-		}
-	}
-
-	private void calculatePeaks(final float[] inputArray) {
-		// float rms = 0f;
-		peak = 0f;
-		for (float sample : inputArray) {
-			float abs = Math.abs(sample);
-			if (abs > peak) {
-				peak = abs;
-			}
-			rms += Math.abs(sample);
-		}
-		rms = rms / inputArray.length;
-		if (lastPeak > peak) {
-			lastPeak = lastPeak * 0.975f;
-		} else {
-			lastPeak = peak;
-		}
-	}
-
-	@Override
 	public void clear() {
 		// do nothing
 		// channelList.clear();
 	}
 
-	private void fftThis(final float[] output) {
+	private synchronized void fftThis(final float[] output) {
 		try {
-			for (int i = 0; i < bufferSize; i++) {
+			for (int i = 0; i < DESIRED_BUFFER_SIZE; i++) {
 				for (int j = 0; j < bufferCount; j++) {
 					fftBuffer[j][index[j]] = output[i];
 				}
@@ -251,9 +237,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 			for (int i = 0; i < bufferCount; i++) {
 				if (index[i] == fftBufferSize) {
 					fftBuffer[i] = applyHannWindow(fftBuffer[i]);
-					// fft.realForward(fftBuffer[i]);
 					fft.forward(fftBuffer[i], false);
-					// double[] fftData = fftAbs(fftBuffer[i]);
 					double[] fftData = fftBuffer[i];
 					int baseFrequencyIndex = getBaseFrequencyIndex(fftData);
 					// int baseFrequencyIndex =
@@ -261,7 +245,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					baseFrequency = getFrequencyForIndex(baseFrequencyIndex, fftData.length, (int) sampleRate) / 2;
 					// System.out.println("Base " + baseFrequency);
 					spectrumMap = getSpectrum(fftData);
-					// controller.updateText(baseFrequency);
 					index[i] = 0;
 				}
 			}
@@ -272,7 +255,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 			}
 			for (FFTListener l : fftListeners) {
 				if (l != null) {
-					Thread t = new Thread(() -> {
+					new Thread(() -> {
 						try {
 							l.newFFT(spectrumMap);
 						}
@@ -280,13 +263,12 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 							LOG.warn("Unable to notify FFTListener");
 							LOG.debug("", e);
 						}
-					});
-					t.start();
+					}).start();
 				}
 			}
 		}
 		catch (Exception e) {
-			LOG.debug("Problem on FFT", e);
+			LOG.info("Problem on FFT", e);
 		}
 	}
 
@@ -344,13 +326,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		return channelList;
 	}
 
-	public float getLastPeak() {
-		return lastPeak;
-	}
-
 	public double getLatency() {
 		if (asioDriver != null) {
-			double inSec = asioDriver.getLatencyInput() / asioDriver.getSampleRate();
+			double inSec = (1.0 / asioDriver.getSampleRate()) * asioDriver.getBufferPreferredSize();
 			return Math.round(inSec * 10000.0) / 10.0;
 		}
 		return 0;
@@ -359,14 +337,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	public int getNoOfInputs() {
 		if (asioDriver != null) return asioDriver.getNumChannelsInput();
 		return -1;
-	}
-
-	public float getPeak() {
-		return peak;
-	}
-
-	public float getRms() {
-		return rms;
 	}
 
 	private double[][] getSpectrum(final double[] spectrum) {
@@ -384,9 +354,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	private void initFFT() {
-		bufferCount = 1;
 		// fftBufferSize = 16384;
-		fftBufferSize = bufferSize;
+		fftBufferSize = DESIRED_BUFFER_SIZE;
+		bufferCount = 1;
 		// fft = new DoubleFFT_1D(fftBufferSize);
 		fft = new DoubleDCT_1D(fftBufferSize);
 		fftBuffer = new double[bufferCount][fftBufferSize];
@@ -477,7 +447,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		}
 	}
 
-	public void setActiveChannel(final AsioChannel channel) {
+	public void setActiveChannel(final Channel channel) {
 		activeChannel = channel;
 	}
 
