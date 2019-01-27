@@ -232,7 +232,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 				}
 				if (newValue instanceof Channel) {
 					Channel channel = (Channel) newValue;
-					controller.setActiveChannel(channel.getChannel());
+					controller.setActiveChannel(channel);
 				}
 			}
 		});

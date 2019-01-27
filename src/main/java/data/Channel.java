@@ -1,10 +1,12 @@
 package data;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 
 import com.synthbot.jasiohost.AsioChannel;
 
+import control.ASIOController;
 import control.ChannelListener;
 import control.InputListener;
 
@@ -16,6 +18,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	private Group					group;
 	private boolean					hide				= false;
 	private float[]					buffer;
+	private float[]					bufferFull			= new float[ASIOController.DESIRED_BUFFER_SIZE];
 	private Channel					stereoChannel;
 
 	public Channel() {
@@ -78,7 +81,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	}
 
 	public float[] getBuffer() {
-		return buffer;
+		return Arrays.copyOf(bufferFull, bufferFull.length);
 	}
 
 	public AsioChannel getChannel() {
@@ -111,14 +114,46 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		}
 	}
 
-	public void setBuffer(final float[] buffer, final long time) {
-		this.buffer = buffer;
+	public void setBuffer(final float[] addition, final long time) {
+		if (buffer == null) {
+			buffer = addition;
+		} else {
+			int newBufferSize = Math.min(ASIOController.DESIRED_BUFFER_SIZE, buffer.length + addition.length);
+			final int lengthBefore = buffer.length;
+			buffer = Arrays.copyOf(buffer, newBufferSize);
+			int count = 0;
+			while (count + lengthBefore < newBufferSize) {
+				buffer[lengthBefore + count] = addition[count];
+				count++;
+			}
+			if (buffer.length >= ASIOController.DESIRED_BUFFER_SIZE) {
+				bufferFull = Arrays.copyOf(buffer, buffer.length);
+				sendFullBuffer(time);
+				buffer = new float[addition.length - count];
+				int tempCount = 0;
+				while (count < addition.length) {
+					buffer[tempCount] = addition[count];
+					tempCount++;
+					count++;
+				}
+			}
+		}
+	}
+
+	public void sendFullBuffer(long time) {
+		float max = 0;
+		for (float f : bufferFull) {
+			if (f > max) {
+				max = f;
+			}
+		}
+		setLevel(max, time);
 		synchronized (getListeners()) {
 			for (InputListener l : getListeners()) {
 				if (l instanceof ChannelListener) {
 					// new Thread(() -> ((ChannelListener)
 					// l).newBuffer(buffer)).start();
-					((ChannelListener) l).newBuffer(this, buffer, time);
+					((ChannelListener) l).newBuffer(this, bufferFull, time);
 				}
 			}
 		}
