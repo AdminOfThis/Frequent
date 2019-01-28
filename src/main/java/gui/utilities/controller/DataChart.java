@@ -26,15 +26,16 @@ import javafx.scene.layout.AnchorPane;
 
 public class DataChart extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
-	private static final Logger			LOG			= Logger.getLogger(WaveFormChart.class);
-	private static final String			FXML		= "/fxml/utilities/DataChart.fxml";
+	private static final Logger			LOG				= Logger.getLogger(WaveFormChart.class);
+	private static final String			FXML			= "/fxml/utilities/DataChart.fxml";
 	@FXML
 	private LineChart<Number, Number>	chart;
-	private Series<Number, Number>		series		= new Series<>();
+	private Series<Number, Number>		series			= new Series<>();
 	private Channel						channel;
-	private List<Float>					pendingData	= Collections.synchronizedList(new ArrayList<>());
+	private List<Float>					pendingData		= Collections.synchronizedList(new ArrayList<>());
 	private Pausable					pausableParent;
-	private boolean						pause		= false;
+	private boolean						pause			= false;
+	private boolean						showSingleWave	= false;
 
 	public DataChart() {
 		LOG.debug("Creating new DataChart");
@@ -64,6 +65,9 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 			synchronized (pendingData) {
 				ArrayList<Data<Number, Number>> adding = new ArrayList<>();
 				for (int i = 0; i < pendingData.size(); i++) {
+					if (showSingleWave && pendingData.get(i) < 0) {
+						break;
+					}
 					adding.add(new Data<Number, Number>(i, pendingData.get(i)));
 				}
 				series.getData().setAll(adding);
@@ -78,6 +82,7 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 					channel.removeListener(this);
 				}
 				series.getData().clear();
+				pendingData.clear();
 				synchronized (pendingData) {
 					pendingData.clear();
 				}
