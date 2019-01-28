@@ -85,6 +85,7 @@ public class WaveFormPane extends ResizableCanvas implements PausableComponent, 
 		if (this.input != null) {
 			this.input.removeListener(this);
 		}
+		getGraphicsContext2D().clearRect(0, 0, getWidth(), getHeight());
 		this.input = channel;
 		if (this.input != null) {
 			this.input.addListener(this);

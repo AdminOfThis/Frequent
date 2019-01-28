@@ -192,18 +192,18 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 	@Override
 	public void newBuffer(Channel channel, float[] buffer, long time) {
 		if (Objects.equals(channel, primaryChannel)) {
-			for (int i = 0; i < newData1.length - ASIOController.getInstance().getBufferSize(); i++) {
-				newData1[i] = newData1[i + ASIOController.getInstance().getBufferSize()];
+			for (int i = 0; i < newData1.length - ASIOController.DESIRED_BUFFER_SIZE; i++) {
+				newData1[i] = newData1[i + ASIOController.DESIRED_BUFFER_SIZE];
 			}
 			for (int i = 0; i < buffer.length; i++) {
-				newData1[newData1.length - ASIOController.getInstance().getBufferSize() + i] = buffer[i];
+				newData1[newData1.length - ASIOController.DESIRED_BUFFER_SIZE + i] = buffer[i];
 			}
 		} else if (Objects.equals(channel, secondaryChannel)) {
-			for (int i = 0; i < newData2.length - ASIOController.getInstance().getBufferSize(); i++) {
-				newData2[i] = newData2[i + ASIOController.getInstance().getBufferSize()];
+			for (int i = 0; i < newData2.length - ASIOController.DESIRED_BUFFER_SIZE; i++) {
+				newData2[i] = newData2[i + ASIOController.DESIRED_BUFFER_SIZE];
 			}
 			for (int i = 0; i < buffer.length; i++) {
-				newData2[newData2.length - ASIOController.getInstance().getBufferSize() + i] = buffer[i];
+				newData2[newData2.length - ASIOController.DESIRED_BUFFER_SIZE + i] = buffer[i];
 			}
 		} else {
 			LOG.warn("Had to remove Channel listener by force");
