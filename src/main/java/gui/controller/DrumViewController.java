@@ -15,9 +15,9 @@ import control.ASIOController;
 import control.bpmdetect.BeatDetector;
 import data.DrumTrigger;
 import data.Input;
+import gui.FXMLUtil;
 import gui.pausable.PausableView;
 import gui.utilities.DrumTriggerListener;
-import gui.utilities.FXMLUtil;
 import gui.utilities.controller.DrumTriggerItem;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
@@ -39,13 +39,10 @@ import javafx.util.StringConverter;
 
 public class DrumViewController implements Initializable, PausableView, DrumTriggerListener {
 
-	private static final Logger									LOG				= Logger
-	        .getLogger(DrumViewController.class);
+	private static final Logger									LOG				= Logger.getLogger(DrumViewController.class);
 	private static final long									DRUM_TIME_FRAME	= 5000000000l;
-
 	@FXML
 	private ScatterChart<Number, Number>						drumChart;
-
 	@FXML
 	private VBox												triggerPane;
 	@FXML
@@ -56,12 +53,9 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 	private Label												lblBPM;
 	@FXML
 	private HBox												bpmBox;
-	private List<DrumTrigger>									triggerList		= Collections
-	        .synchronizedList(new ArrayList<>());
-	private Map<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap		= Collections
-	        .synchronizedMap(new HashMap<>());
-	private Map<DrumTrigger, ArrayList<Data<Number, Number>>>	pendingMap		= Collections
-	        .synchronizedMap(new HashMap<>());
+	private List<DrumTrigger>									triggerList		= Collections.synchronizedList(new ArrayList<>());
+	private Map<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap		= Collections.synchronizedMap(new HashMap<>());
+	private Map<DrumTrigger, ArrayList<Data<Number, Number>>>	pendingMap		= Collections.synchronizedMap(new HashMap<>());
 	private boolean												paused			= false;
 
 	@Override
@@ -114,9 +108,7 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 			@Override
 			public Number fromString(final String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) {
-						return triggerList.indexOf(trig);
-					}
+					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
 				}
 				return null;
 			}
@@ -126,11 +118,9 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
-				} catch (Exception e) {
 				}
-				if (trig != null) {
-					return trig.getName();
-				}
+				catch (Exception e) {}
+				if (trig != null) { return trig.getName(); }
 				return null;
 			}
 		});
@@ -189,17 +179,14 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 		if (ASIOController.getInstance() != null) {
 			// Adding pending entries
 			synchronized (pendingMap) {
-
 				for (Entry<DrumTrigger, ArrayList<Data<Number, Number>>> listEntry : pendingMap.entrySet()) {
 					Series<Number, Number> series = seriesMap.get(listEntry.getKey());
 					ArrayList<Data<Number, Number>> dataList = new ArrayList<>();
-
 					for (Data<Number, Number> data : listEntry.getValue()) {
 						dataList.add(data);
 					}
 					series.getData().addAll(dataList);
 				}
-
 				pendingMap.clear();
 			}
 			// udating xAxis
@@ -215,7 +202,6 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 			} else {
 				lblBPM.setText("Unknown");
 			}
-
 		}
 	}
 

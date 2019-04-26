@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import gui.FXMLUtil;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
@@ -34,7 +35,6 @@ public class FXMLUtilTest {
 		Series<Number, Number> series = new Series<>();
 		Data<Number, Number> dataOld = new Data<>(0, 0);
 		Data<Number, Number> dataNew = new Data<>(System.nanoTime() - 100, 0);
-
 		series.getData().add(dataNew);
 		series.getData().add(dataOld);
 		FXMLUtil.removeOldData(System.nanoTime() - 30000000000l, series);
@@ -51,7 +51,6 @@ public class FXMLUtilTest {
 		assertEquals(11, axis.getUpperBound());
 		assertEquals(6, axis.getLowerBound());
 		assertEquals(0.5, axis.getTickUnit());
-
 		axis = new NumberAxis(0, 10, 5);
 		FXMLUtil.updateAxis(axis, 5, 11);
 		assertEquals(11, axis.getUpperBound());

@@ -18,8 +18,8 @@ import data.Channel;
 import data.Cue;
 import data.FileIO;
 import dialog.InformationDialog;
+import gui.FXMLUtil;
 import gui.utilities.DoughnutChart;
-import gui.utilities.FXMLUtil;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -316,8 +316,7 @@ public class TimeKeeperController implements Initializable {
 			}
 		};
 		timer.start();
-		while (TimeKeeper.getInstance().getActiveIndex() < 0) {
-		}
+		while (TimeKeeper.getInstance().getActiveIndex() < 0) {}
 		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
 		cueTable.getSelectionModel().select(0);
 		cueTable.refresh();
@@ -486,7 +485,6 @@ public class TimeKeeperController implements Initializable {
 
 			@Override
 			protected Void call() {
-
 				if (!ChurchToolsAdapter.getInstance().isLoggedIn()) {
 					Platform.runLater(() -> {
 						Dialog<?> dialog = new InformationDialog("Unable to log into ChurchTools");
@@ -550,9 +548,7 @@ public class TimeKeeperController implements Initializable {
 		// Convert the result to a username-password-pair when the login button
 		// is clicked.
 		dialog.setResultConverter(dialogButton -> {
-			if (dialogButton == loginButtonType) {
-				return new Pair<>(username.getText(), password.getText());
-			}
+			if (dialogButton == loginButtonType) { return new Pair<>(username.getText(), password.getText()); }
 			return null;
 		});
 		// Request focus on the username field by default.
@@ -562,9 +558,7 @@ public class TimeKeeperController implements Initializable {
 			Platform.runLater(() -> password.requestFocus());
 		}
 		Optional<Pair<String, String>> result = dialog.showAndWait();
-		if (result.isPresent()) {
-			return result.get();
-		}
+		if (result.isPresent()) { return result.get(); }
 		return null;
 	}
 }

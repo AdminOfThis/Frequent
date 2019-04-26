@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import data.Channel;
 import data.RTAIO;
+import gui.FXMLUtil;
 import gui.controller.MainController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
