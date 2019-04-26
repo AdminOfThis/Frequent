@@ -49,7 +49,7 @@ public class PreLoader extends Preloader implements Initializable {
 			LOG.error("Unable to load logo", e);
 		}
 		stage.initStyle(StageStyle.UNDECORATED);
-		stage.setTitle(Main.getTitle());
+		stage.setTitle(Main.getReadableTitle());
 		stage.setWidth(400);
 		stage.setHeight(300);
 		stage.centerOnScreen();

@@ -2,13 +2,9 @@ package main;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.Optional;
-import java.util.jar.Manifest;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import com.sun.javafx.application.LauncherImpl;
 
@@ -16,11 +12,11 @@ import control.ASIOController;
 import data.FileIO;
 import data.RTAIO;
 import dialog.ConfirmationDialog;
+import gui.FXMLUtil;
+import gui.MainGUI;
 import gui.controller.IOChooserController;
 import gui.controller.MainController;
 import gui.preloader.PreLoader;
-import gui.utilities.FXMLUtil;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
 import javafx.event.ActionEvent;
@@ -28,10 +24,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class Main extends MainGUI {
 
 	private static String		color_accent	= "#5EBF23";
 	private static String		color_base		= "#1A1A1A";
@@ -39,14 +34,10 @@ public class Main extends Application {
 	private static String		style			= "";
 	private static Logger		LOG				= Logger.getLogger(Main.class);
 	private static final String	POM_TITLE		= "Frequent";
-	private static final String	VERSION_KEY		= "Implementation-Version";
-	private static final String	TITLE_KEY		= "Implementation-Title";
-	private static final String	LOG_CONFIG_FILE	= "./log4j.ini";
 	private static final String	GUI_IO_CHOOSER	= "/fxml/IOChooser.fxml";
 	private static final String	GUI_MAIN_PATH	= "/fxml/Main.fxml";
 	private static final String	LOGO			= "/logo/logo_64.png";
 	private static boolean		debug			= false, fast = false;
-	private static String		version, title;
 	private static Main			instance;
 	private Scene				loginScene;
 	private Scene				mainScene;
@@ -55,7 +46,8 @@ public class Main extends Application {
 	/**
 	 * stops all running threads and terminates the gui
 	 */
-	public static boolean close() {
+	@Override
+	public boolean close() {
 		if (!Main.isDebug()) {
 			LOG.info("Checking for unsaved changes");
 			if (FileIO.unsavedChanges()) {
@@ -102,61 +94,12 @@ public class Main extends Application {
 		return color_focus;
 	}
 
-	public static String getFromManifest(final String key, final String def) {
-		try {
-			Enumeration<URL> resources = Main.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
-			while (resources.hasMoreElements()) {
-				try {
-					Manifest manifest = new Manifest(resources.nextElement().openStream());
-					if (POM_TITLE.equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Title")))
-						// check that this is your manifest and do what you need
-						// or get the next one
-						return manifest.getMainAttributes().getValue(key);
-				}
-				catch (IOException e) {
-					LOG.warn(e);
-				}
-			}
-		}
-		catch (Exception e) {
-			LOG.warn("Unable to read version from manifest");
-			LOG.debug("", e);
-		}
-		return def;
-	}
-
 	public static Main getInstance() {
 		return instance;
 	}
 
-	public static String getOnlyTitle() {
-		if (title == null || title.isEmpty()) { return ""; }
-		return title.substring(0, 1).toUpperCase() + title.substring(1).toLowerCase();
-	}
-
 	public static String getStyle() {
 		return style;
-	}
-
-	public static String getTitle() {
-		return getOnlyTitle() + " " + getVersion();
-	}
-
-	public static String getVersion() {
-		return version;
-	}
-
-	/**
-	 * sets up the Log4j logger ba reading the properties file
-	 */
-	private static void initLogger() {
-		try {
-			PropertyConfigurator.configure(LOG_CONFIG_FILE);
-			LOG = Logger.getLogger(Main.class);
-		}
-		catch (Exception e) {
-			LOG.fatal("Unexpected error while initializing logging", e);
-		}
 	}
 
 	public static boolean isDebug() {
@@ -168,10 +111,8 @@ public class Main extends Application {
 	}
 
 	public static void main(final String[] args) throws Exception {
-		initLogger();
-		title = getFromManifest(TITLE_KEY, "Frequent");
-		version = getFromManifest(VERSION_KEY, "Local");
-		LOG.info(" === " + getTitle() + " ===");
+		MainGUI.initialize(POM_TITLE);
+		LOG.info(" === " + getReadableTitle() + " ===");
 		parseArgs(args);
 		setColors();
 		LauncherImpl.launchApplication(Main.class, PreLoader.class, args);
@@ -267,7 +208,7 @@ public class Main extends Application {
 		}
 		catch (IOException e) {
 			LOG.error("Unable to load Main GUI", e);
-			Main.close();
+			Main.getInstance().close();
 		}
 		return null;
 	}
@@ -284,20 +225,14 @@ public class Main extends Application {
 		LOG.info("Showing IOChooser");
 		primaryStage.setScene(loginScene);
 		primaryStage.setOnCloseRequest(e -> {
-			if (!Main.close()) {
+			if (!Main.getInstance().close()) {
 				MainController.getInstance().setStatus("Close cancelled");
 				e.consume();
 			}
 		});
-		primaryStage.setTitle(getTitle());
+		primaryStage.setTitle(getReadableTitle());
 		primaryStage.setResizable(false);
-		try {
-			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO)));
-		}
-		catch (Exception e) {
-			LOG.error("Unable to load logo");
-			LOG.debug("", e);
-		}
+		FXMLUtil.setIcon(primaryStage, LOGO);
 		primaryStage.setOnShowing(e -> {
 			if (Main.isDebug()) {
 				loginController.startDebug();
@@ -308,5 +243,10 @@ public class Main extends Application {
 
 	public Scene getScene() {
 		return mainScene;
+	}
+
+	@Override
+	public String getPOMTitle() {
+		return POM_TITLE;
 	}
 }

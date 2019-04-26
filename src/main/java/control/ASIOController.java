@@ -399,7 +399,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		}
 		if (asioDriver == null) {
 			LOG.warn("Unable to load ASIO driver '" + driverName + "'");
-			Main.close();
+			Main.getInstance().close();
 		}
 		asioDriver.addAsioDriverListener(this);
 		// create a Set of AsioChannels, defining which input and output

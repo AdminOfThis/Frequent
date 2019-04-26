@@ -24,10 +24,10 @@ import data.FileIO;
 import data.Group;
 import data.Input;
 import dialog.InformationDialog;
+import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
-import gui.utilities.FXMLUtil;
 import gui.utilities.WaveFormPane;
 import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.DataChart;
@@ -358,7 +358,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		// toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
 		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
 		// Close Button
-		closeMenu.setOnAction(e -> Main.close());
+		closeMenu.setOnAction(e -> Main.getInstance().close());
 	}
 
 	private void initBleedView() {
@@ -652,7 +652,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	public void setTitle(final String title) {
 		Stage stage = (Stage) channelList.getScene().getWindow();
-		String finalTitle = Main.getTitle();
+		String finalTitle = Main.getReadableTitle();
 		if (title != null && !title.isEmpty()) {
 			finalTitle += " - " + title;
 		}
