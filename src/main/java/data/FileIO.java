@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import control.DataHolder;
@@ -26,7 +27,7 @@ import gui.controller.TimeKeeperController;
 public abstract class FileIO {
 
 	private static final String								PROPERTIES_FILE	= "./frequent.properties";
-	private static final Logger								LOG				= Logger.getLogger(FileIO.class);
+	private static final Logger								LOG				= LogManager.getLogger(FileIO.class);
 	public static final String								ENDING			= ".fre";
 	// files
 	private static File										currentDir		= new File(System.getProperty("user.home"));
@@ -73,7 +74,8 @@ public abstract class FileIO {
 				if (holder != null) {
 					holder.add(o);
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				LOG.warn("Problem loading object", e);
 			}
 		}
@@ -87,7 +89,8 @@ public abstract class FileIO {
 			for (Entry<Class, Integer> o : counterMap.entrySet()) {
 				LOG.info("    " + o.getKey().getSimpleName() + ": " + o.getValue());
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Problem while showing statistics", e);
 		}
 	}
@@ -101,7 +104,8 @@ public abstract class FileIO {
 			if (file.exists()) {
 				properties.load(new FileInputStream(file));
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to load properties", e);
 			LOG.debug("", e);
 		}
@@ -131,7 +135,8 @@ public abstract class FileIO {
 					} else {
 						LOG.warn("Nothing loaded");
 					}
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					LOG.error("Unable to open file", e);
 				}
 			}
@@ -150,20 +155,25 @@ public abstract class FileIO {
 					result.add((Serializable) o);
 				}
 			}
-		} catch (FileNotFoundException e) {
+		}
+		catch (FileNotFoundException e) {
 			LOG.warn("File not found");
 			LOG.debug("", e);
-		} catch (EOFException e) {
-		} catch (IOException e) {
+		}
+		catch (EOFException e) {}
+		catch (IOException e) {
 			LOG.warn("Unable to read file");
 			LOG.debug("", e);
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e) {
 			LOG.warn("Class not found");
 			LOG.debug("", e);
-		} finally {
+		}
+		finally {
 			try {
 				stream.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				LOG.error("Unable to close file stream");
 				LOG.debug("", e);
 			}
@@ -203,14 +213,17 @@ public abstract class FileIO {
 			for (Serializable o : objects) {
 				stream.writeObject(o);
 			}
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			LOG.warn("Unable to write file");
 			LOG.debug("", e);
 			result = false;
-		} finally {
+		}
+		finally {
 			try {
 				stream.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				LOG.error("Unable to close file stream");
 				LOG.debug("", e);
 			}
@@ -222,7 +235,8 @@ public abstract class FileIO {
 	private static boolean saveProperties() {
 		try {
 			properties.store(new FileOutputStream(new File(PROPERTIES_FILE)), "");
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			LOG.warn("Unable to save preferences");
 			LOG.debug("", e);
 			return false;
@@ -257,5 +271,4 @@ public abstract class FileIO {
 		properties.put(key, value);
 		saveProperties();
 	}
-
 }

@@ -13,7 +13,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jtransforms.dct.DoubleDCT_1D;
 
 import com.synthbot.jasiohost.AsioChannel;
@@ -31,7 +32,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	public static final int			DESIRED_BUFFER_SIZE	= 1024;
 	private static ASIOController	instance;
-	private static final Logger		LOG					= Logger.getLogger(ASIOController.class);
+	private static final Logger		LOG					= LogManager.getLogger(ASIOController.class);
 	private static int				fftBufferSize;
 	private String					driverName;
 	private AsioDriver				asioDriver;

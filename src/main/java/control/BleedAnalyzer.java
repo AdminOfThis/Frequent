@@ -3,7 +3,8 @@ package control;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import data.Channel;
 import data.Input;
@@ -12,7 +13,7 @@ import gui.pausable.PausableComponent;
 
 public class BleedAnalyzer extends Thread implements PausableComponent, ChannelListener {
 
-	private static final Logger	LOG				= Logger.getLogger(BleedAnalyzer.class);
+	private static final Logger	LOG				= LogManager.getLogger(BleedAnalyzer.class);
 	private static final double	MIN_CONFIDENCE	= .5;
 	private boolean				pause			= false;
 	private Pausable			parent;

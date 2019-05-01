@@ -3,7 +3,8 @@ package gui.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.NearestToneInfo;
@@ -18,7 +19,7 @@ import javafx.util.Duration;
 
 public class TunerController implements Initializable {
 
-	private static final Logger	LOG				= Logger.getLogger(TunerController.class);
+	private static final Logger	LOG				= LogManager.getLogger(TunerController.class);
 	private static final double	REFRESH_RATE	= 50;
 	private static final double	MULTIPLIER		= 2.0;
 	@FXML

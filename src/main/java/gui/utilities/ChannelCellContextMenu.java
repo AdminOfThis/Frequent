@@ -3,7 +3,8 @@ package gui.utilities;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.Channel;
@@ -21,7 +22,7 @@ import javafx.scene.control.ToggleGroup;
 
 public class ChannelCellContextMenu extends InputCellContextMenu {
 
-	private static final Logger	LOG			= Logger.getLogger(ChannelCellContextMenu.class);
+	private static final Logger	LOG			= LogManager.getLogger(ChannelCellContextMenu.class);
 	private MenuItem			resetName	= new MenuItem("Reset Name");
 	private CheckMenuItem		hide		= new CheckMenuItem("Hide");
 	private CheckMenuItem		showHidden	= new CheckMenuItem("Show Hidden");

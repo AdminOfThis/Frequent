@@ -4,7 +4,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.Channel;
@@ -26,7 +27,7 @@ import javafx.scene.layout.Priority;
 
 public class BleedViewController implements Initializable, PausableView {
 
-	private static final Logger			LOG		= Logger.getLogger(BleedViewController.class);
+	private static final Logger			LOG		= LogManager.getLogger(BleedViewController.class);
 	private boolean						pause	= true;
 	@FXML
 	private HBox						topBox;

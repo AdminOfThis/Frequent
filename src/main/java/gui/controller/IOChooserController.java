@@ -4,7 +4,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import javafx.event.ActionEvent;
@@ -20,7 +21,7 @@ import main.Main;
 
 public class IOChooserController implements Initializable {
 
-	private static final Logger	LOG	= Logger.getLogger(IOChooserController.class);
+	private static final Logger	LOG	= LogManager.getLogger(IOChooserController.class);
 	@FXML
 	private Parent				root;
 	@FXML
@@ -61,8 +62,8 @@ public class IOChooserController implements Initializable {
 		Stage stage = null;
 		try {
 			stage = (Stage) listIO.getScene().getWindow();
-		} catch (Exception ex) {
 		}
+		catch (Exception ex) {}
 		if (stage != null) {
 			stage.close();
 		}
@@ -81,7 +82,6 @@ public class IOChooserController implements Initializable {
 	public void startDebug() {
 		// if (!listIO.getItems().isEmpty()) {
 		LOG.warn("Starting without selected driver, for DEBUG purposes only!");
-
 		start(new ActionEvent());
 		// }
 	}

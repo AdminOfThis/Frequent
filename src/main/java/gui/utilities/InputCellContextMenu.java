@@ -2,7 +2,8 @@ package gui.utilities;
 
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import data.Input;
 import gui.controller.MainController;
@@ -16,7 +17,7 @@ import javafx.scene.shape.Circle;
 
 public abstract class InputCellContextMenu extends ContextMenu {
 
-	private static final Logger	LOG			= Logger.getLogger(InputCellContextMenu.class);
+	private static final Logger	LOG			= LogManager.getLogger(InputCellContextMenu.class);
 	private static final int	COLORS		= 8;
 	private MenuItem			name		= new MenuItem("Rename");
 	private Menu				colorMenu	= new Menu("Color");

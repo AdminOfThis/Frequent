@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import control.BleedAnalyzer;
@@ -33,7 +34,7 @@ import javafx.scene.layout.VBox;
 
 public class BleedMonitor extends AnchorPane implements Initializable, PausableComponent {
 
-	private static final Logger			LOG			= Logger.getLogger(BleedMonitor.class);
+	private static final Logger			LOG			= LogManager.getLogger(BleedMonitor.class);
 	private static final String			FXML		= "/fxml/utilities/BleedMonitor.fxml";
 	private boolean						pause		= false;
 	private Pausable					parent;
@@ -59,7 +60,7 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 		analyzer = new BleedAnalyzer();
 		analyzer.setParentPausable(this);
 		LOG.debug("Creating new BleedMonitor");
-		Parent p = FXMLUtil.loadFXML(FXML, this);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML), this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, 0.0);
 		AnchorPane.setBottomAnchor(p, 0.0);

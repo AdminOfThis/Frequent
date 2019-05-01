@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -24,21 +25,24 @@ class MainTest {
 	private static Scene		scene;
 
 	public static Object[][] data() {
-		return new Object[][] { { KeyCode.DIGIT1, false }, { KeyCode.DIGIT2, false }, { KeyCode.DIGIT3, false }, { KeyCode.DIGIT4, false },
-			{ KeyCode.DIGIT5, false }, { KeyCode.DIGIT1, true }, { KeyCode.DIGIT2, true } };
+		return new Object[][] { { KeyCode.DIGIT1, false }, { KeyCode.DIGIT2, false }, { KeyCode.DIGIT3, false }, { KeyCode.DIGIT4, false }, { KeyCode.DIGIT5, false }, { KeyCode.DIGIT1, true },
+			{ KeyCode.DIGIT2, true } };
 	}
 
 	// @Test
 	@BeforeAll
+	@Disabled("Unable to run forked tests with current maven surefire version")
 	public static void launchApplication() throws Exception {
 		CountDownLatch latch = new CountDownLatch(1);
 		Thread thread = new Thread(() -> {
 			try {
-				Main.main(new String[] { "-debug" });
-			} catch (Exception ex) {
+				FXMLLauncher.main(new String[] { "-debug" });
+			}
+			catch (Exception ex) {
 				e = ex;
 				e.printStackTrace();
-			} finally {
+			}
+			finally {
 				latch.countDown();
 			}
 		});
@@ -46,9 +50,7 @@ class MainTest {
 		thread.start();// Initialize the thread
 		latch.await(10, TimeUnit.SECONDS);
 		scene = Main.getInstance().getScene();
-		if (e != null) {
-			throw e;
-		}
+		if (e != null) { throw e; }
 	}
 
 	public static void clearSyso() {
@@ -88,14 +90,13 @@ class MainTest {
 	}
 
 	private void pushButton(KeyCode code, boolean control) {
-		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(),
-			new KeyEvent(null, scene, KeyEvent.KEY_PRESSED, "", "", code, false, control, false, false)));
+		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(), new KeyEvent(null, scene, KeyEvent.KEY_PRESSED, "", "", code, false, control, false, false)));
 		try {
 			Thread.sleep(50);
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(),
-			new KeyEvent(null, scene, KeyEvent.KEY_RELEASED, "", "", code, false, control, false, false)));
+		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(), new KeyEvent(null, scene, KeyEvent.KEY_RELEASED, "", "", code, false, control, false, false)));
 	}
 }

@@ -11,7 +11,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import control.CueListener;
@@ -78,7 +79,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private static final String				DRUM_PATH			= "/fxml/DrumView.fxml";
 	private static final String				PHASE_PATH			= "/fxml/VectorScopeView.fxml";
 	private static final String				BLEED_PATH			= "/fxml/BleedView.fxml";
-	private static final Logger				LOG					= Logger.getLogger(MainController.class);
+	private static final Logger				LOG					= LogManager.getLogger(MainController.class);
 	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
 	private static MainController			instance;
 	@FXML
@@ -246,7 +247,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void initChart() {
-		Parent p = FXMLUtil.loadFXML(FFT_PATH);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(FFT_PATH));
 		if (p != null) {
 			contentMap.put(toggleFFTView, p);
 			controllerMap.put(p, (PausableView) FXMLUtil.getController());
@@ -256,7 +257,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void initDrumMonitor() {
-		Parent p = FXMLUtil.loadFXML(DRUM_PATH);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(DRUM_PATH));
 		if (p != null) {
 			contentMap.put(toggleDrumView, p);
 			controllerMap.put(p, (PausableView) FXMLUtil.getController());
@@ -276,7 +277,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void initGroups() {
-		Parent p = FXMLUtil.loadFXML(GROUP_PATH);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(GROUP_PATH));
 		if (p != null) {
 			contentMap.put(toggleGroupsView, p);
 			controllerMap.put(p, (PausableView) FXMLUtil.getController());
@@ -362,7 +363,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void initBleedView() {
-		Parent p = FXMLUtil.loadFXML(BLEED_PATH);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(BLEED_PATH));
 		if (p != null) {
 			contentMap.put(toggleBleedView, p);
 			controllerMap.put(p, (PausableView) FXMLUtil.getController());
@@ -372,7 +373,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void initPhaseMonitor() {
-		Parent p = FXMLUtil.loadFXML(PHASE_PATH);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(PHASE_PATH));
 		if (p != null) {
 			contentMap.put(togglePhaseView, p);
 			controllerMap.put(p, (PausableView) FXMLUtil.getController());
@@ -382,7 +383,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void initRTA() {
-		Parent p = FXMLUtil.loadFXML(RTA_PATH);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(RTA_PATH));
 		if (p != null) {
 			contentMap.put(toggleRTAView, p);
 			controllerMap.put(p, (PausableView) FXMLUtil.getController());
@@ -392,7 +393,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void initTimekeeper() {
-		Parent p = FXMLUtil.loadFXML(TIMEKEEPER_PATH);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(TIMEKEEPER_PATH));
 		if (p != null) {
 			SplitPane.setResizableWithParent(p, false);
 			timeKeeperController = (TimeKeeperController) FXMLUtil.getController();

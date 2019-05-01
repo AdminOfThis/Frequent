@@ -4,71 +4,49 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
-import control.ChurchToolsAdapter;
 import control.TimeKeeper;
 import data.Channel;
 import data.Cue;
 import data.FileIO;
-import dialog.InformationDialog;
-import gui.FXMLUtil;
 import gui.utilities.DoughnutChart;
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Modality;
-import javafx.util.Pair;
 import javafx.util.StringConverter;
-import main.Main;
 
 public class TimeKeeperController implements Initializable {
 
-	private static final Logger			LOG	= Logger.getLogger(TimeKeeperController.class);
+	private static final Logger			LOG	= LogManager.getLogger(TimeKeeperController.class);
 	private static TimeKeeperController	instance;
 	@FXML
 	private Parent						paneCue;
@@ -78,8 +56,6 @@ public class TimeKeeperController implements Initializable {
 	private PieChart					timeChart;
 	@FXML
 	private Button						btnTime;
-	@FXML
-	private ToggleButton				btnInfo;
 	@FXML
 	private SplitMenuButton				btnStart;
 	@FXML
@@ -106,63 +82,8 @@ public class TimeKeeperController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		instance = this;
 		infoPane.setVisible(false);
-		btnInfo.selectedProperty().bindBidirectional(infoPane.visibleProperty());
-		btnInfo.selectedProperty().addListener((o, oldV, newV) -> {
-			if (newV) {
-				refreshAdditionalInfos();
-			}
-		});
 		initTimeKeeper();
 		enableContextMenu(false);
-	}
-
-	private void refreshAdditionalInfos() {
-		LinkedHashMap<String, String> map = ChurchToolsAdapter.getInstance().getAdditionalInfos();
-		StackPane p = (StackPane) infoPane.getParent();
-		p.getChildren().remove(infoPane);
-		infoPane = new GridPane();
-		infoPane.setHgap(25.0);
-		infoPane.setVgap(5.0);
-		infoPane.setStyle("-fx-background-color: -fx-background");
-		btnInfo.selectedProperty().bindBidirectional(infoPane.visibleProperty());
-		infoPane.addColumn(1);
-		infoPane.getColumnConstraints().add(new ColumnConstraints());
-		infoPane.getColumnConstraints().add(new ColumnConstraints());
-		infoPane.getColumnConstraints().get(1).setHgrow(Priority.ALWAYS);
-		p.getChildren().add(1, infoPane);
-		HBox top = new HBox();
-		top.setAlignment(Pos.CENTER);
-		top.setSpacing(20.0);
-		Label lblEvent = new Label(map.get("Event"));
-		lblEvent.setStyle("-fx-font-size: 20px");
-		top.getChildren().add(lblEvent);
-		Label lblTime = new Label(map.get("Time"));
-		top.getChildren().add(lblTime);
-		infoPane.getChildren().add(top);
-		GridPane.setColumnIndex(top, 0);
-		GridPane.setRowIndex(top, 0);
-		GridPane.setColumnSpan(top, 2);
-		GridPane.setHalignment(top, HPos.CENTER);
-		map.remove("Event");
-		map.remove("Time");
-		int i = 1;
-		for (String key : map.keySet()) {
-			Label lblKey = new Label(key + ":");
-			infoPane.addRow(i, lblKey);
-			infoPane.getRowConstraints().add(new RowConstraints(30));
-			Label lblValue = new Label(map.get(key));
-			infoPane.getChildren().add(lblValue);
-			GridPane.setColumnIndex(lblValue, 1);
-			GridPane.setRowIndex(lblValue, i);
-			i++;
-		}
-		for (int j = 0; j < infoPane.getRowConstraints().size(); j++) {
-			infoPane.getRowConstraints().get(j).setPrefHeight(-1);
-			infoPane.getRowConstraints().get(j).setVgrow(Priority.SOMETIMES);
-		}
-		infoPane.addRow(i);
-		infoPane.getRowConstraints().add(new RowConstraints(-1));
-		infoPane.getRowConstraints().get(infoPane.getRowConstraints().size() - 1).setVgrow(Priority.ALWAYS);
 	}
 
 	public static TimeKeeperController getInstance() {
@@ -465,100 +386,5 @@ public class TimeKeeperController implements Initializable {
 			cue.setChannelToSelect(null);
 		}
 		e.consume();
-	}
-
-	@FXML
-	private void loadFromChurchTools(ActionEvent e) {
-		MainController.getInstance().setStatus("Loading from Churchtools", -1);
-		boolean isLoginSet = ChurchToolsAdapter.getInstance().isLoggedIn();
-		if (!isLoginSet) {
-			Pair<String, String> loginCredentials = getLoginData();
-			if (loginCredentials != null) {
-				ChurchToolsAdapter.getInstance().setPassword(loginCredentials.getValue());
-				ChurchToolsAdapter.getInstance().setLogin(loginCredentials.getKey());
-			} else {
-				MainController.getInstance().setStatus("Loading from Churchtools cancelled", 0);
-				return;
-			}
-		}
-		Task<Void> task = new Task<Void>() {
-
-			@Override
-			protected Void call() {
-				if (!ChurchToolsAdapter.getInstance().isLoggedIn()) {
-					Platform.runLater(() -> {
-						Dialog<?> dialog = new InformationDialog("Unable to log into ChurchTools");
-						dialog.showAndWait();
-					});
-				}
-				ArrayList<Cue> cues = ChurchToolsAdapter.getInstance().loadCues();
-				if (cues != null) {
-					TimeKeeper.getInstance().set(cues);
-					Platform.runLater(() -> {
-						MainController.getInstance().setStatus("Loading finished", 0);
-						refresh();
-					});
-				} else {
-					Platform.runLater(() -> {
-						MainController.getInstance().setStatus("Unable to load from ChurchTools", 0);
-					});
-				}
-				return null;
-			}
-		};
-		new Thread(task).start();
-		e.consume();
-	}
-
-	private Pair<String, String> getLoginData() {
-		Dialog<Pair<String, String>> dialog = new Dialog<>();
-		dialog.setTitle("Login ChurchTools");
-		dialog.setHeaderText("Please enter your ChurchTools Login Credentials");
-		dialog.initModality(Modality.NONE);
-		dialog.initOwner(paneCue.getScene().getWindow());
-		FXMLUtil.setStyleSheet(dialog.getDialogPane());
-		dialog.getDialogPane().setStyle(Main.getStyle());
-		// Set the icon (must be included in the project).
-		// Set the button types.
-		ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
-		// Create the username and password labels and fields.
-		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
-		TextField username = new TextField();
-		username.setText(ChurchToolsAdapter.getInstance().getUserName());
-		username.setPromptText("Username");
-		PasswordField password = new PasswordField();
-		password.setPromptText("Password");
-		grid.add(new Label("Username:"), 0, 0);
-		grid.add(username, 1, 0);
-		grid.add(new Label("Password:"), 0, 1);
-		grid.add(password, 1, 1);
-		// Enable/Disable login button depending on whether a username was
-		// entered.
-		Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
-		loginButton.setDisable(username.getText().isEmpty());
-		// Do some validation (using the Java 8 lambda syntax).
-		username.textProperty().addListener((observable, oldValue, newValue) -> {
-			loginButton.setDisable(newValue.trim().isEmpty());
-		});
-		dialog.getDialogPane().setContent(grid);
-		// Convert the result to a username-password-pair when the login button
-		// is clicked.
-		dialog.setResultConverter(dialogButton -> {
-			if (dialogButton == loginButtonType) { return new Pair<>(username.getText(), password.getText()); }
-			return null;
-		});
-		// Request focus on the username field by default.
-		if (username.getText().isEmpty()) {
-			Platform.runLater(() -> username.requestFocus());
-		} else {
-			Platform.runLater(() -> password.requestFocus());
-		}
-		Optional<Pair<String, String>> result = dialog.showAndWait();
-		if (result.isPresent()) { return result.get(); }
-		return null;
 	}
 }

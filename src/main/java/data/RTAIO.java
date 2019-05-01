@@ -8,18 +8,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class RTAIO {
 
 	private static final File		tempFile	= new File("rta.temp");
-	private static final Logger		LOG			= Logger.getLogger(RTAIO.class);
+	private static final Logger		LOG			= LogManager.getLogger(RTAIO.class);
 	public static final String		SEPARATOR	= ";";
 	private static BufferedWriter	writer;
 
 	public static void writeToFile(double[][] freq) {
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if (writer == null) {
@@ -37,7 +38,6 @@ public abstract class RTAIO {
 				}
 			}
 		}).start();
-		
 	}
 
 	public static void closeFile() {
@@ -111,8 +111,8 @@ public abstract class RTAIO {
 
 	private static String freqToString(double[][] freq) {
 		String result = "";
-		for (int i = 0;i<freq[0].length;i++) {
-			result += Double.toString(Math.round(freq[1][i]*100.0) / 100.0);
+		for (int i = 0; i < freq[0].length; i++) {
+			result += Double.toString(Math.round(freq[1][i] * 100.0) / 100.0);
 			result += SEPARATOR;
 		}
 		// removes to last separator

@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import control.InputListener;
@@ -16,7 +17,7 @@ public class Group extends Input implements InputListener {
 	 * 
 	 */
 	private static final long	serialVersionUID	= 1L;
-	private static final Logger	LOG					= Logger.getLogger(Group.class);
+	private static final Logger	LOG					= LogManager.getLogger(Group.class);
 	private List<Channel>		channelList			= new ArrayList<>();
 	private List<Double>		channelLevel		= Collections.synchronizedList(new ArrayList<>());
 

@@ -59,7 +59,7 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 		} else {
 			path = FXML_VERTICAL;
 		}
-		Parent p = FXMLUtil.loadFXML(path, this);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(path), this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, 0.0);
 		AnchorPane.setBottomAnchor(p, 0.0);

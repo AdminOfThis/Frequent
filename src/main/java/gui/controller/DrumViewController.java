@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import control.bpmdetect.BeatDetector;
@@ -39,7 +40,7 @@ import javafx.util.StringConverter;
 
 public class DrumViewController implements Initializable, PausableView, DrumTriggerListener {
 
-	private static final Logger									LOG				= Logger.getLogger(DrumViewController.class);
+	private static final Logger									LOG				= LogManager.getLogger(DrumViewController.class);
 	private static final long									DRUM_TIME_FRAME	= 5000000000l;
 	@FXML
 	private ScatterChart<Number, Number>						drumChart;

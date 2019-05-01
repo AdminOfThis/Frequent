@@ -3,7 +3,8 @@ package gui.preloader;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javafx.application.Preloader;
 import javafx.fxml.FXML;
@@ -20,7 +21,7 @@ import main.Main;
 
 public class PreLoader extends Preloader implements Initializable {
 
-	private static final Logger	LOG				= Logger.getLogger(Preloader.class);
+	private static final Logger	LOG				= LogManager.getLogger(Preloader.class);
 	private static final String	PRELOADER_PATH	= "/fxml/preloader/SplashScreen.fxml";
 	private static final String	LOGO_SMALL		= "/logo/logo_64.png";
 	private Stage				stage;

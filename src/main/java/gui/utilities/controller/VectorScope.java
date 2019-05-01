@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ChannelListener;
 import data.Channel;
@@ -35,7 +36,7 @@ import main.Main;
 
 public class VectorScope extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
-	private static final Logger				LOG				= Logger.getLogger(VectorScope.class);
+	private static final Logger				LOG				= LogManager.getLogger(VectorScope.class);
 	private static final String				FXML			= "/fxml/utilities/VectorScope.fxml";
 	// GUI
 	private static final int				MAX_DATA_POINTS	= 200;
@@ -62,7 +63,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	private double							decay			= 1.0;
 
 	public VectorScope() {
-		Parent p = FXMLUtil.loadFXML(FXML, this);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML), this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, 0.0);
 		AnchorPane.setBottomAnchor(p, 0.0);

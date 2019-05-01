@@ -9,7 +9,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import control.InputListener;
@@ -37,7 +38,7 @@ import javafx.scene.layout.BorderPane;
 
 public class WaveFormChart extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
-	private static final Logger		LOG			= Logger.getLogger(WaveFormChart.class);
+	private static final Logger		LOG			= LogManager.getLogger(WaveFormChart.class);
 	private static final String		FXML		= "/fxml/utilities/WaveFormChart.fxml";
 	private static final long		TIME_FRAME	= 3000000000l;
 	@FXML
@@ -53,7 +54,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	public WaveFormChart() {
 		LOG.debug("Creating new WaveFormChart");
-		Parent p = FXMLUtil.loadFXML(FXML, this);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML), this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, 0.0);
 		AnchorPane.setBottomAnchor(p, 0.0);

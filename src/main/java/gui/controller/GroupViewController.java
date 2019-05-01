@@ -9,10 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
-
-import com.sun.javafx.charts.Legend;
-import com.sun.javafx.charts.Legend.LegendItem;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.Channel;
@@ -38,13 +36,11 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import main.Main;
 
 public class GroupViewController implements Initializable, PausableView {
 
-	private static final Logger					LOG				= Logger.getLogger(GroupViewController.class);
+	private static final Logger					LOG				= LogManager.getLogger(GroupViewController.class);
 	private static final long					TIME_FRAME		= 6000000000l;
 	private static GroupViewController			instance;
 	@FXML
@@ -195,17 +191,6 @@ public class GroupViewController implements Initializable, PausableView {
 		groupSeriesMap.put(group, series);
 		series.setName(group.getName());
 		chart.getData().add(series);
-		Legend legend = (Legend) chart.lookup(".chart-legend");
-		for (LegendItem i : legend.getItems()) {
-			if (i.getText().equals(group.getName())) {
-				if (group.getColor() == null) {
-					i.setSymbol(new Rectangle(10, 4));
-					i.getSymbol().setStyle("-fx-fill: -fx-accent");
-				} else {
-					i.setSymbol(new Rectangle(10, 4, Color.web(group.getColor())));
-				}
-			}
-		}
 		synchronized (pendingMap) {
 			// pendingMap for new group added
 			if (pendingMap.get(group) == null) {

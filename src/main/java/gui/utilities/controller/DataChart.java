@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ChannelListener;
 import data.Channel;
@@ -26,7 +27,7 @@ import javafx.scene.layout.AnchorPane;
 
 public class DataChart extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
-	private static final Logger			LOG				= Logger.getLogger(WaveFormChart.class);
+	private static final Logger			LOG				= LogManager.getLogger(WaveFormChart.class);
 	private static final String			FXML			= "/fxml/utilities/DataChart.fxml";
 	@FXML
 	private LineChart<Number, Number>	chart;
@@ -39,7 +40,7 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 
 	public DataChart() {
 		LOG.debug("Creating new DataChart");
-		Parent p = FXMLUtil.loadFXML(FXML, this);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML), this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, 0.0);
 		AnchorPane.setBottomAnchor(p, 0.0);

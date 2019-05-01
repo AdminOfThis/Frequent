@@ -36,7 +36,7 @@ public class DrumTriggerItem extends AnchorPane implements Initializable {
 
 	public DrumTriggerItem(final DrumTrigger trigger) {
 		this.trigger = trigger;
-		Parent p = FXMLUtil.loadFXML(DRUM_ITEM_PATH, this);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(DRUM_ITEM_PATH), this);
 		getChildren().add(p);
 		AnchorPane.setTopAnchor(p, .0);
 		AnchorPane.setBottomAnchor(p, .0);

@@ -7,14 +7,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.InputListener;
 
 public abstract class Input implements Serializable {
 
 	private static final long				serialVersionUID	= 1L;
-	private static final Logger				LOG					= Logger.getLogger(Input.class);
+	private static final Logger				LOG					= LogManager.getLogger(Input.class);
 	public static final Comparator<Input>	COMPARATOR			= (o1, o2) -> {
 																	if (o1 instanceof Channel && o2 instanceof Channel) {
 																		return ((Channel) o1).getChannelIndex() - ((Channel) o2).getChannelIndex();

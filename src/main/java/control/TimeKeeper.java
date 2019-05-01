@@ -3,15 +3,15 @@ package control;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import data.Cue;
 import data.FileIO;
 
 public final class TimeKeeper implements DataHolder<Cue> {
 
-	private static final Logger					LOG					= Logger.getLogger(TimeKeeper.class);
-
+	private static final Logger					LOG					= LogManager.getLogger(TimeKeeper.class);
 	public static final String					DEFAULT_CUE_NAME	= "Song #";
 	private static TimeKeeper					instance;
 	private long								startTime;
@@ -29,7 +29,6 @@ public final class TimeKeeper implements DataHolder<Cue> {
 		}
 		return instance;
 	}
-
 
 	private TimeKeeper() {
 		FileIO.registerSaveData(this);
@@ -85,7 +84,6 @@ public final class TimeKeeper implements DataHolder<Cue> {
 		for (CueListener lis : listeners) {
 			new Thread(() -> lis.currentCue(getActiveCue(), getNextCue())).start();
 		}
-
 	}
 
 	public void reset() {
@@ -107,9 +105,7 @@ public final class TimeKeeper implements DataHolder<Cue> {
 		if (pause) {
 			LOG.info("Pausing timer");
 			pauseStarttime = System.currentTimeMillis();
-
 		} else {
-
 			LOG.info("Unpausing timer");
 			pauseTime = pauseTime + System.currentTimeMillis() - pauseStarttime;
 			pauseRoundTime = pauseRoundTime + System.currentTimeMillis() - pauseStarttime;
@@ -134,9 +130,7 @@ public final class TimeKeeper implements DataHolder<Cue> {
 	}
 
 	public Cue getActiveCue() {
-		if (getActiveIndex() < 0) {
-			return null;
-		}
+		if (getActiveIndex() < 0) { return null; }
 		if (cueList.size() < getActiveIndex() + 1) {
 			cueList.add(new Cue(DEFAULT_CUE_NAME + (activeIndex + 1)));
 		}

@@ -4,7 +4,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.FFTListener;
 import data.Channel;
@@ -35,7 +36,7 @@ import javafx.scene.layout.Priority;
 public class RTAViewController implements Initializable, FFTListener, PausableView {
 
 	private static final double		DECAY		= 1.01;
-	private static final Logger		LOG			= Logger.getLogger(RTAViewController.class);
+	private static final Logger		LOG			= LogManager.getLogger(RTAViewController.class);
 	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
 	private static final int		X_MIN		= 25;
 	private static final int		X_MAX		= 20000;

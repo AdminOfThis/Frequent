@@ -3,7 +3,8 @@ package gui.utilities.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import data.Channel;
 import data.Group;
@@ -27,7 +28,7 @@ import javafx.scene.paint.Color;
 
 public class ChannelCell extends ListCell<Input> implements Initializable {
 
-	private static final Logger	LOG			= Logger.getLogger(ChannelCell.class);
+	private static final Logger	LOG			= LogManager.getLogger(ChannelCell.class);
 	private static final String	FXML_PATH	= "/fxml/utilities/ChannelCell.fxml";
 	@FXML
 	private AnchorPane			chartPane;
@@ -46,7 +47,7 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	public ChannelCell() {
 		super();
 		setPadding(Insets.EMPTY);
-		Parent p = FXMLUtil.loadFXML(FXML_PATH, this);
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML_PATH), this);
 		if (p != null) {
 			setGraphic(p);
 		} else {

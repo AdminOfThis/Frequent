@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
-
-import com.sun.javafx.application.LauncherImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.FileIO;
@@ -17,6 +16,7 @@ import gui.MainGUI;
 import gui.controller.IOChooserController;
 import gui.controller.MainController;
 import gui.preloader.PreLoader;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
 import javafx.event.ActionEvent;
@@ -32,7 +32,7 @@ public class Main extends MainGUI {
 	private static String		color_base		= "#1A1A1A";
 	private static String		color_focus		= "#7DFF2F";
 	private static String		style			= "";
-	private static Logger		LOG				= Logger.getLogger(Main.class);
+	private static Logger		LOG				= LogManager.getLogger(Main.class);
 	private static final String	POM_TITLE		= "Frequent";
 	private static final String	GUI_IO_CHOOSER	= "/fxml/IOChooser.fxml";
 	private static final String	GUI_MAIN_PATH	= "/fxml/Main.fxml";
@@ -42,6 +42,15 @@ public class Main extends MainGUI {
 	private Scene				loginScene;
 	private Scene				mainScene;
 	private IOChooserController	loginController;
+
+	public static void main(final String[] args) throws Exception {
+		MainGUI.initialize(POM_TITLE);
+		LOG.info(" === " + getReadableTitle() + " ===");
+		parseArgs(args);
+		setColors();
+		System.setProperty("javafx.preloader", PreLoader.class.getName());
+		Application.launch(Main.class, args);
+	}
 
 	/**
 	 * stops all running threads and terminates the gui
@@ -110,14 +119,6 @@ public class Main extends MainGUI {
 		return fast;
 	}
 
-	public static void main(final String[] args) throws Exception {
-		MainGUI.initialize(POM_TITLE);
-		LOG.info(" === " + getReadableTitle() + " ===");
-		parseArgs(args);
-		setColors();
-		LauncherImpl.launchApplication(Main.class, PreLoader.class, args);
-	}
-
 	/**
 	 * checks the start parameters for keywords and sets the debug flag to true if found
 	 *
@@ -184,7 +185,7 @@ public class Main extends MainGUI {
 		super.init();
 		instance = this;
 		notifyPreloader(new Preloader.ProgressNotification(0.1));
-		Parent parent = FXMLUtil.loadFXML(GUI_IO_CHOOSER);
+		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
 		loginController = (IOChooserController) FXMLUtil.getController();
 		loginScene = new Scene(parent);
 		notifyPreloader(new Preloader.ProgressNotification(0.2));

@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import data.DrumTrigger;
 import gui.utilities.DrumTriggerListener;
@@ -18,7 +19,7 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 		CLASSIC, BPM_DETECT
 	};
 
-	private static final Logger				LOG			= Logger.getLogger(BeatDetector.class);
+	private static final Logger				LOG			= LogManager.getLogger(BeatDetector.class);
 	private static final int				LIST_SIZE	= 20;
 	private static BeatDetector				instance;
 	private static boolean					initialized	= false;
@@ -90,7 +91,8 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 			}
 			try {
 				Thread.sleep(1000);
-			} catch (InterruptedException e) {
+			}
+			catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

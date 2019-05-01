@@ -7,7 +7,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import data.Channel;
 import data.RTAIO;
@@ -30,7 +31,7 @@ import javafx.scene.paint.Color;
 
 public class RTACanvas extends Canvas implements PausableComponent {
 
-	private static final Logger							LOG				= Logger.getLogger(RTACanvas.class);
+	private static final Logger							LOG				= LogManager.getLogger(RTACanvas.class);
 	private static final WritablePixelFormat<IntBuffer>	PIXEL_FORMAT	= PixelFormat.getIntArgbPreInstance();
 	private int											count			= 0;
 	private GraphicsContext								content;
@@ -181,7 +182,7 @@ public class RTACanvas extends Canvas implements PausableComponent {
 	}
 
 	public void save(final File file) {
-		final Task<Boolean> task = new Task<Boolean>() {
+		final Task<Boolean> task = new Task<>() {
 
 			@Override
 			public Boolean call() {
