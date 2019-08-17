@@ -43,6 +43,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -72,6 +73,8 @@ import main.Main;
 
 public class MainController implements Initializable, Pausable, CueListener {
 
+	private static final String				SETTINGS_PATH		= "/fxml/Settings.fxml";
+	// modules
 	private static final String				FFT_PATH			= "/fxml/RTAView.fxml";
 	private static final String				RTA_PATH			= "/fxml/FFTView.fxml";
 	private static final String				TIMEKEEPER_PATH		= "/fxml/TimeKeeper.fxml";
@@ -102,7 +105,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	@FXML
 	private SplitPane						contentPane;
 	@FXML
-	private MenuItem						closeMenu, menuSave;
+	private MenuItem						closeMenu, menuSave, menuSettings;
 	@FXML
 	private MenuItem						menuTimerStart, menuTimerNext;
 	@FXML
@@ -358,8 +361,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 		toggleChannels.selectedProperty().bindBidirectional(menuShowChannels.selectedProperty());
 		// toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
 		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
-		// Close Button
-		closeMenu.setOnAction(e -> Main.getInstance().close());
 	}
 
 	private void initBleedView() {
@@ -694,5 +695,22 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	public Stage getStage() {
 		return (Stage) channelList.getScene().getWindow();
+	}
+
+	@FXML
+	private void close(ActionEvent e) {
+		Main.getInstance().close();
+	}
+
+	@FXML
+	private void openSettings(ActionEvent e) {
+		Parent setting = FXMLUtil.loadFXML(getClass().getResource(SETTINGS_PATH));
+		Stage settingStage = new Stage();
+		settingStage.setTitle("Settings");
+		FXMLUtil.setIcon(settingStage, getClass().getResource(Main.LOGO));
+		settingStage.setScene(new Scene(setting));
+		settingStage.initOwner(root.getScene().getWindow());
+		settingStage.initModality(Modality.APPLICATION_MODAL);
+		settingStage.show();
 	}
 }

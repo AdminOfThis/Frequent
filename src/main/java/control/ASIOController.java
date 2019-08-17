@@ -387,6 +387,10 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		restartASIODriver();
 	}
 
+	public void restart() {
+		restartASIODriver();
+	}
+
 	private void restartASIODriver() {
 		if (asioDriver != null) {
 			asioDriver.shutdownAndUnloadDriver();
@@ -468,5 +472,15 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	public int getSampleRate() {
 		return (int) Math.floor(sampleRate);
+	}
+
+	public void setBufferSize(int value) {
+		if (value > 0 && value < 10000) {
+			bufferSize = value;
+		}
+	}
+
+	public String getDevice() {
+		return driverName;
 	}
 }

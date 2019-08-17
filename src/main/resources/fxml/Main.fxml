@@ -53,7 +53,13 @@
                                  </accelerator>
                               </MenuItem>
                               <SeparatorMenuItem mnemonicParsing="false" />
-                          <MenuItem fx:id="closeMenu" mnemonicParsing="false" text="Quit" />
+                              <MenuItem fx:id="menuSettings" mnemonicParsing="false" onAction="#openSettings" text="Settings">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                                 </accelerator>
+                              </MenuItem>
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                          <MenuItem fx:id="closeMenu" mnemonicParsing="false" onAction="#close" text="Quit" />
                         </items>
                       </Menu>
                         <Menu mnemonicParsing="false" text="View">

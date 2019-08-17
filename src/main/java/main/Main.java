@@ -36,7 +36,7 @@ public class Main extends MainGUI {
 	private static final String	POM_TITLE		= "Frequent";
 	private static final String	GUI_IO_CHOOSER	= "/fxml/IOChooser.fxml";
 	private static final String	GUI_MAIN_PATH	= "/fxml/Main.fxml";
-	private static final String	LOGO			= "/logo/logo_64.png";
+	public static final String	LOGO			= "/logo/logo_64.png";
 	private static boolean		debug			= false, fast = false;
 	private static Main			instance;
 	private Scene				loginScene;
