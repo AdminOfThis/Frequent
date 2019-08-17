@@ -182,7 +182,7 @@ public class RTACanvas extends Canvas implements PausableComponent {
 	}
 
 	public void save(final File file) {
-		final Task<Boolean> task = new Task<>() {
+		final Task<Boolean> task = new Task<Boolean>() {
 
 			@Override
 			public Boolean call() {
