@@ -233,7 +233,7 @@ public class Main extends MainGUI {
 		});
 		primaryStage.setTitle(getReadableTitle());
 		primaryStage.setResizable(false);
-		FXMLUtil.setIcon(primaryStage, Main.class.getResource(LOGO));
+		FXMLUtil.setIcon(primaryStage, LOGO);
 		primaryStage.setOnShowing(e -> {
 			if (Main.isDebug()) {
 				loginController.startDebug();

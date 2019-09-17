@@ -707,7 +707,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		Parent setting = FXMLUtil.loadFXML(getClass().getResource(SETTINGS_PATH));
 		Stage settingStage = new Stage();
 		settingStage.setTitle("Settings");
-		FXMLUtil.setIcon(settingStage, getClass().getResource(Main.LOGO));
+		FXMLUtil.setIcon(settingStage, Main.LOGO);
 		settingStage.setScene(new Scene(setting));
 		settingStage.initOwner(root.getScene().getWindow());
 		settingStage.initModality(Modality.APPLICATION_MODAL);
