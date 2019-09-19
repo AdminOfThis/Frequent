@@ -25,11 +25,11 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	/**
 	 * The time of animation in ms
 	 */
-	private static final double		ANIMATION_TIME		= 2000;
-	private final Timeline			lowerRangeTimeline	= new Timeline();
-	private final Timeline			upperRangeTimeline	= new Timeline();
-	private final DoubleProperty	logUpperBound		= new SimpleDoubleProperty();
-	private final DoubleProperty	logLowerBound		= new SimpleDoubleProperty();
+	private static final double ANIMATION_TIME = 2000;
+	private final Timeline lowerRangeTimeline = new Timeline();
+	private final Timeline upperRangeTimeline = new Timeline();
+	private final DoubleProperty logUpperBound = new SimpleDoubleProperty();
+	private final DoubleProperty logLowerBound = new SimpleDoubleProperty();
 
 	public LogarithmicAxis() {
 		super(1, 100);
@@ -47,8 +47,8 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	}
 
 	/**
-	 * Bind our logarithmic bounds with the super class bounds, consider the
-	 * base 10 logarithmic scale.
+	 * Bind our logarithmic bounds with the super class bounds, consider the base 10
+	 * logarithmic scale.
 	 */
 	private void bindLogBoundsToDefaultBounds() {
 		DoubleBinding bind1 = new DoubleBinding() {
@@ -56,7 +56,6 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 			{
 				super.bind(lowerBoundProperty());
 			}
-
 
 			@Override
 			protected double computeValue() {
@@ -79,8 +78,8 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	}
 
 	/**
-	 * Validate the bounds by throwing an exception if the values are not
-	 * conform to the mathematics log interval: ]0,Double.MAX_VALUE]
+	 * Validate the bounds by throwing an exception if the values are not conform to
+	 * the mathematics log interval: ]0,Double.MAX_VALUE]
 	 * 
 	 * @param lowerBound
 	 * @param upperBound
@@ -89,7 +88,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	private void validateBounds(double lowerBound, double upperBound) throws IllegalLogarithmicRangeException {
 		if (lowerBound <= 0 || upperBound < 0 || lowerBound > upperBound) {
 			throw new IllegalLogarithmicRangeException(
-				"The logarithmic range should be include to ]0,Double.MAX_VALUE] and the lowerBound should be less than the upperBound");
+					"The logarithmic range should be include to ]0,Double.MAX_VALUE] and the lowerBound should be less than the upperBound");
 		}
 	}
 
@@ -142,10 +141,19 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 
 	@Override
 	protected String getTickMarkLabel(Number value) {
+		String result = "";
 		NumberFormat formatter = NumberFormat.getInstance();
-		formatter.setMaximumIntegerDigits(6);
 		formatter.setMinimumIntegerDigits(1);
-		return formatter.format(value);
+		if (value.doubleValue() >= 1000.0) {
+
+			formatter.setMaximumIntegerDigits(2);
+			value = value.doubleValue() / 1000.0;
+			result = formatter.format(value) + "k";
+		} else {
+			formatter.setMaximumIntegerDigits(6);
+			result = formatter.format(value);
+		}
+		return result;
 	}
 
 	/**
@@ -166,11 +174,13 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 					lowerRangeTimeline.getKeyFrames().clear();
 					upperRangeTimeline.getKeyFrames().clear();
 					lowerRangeTimeline.getKeyFrames().addAll(
-						new KeyFrame(Duration.ZERO, new KeyValue(lowerBoundProperty(), lowerBoundProperty().get())),
-						new KeyFrame(new Duration(ANIMATION_TIME), new KeyValue(lowerBoundProperty(), lowerBound.doubleValue())));
+							new KeyFrame(Duration.ZERO, new KeyValue(lowerBoundProperty(), lowerBoundProperty().get())),
+							new KeyFrame(new Duration(ANIMATION_TIME),
+									new KeyValue(lowerBoundProperty(), lowerBound.doubleValue())));
 					upperRangeTimeline.getKeyFrames().addAll(
-						new KeyFrame(Duration.ZERO, new KeyValue(upperBoundProperty(), upperBoundProperty().get())),
-						new KeyFrame(new Duration(ANIMATION_TIME), new KeyValue(upperBoundProperty(), upperBound.doubleValue())));
+							new KeyFrame(Duration.ZERO, new KeyValue(upperBoundProperty(), upperBoundProperty().get())),
+							new KeyFrame(new Duration(ANIMATION_TIME),
+									new KeyValue(upperBoundProperty(), upperBound.doubleValue())));
 					lowerRangeTimeline.play();
 					upperRangeTimeline.play();
 				} catch (Exception e) {
@@ -205,8 +215,8 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	}
 
 	/**
-	 * Exception to be thrown when a bound value isn't supported by the
-	 * logarithmic axis<br>
+	 * Exception to be thrown when a bound value isn't supported by the logarithmic
+	 * axis<br>
 	 * <br>
 	 * 
 	 * @author Kevin Senechal mailto: kevin.senechal@dooapp.com
