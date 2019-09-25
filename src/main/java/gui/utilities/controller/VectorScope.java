@@ -36,31 +36,31 @@ import main.Main;
 
 public class VectorScope extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
-	private static final Logger				LOG				= LogManager.getLogger(VectorScope.class);
-	private static final String				FXML			= "/fxml/utilities/VectorScope.fxml";
+	private static final Logger LOG = LogManager.getLogger(VectorScope.class);
+	private static final String FXML = "/fxml/utilities/VectorScope.fxml";
 	// GUI
-	private static final int				MAX_DATA_POINTS	= 200;
+	private static final int MAX_DATA_POINTS = 200;
 	// private static final int DOTS_PER_BUFFER = 500;
 	@FXML
-	private HBox							chartParent;
+	private HBox chartParent;
 	@FXML
-	private ScatterChart<Number, Number>	chart;
+	private ScatterChart<Number, Number> chart;
 	@FXML
-	private Label							lblTitle;
-	private Series<Number, Number>			vectorSeries	= new Series<>();
+	private Label lblTitle;
+	private Series<Number, Number> vectorSeries = new Series<>();
 	// GUI data
 	// pausable
-	private boolean							pause;
-	private Pausable						parentPausable;
+	private boolean pause;
+	private Pausable parentPausable;
 	// data
-	private Channel							channel1, channel2;
+	private Channel channel1, channel2;
 	// private boolean restarting = true;
 	// vars to align the buffers, instead of beeing of by one
 	// private long timeFirstBuffer, timeSecondBuffer;
 	// buffers
 	// private List<Float> buffer1, buffer2;
-	private Map<Long, float[]>				map1, map2;
-	private double							decay			= 1.0;
+	private Map<Long, float[]> map1, map2;
+	private double decay = 1.0;
 
 	public VectorScope() {
 		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML), this);
@@ -144,8 +144,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				} else {
 					throw new IllegalArgumentException("Both buffers are filled with this sample position already");
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.error("Problem showing vectorscope", e);
 			}
 		}
@@ -203,11 +202,13 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					percent = 1.0 / percent;
 				}
 				percent = 1 - Math.abs((percent + 1) / 2.0);
-				d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
+				d.getNode().setStyle("-fx-background-color: "
+						+ FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
 			}
 		} // removing old data points
 		if (vectorSeries.getData().size() > MAX_DATA_POINTS * decay) {
-			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0, (int) Math.round(vectorSeries.getData().size() - MAX_DATA_POINTS * decay));
+			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0,
+					(int) Math.round(vectorSeries.getData().size() - MAX_DATA_POINTS * decay));
 			vectorSeries.getData().removeAll(removeList);
 		}
 	}
@@ -215,21 +216,37 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	private void update() {
 		if (!isPaused()) {
 			ArrayList<Long> clearedKeys = null;
-			synchronized (map1) {
-				for (long key : map1.keySet()) {
-					if (map2.containsKey(key)) {
-						synchronized (map2) {
-							showData(map1.get(key), map2.get(key));
-							if (clearedKeys == null) {
-								clearedKeys = new ArrayList<>();
-							}
-							clearedKeys.add(key);
-						}
+			Map<Long, float[]> copyMap1, copyMap2;
+			copyMap1 = new LinkedHashMap<Long, float[]>(map1);
+			copyMap2 = new LinkedHashMap<Long, float[]>(map2);
+			for (long key : copyMap1.keySet()) {
+				if (copyMap2.containsKey(key)) {
+
+					if (clearedKeys == null) {
+						clearedKeys = new ArrayList<>();
 					}
+					clearedKeys.add(key);
+
 				}
+				// else {
+				// break;
+				// TODO
+				// }
 			}
+
 			// clear buffers
 			if (clearedKeys != null) {
+				for (long key : clearedKeys) {
+					float[] copy1, copy2;
+					synchronized (map1) {
+						copy1 = map1.get(key);
+					}
+					synchronized (map2) {
+						copy2 = map2.get(key);
+					}
+					showData(copy1, copy2);
+				}
+
 				for (long key : clearedKeys) {
 					synchronized (map1) {
 						map1.remove(key);
