@@ -64,6 +64,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
@@ -73,63 +74,68 @@ import main.Main;
 
 public class MainController implements Initializable, Pausable, CueListener {
 
-	private static final String				SETTINGS_PATH		= "/fxml/Settings.fxml";
+	private static final String SETTINGS_PATH = "/fxml/Settings.fxml";
 	// modules
-	private static final String				FFT_PATH			= "/fxml/RTAView.fxml";
-	private static final String				RTA_PATH			= "/fxml/FFTView.fxml";
-	private static final String				TIMEKEEPER_PATH		= "/fxml/TimeKeeper.fxml";
-	private static final String				GROUP_PATH			= "/fxml/GroupView.fxml";
-	private static final String				DRUM_PATH			= "/fxml/DrumView.fxml";
-	private static final String				PHASE_PATH			= "/fxml/VectorScopeView.fxml";
-	private static final String				BLEED_PATH			= "/fxml/BleedView.fxml";
-	private static final Logger				LOG					= LogManager.getLogger(MainController.class);
-	private static final ExtensionFilter	FILTER				= new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
-	private static MainController			instance;
+	private static final String FFT_PATH = "/fxml/RTAView.fxml";
+	private static final String RTA_PATH = "/fxml/FFTView.fxml";
+	private static final String TIMEKEEPER_PATH = "/fxml/TimeKeeper.fxml";
+	private static final String GROUP_PATH = "/fxml/GroupView.fxml";
+	private static final String DRUM_PATH = "/fxml/DrumView.fxml";
+	private static final String PHASE_PATH = "/fxml/VectorScopeView.fxml";
+	private static final String BLEED_PATH = "/fxml/BleedView.fxml";
+	private static final Logger LOG = LogManager.getLogger(MainController.class);
+	private static final ExtensionFilter FILTER = new ExtensionFilter(Main.getOnlyTitle() + " File",
+			"*" + FileIO.ENDING);
+	private static MainController instance;
 	@FXML
-	private AnchorPane						waveFormPane;
+	private AnchorPane waveFormPane;
 	@FXML
-	private HBox							buttonBox;
+	private HBox buttonBox;
 	@FXML
-	private Node							bottomLabel;
+	private Node bottomLabel;
+
+	@FXML
+	private VBox waveFormPaneParent;
 	/**
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
 	@FXML
-	private ToggleButton					toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView, toggleBleedView;
+	private ToggleButton toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView,
+			toggleBleedView;
 	@FXML
-	private CheckMenuItem					menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView, menuBleedView;
+	private CheckMenuItem menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView, menuBleedView;
 	@FXML
-	private ToggleButton					toggleWaveForm, toggleCue, toggleChannels, toggleGroupChannels;
+	private ToggleButton togglePreview, toggleCue, toggleChannels, toggleGroupChannels, toggleBtmRaw, toggleBtmWave;
 	@FXML
-	private BorderPane						root;
+	private BorderPane root;
 	@FXML
-	private SplitPane						contentPane;
+	private SplitPane contentPane;
 	@FXML
-	private MenuItem						closeMenu, menuSave, menuSettings;
+	private MenuItem closeMenu, menuSave, menuSettings;
 	@FXML
-	private MenuItem						menuTimerStart, menuTimerNext;
+	private MenuItem menuTimerStart, menuTimerNext;
 	@FXML
-	private ListView<Input>					channelList;
+	private ListView<Input> channelList;
 	@FXML
-	private CheckMenuItem					menuShowCue, menuShowChannels;
+	private CheckMenuItem menuShowCue, menuShowChannels;
 	@FXML
-	private Label							lblDriver, lblLatency, lblCurrentSong, lblNextSong;
+	private Label lblDriver, lblLatency, lblCurrentSong, lblNextSong;
 	@FXML
-	private SplitPane						channelPane;
+	private SplitPane channelPane;
 	@FXML
-	private Label							lblStatus;
+	private Label lblStatus;
 	@FXML
-	private ProgressBar						progStatus;
-	private boolean							showHidden			= false;
-	private boolean							pause				= false;
-	private HashMap<ToggleButton, Node>		contentMap			= new HashMap<>();
-	private HashMap<Node, PausableView>		controllerMap		= new HashMap<>();
-	private double							channelSplitRatio	= 0.8;
-	private ASIOController					controller;
-	private TimeKeeperController			timeKeeperController;
+	private ProgressBar progStatus;
+	private boolean showHidden = false;
+	private boolean pause = false;
+	private HashMap<ToggleButton, Node> contentMap = new HashMap<>();
+	private HashMap<Node, PausableView> controllerMap = new HashMap<>();
+	private double channelSplitRatio = 0.8;
+	private ASIOController controller;
+	private TimeKeeperController timeKeeperController;
 	// private DrumController drumController;
-	private WaveFormPane					waveFormChart;
-	private DataChart						dataChart;
+	private WaveFormPane waveFormChart;
+	private DataChart dataChart;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
@@ -209,37 +215,38 @@ public class MainController implements Initializable, Pausable, CueListener {
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().visibleProperty());
 		toggleChannels.selectedProperty().bindBidirectional(root.getLeft().managedProperty());
 		toggleChannels.selectedProperty().addListener(e -> pause(!toggleChannels.isSelected()));
-		toggleWaveForm.selectedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
+		togglePreview.selectedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			if (newValue) {
-				if (!channelPane.getItems().contains(waveFormPane)) {
-					channelPane.getItems().add(waveFormPane);
+				if (!channelPane.getItems().contains(waveFormPaneParent)) {
+					channelPane.getItems().add(waveFormPaneParent);
 					channelPane.setDividerPosition(0, channelSplitRatio);
 				}
 			} else {
 				channelSplitRatio = channelPane.getDividerPositions()[0];
-				channelPane.getItems().remove(waveFormPane);
+				channelPane.getItems().remove(waveFormPaneParent);
 			}
 		});
 		channelList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		channelList.setCellFactory(e -> new ChannelCell());
 		// channelList.setOnEditCommit(e ->
 		// timeKeeperController.setChannels(channelList.getItems()));
-		channelList.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
-			waveFormChart.setChannel(newValue);
-			if (newValue instanceof Channel) {
-				dataChart.setChannel((Channel) newValue);
-			}
-			if (newValue != null) {
-				LOG.debug("Switching to channel " + newValue.getName());
-				for (PausableView v : controllerMap.values()) {
-					v.setSelectedChannel(newValue);
-				}
-				if (newValue instanceof Channel) {
-					Channel channel = (Channel) newValue;
-					controller.setActiveChannel(channel);
-				}
-			}
-		});
+		channelList.getSelectionModel().selectedItemProperty()
+				.addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
+					waveFormChart.setChannel(newValue);
+					if (newValue instanceof Channel) {
+						dataChart.setChannel((Channel) newValue);
+					}
+					if (newValue != null) {
+						LOG.debug("Switching to channel " + newValue.getName());
+						for (PausableView v : controllerMap.values()) {
+							v.setSelectedChannel(newValue);
+						}
+						if (newValue instanceof Channel) {
+							Channel channel = (Channel) newValue;
+							controller.setActiveChannel(channel);
+						}
+					}
+				});
 		// Edit channel list
 		channelList.setEditable(true);
 		toggleGroupChannels.selectedProperty().addListener((obs, oldV, newV) -> {
@@ -423,22 +430,45 @@ public class MainController implements Initializable, Pausable, CueListener {
 			AnchorPane.setRightAnchor((Node) n, .0);
 			((Node) n).setOnMouseClicked(e -> {
 				if (e.getClickCount() == 2) {
-					LOG.info("Swaping WaveForm and DataChart");
-					waveFormPane.getChildren().clear();
-					if (Objects.equals(n, dataChart)) {
-						waveFormPane.getChildren().add(waveFormChart);
-					} else if (Objects.equals(n, waveFormChart)) {
-						waveFormPane.getChildren().add(dataChart);
+					if (toggleBtmRaw.isSelected()) {
+						toggleBtmWave.fire();
+					} else {
+						toggleBtmRaw.fire();
 					}
-					dataChart.pause(Objects.equals(e.getSource(), dataChart));
-					waveFormChart.pause(Objects.equals(e.getSource(), waveFormChart));
-				}
-				if (e.getClickCount() == 1) {
+				} else if (e.getClickCount() == 1) {
 					n.pause(!n.isPaused());
 				}
 			});
 		}
 		waveFormPane.getChildren().add(dataChart);
+	}
+
+	@FXML
+	public void swapWaveRawEvent(ActionEvent e) {
+
+		if (Objects.equals(e.getSource(), toggleBtmRaw) && dataChart.getParent() == null) {
+			swapWaveAndDataChart();
+		} else if (Objects.equals(e.getSource(), toggleBtmWave) && waveFormChart.getParent() == null) {
+			swapWaveAndDataChart();
+		} else {
+			ToggleButton btn = (ToggleButton) e.getSource();
+			btn.setSelected(true);
+			e.consume();
+		}
+	}
+
+	private void swapWaveAndDataChart() {
+		LOG.debug("Swaping WaveForm and DataChart");
+		Node n = waveFormPane.getChildren().get(0);
+		waveFormPane.getChildren().clear();
+		if (Objects.equals(n, dataChart)) {
+			waveFormPane.getChildren().add(waveFormChart);
+		} else if (Objects.equals(n, waveFormChart)) {
+			waveFormPane.getChildren().add(dataChart);
+		}
+		dataChart.pause(Objects.equals(n, dataChart));
+		waveFormChart.pause(Objects.equals(n, waveFormChart));
+
 	}
 
 	@Override
@@ -493,7 +523,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	public void refresh() {
-		ObservableList<Integer> selectedItems = FXCollections.observableArrayList(channelList.getSelectionModel().getSelectedIndices());
+		ObservableList<Integer> selectedItems = FXCollections
+				.observableArrayList(channelList.getSelectionModel().getSelectedIndices());
 		if (controller != null) {
 			refreshInputs();
 		}
@@ -516,7 +547,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 				for (Channel channel : ASIOController.getInstance().getInputList()) {
 					// if channel is not hidden, or showHidden, and if
 					// sterechannel isn't already added to list
-					if ((!channel.isHidden() || showHidden) && (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
+					if ((!channel.isHidden() || showHidden) && (channel.getStereoChannel() == null
+							|| !channelList.getItems().contains(channel.getStereoChannel()))) {
 						channelList.getItems().add(channel);
 					}
 				}
@@ -565,7 +597,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
-		if (result != null && timeKeeperController != null) return FileIO.save(result);
+		if (result != null && timeKeeperController != null)
+			return FileIO.save(result);
 		e.consume();
 		return false;
 	}
@@ -675,7 +708,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 		alert.getButtonTypes().add(ButtonType.CANCEL);
 		alert.getButtonTypes().add(ButtonType.OK);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent()) return result.get();
+		if (result.isPresent())
+			return result.get();
 		return ButtonType.CANCEL;
 	}
 

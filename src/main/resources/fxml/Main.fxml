@@ -25,13 +25,13 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" minHeight="600.0" minWidth="800.0" prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.MainController">
+<BorderPane fx:id="root" minHeight="600.0" minWidth="800.0" prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.MainController">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="BOTTOM_CENTER" style="-fx-padding: 0;" styleClass="menu-bar">
                <children>
-                  <MenuBar>
+                  <MenuBar maxHeight="30.0" minHeight="30.0" prefHeight="30.0">
                     <menus>
                       <Menu mnemonicParsing="false" text="File">
                         <items>
@@ -127,14 +127,14 @@
                     </menus>
                   </MenuBar>
                   <Pane HBox.hgrow="SOMETIMES" />
-                  <HBox>
+                  <HBox maxHeight="30.0" minHeight="30.0" prefHeight="30.0">
                      <children>
-                        <ToggleButton fx:id="toggleChannels" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Channels">
+                        <ToggleButton fx:id="toggleChannels" minHeight="30.0" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Channels">
                            <tooltip>
                               <Tooltip text="Shows/hides the channellist" />
                            </tooltip>
                         </ToggleButton>
-                        <ToggleButton fx:id="toggleCue" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" text="Cues">
+                        <ToggleButton fx:id="toggleCue" minHeight="30.0" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" text="Cues">
                            <tooltip>
                               <Tooltip text="Shows/hides the cue manager" />
                            </tooltip>
@@ -145,18 +145,18 @@
                      </HBox.margin>
                   </HBox>
                   <Pane HBox.hgrow="SOMETIMES" />
-                  <HBox alignment="BOTTOM_CENTER">
+                  <HBox alignment="BOTTOM_CENTER" maxHeight="30.0" minHeight="30.0" prefHeight="30.0">
                      <children>
-                        <ToggleButton fx:id="toggleFFTView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Spectrum">
+                        <ToggleButton fx:id="toggleFFTView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Spectrum">
                            <toggleGroup>
                               <ToggleGroup fx:id="viewGroup" />
                            </toggleGroup>
                         </ToggleButton>
-                        <ToggleButton fx:id="toggleRTAView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="RTA" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="toggleDrumView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Drum" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="toggleGroupsView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Groups" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="togglePhaseView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Phase" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="toggleBleedView" minWidth="70.0" mnemonicParsing="false" prefWidth="70.0" text="Bleed" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleRTAView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="RTA" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleDrumView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Drum" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleGroupsView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Groups" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="togglePhaseView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Phase" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleBleedView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Bleed" toggleGroup="$viewGroup" />
                      </children>
                      <HBox.margin>
                         <Insets />
@@ -207,7 +207,7 @@
                <left>
                   <HBox alignment="BOTTOM_LEFT" spacing="5.0" BorderPane.alignment="CENTER">
                      <children>
-                        <ProgressBar fx:id="progStatus" prefWidth="100.0" progress="0.0" HBox.hgrow="NEVER" />
+                        <ProgressBar fx:id="progStatus" prefWidth="100.0" progress="0.0" styleClass="flat-progress" HBox.hgrow="NEVER" />
                         <Label fx:id="lblStatus" text="Status" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
@@ -251,11 +251,11 @@
                      <children>
                         <HBox>
                            <children>
-                              <ToggleButton fx:id="toggleWaveForm" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Wave">
+                              <ToggleButton fx:id="togglePreview" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" selected="true" text="Wave" HBox.hgrow="ALWAYS">
                                  <tooltip>
                                     <Tooltip text="Hides/shows WaveForm for selected channel" />
                                  </tooltip></ToggleButton>
-                              <ToggleButton fx:id="toggleGroupChannels" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" text="Group">
+                              <ToggleButton fx:id="toggleGroupChannels" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Group" HBox.hgrow="ALWAYS">
                                  <tooltip>
                                     <Tooltip text="Groups the channels by groups if selected" />
                                  </tooltip></ToggleButton>
@@ -267,7 +267,21 @@
                         <ListView fx:id="channelList" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
-                  <AnchorPane fx:id="waveFormPane" SplitPane.resizableWithParent="false" />
+                  <VBox fx:id="waveFormPaneParent" SplitPane.resizableWithParent="false">
+                     <children>
+                        <AnchorPane fx:id="waveFormPane" VBox.vgrow="ALWAYS" />
+                        <HBox VBox.vgrow="NEVER">
+                           <children>
+                              <ToggleButton fx:id="toggleBtmRaw" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" onAction="#swapWaveRawEvent" prefHeight="30.0" selected="true" text="Raw Data" HBox.hgrow="ALWAYS">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="bottomLeft" />
+                                 </toggleGroup>
+                              </ToggleButton>
+                              <ToggleButton fx:id="toggleBtmWave" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" onAction="#swapWaveRawEvent" prefHeight="30.0" text="WaveForm" toggleGroup="$bottomLeft" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
                </items>
             </SplitPane>
          </children>
