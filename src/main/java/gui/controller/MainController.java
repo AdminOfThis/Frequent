@@ -230,7 +230,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 				dataChart.setChannel((Channel) newValue);
 			}
 			if (newValue != null) {
-				LOG.info("Switching to channel " + newValue.getName());
+				LOG.debug("Switching to channel " + newValue.getName());
 				for (PausableView v : controllerMap.values()) {
 					v.setSelectedChannel(newValue);
 				}
