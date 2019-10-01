@@ -28,38 +28,53 @@ import data.Group;
 import data.Input;
 import main.Main;
 
+/**
+ * @author AdminOfThis
+ *
+ */
 public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
-	public static final int			DESIRED_BUFFER_SIZE	= 1024;
-	private static ASIOController	instance;
-	private static final Logger		LOG					= LogManager.getLogger(ASIOController.class);
-	private static int				fftBufferSize;
-	private String					driverName;
-	private AsioDriver				asioDriver;
-	private int						bufferSize			= 1024;
-	private double					sampleRate;
-	private Channel					activeChannel;
-	private float					baseFrequency		= -1;
+	/**
+	 * Default buffer size
+	 */
+	public static final int DESIRED_BUFFER_SIZE = 1024;
+	private static ASIOController instance;
+	private static final Logger LOG = LogManager.getLogger(ASIOController.class);
+	private static int fftBufferSize;
+	private String driverName;
+	private AsioDriver asioDriver;
+	private int bufferSize = 1024;
+	private double sampleRate;
+	private Channel activeChannel;
+	private float baseFrequency = -1;
 	// FFT
 	// private float[] output;
-	private int						bufferCount;
-	private DoubleDCT_1D			fft;
-	private int[]					index;
-	private double[][]				fftBuffer;
-	private double[][]				spectrumMap;
-	private List<Channel>			channelList;
-	private List<Group>				groupList			= new ArrayList<>();
-	private List<FFTListener>		fftListeners		= new ArrayList<>();
-	private double[][][]			bufferingBuffer		= new double[2][2][1024];
-	private ExecutorService			exe;
-	private long					time;
-	private boolean					isFFTing			= false;
-	private Object					lastCompleteBuffer;;
+	private int bufferCount;
+	private DoubleDCT_1D fft;
+	private int[] index;
+	private double[][] fftBuffer;
+	private double[][] spectrumMap;
+	private List<Channel> channelList;
+	private List<Group> groupList = new ArrayList<>();
+	private List<FFTListener> fftListeners = new ArrayList<>();
+	private double[][][] bufferingBuffer = new double[2][2][1024];
+	private ExecutorService exe;
+	private long time;
+	private boolean isFFTing = false;
+	private Object lastCompleteBuffer;;
 
+	/**
+	 * @return Returns the instance of the {@link #ASIOController}, as definded by
+	 *         singleton pattern
+	 */
 	public static ASIOController getInstance() {
 		return instance;
 	}
 
+	/**
+	 * @return Returns a list of {@link String} of found active ASIO drivers on the
+	 *         system
+	 */
 	public static List<String> getPossibleDrivers() {
 		ArrayList<String> result = new ArrayList<>();
 		try {
@@ -73,29 +88,32 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
 						result.add(possibleDriver);
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOG.debug(possibleDriver + " is unavailable");
-				}
-				finally {
+				} finally {
 					if (tempDriver != null) {
 						tempDriver.shutdownAndUnloadDriver();
 					}
 				}
 			}
-		}
-		catch (UnsatisfiedLinkError e) {
+		} catch (UnsatisfiedLinkError e) {
 			LOG.warn("The corresponding library jasiohost64.dll was not found");
 		}
 		return result;
 	}
 
+	/**
+	 * Constructor of the ASIOController
+	 * 
+	 * @param ioName Name of the chosen ASIO driver, should be chosen of the list
+	 *               from {@link #getPossibleDrivers()}
+	 */
 	public ASIOController(final String ioName) {
 		LOG.info("Created ASIO Controller");
 		driverName = ioName;
 		instance = this;
 		FileIO.registerSaveData(this);
-		restartASIODriver();
+		restart();
 		LOG.info("ASIO driver started");
 		initFFT();
 		LOG.info("FFT Analysis started");
@@ -113,8 +131,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 							if (activeChannel != null) {
 								try {
 									channel.read(output);
-								}
-								catch (BufferUnderflowException e1) {
+								} catch (BufferUnderflowException e1) {
 									LOG.debug("Underflow Exception", e1);
 								}
 								if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
@@ -141,15 +158,13 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 									c.setBuffer(output, samplePosition);
 								}
 							}
-						}
-						catch (Exception e2) {
+						} catch (Exception e2) {
 							e2.printStackTrace();
 						}
 					};
 					exe.submit(runnable);
 				}
-			}
-			catch (ConcurrentModificationException e) {
+			} catch (ConcurrentModificationException e) {
 				e.printStackTrace();
 			}
 		}
@@ -188,12 +203,24 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		}
 	}
 
-	public void addFFTListener(final FFTListener pausableView) {
-		if (!fftListeners.contains(pausableView)) {
-			fftListeners.add(pausableView);
+	/**
+	 * Adds a {@link FFTListener} to the list of listeners that get notified by fft
+	 * events, if that listener is not already an entry in that list
+	 * 
+	 * @param fftListener The listener to be added
+	 */
+	public void addFFTListener(final FFTListener fftListener) {
+		if (!fftListeners.contains(fftListener)) {
+			fftListeners.add(fftListener);
 		}
 	}
 
+	/**
+	 * Adds a group to the {@link ASIOController}, for the level of the group to be
+	 * calculated by the controller
+	 * 
+	 * @param group The group to add to the list of groups
+	 */
 	public void addGroup(final Group group) {
 		if (!groupList.contains(group)) {
 			LOG.info("Group " + group.getName() + " added");
@@ -201,8 +228,14 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		}
 	}
 
-	// taken from Bachelor thesis at
-	// https://www.vutbr.cz/studium/zaverecne-prace?zp_id=88462
+	/**
+	 * Applies a HannWindow to a signal taken from Bachelor thesis at
+	 * <a href="https://www.vutbr.cz/studium/zaverecne-prace?zp_id=88462">Bachelor
+	 * thesis</a>
+	 * 
+	 * @param input The raw input of the audio signal
+	 * @return data
+	 */
 	private double[] applyHannWindow(final double[] input) {
 		double[] out = new double[input.length];
 		for (int i = 0; i < input.length; i++) {
@@ -215,7 +248,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	@Override
 	public void bufferSizeChanged(final int bufferSize) {
 		LOG.info("Buffer size changed");
-		restartASIODriver();
+		restart();
 	}
 
 	@Override
@@ -259,20 +292,24 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					new Thread(() -> {
 						try {
 							l.newFFT(spectrumMap);
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							LOG.warn("Unable to notify FFTListener");
 							LOG.debug("", e);
 						}
 					}).start();
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.info("Problem on FFT", e);
 		}
 	}
 
+	/**
+	 * Returns the root frequency of the selected channel, which is prior calculated
+	 * while applying the fft calculations
+	 * 
+	 * @return The root frequency of the selected channel
+	 */
 	public float getBaseFrequency() {
 		return baseFrequency;
 	}
@@ -313,10 +350,20 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		return (float) index * (float) rate / size;
 	}
 
+	/**
+	 * Returns the list of {@link Group} that get calculated
+	 * 
+	 * @return The list of {@link Group}
+	 */
 	public ArrayList<Group> getGroupList() {
 		return new ArrayList<>(groupList);
 	}
 
+	/**
+	 * Returns the list of {@link Channel} the ASIO driver provides
+	 * 
+	 * @return List of {@link Channel}
+	 */
 	public List<Channel> getInputList() {
 		if (channelList == null) {
 			channelList = new ArrayList<>();
@@ -327,6 +374,12 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		return channelList;
 	}
 
+	/**
+	 * Calculates and returns the latency of the ASIO driver, calculated with the
+	 * sample rate and the BufferSize of the {@link AsioDriver}
+	 * 
+	 * @return The calculated latency in milliseconds
+	 */
 	public double getLatency() {
 		if (asioDriver != null) {
 			double inSec = (1.0 / asioDriver.getSampleRate()) * asioDriver.getBufferPreferredSize();
@@ -335,9 +388,17 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		return 0;
 	}
 
+	/**
+	 * Returns the number of input channels the ASIO driver reports
+	 * 
+	 * @return Number of inputs
+	 */
 	public int getNoOfInputs() {
-		if (asioDriver != null) return asioDriver.getNumChannelsInput();
-		return -1;
+		if (asioDriver != null) {
+			return asioDriver.getNumChannelsInput();
+		} else {
+			return -1;
+		}
 	}
 
 	private double[][] getSpectrum(final double[] spectrum) {
@@ -350,6 +411,12 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		return result;
 	}
 
+	/**
+	 * Returns the spectrumMap that gets calulated by the FFT calculations
+	 * 
+	 * @return twodimensional array, in column 0 are the frequencies in Hertz, in
+	 *         column 1 is the calulated value associated to that frequency
+	 */
 	public double[][] getSpectrumMap() {
 		return spectrumMap;
 	}
@@ -370,13 +437,24 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	@Override
 	public void latenciesChanged(final int inputLatency, final int outputLatency) {
 		LOG.info("Latencies changed");
-		restartASIODriver();
+		restart();
 	}
 
-	public void removeFFTListener(final FFTListener l) {
-		fftListeners.remove(l);
+	/**
+	 * Removes a listener from the list of {@link FFTListener} that get notified by
+	 * fft events
+	 * 
+	 * @param listener The {@link FFTListener} that gets removed
+	 */
+	public void removeFFTListener(final FFTListener listener) {
+		fftListeners.remove(listener);
 	}
 
+	/**
+	 * Removes a group from the list of {@link Group} that get calculated
+	 * 
+	 * @param group The {@link Group} to be removed
+	 */
 	public void removeGroup(final Group group) {
 		groupList.remove(group);
 	}
@@ -384,22 +462,20 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	@Override
 	public void resetRequest() {
 		LOG.info("Reset requested");
-		restartASIODriver();
+		restart();
 	}
 
+	/**
+	 * Restarts the {@link AsioDriver} with the set attributes
+	 */
 	public void restart() {
-		restartASIODriver();
-	}
-
-	private void restartASIODriver() {
 		if (asioDriver != null) {
 			asioDriver.shutdownAndUnloadDriver();
 		}
 		LOG.info("Loading ASIO driver '" + driverName + "'");
 		try {
 			asioDriver = AsioDriver.getDriver(driverName);
-		}
-		catch (AsioException e) {
+		} catch (AsioException e) {
 			LOG.error("No ASIO device found");
 		}
 		if (asioDriver == null) {
@@ -423,7 +499,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		// start the driver
 		asioDriver.start();
 		// creating ThreadPool
-		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<Runnable>());
 		LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
 		LOG.info("Buffer size: " + bufferSize);
 		LOG.info("Samplerate: " + sampleRate);
@@ -432,13 +509,13 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	@Override
 	public void resyncRequest() {
 		LOG.info("Resync requested");
-		restartASIODriver();
+		restart();
 	}
 
 	@Override
 	public void sampleRateDidChange(final double sampleRate) {
 		LOG.info("Sample rate changed");
-		restartASIODriver();
+		restart();
 	}
 
 	@Override
@@ -452,34 +529,62 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		}
 	}
 
+	/**
+	 * Sets the active {@link Channel} for which the FFT calculations are done
+	 * 
+	 * @param channel The {@link Channel} for the fft calculations
+	 */
 	public void setActiveChannel(final Channel channel) {
 		activeChannel = channel;
 	}
 
+	/**
+	 * Closes and unloads the {@link AsioDriver}
+	 */
 	public void shutdown() {
 		if (asioDriver != null) {
 			asioDriver.shutdownAndUnloadDriver();
 		}
 	}
 
+	/**
+	 * Returns the buffer size of the driver
+	 * @return The buffersize
+	 */
 	public int getBufferSize() {
 		return bufferSize;
 	}
 
+	/**
+	 * Returns the current time, read from the {@link AsioDriver}
+	 * @return The time as {@link Long}
+	 */
 	public long getTime() {
 		return time;
 	}
 
+	
+	/**
+	 * The samplerate set for the driver
+	 */
 	public int getSampleRate() {
 		return (int) Math.floor(sampleRate);
 	}
 
+	/**
+	 * Sets the buffersize, which gets only loaded once the driver ist restarted.
+	 * @param value The buffer size
+	 */
 	public void setBufferSize(int value) {
 		if (value > 0 && value < 10000) {
 			bufferSize = value;
 		}
 	}
 
+	/**
+	 * Returns the name of the loaded driver 
+	 * @return The name of the active driver as {@link String}
+	 */
 	public String getDevice() {
 		return driverName;
 	}

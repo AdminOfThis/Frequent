@@ -30,7 +30,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
-
+/**
+ * 
+ * @author AdminOfThis
+ *
+ */
 public class VuMeterMono extends AnchorPane implements Initializable, VuMeterIntf, InputListener {
 
 	private static final String		FXML_VERTICAL	= "/fxml/utilities/VuMeterVertical.fxml";
