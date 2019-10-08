@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import control.ChannelListener;
 import data.Channel;
 import data.Input;
+import debug.ExecutionTimer;
 import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
@@ -50,7 +51,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	private Series<Number, Number> vectorSeries = new Series<>();
 	// GUI data
 	// pausable
-	private boolean pause;
+	private boolean pause = false;
 	private Pausable parentPausable;
 	// data
 	private Channel channel1, channel2;
@@ -59,7 +60,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	// private long timeFirstBuffer, timeSecondBuffer;
 	// buffers
 	// private List<Float> buffer1, buffer2;
-	private Map<Long, float[]> map1, map2;
+	protected Map<Long, float[]> map1, map2;
 	private double decay = 1.0;
 
 	public VectorScope() {
@@ -75,6 +76,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		// buffer1 = Collections.synchronizedList(new ArrayList<Float>());
 		// buffer2 = Collections.synchronizedList(new ArrayList<Float>());
 		// initialize timer
+
 		AnimationTimer timer = new AnimationTimer() {
 
 			@Override
@@ -83,6 +85,10 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			}
 		};
 		timer.start();
+	}
+
+	protected ScatterChart<Number, Number> getChart() {
+		return chart;
 	}
 
 	public VectorScope(final PausableView parent) {
@@ -187,7 +193,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		lblTitle.setText(title);
 	}
 
-	private void showData(final float[] x, final float[] y) {
+	protected void showData(final float[] x, final float[] y) {
 		// drawing new data
 		if (x.length == y.length) {
 			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
@@ -213,12 +219,16 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		}
 	}
 
-	private void update() {
+	protected void update() {
 		if (!isPaused()) {
 			ArrayList<Long> clearedKeys = null;
 			Map<Long, float[]> copyMap1, copyMap2;
-			copyMap1 = new LinkedHashMap<Long, float[]>(map1);
-			copyMap2 = new LinkedHashMap<Long, float[]>(map2);
+			synchronized (map1) {
+				copyMap1 = new LinkedHashMap<Long, float[]>(map1);
+			}
+			synchronized (map2) {
+				copyMap2 = new LinkedHashMap<Long, float[]>(map2);
+			}
 			for (long key : copyMap1.keySet()) {
 				if (copyMap2.containsKey(key)) {
 
@@ -244,7 +254,12 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					synchronized (map2) {
 						copy2 = map2.get(key);
 					}
-					showData(copy1, copy2);
+					if (Main.isDebug()) {
+						ExecutionTimer.executeTime("ShowData", () -> showData(copy1, copy2));
+					} else {
+						showData(copy1, copy2);
+					}
+
 				}
 
 				for (long key : clearedKeys) {

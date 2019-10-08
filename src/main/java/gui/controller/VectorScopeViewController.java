@@ -28,22 +28,22 @@ public class VectorScopeViewController implements Initializable, PausableView {
 
 	// private static final Logger LOG =
 	// Logger.getLogger(VectorScopeViewController.class);
-	private boolean				pause	= false;
+	private boolean pause = true;
 	@FXML
-	private AnchorPane			chartPane;
+	private AnchorPane chartPane;
 	@FXML
-	private ComboBox<Channel>	cmbChannel1, cmbChannel2;
+	private ComboBox<Channel> cmbChannel1, cmbChannel2;
 	@FXML
-	private HBox				box1, box2;
+	private HBox box1, box2;
 	@FXML
-	private HBox				bottomPane;
+	private HBox bottomPane;
 	@FXML
-	private Slider				decaySlider;
+	private Slider decaySlider;
 	@FXML
-	private HBox				boxDecay;
-	private VectorScope			vectorScope;
-	private VuMeterMono			vu1, vu2;
-	private Channel				c1, c2;
+	private HBox boxDecay;
+	private VectorScope vectorScope;
+	private VuMeterMono vu1, vu2;
+	private Channel c1, c2;
 
 	@Override
 	public ArrayList<Node> getHeader() {
@@ -143,9 +143,12 @@ public class VectorScopeViewController implements Initializable, PausableView {
 					cmbChannel2.setValue(((Channel) i).getStereoChannel());
 				}
 			}
-		} else if (cmbChannel1.getValue() == null && cmbChannel2.getValue() == null && MainController.getInstance().getSelectedChannels().size() == 2) {
+		} else if (cmbChannel1.getValue() == null && cmbChannel2.getValue() == null
+				&& MainController.getInstance().getSelectedChannels().size() == 2) {
 			for (Input i : MainController.getInstance().getSelectedChannels()) {
-				if (i instanceof Group) { return; }
+				if (i instanceof Group) {
+					return;
+				}
 			}
 			cmbChannel1.setValue((Channel) MainController.getInstance().getSelectedChannels().get(0));
 			cmbChannel2.setValue((Channel) MainController.getInstance().getSelectedChannels().get(1));

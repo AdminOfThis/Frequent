@@ -549,6 +549,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	/**
 	 * Returns the buffer size of the driver
+	 * 
 	 * @return The buffersize
 	 */
 	public int getBufferSize() {
@@ -557,13 +558,13 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	/**
 	 * Returns the current time, read from the {@link AsioDriver}
+	 * 
 	 * @return The time as {@link Long}
 	 */
 	public long getTime() {
 		return time;
 	}
 
-	
 	/**
 	 * The samplerate set for the driver
 	 */
@@ -573,6 +574,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	/**
 	 * Sets the buffersize, which gets only loaded once the driver ist restarted.
+	 * 
 	 * @param value The buffer size
 	 */
 	public void setBufferSize(int value) {
@@ -582,7 +584,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	/**
-	 * Returns the name of the loaded driver 
+	 * Returns the name of the loaded driver
+	 * 
 	 * @return The name of the active driver as {@link String}
 	 */
 	public String getDevice() {

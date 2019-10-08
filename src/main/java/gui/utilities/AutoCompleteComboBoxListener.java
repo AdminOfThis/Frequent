@@ -7,6 +7,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
+/**
+ * @author AdminOfThis
+ *
+ * @param <T>
+ */
 public class AutoCompleteComboBoxListener<T> implements EventHandler<KeyEvent> {
 
 	private ComboBox<T>			comboBox;
