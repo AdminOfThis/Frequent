@@ -13,24 +13,30 @@ import java.util.Map.Entry;
  */
 public class BPMDetect {
 
-	public final int		sampleRate		= 500;
-	public final int		NUM_FLAGS		= 8;
+	private final int sampleRate = 500;
 	// public static Multimap<Double, Integer> reps = TreeMultimap.create();
-	public List<Integer>	flags			= new ArrayList<>();
-	public double			bpm				= -1;
-	public double			confidence		= 0;
-	private int				ramp			= sampleRate / 60;
-	public double			rampRequired	= 0.35;
-	private int				rampSeperation	= ramp * 5;
-	private long			downbeatTime	= System.currentTimeMillis();
+	private List<Integer> flags = new ArrayList<>();
+	private double bpm = -1;
+	private double confidence = 0;
+	private int ramp = sampleRate / 60;
+	private double rampRequired = 0.35;
+	private int rampSeperation = ramp * 5;
+	private long downbeatTime = System.currentTimeMillis();
 
+	/**
+	 * detects the BPM from the float array sample
+	 * 
+	 * @param samples    The samples of the audio snippet to analyze
+	 * @param sampleRate The samplerate of the audio interface
+	 */
 	public void detect(float[] samples, int sampleRate) {
 		new Thread(() -> detectBPM(samples, sampleRate)).start();
 	}
 
 	private double detectBPM(float[] samples, int sampleRate) {
 		int crossoverSize = sampleRate * 60 / 130 * 4; // 4 beats at 130BPM
-		if (crossoverSize > sampleRate * 10.0) { return -1; // whoops
+		if (crossoverSize > sampleRate * 10.0) {
+			return -1; // whoops
 		}
 		float max = getMaxInArray(samples);
 		int lastBeat = 0;
@@ -57,7 +63,7 @@ public class BPMDetect {
 		return bpm;
 	}
 
-	public double bpmFromFlags(int sampleRate) {
+	private double bpmFromFlags(int sampleRate) {
 		ArrayList<Integer> distances = new ArrayList<>();
 		for (int i = 0; i < flags.size(); i++)
 			for (int j = i + 1; j < flags.size(); j++) {
@@ -105,7 +111,9 @@ public class BPMDetect {
 			return -1;
 		} else {
 			double bpm = sampleRate * 60.0 / (bestGuess.x - 1);
-			if (bpm <= 0) { return bpm; }
+			if (bpm <= 0) {
+				return bpm;
+			}
 			while (bpm < 70) {
 				bpm *= 2.0;
 			}
@@ -116,22 +124,28 @@ public class BPMDetect {
 		}
 	}
 
-	public long getDownbeat(float[] samples, int sampleRate) {
-		Pair<Integer, Float> bestGuess = new Pair<>(0, 0f);
-		float[] sums = new float[samples.length - sampleRate];
-		for (int i = 0; i < samples.length - sampleRate; i++)
-			for (int j = 0; j < sampleRate; j++)
-				sums[i] += samples[i + j];
-		for (int i = 0; i < samples.length - 2 * sampleRate; i++)
-			if (sums[i + sampleRate] - sums[i] > bestGuess.y) {
-				bestGuess = new Pair<>(i + sampleRate, sums[i + sampleRate]);
-			}
-		if (sums[bestGuess.x - sampleRate] * 5 < sums[bestGuess.x] && Math.abs(downbeatTime - (System.currentTimeMillis() - (samples.length - bestGuess.x) * 1000 / sampleRate)) > 100) {
-			downbeatTime = System.currentTimeMillis() - (samples.length - bestGuess.x) * 1000 / sampleRate;
-		}
-		return downbeatTime;
-	}
+//	private long getDownbeat(float[] samples, int sampleRate) {
+//		Pair<Integer, Float> bestGuess = new Pair<>(0, 0f);
+//		float[] sums = new float[samples.length - sampleRate];
+//		for (int i = 0; i < samples.length - sampleRate; i++)
+//			for (int j = 0; j < sampleRate; j++)
+//				sums[i] += samples[i + j];
+//		for (int i = 0; i < samples.length - 2 * sampleRate; i++)
+//			if (sums[i + sampleRate] - sums[i] > bestGuess.y) {
+//				bestGuess = new Pair<>(i + sampleRate, sums[i + sampleRate]);
+//			}
+//		if (sums[bestGuess.x - sampleRate] * 5 < sums[bestGuess.x] && Math.abs(downbeatTime
+//				- (System.currentTimeMillis() - (samples.length - bestGuess.x) * 1000 / sampleRate)) > 100) {
+//			downbeatTime = System.currentTimeMillis() - (samples.length - bestGuess.x) * 1000 / sampleRate;
+//		}
+//		return downbeatTime;
+//	}
 
+	/**
+	 * Returns the BPM of the given sample
+	 * 
+	 * @return bpm
+	 */
 	public int getBeat() {
 		double time = (System.currentTimeMillis() - downbeatTime);
 		double bpm = BPMBestGuess.getInstance().getBPM();
@@ -139,50 +153,56 @@ public class BPMDetect {
 		return (int) beat % 32 + 1;
 	}
 
+	/**
+	 * The phase detected by {@link BPMBestGuess}
+	 * 
+	 * @return phase
+	 */
 	public double getPhase() {
 		double time = (System.currentTimeMillis() - downbeatTime);
 		double bpm = BPMBestGuess.getInstance().getBPM();
 		return (bpm * time / 60000) - Math.round(bpm * time / 60000) + 0.5d;
 	}
 
-	public float[] filterSamplesDecay(float[] samples) {
-		float[] s = new float[samples.length];
-		s = samples.clone();
-		for (int i = s.length - 1; i > 0; i--)
-			for (int j = 0; j < 5; j++)
-				if (i > 5 && s[i] < s[i - j]) s[i] = s[i - j];
-		return s;
-	}
+//	private float[] filterSamplesDecay(float[] samples) {
+//		float[] s = new float[samples.length];
+//		s = samples.clone();
+//		for (int i = s.length - 1; i > 0; i--)
+//			for (int j = 0; j < 5; j++)
+//				if (i > 5 && s[i] < s[i - j])
+//					s[i] = s[i - j];
+//		return s;
+//	}
 
-	public float[] dIntegral(float[] samples) {
-		float[] s = new float[samples.length];
-		s[0] = 0;
-		for (int i = 1; i < s.length; i++)
-			if (samples[i] - samples[i - 1] > 0) {
-				s[i] = samples[i] - samples[i - 1];
-			} else {
-				s[i] = 0;
-			}
-		return s;
-	}
+//	private float[] dIntegral(float[] samples) {
+//		float[] s = new float[samples.length];
+//		s[0] = 0;
+//		for (int i = 1; i < s.length; i++)
+//			if (samples[i] - samples[i - 1] > 0) {
+//				s[i] = samples[i] - samples[i - 1];
+//			} else {
+//				s[i] = 0;
+//			}
+//		return s;
+//	}
 
-	public float[] filteredIntegral(float[] samples) {
-		return dIntegral(filterSamplesDecay(samples));
-	}
+//	private float[] filteredIntegral(float[] samples) {
+//		return dIntegral(filterSamplesDecay(samples));
+//	}
 
-	public float getMaxInArray(float[] array) {
+	private float getMaxInArray(float[] array) {
 		float max = 0;
 		for (int i = 0; i < array.length; i++)
-			if (array[i] > max) max = array[i];
+			if (array[i] > max)
+				max = array[i];
 		return max;
 	}
 }
 
-
 class Pair<X, Y> {
 
-	public final X	x;
-	public final Y	y;
+	public final X x;
+	public final Y y;
 
 	public Pair(X x, Y y) {
 		this.x = x;

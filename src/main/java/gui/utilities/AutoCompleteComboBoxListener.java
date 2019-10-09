@@ -8,17 +8,24 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 /**
+ * Class for auto completing combo boxes, which check the data typed with the
+ * dataset of the combo box
+ * 
  * @author AdminOfThis
  *
- * @param <T>
+ * @param <T> inherited from {@link ComboBox}
  */
 public class AutoCompleteComboBoxListener<T> implements EventHandler<KeyEvent> {
 
-	private ComboBox<T>			comboBox;
-	private ObservableList<T>	data;
-	private boolean				moveCaretToPos	= false;
-	private int					caretPos;
+	private ComboBox<T> comboBox;
+	private ObservableList<T> data;
+	private boolean moveCaretToPos = false;
+	private int caretPos;
 
+	/**
+	 * Creates a new AutoCompleteLsitener, and adds it to the given {@link ComboBox}
+	 * @param comboBox THe {@link ComboBox} to which the Listener gets added
+	 */
 	public AutoCompleteComboBoxListener(final ComboBox<T> comboBox) {
 		this.comboBox = comboBox;
 		data = comboBox.getItems();
@@ -50,8 +57,9 @@ public class AutoCompleteComboBoxListener<T> implements EventHandler<KeyEvent> {
 			caretPos = comboBox.getEditor().getCaretPosition();
 		}
 
-		if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.LEFT || event.isControlDown() || event.getCode() == KeyCode.HOME
-			|| event.getCode() == KeyCode.END || event.getCode() == KeyCode.TAB) {
+		if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.LEFT || event.isControlDown()
+				|| event.getCode() == KeyCode.HOME || event.getCode() == KeyCode.END
+				|| event.getCode() == KeyCode.TAB) {
 			return;
 		}
 
@@ -62,7 +70,7 @@ public class AutoCompleteComboBoxListener<T> implements EventHandler<KeyEvent> {
 		ObservableList<T> list = FXCollections.observableArrayList();
 		for (int i = 0; i < data.size(); i++) {
 			if (data.get(i).toString().toLowerCase()
-				.startsWith(AutoCompleteComboBoxListener.this.comboBox.getEditor().getText().toLowerCase())) {
+					.startsWith(AutoCompleteComboBoxListener.this.comboBox.getEditor().getText().toLowerCase())) {
 				list.add(data.get(i));
 			}
 		}
