@@ -23,8 +23,8 @@
       <HBox spacing="5.0" BorderPane.alignment="CENTER">
          <children>
             <Pane HBox.hgrow="ALWAYS" />
-            <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" prefWidth="75.0" text="Cancel" />
-            <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" prefWidth="75.0" text="Save" />
+            <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" onAction="#cancel" prefWidth="75.0" text="Cancel" />
+            <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#save" prefWidth="75.0" text="Save" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -82,16 +82,15 @@
                         <ToggleGroup fx:id="startUp" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton mnemonicParsing="false" text="Show last used Panel on Application start" toggleGroup="$startUp" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                  <RadioButton fx:id="rBtnSpecific" mnemonicParsing="false" text="Show specific Panel on Application Start" toggleGroup="$startUp" GridPane.columnIndex="2" GridPane.rowIndex="7" />
-                  <FlowPane fx:id="flwPanel" hgap="10.0" rowValignment="TOP" style="-fx-background-color: derive(-fx-base, 10%);" vgap="10.0" GridPane.columnIndex="2" GridPane.rowIndex="8" disable="${rBtnSpecific.selected}">
+                  <RadioButton fx:id="rBtnPanelLast" mnemonicParsing="false" text="Show last used Panel on Application start" toggleGroup="$startUp" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                  <RadioButton fx:id="rBtnPanelSpecific" mnemonicParsing="false" text="Show specific Panel on Application Start" toggleGroup="$startUp" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+                  <FlowPane fx:id="flwPanel" hgap="10.0" rowValignment="TOP" style="-fx-background-color: derive(-fx-base, 10%);" vgap="10.0" GridPane.columnIndex="2" GridPane.rowIndex="8">
                      <children>
                         <RadioButton mnemonicParsing="false" text="RadioButton">
                            <toggleGroup>
                               <ToggleGroup fx:id="startUpPanel" />
                            </toggleGroup>
                         </RadioButton>
-                        <RadioButton mnemonicParsing="false" text="RadioButton" toggleGroup="$startUpPanel" />
                         <RadioButton mnemonicParsing="false" text="RadioButton" toggleGroup="$startUpPanel" />
                         <RadioButton mnemonicParsing="false" text="RadioButton" toggleGroup="$startUpPanel" />
                         <RadioButton mnemonicParsing="false" text="RadioButton" toggleGroup="$startUpPanel" />

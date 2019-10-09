@@ -55,6 +55,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
@@ -741,10 +742,21 @@ public class MainController implements Initializable, Pausable, CueListener {
 		Parent setting = FXMLUtil.loadFXML(getClass().getResource(SETTINGS_PATH));
 		Stage settingStage = new Stage();
 		settingStage.setTitle("Settings");
-		FXMLUtil.setIcon(settingStage, Main.LOGO);
+		FXMLUtil.setIcon(settingStage, Main.getLogoPath());
 		settingStage.setScene(new Scene(setting));
 		settingStage.initOwner(root.getScene().getWindow());
 		settingStage.initModality(Modality.APPLICATION_MODAL);
 		settingStage.show();
+	}
+
+	public List<String> getPanels() {
+		List<String> result = new ArrayList<>();
+		// TODO Auto-generated method stub
+		for (Toggle t : toggleFFTView.getToggleGroup().getToggles()) {
+			ToggleButton tglBtn = (ToggleButton) t;
+			result.add(tglBtn.getText());
+
+		}
+		return result;
 	}
 }

@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,102 +26,63 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import preferences.PropertiesIO;
 
 public class Main extends MainGUI {
 
-	private static String		color_accent	= "#5EBF23";
-	private static String		color_base		= "#1A1A1A";
-	private static String		color_focus		= "#7DFF2F";
-	private static String		style			= "";
-	private static Logger		LOG				= LogManager.getLogger(Main.class);
-	private static final String	POM_TITLE		= "Frequent";
-	private static final String	GUI_IO_CHOOSER	= "/fxml/IOChooser.fxml";
-	private static final String	GUI_MAIN_PATH	= "/fxml/Main.fxml";
-	public static final String	LOGO			= "/logo/logo_64.png";
-	private static boolean		debug			= false, fast = false;
-	private static Main			instance;
-	private Scene				loginScene;
-	private Scene				mainScene;
-	private IOChooserController	loginController;
+	private static final String POM_TITLE = "Frequent";
+	private static final String GUI_IO_CHOOSER = "/fxml/IOChooser.fxml";
+	private static final String GUI_MAIN_PATH = "/fxml/Main.fxml";
+	private static final String LOGO = "/logo/logo_64.png";
+	private static final String DEFAULT_PROPERTIES_PATH = "./settings.conf";
 
+	private static String color_accent = "#5EBF23";
+	private static String color_base = "#1A1A1A";
+	private static String color_focus = "#7DFF2F";
+	private static String style = "";
+	private static String propertiesPath = DEFAULT_PROPERTIES_PATH;
+	private static Logger LOG = LogManager.getLogger(Main.class);
+	private static boolean debug = false, fast = false;
+	private static Main instance;
+	private Scene loginScene;
+	private Scene mainScene;
+	private IOChooserController loginController;
+	private static Properties properties = new Properties();
+
+	/**
+	 * The main method of the programm. Starts with parsing arguments, then launches
+	 * the GUI
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(final String[] args) throws Exception {
 		MainGUI.initialize(POM_TITLE);
 		LOG.info(" === " + getReadableTitle() + " ===");
 		parseArgs(args);
 		setColors();
+		loadProperties();
 		System.setProperty("javafx.preloader", PreLoader.class.getName());
 		Application.launch(Main.class, args);
 	}
 
-	/**
-	 * stops all running threads and terminates the gui
-	 */
 	@Override
-	public boolean close() {
-		if (!Main.isDebug()) {
-			LOG.info("Checking for unsaved changes");
-			if (FileIO.unsavedChanges()) {
-				LOG.info("Unsaved changes found");
-				ConfirmationDialog dialog = new ConfirmationDialog("Save changes before exit?", true);
-				Optional<ButtonType> result = dialog.showAndWait();
-				if (!result.isPresent()) { return false; }
-				if (result.get() == ButtonType.YES) {
-					boolean saveResult = MainController.getInstance().save(new ActionEvent());
-					if (!saveResult) {
-						LOG.info("Saving cancelled");
-						return false;
-					}
-				} else if (result.get() == ButtonType.NO) {
-					LOG.info("Closing without saving unfinished changes");
-				} else if (result.get() == ButtonType.CANCEL) {
-					LOG.info("Cancelled closing of program");
-					return false;
-				}
-			}
-		}
-		LOG.info("Stopping GUI");
-		Platform.exit();
-		if (ASIOController.getInstance() != null) {
-			LOG.info("Stopping AudioDriver");
-			ASIOController.getInstance().shutdown();
-		}
-		LOG.info("Deleting RTA file");
-		RTAIO.deleteFile();
-		LOG.info("Bye");
-		System.exit(0);
-		return true;
-	}
-
-	public static String getAccentColor() {
-		return color_accent;
-	}
-
-	public static String getBaseColor() {
-		return color_base;
-	}
-
-	public static String getFocusColor() {
-		return color_focus;
-	}
-
-	public static Main getInstance() {
-		return instance;
-	}
-
-	public static String getStyle() {
-		return style;
-	}
-
-	public static boolean isDebug() {
-		return debug;
-	}
-
-	public static boolean isFast() {
-		return fast;
+	public void init() throws Exception {
+		super.init();
+		instance = this;
+		notifyPreloader(new Preloader.ProgressNotification(0.1));
+		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
+		loginController = (IOChooserController) FXMLUtil.getController();
+		loginScene = new Scene(parent);
+		notifyPreloader(new Preloader.ProgressNotification(0.2));
+		mainScene = loadMain();
+		loginController.setMainScene(mainScene);
+		notifyPreloader(new Preloader.ProgressNotification(0.95));
 	}
 
 	/**
-	 * checks the start parameters for keywords and sets the debug flag to true if found
+	 * checks the start parameters for keywords and sets the debug flag to true if
+	 * found
 	 *
 	 * @param args
 	 */
@@ -167,32 +129,12 @@ public class Main extends MainGUI {
 						a = args[index];
 					}
 					LOG.info("Loaded style as: " + style);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOG.warn("Unable to load style from commandline");
 					LOG.debug("", e);
 				}
 			}
 		}
-	}
-
-	private static void setColors() {
-		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
-	}
-
-	@Override
-	public void init() throws Exception {
-		super.init();
-		instance = this;
-		notifyPreloader(new Preloader.ProgressNotification(0.1));
-		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
-		loginController = (IOChooserController) FXMLUtil.getController();
-		loginScene = new Scene(parent);
-		notifyPreloader(new Preloader.ProgressNotification(0.2));
-		mainScene = loadMain();
-		loginController.setMainScene(mainScene);
-		notifyPreloader(new Preloader.ProgressNotification(0.95));
-		Thread.sleep(100);
 	}
 
 	private Scene loadMain() {
@@ -206,19 +148,26 @@ public class Main extends MainGUI {
 			// }
 			LOG.info("Main Window loaded");
 			return new Scene(p);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			LOG.error("Unable to load Main GUI", e);
 			Main.getInstance().close();
 		}
 		return null;
 	}
 
+	private static void loadProperties() {
+		properties = PropertiesIO.loadProperties(new File(propertiesPath));
+		if(!properties.isEmpty()) {
+			LOG.info(properties.size() + " Properties loaded");
+		}
+
+	}
+
 	public void setProgress(final double prog) {
 		try {
 			notifyPreloader(new Preloader.ProgressNotification(prog));
+		} catch (Exception e) {
 		}
-		catch (Exception e) {}
 	}
 
 	@Override
@@ -242,6 +191,79 @@ public class Main extends MainGUI {
 		primaryStage.show();
 	}
 
+	/**
+	 * stops all running threads and terminates the gui
+	 */
+	@Override
+	public boolean close() {
+		if (!Main.isDebug()) {
+			LOG.info("Checking for unsaved changes");
+			if (FileIO.unsavedChanges()) {
+				LOG.info("Unsaved changes found");
+				ConfirmationDialog dialog = new ConfirmationDialog("Save changes before exit?", true);
+				Optional<ButtonType> result = dialog.showAndWait();
+				if (!result.isPresent()) {
+					return false;
+				}
+				if (result.get() == ButtonType.YES) {
+					boolean saveResult = MainController.getInstance().save(new ActionEvent());
+					if (!saveResult) {
+						LOG.info("Saving cancelled");
+						return false;
+					}
+				} else if (result.get() == ButtonType.NO) {
+					LOG.info("Closing without saving unfinished changes");
+				} else if (result.get() == ButtonType.CANCEL) {
+					LOG.info("Cancelled closing of program");
+					return false;
+				}
+			}
+		}
+		LOG.info("Stopping GUI");
+		Platform.exit();
+		if (ASIOController.getInstance() != null) {
+			LOG.info("Stopping AudioDriver");
+			ASIOController.getInstance().shutdown();
+		}
+		LOG.info("Deleting RTA file");
+		RTAIO.deleteFile();
+		LOG.info("Bye");
+		System.exit(0);
+		return true;
+	}
+
+	private static void setColors() {
+		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
+	}
+
+	public static String getAccentColor() {
+		return color_accent;
+	}
+
+	public static String getBaseColor() {
+		return color_base;
+	}
+
+	public static String getFocusColor() {
+		return color_focus;
+	}
+
+	public static Main getInstance() {
+		return instance;
+	}
+
+	public static String getStyle() {
+		return style;
+	}
+
+	public static boolean isDebug() {
+		return debug;
+	}
+
+	public static boolean isFast() {
+		return fast;
+	}
+
 	public Scene getScene() {
 		return mainScene;
 	}
@@ -249,5 +271,13 @@ public class Main extends MainGUI {
 	@Override
 	public String getPOMTitle() {
 		return POM_TITLE;
+	}
+	
+	public static String getLogoPath() {
+		return LOGO;
+	}
+
+	public static Properties getProperties() {
+		return properties;
 	}
 }

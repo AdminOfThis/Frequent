@@ -143,12 +143,10 @@
 	-fa-background-color: -fx-base;
 }
 
-.split-pane {
-	-fx-background-insets: 0;
-}
 
-.split-pane .split-pane-divider {
+.split-pane .split-pane-divider{
 	-fx-background-insets: 0;
+	-fx-background-radius: 0px;
 }
 
 .vectorscope .chart-symbol {
@@ -189,15 +187,14 @@
 }
 
 .button, .toggle-button, .split-menu-button, .text-field, .combo-box .check-box{
-	-fx-background-radius: null;
+	-fx-background-radius: 0px;
 	-fx-background-insets: 0px 0px 0px 0px, 0px, 1px, 1px;
 }
 
 .dialog-pane {
 	-fx-background: derive(-fx-base, 10%);
-	-fx-background-radius: null;
+	-fx-background-radius: 0px;
 	-fx-background-insets: 0px 0px 0px 0px, 0px, 1px, 1px;
-	-fx-background-radius: null;
 }
 
 .dialog-pane>.button-bar .container .button:default {
