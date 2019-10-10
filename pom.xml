@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-	<module>util</module>
+		<module>util</module>
 	</modules>
 
 
@@ -55,6 +55,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>${project.name}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -77,7 +78,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<!--  <version>3.1.1</version>  -->
+				<!-- <version>3.1.1</version> -->
 				<executions>
 					<execution>
 						<id>dependency-tree</id>
@@ -110,34 +111,65 @@
 					<argLine>-Djava.library.path=. -Djni.library.path=.</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>2</rerunFailingTestsCount>
-						<excludes>
-							<exclude>**/MainTest.java</exclude>
-						</excludes>
-					
+					<excludes>
+						<exclude>**/MainTest.java</exclude>
+					</excludes>
+
 				</configuration>
 			</plugin>
-
+			
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.0.0</version>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<!-- get all project dependencies -->
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<!-- MainClass in mainfest make a executable jar -->
+					<archive>
+					  <manifest>
+						<mainClass>main.FXMLLauncher</mainClass>
+					  </manifest>
+					</archive>
+
+				</configuration>
 				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>main.FXMLLauncher</mainClass>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
+				  <execution>
+					<id>make-assembly</id>
+                                        <!-- bind to the packaging phase -->
+					<phase>package</phase> 
+					<goals>
+						<goal>single</goal>
+					</goals>
+				  </execution>
 				</executions>
 			</plugin>
+			
+
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-shade-plugin</artifactId> -->
+<!-- 				<version>3.0.0</version> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<phase>package</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>shade</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<transformers> -->
+<!-- 								<transformer -->
+<!-- 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> -->
+<!-- 									<mainClass>main.FXMLLauncher</mainClass> -->
+<!-- 								</transformer> -->
+<!-- 							</transformers> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
 
 		</plugins>
 	</build>
