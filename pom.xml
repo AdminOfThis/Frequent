@@ -6,7 +6,11 @@
 	<artifactId>frequent</artifactId>
 	<version>0.4.0</version>
 	<name>frequent</name>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
+
+	<modules>
+	<module>util</module>
+	</modules>
 
 
 	<properties>
