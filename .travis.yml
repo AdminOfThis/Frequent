@@ -3,6 +3,7 @@ jdk:
 - oraclejdk8
 os:
 - linux
+dist: trusty
 before_install:
   - "git submodule update --init --recursive"
 before_script:
