@@ -5,7 +5,7 @@
 	<groupId>com.github.adminofthis</groupId>
 	<artifactId>frequent</artifactId>
 	<version>0.4.0</version>
-	<name>frequent</name>
+	<name>Frequent</name>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -52,11 +52,33 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Junit5 -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.5.0-M1</version>
+			<!-- <scope>test</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>5.5.0-M1</version>
+			<!-- <scope>test</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.5.0-M1</version>
+			<!-- <scope>test</scope> -->
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
 		<finalName>${project.name}</finalName>
 		<plugins>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
@@ -68,17 +90,19 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>3.8.1</version>
 				<configuration>
 					<source>8</source>
 					<target>8</target>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${java.home}/target/classes/**/*.class</additionalClasspathElement>
+					</additionalClasspathElements>
 				</configuration>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<!-- <version>3.1.1</version> -->
 				<executions>
 					<execution>
 						<id>dependency-tree</id>
@@ -97,6 +121,44 @@
 
 			</plugin>
 
+
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>build-helper-maven-plugin</artifactId> 
+				<version>1.7</version> <executions> <execution> <id>attach-artifacts</id> 
+				<phase>package</phase> <goals> <goal>attach-artifact</goal> </goals> <configuration> 
+				<artifacts> <artifact> <file>test-${project.version}</file> <type>jar</type> 
+				</artifact> </artifacts> </configuration> </execution> </executions> </plugin> -->
+
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jar-plugin</artifactId> 
+				<version>2.4</version> <executions> <execution> <id>default</id> <goals> 
+				<goal>jar</goal> </goals> <phase>package</phase> </execution> </executions> 
+				</plugin> -->
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<!-- here the phase you need -->
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -114,64 +176,57 @@
 					<excludes>
 						<exclude>**/MainTest.java</exclude>
 					</excludes>
-
+					<executions>
+						<execution>
+							<phase>test</phase>
+							<goals>
+								<goal>test</goal>
+							</goals>
+						</execution>
+					</executions>
 				</configuration>
 			</plugin>
-			
-			
+
+
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-assembly-plugin</artifactId> 
+				<configuration> get all project dependencies <descriptorRefs> <descriptorRef>jar-with-dependencies</descriptorRef> 
+				</descriptorRefs> MainClass in mainfest make a executable jar <archive> <manifest> 
+				<mainClass>main.FXMLLauncher</mainClass> </manifest> </archive> </configuration> 
+				<executions> <execution> <id>make-assembly</id> bind to the packaging phase 
+				<phase>package</phase> <goals> <goal>single</goal> </goals> </execution> 
+				</executions> </plugin> -->
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.4.1</version>
-				<configuration>
-					<!-- get all project dependencies -->
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<!-- MainClass in mainfest make a executable jar -->
-					<archive>
-					  <manifest>
-						<mainClass>main.FXMLLauncher</mainClass>
-					  </manifest>
-					</archive>
-
-				</configuration>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.0.0</version>
 				<executions>
-				  <execution>
-					<id>make-assembly</id>
-                                        <!-- bind to the packaging phase -->
-					<phase>package</phase> 
-					<goals>
-						<goal>single</goal>
-					</goals>
-				  </execution>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>main.FXMLLauncher</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
-			
-
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-shade-plugin</artifactId> -->
-<!-- 				<version>3.0.0</version> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<phase>package</phase> -->
-<!-- 						<goals> -->
-<!-- 							<goal>shade</goal> -->
-<!-- 						</goals> -->
-<!-- 						<configuration> -->
-<!-- 							<transformers> -->
-<!-- 								<transformer -->
-<!-- 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> -->
-<!-- 									<mainClass>main.FXMLLauncher</mainClass> -->
-<!-- 								</transformer> -->
-<!-- 							</transformers> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
-<!-- 			</plugin> -->
 
 		</plugins>
+
+
+
+
+
+
+
 	</build>
 
 	<repositories>

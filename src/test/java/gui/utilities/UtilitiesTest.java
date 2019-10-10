@@ -121,6 +121,6 @@ public class UtilitiesTest extends Application {
 			root.setCenter(node);
 			latch.countDown();
 		});
-		latch.await(1000, TimeUnit.SECONDS);
+		latch.await(3000, TimeUnit.SECONDS);
 	}
 }
