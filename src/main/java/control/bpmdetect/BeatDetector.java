@@ -12,7 +12,11 @@ import org.apache.logging.log4j.Logger;
 
 import data.DrumTrigger;
 import gui.utilities.DrumTriggerListener;
-
+/**
+ * 
+ * @author AdminOfThis
+ *
+ */
 public final class BeatDetector extends Thread implements DrumTriggerListener {
 
 	private enum Mode {
