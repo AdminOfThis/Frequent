@@ -200,6 +200,8 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+					<finalName>${project.name}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
 					<!-- MainClass in mainfest make a executable jar -->
 					<archive>
 						<manifest>
@@ -220,7 +222,7 @@
 			</plugin>
 
 
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.0.0</version>
@@ -237,10 +239,11 @@
 									<mainClass>main.FXMLLauncher</mainClass>
 								</transformer>
 							</transformers>
+							<shadeTestJar>true</shadeTestJar>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin> -->
 
 		</plugins>
 
