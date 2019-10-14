@@ -16,7 +16,6 @@ import gui.controller.BleedViewController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.utilities.AutoCompleteComboBoxListener;
-import gui.utilities.Constants;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,6 +30,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import main.Constants;
 
 public class BleedMonitor extends AnchorPane implements Initializable, PausableComponent {
 

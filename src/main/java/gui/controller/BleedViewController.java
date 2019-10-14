@@ -12,7 +12,6 @@ import data.Channel;
 import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.AutoCompleteComboBoxListener;
-import gui.utilities.Constants;
 import gui.utilities.controller.BleedMonitor;
 import gui.utilities.controller.VuMeterMono;
 import javafx.event.ActionEvent;
@@ -24,6 +23,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import main.Constants;
 
 public class BleedViewController implements Initializable, PausableView {
 

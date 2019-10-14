@@ -157,7 +157,7 @@ public class Main extends MainGUI {
 
 	private static void loadProperties() {
 		properties = PropertiesIO.loadProperties(new File(propertiesPath));
-		if(!properties.isEmpty()) {
+		if (!properties.isEmpty()) {
 			LOG.info(properties.size() + " Properties loaded");
 		}
 
@@ -272,12 +272,27 @@ public class Main extends MainGUI {
 	public String getPOMTitle() {
 		return POM_TITLE;
 	}
-	
+
 	public static String getLogoPath() {
 		return LOGO;
 	}
 
-	public static Properties getProperties() {
-		return properties;
+	public static String getProperty(String key) {
+		return properties.get(key).toString();
+	}
+
+	public static void setProperty(String key, Object value) {
+		setProperty(key, value, true);
+	}
+
+	public static void setProperty(String key, Object value, boolean save) {
+		properties.put(key, value);
+		if (save) {
+			saveProperties();
+		}
+	}
+
+	public static void saveProperties() {
+		PropertiesIO.saveProperties(properties, new File(Main.DEFAULT_PROPERTIES_PATH));
 	}
 }

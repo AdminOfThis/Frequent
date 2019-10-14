@@ -18,7 +18,6 @@ import data.Group;
 import data.Input;
 import gui.FXMLUtil;
 import gui.pausable.PausableView;
-import gui.utilities.Constants;
 import gui.utilities.controller.VuMeterMono;
 import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
@@ -36,6 +35,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import main.Constants;
 import main.Main;
 
 public class GroupViewController implements Initializable, PausableView {

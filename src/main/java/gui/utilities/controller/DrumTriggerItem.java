@@ -8,7 +8,6 @@ import data.Channel;
 import data.DrumTrigger;
 import gui.FXMLUtil;
 import gui.utilities.AutoCompleteComboBoxListener;
-import gui.utilities.Constants;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,22 +16,23 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
+import main.Constants;
 
 public class DrumTriggerItem extends AnchorPane implements Initializable {
 
 	// private static final Logger LOG =
 	// Logger.getLogger(DrumTriggerItem.class);
-	private static final String	DRUM_ITEM_PATH	= "/fxml/utilities/DrumTriggerItem.fxml";
+	private static final String DRUM_ITEM_PATH = "/fxml/utilities/DrumTriggerItem.fxml";
 	@FXML
-	private Label				label;
+	private Label label;
 	@FXML
-	private ComboBox<Channel>	combo;
+	private ComboBox<Channel> combo;
 	@FXML
-	private Slider				slider;
+	private Slider slider;
 	@FXML
-	private AnchorPane			waveFormPane;
-	private WaveFormChart		chart;
-	private DrumTrigger			trigger;
+	private AnchorPane waveFormPane;
+	private WaveFormChart chart;
+	private DrumTrigger trigger;
 
 	public DrumTriggerItem(final DrumTrigger trigger) {
 		this.trigger = trigger;
@@ -58,14 +58,15 @@ public class DrumTriggerItem extends AnchorPane implements Initializable {
 				combo.getItems().setAll(ASIOController.getInstance().getInputList());
 			}
 		});
-		combo.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
-			if (trigger != null) {
-				trigger.setChannel(newValue);
-			}
-			if (chart != null) {
-				chart.setChannel(newValue);
-			}
-		});
+		combo.getSelectionModel().selectedItemProperty()
+				.addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
+					if (trigger != null) {
+						trigger.setChannel(newValue);
+					}
+					if (chart != null) {
+						chart.setChannel(newValue);
+					}
+				});
 		combo.setConverter(Constants.CHANNEL_CONVERTER);
 		slider.setMin(Constants.FFT_MIN);
 		slider.valueProperty().addListener(e -> {

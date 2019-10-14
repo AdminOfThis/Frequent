@@ -28,16 +28,17 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
+import main.Constants;
 
 public class RTACanvas extends Canvas implements PausableComponent {
 
-	private static final Logger							LOG				= LogManager.getLogger(RTACanvas.class);
-	private static final WritablePixelFormat<IntBuffer>	PIXEL_FORMAT	= PixelFormat.getIntArgbPreInstance();
-	private int											count			= 0;
-	private GraphicsContext								content;
-	private boolean										pause			= true;
-	private boolean										exporting		= false;
-	private Pausable									pausableParent;
+	private static final Logger LOG = LogManager.getLogger(RTACanvas.class);
+	private static final WritablePixelFormat<IntBuffer> PIXEL_FORMAT = PixelFormat.getIntArgbPreInstance();
+	private int count = 0;
+	private GraphicsContext content;
+	private boolean pause = true;
+	private boolean exporting = false;
+	private Pausable pausableParent;
 
 	private RTACanvas() {
 		content = getGraphicsContext2D();
@@ -107,8 +108,7 @@ public class RTACanvas extends Canvas implements PausableComponent {
 			}
 			try {
 				p.setPixels(0, count, width, 1, PIXEL_FORMAT, buffer, 0, buffer.length - 1);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.error(e);
 			}
 		}
@@ -196,16 +196,13 @@ public class RTACanvas extends Canvas implements PausableComponent {
 							WritableImage image = canvas.snapshot(params, null);
 							RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
 							ImageIO.write(renderedImage, "png", file);
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							LOG.warn("Unable to export image", e);
-						}
-						finally {
+						} finally {
 							MainController.getInstance().resetStatus();
 						}
 					});
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					LOG.warn("Unable to export image", ex);
 					MainController.getInstance().resetStatus();
 				}
@@ -223,6 +220,7 @@ public class RTACanvas extends Canvas implements PausableComponent {
 	}
 
 	private int toInt(Color c) {
-		return (255 << 24) | ((int) (c.getRed() * 255) << 16) | ((int) (c.getGreen() * 255) << 8) | ((int) (c.getBlue() * 255));
+		return (255 << 24) | ((int) (c.getRed() * 255) << 16) | ((int) (c.getGreen() * 255) << 8)
+				| ((int) (c.getBlue() * 255));
 	}
 }

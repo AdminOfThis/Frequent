@@ -19,7 +19,6 @@ import data.Input;
 import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
-import gui.utilities.Constants;
 import gui.utilities.NegativeAreaChart;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
@@ -35,22 +34,23 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import main.Constants;
 
 public class WaveFormChart extends AnchorPane implements Initializable, InputListener, PausableComponent {
 
-	private static final Logger		LOG			= LogManager.getLogger(WaveFormChart.class);
-	private static final String		FXML		= "/fxml/utilities/WaveFormChart.fxml";
-	private static final long		TIME_FRAME	= 3000000000l;
+	private static final Logger LOG = LogManager.getLogger(WaveFormChart.class);
+	private static final String FXML = "/fxml/utilities/WaveFormChart.fxml";
+	private static final long TIME_FRAME = 3000000000l;
 	@FXML
-	private BorderPane				root;
-	private XYChart<Number, Number>	chart;
-	private Series<Number, Number>	series		= new Series<>();
-	private Series<Number, Number>	treshold	= new Series<>();
-	private Input					channel;
-	private boolean					pause		= false;
-	private Pausable				pausableParent;
-	private boolean					styleSet	= false;
-	private Map<Long, Double>		pendingMap	= Collections.synchronizedMap(new HashMap<Long, Double>());
+	private BorderPane root;
+	private XYChart<Number, Number> chart;
+	private Series<Number, Number> series = new Series<>();
+	private Series<Number, Number> treshold = new Series<>();
+	private Input channel;
+	private boolean pause = false;
+	private Pausable pausableParent;
+	private boolean styleSet = false;
+	private Map<Long, Double> pendingMap = Collections.synchronizedMap(new HashMap<Long, Double>());
 
 	public WaveFormChart() {
 		LOG.debug("Creating new WaveFormChart");
@@ -150,8 +150,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					c.addListener(this);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}
@@ -190,8 +189,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 				value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
 				Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 				dataList.add(newData);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.warn("", e);
 			}
 		}

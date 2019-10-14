@@ -3,18 +3,26 @@ package gui.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import control.ASIOController;
 import gui.FXMLUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
+import main.Constants;
+import main.Constants.RESTORE_PANEL;
 import main.Main;
 
 /**
@@ -23,6 +31,8 @@ import main.Main;
  *
  */
 public class SettingsController implements Initializable {
+
+	private static final Logger LOG = LogManager.getLogger(SettingsController.class);
 
 	private static final Number[] BUFFERS = new Number[] { 64, 128, 256, 512, 1024, 2048 };
 
@@ -42,14 +52,17 @@ public class SettingsController implements Initializable {
 	private ToggleGroup startUp, startUpPanel;
 
 	@FXML
-	private RadioButton rBtnPanelLast, rBtnPanelSpecific;
+	private RadioButton rBtnPanelNothing, rBtnPanelLast, rBtnPanelSpecific;
 
 	@FXML
 	private FlowPane flwPanel;
+	@FXML
+	private CheckBox chkRestoreLastFile, chkWarnUnsavedChanges;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		checkFXML();
+
 		root.setStyle(Main.getStyle());
 		// FXMLUtil.setIcon((Stage) root.getScene().getWindow(), Main.getLogoPath());
 		FXMLUtil.setStyleSheet(root);
@@ -64,6 +77,7 @@ public class SettingsController implements Initializable {
 		}
 
 		initSpecificPanel();
+		loadValues();
 	}
 
 	private void checkFXML() {
@@ -87,7 +101,46 @@ public class SettingsController implements Initializable {
 			button.setToggleGroup(startUpPanel);
 			flwPanel.getChildren().add(button);
 		}
-		startUpPanel.getToggles().get(1).setSelected(true);;
+		startUpPanel.getToggles().get(1).setSelected(true);
+		;
+	}
+
+	private void loadValues() {
+
+		loadRestorePanel();
+		loadFile();
+
+	}
+
+	private void loadRestorePanel() {
+		setSettingSecure(() -> rBtnPanelNothing.setSelected(Main.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.NOTHING.name())), Constants.SETTING_RESTORE_PANEL);
+		setSettingSecure(() -> rBtnPanelLast.setSelected(Main.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.LAST.name())), Constants.SETTING_RESTORE_PANEL);
+		if (Main.getProperty(Constants.SETTING_RESTORE_PANEL) != null && Main.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.SPECIFIC.name())) {
+			rBtnPanelSpecific.setSelected(true);
+			if (Main.getProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC) != null) {
+				for (Toggle t : startUpPanel.getToggles()) {
+					ToggleButton btn = (ToggleButton) t;
+					if (btn.getText().equals(Main.getProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC))) {
+						btn.setSelected(true);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	private void loadFile() {
+		setSettingSecure(() -> chkRestoreLastFile.setSelected(Boolean.parseBoolean(Main.getProperty(Constants.SETTING_RELOAD_LAST_FILE))), Constants.SETTING_RELOAD_LAST_FILE);
+		setSettingSecure(() -> chkWarnUnsavedChanges.setSelected(Boolean.parseBoolean(Main.getProperty(Constants.SETTING_WARN_UNSAVED_CHANGES))), Constants.SETTING_WARN_UNSAVED_CHANGES);
+
+	}
+
+	private void setSettingSecure(Runnable r, String setting) {
+		try {
+			r.run();
+		} catch (Exception e) {
+			LOG.warn("Unable to load Setting \"" + setting + "\"");
+		}
 	}
 
 	@FXML
@@ -98,6 +151,24 @@ public class SettingsController implements Initializable {
 	@FXML
 	private void save(ActionEvent e) {
 
+		// Panel restore
+		if (rBtnPanelNothing.isSelected()) {
+			Main.setProperty(Constants.SETTING_RESTORE_PANEL, RESTORE_PANEL.NOTHING.name(), false);
+			Main.setProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC, Integer.toString(-1));
+		} else if (rBtnPanelLast.isSelected()) {
+			Main.setProperty(Constants.SETTING_RESTORE_PANEL, RESTORE_PANEL.LAST.name(), false);
+			Main.setProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC, Integer.toString(-1));
+		} else if (rBtnPanelSpecific.isSelected()) {
+			Main.setProperty(Constants.SETTING_RESTORE_PANEL, RESTORE_PANEL.SPECIFIC.name(), false);
+			Main.setProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC, ((ToggleButton) startUpPanel.getSelectedToggle()).getText());
+		} else {
+			LOG.error("State should not be reached");
+		}
+		// File/saving
+		Main.setProperty(Constants.SETTING_RELOAD_LAST_FILE, Boolean.toString(chkRestoreLastFile.isSelected()));
+		Main.setProperty(Constants.SETTING_WARN_UNSAVED_CHANGES, Boolean.toString(chkWarnUnsavedChanges.isSelected()));
+
+		Main.saveProperties();
 		close();
 	}
 

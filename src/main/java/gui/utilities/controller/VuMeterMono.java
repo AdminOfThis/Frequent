@@ -14,7 +14,6 @@ import data.Input;
 import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.utilities.ChannelCellContextMenu;
-import gui.utilities.Constants;
 import gui.utilities.GroupCellContextMenu;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
@@ -30,6 +29,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import main.Constants;
+
 /**
  * 
  * @author AdminOfThis
@@ -37,23 +38,23 @@ import javafx.util.Duration;
  */
 public class VuMeterMono extends AnchorPane implements Initializable, VuMeterIntf, InputListener {
 
-	private static final String		FXML_VERTICAL	= "/fxml/utilities/VuMeterVertical.fxml";
-	private static final String		FXML_HORIZONTAL	= "/fxml/utilities/VuMeterHorizontal.fxml";
-	private static final int		PEAK_HOLD		= 50;
+	private static final String FXML_VERTICAL = "/fxml/utilities/VuMeterVertical.fxml";
+	private static final String FXML_HORIZONTAL = "/fxml/utilities/VuMeterHorizontal.fxml";
+	private static final int PEAK_HOLD = 50;
 	@FXML
-	private StackPane				vuPane;
+	private StackPane vuPane;
 	@FXML
-	private Pane					vuPeakPane, vuLastPeakPane;
+	private Pane vuPeakPane, vuLastPeakPane;
 	@FXML
-	private Label					lblPeak, lblTitle;
-	private Input					channel;
-	private double					peak			= Constants.FFT_MIN;
-	private Orientation				orientation;
-	private boolean					pause			= false;
-	private Pausable				parentPausable;
-	private SimpleBooleanProperty	showLabels		= new SimpleBooleanProperty(true);
-	private int						timeSincePeak	= 0;
-	private List<Double>			pendingLevelList;
+	private Label lblPeak, lblTitle;
+	private Input channel;
+	private double peak = Constants.FFT_MIN;
+	private Orientation orientation;
+	private boolean pause = false;
+	private Pausable parentPausable;
+	private SimpleBooleanProperty showLabels = new SimpleBooleanProperty(true);
+	private int timeSincePeak = 0;
+	private List<Double> pendingLevelList;
 
 	public VuMeterMono(final Input channel, final Orientation o) {
 		orientation = o;
@@ -106,7 +107,8 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 
 	@Override
 	public boolean isPaused() {
-		return pause || parentPausable != null && parentPausable.isPaused() || channel == null || pendingLevelList == null;
+		return pause || parentPausable != null && parentPausable.isPaused() || channel == null
+				|| pendingLevelList == null;
 	}
 
 	@Override
@@ -184,11 +186,15 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 						timeSincePeak++;
 					}
 					if (orientation == Orientation.VERTICAL) {
-						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
-						vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(Constants.FFT_MIN))
+								/ Math.abs(Constants.FFT_MIN));
+						vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(Constants.FFT_MIN))
+								/ Math.abs(Constants.FFT_MIN));
 					} else {
-						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
-						vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(Constants.FFT_MIN))
+								/ Math.abs(Constants.FFT_MIN));
+						vuLastPeakPane.setPrefWidth(
+								vuPane.getWidth() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
 					}
 					if (peakdB >= Constants.FFT_MIN) {
 						lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");

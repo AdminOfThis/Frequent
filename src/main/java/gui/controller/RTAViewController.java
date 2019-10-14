@@ -11,7 +11,6 @@ import control.FFTListener;
 import data.Channel;
 import data.Input;
 import gui.pausable.PausableView;
-import gui.utilities.Constants;
 import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeterMono;
@@ -32,6 +31,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import main.Constants;
 
 public class RTAViewController implements Initializable, FFTListener, PausableView {
 
