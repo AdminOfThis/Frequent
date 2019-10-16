@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.adminofthis</groupId>
 	<artifactId>frequent</artifactId>
-	<version>0.4.0</version>
+	<version>0.4.1</version>
 	<name>Frequent</name>
 	<packaging>pom</packaging>
 
@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>com.github.adminofthis</groupId>
 			<artifactId>util</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.2</version>
 		</dependency>
 
 		<dependency>
@@ -190,9 +190,9 @@
 					<argLine>-Djava.library.path=. -Djni.library.path=.</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>2</rerunFailingTestsCount>
-					<excludes>
+					<!-- <excludes>
 						<exclude>**/MainTest.java</exclude>
-					</excludes>
+					</excludes> -->
 					<executions>
 						<execution>
 							<phase>test</phase>
