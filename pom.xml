@@ -190,9 +190,9 @@
 					<argLine>-Djava.library.path=. -Djni.library.path=.</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>2</rerunFailingTestsCount>
-					<!-- <excludes>
+					<excludes>
 						<exclude>**/MainTest.java</exclude>
-					</excludes> -->
+					</excludes>
 					<executions>
 						<execution>
 							<phase>test</phase>
