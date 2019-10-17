@@ -239,7 +239,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 			}
 		});
 		channelList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		channelList.setCellFactory(e -> new ChannelCell());
+		channelList.setCellFactory(e -> new ChannelCell(this));
 		// channelList.setOnEditCommit(e ->
 		// timeKeeperController.setChannels(channelList.getItems()));
 		channelList.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
@@ -441,7 +441,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 		waveFormChart = new WaveFormPane();
 		waveFormChart.setParentPausable(this);
 		dataChart = new DataChart();
-		dataChart.setParentPausable(this);
 		for (PausableComponent n : new PausableComponent[] { dataChart, waveFormChart }) {
 			n.setParentPausable(this);
 			AnchorPane.setTopAnchor((Node) n, .0);

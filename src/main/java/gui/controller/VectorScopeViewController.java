@@ -143,8 +143,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 					cmbChannel2.setValue(((Channel) i).getStereoChannel());
 				}
 			}
-		} else if (cmbChannel1.getValue() == null && cmbChannel2.getValue() == null
-				&& MainController.getInstance().getSelectedChannels().size() == 2) {
+		} else if (cmbChannel1.getValue() == null && cmbChannel2.getValue() == null && MainController.getInstance().getSelectedChannels().size() == 2) {
 			for (Input i : MainController.getInstance().getSelectedChannels()) {
 				if (i instanceof Group) {
 					return;

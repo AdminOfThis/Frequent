@@ -18,6 +18,7 @@ import gui.utilities.GroupCellContextMenu;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -76,7 +77,10 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 
 			@Override
 			public void handle(final long now) {
-				update();
+				if (!isPaused()) {
+					new Thread(() -> update()).start();
+
+				}
 			}
 		};
 		timer.start();
@@ -107,8 +111,7 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 
 	@Override
 	public boolean isPaused() {
-		return pause || parentPausable != null && parentPausable.isPaused() || channel == null
-				|| pendingLevelList == null;
+		return pause || parentPausable != null && parentPausable.isPaused() || channel == null || pendingLevelList == null;
 	}
 
 	@Override
@@ -175,7 +178,7 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 	}
 
 	private void update() {
-		if (!isPaused()) {
+		if (!isPaused() || pendingLevelList.isEmpty()) {
 			synchronized (pendingLevelList) {
 				for (Double peakdB : pendingLevelList) {
 					if (peak < peakdB || timeSincePeak >= PEAK_HOLD) {
@@ -186,20 +189,20 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 						timeSincePeak++;
 					}
 					if (orientation == Orientation.VERTICAL) {
-						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(Constants.FFT_MIN))
-								/ Math.abs(Constants.FFT_MIN));
-						vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(Constants.FFT_MIN))
-								/ Math.abs(Constants.FFT_MIN));
+						Platform.runLater(() -> {
+							vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+							vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						});
 					} else {
-						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(Constants.FFT_MIN))
-								/ Math.abs(Constants.FFT_MIN));
-						vuLastPeakPane.setPrefWidth(
-								vuPane.getWidth() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						Platform.runLater(() -> {
+							vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+							vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						});
 					}
 					if (peakdB >= Constants.FFT_MIN) {
-						lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
+						Platform.runLater(() -> lblPeak.setText(Math.round(peakdB * 10.0) / 10 + ""));
 					} else {
-						lblPeak.setText("-\u221E");
+						Platform.runLater(() -> lblPeak.setText("-\u221E"));
 					}
 					if (peakdB > Constants.YELLOW) {
 						if (peakdB >= Constants.RED) {

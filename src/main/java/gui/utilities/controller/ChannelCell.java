@@ -10,6 +10,7 @@ import data.Channel;
 import data.Group;
 import data.Input;
 import gui.FXMLUtil;
+import gui.pausable.Pausable;
 import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.GroupCellContextMenu;
 import javafx.fxml.FXML;
@@ -28,14 +29,15 @@ import javafx.scene.paint.Color;
 
 public class ChannelCell extends ListCell<Input> implements Initializable {
 
-	private static final Logger	LOG			= LogManager.getLogger(ChannelCell.class);
-	private static final String	FXML_PATH	= "/fxml/utilities/ChannelCell.fxml";
+	private static final Logger LOG = LogManager.getLogger(ChannelCell.class);
+	private static final String FXML_PATH = "/fxml/utilities/ChannelCell.fxml";
 	@FXML
-	private AnchorPane			chartPane;
+	private AnchorPane chartPane;
 	@FXML
-	private Label				lblNumber;
-	private Input				input;
-	private VuMeterIntf			meter;
+	private Label lblNumber;
+	private Input input;
+	private VuMeterIntf meter;
+	private Pausable pausable;
 
 	public static String toRGBCode(final Color color) {
 		int red = (int) (color.getRed() * 255);
@@ -68,6 +70,11 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 		});
 	}
 
+	public ChannelCell(Pausable p) {
+		this();
+		pausable = p;
+	}
+
 	private void changeMeter(final Input channel) {
 		boolean refresh = false;
 		if (channel != null && channel instanceof Channel && ((Channel) channel).getStereoChannel() != null) {
@@ -75,12 +82,14 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 			if (meter == null || meter instanceof VuMeterMono) {
 				meter = new VuMeterStereo(channel, ((Channel) channel).getStereoChannel(), Orientation.HORIZONTAL);
 				refresh = true;
+				meter.setParentPausable(pausable);
 			}
 		} else {
 			// monoVu
 			if (meter == null || meter instanceof VuMeterStereo) {
 				meter = new VuMeterMono(channel, Orientation.HORIZONTAL);
 				refresh = true;
+				meter.setParentPausable(pausable);
 			}
 		}
 		if (refresh) {

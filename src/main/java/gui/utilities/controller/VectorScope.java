@@ -88,42 +88,13 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 			@Override
 			public void handle(final long now) {
-				new Thread(() -> update()).start();
+				if (!isPaused()) {
+					new Thread(() -> update()).start();
+				}
 //				update();
 			}
 		};
 		timer.start();
-
-		new Thread() {
-			@SuppressWarnings("unchecked")
-			public void run() {
-				while (true) {
-					try {
-						Thread.sleep(5000);
-
-						System.out.println("Cleaner runs");
-						for (Map<Long, float[]> map : new Map[] { map1, map2 }) {
-
-							synchronized (map) {
-								if (!map.isEmpty()) {
-									ArrayList<Long> remove = new ArrayList<Long>();
-									Long max = Collections.max(map.keySet());
-									for (Long key : map1.keySet()) {
-										if (key < max - 1000) {
-											remove.add(key);
-										}
-									}
-									map.keySet().removeAll(remove);
-								}
-							}
-						}
-						System.out.println("Cleaner finished");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			};
-		}.start();
 
 	}
 
@@ -179,16 +150,25 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	public void newBuffer(final Channel channel, final float[] buffer, final long position) {
 		if (!isPaused()) {
 			try {
-				System.out.println(channel.getName() + " " + position);
-				if (!map1.containsKey(position) && !map2.containsKey(position + 1)) {
+//				System.out.println(channel.getName() + " " + position);
+				if (!map1.containsKey(position)) {
 					synchronized (map1) {
 						map1.put(position, buffer);
 						add1++;
 					}
-				} else if (!map2.containsKey(position) && !map1.containsKey(position + 1)) {
+				} else if (!map2.containsKey(position)) {
 					synchronized (map2) {
 						map2.put(position, buffer);
 						add2++;
+
+						ArrayList<Long> remove = new ArrayList<>();
+						for (Long key : map1.keySet()) {
+							if (key < position) {
+								remove.add(key);
+							}
+						}
+						map1.keySet().removeAll(remove);
+
 					}
 				} else {
 					throw new IllegalArgumentException("Both buffers are filled with this sample position already");
@@ -202,6 +182,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	@Override
 	public void pause(final boolean pause) {
+		System.out.println("PAUSE");
 		this.pause = pause;
 	}
 
@@ -297,7 +278,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 						copy2 = map2.get(key);
 					}
 
-					System.out.println(map1.size() + "(" + add1 + ") " + map2.size() + " (" + add2 + ")");
+//					System.out.println(map1.size() + "(" + add1 + ") " + map2.size() + " (" + add2 + ")");
 					Platform.runLater(() -> showData(copy1, copy2));
 //					showData(copy1, copy2);
 
