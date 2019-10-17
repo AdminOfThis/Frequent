@@ -226,8 +226,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 			}
 
 		});
-		
-		//pauses the animations for all the vuMeters in the channels section
+
+		// pauses the animations for all the vuMeters in the channels section
 		toggleChannels.selectedProperty().addListener(e -> pause(!toggleChannels.isSelected()));
 		togglePreview.selectedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			if (newValue) {
@@ -367,10 +367,10 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	private void initMenu() {
 		// Fit buttons to size
-		toggleFFTView.widthProperty()
-				.addListener((e, oldV, newV) -> Platform.runLater(() -> scaleButtonstoMax(toggleFFTView, toggleRTAView, toggleGroupsView, toggleDrumView, togglePhaseView, toggleBleedView)));
+		toggleFFTView.widthProperty().addListener(
+				(e, oldV, newV) -> Platform.runLater(() -> FXMLUtil.setPrefWidthToMaximumRequired(toggleFFTView, toggleRTAView, toggleGroupsView, toggleDrumView, togglePhaseView, toggleBleedView)));
 
-		toggleChannels.widthProperty().addListener((e, oldV, newV) -> Platform.runLater(() -> scaleButtonstoMax(toggleChannels, toggleCue)));
+		toggleChannels.widthProperty().addListener((e, oldV, newV) -> Platform.runLater(() -> FXMLUtil.setPrefWidthToMaximumRequired(toggleChannels, toggleCue)));
 
 		// Add Accelerator manually, makes working in the scen builder easier, because
 		// save still works
@@ -390,24 +390,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 		toggleChannels.selectedProperty().bindBidirectional(menuShowChannels.selectedProperty());
 		// toggleTuner.selectedProperty().bindBidirectional(menuShowTuner.selectedProperty());
 		menuShowCue.selectedProperty().addListener(e -> timeKeeperController.show(menuShowCue.isSelected()));
-	}
-
-	private void scaleButtonstoMax(ToggleButton... button) {
-
-		double max = 0;
-		ToggleButton r = null;
-		for (ToggleButton node : button) {
-			if (node.getWidth() > max) {
-				max = node.getWidth();
-				r = node;
-			}
-		}
-		for (ToggleButton node : button) {
-			if (!node.equals(r)) {
-				node.setPrefWidth(max);
-			}
-		}
-
 	}
 
 	private void initBleedView() {
