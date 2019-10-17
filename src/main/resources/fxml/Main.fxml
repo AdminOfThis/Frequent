@@ -129,12 +129,12 @@
                   <Pane HBox.hgrow="SOMETIMES" />
                   <HBox maxHeight="30.0" minHeight="30.0" prefHeight="30.0">
                      <children>
-                        <ToggleButton fx:id="toggleChannels" minHeight="30.0" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" selected="true" text="Channels">
+                        <ToggleButton fx:id="toggleChannels" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" selected="true" text="Channels">
                            <tooltip>
                               <Tooltip text="Shows/hides the channellist" />
                            </tooltip>
                         </ToggleButton>
-                        <ToggleButton fx:id="toggleCue" minHeight="30.0" minWidth="65.0" mnemonicParsing="false" prefWidth="65.0" text="Cues">
+                        <ToggleButton fx:id="toggleCue" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Cues">
                            <tooltip>
                               <Tooltip text="Shows/hides the cue manager" />
                            </tooltip>
@@ -146,16 +146,16 @@
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" HBox.hgrow="SOMETIMES">
                      <children>
-                        <ToggleButton fx:id="toggleFFTView" mnemonicParsing="false" text="Spectrum">
+                        <ToggleButton fx:id="toggleFFTView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Spectrum">
                            <toggleGroup>
                               <ToggleGroup fx:id="viewGroup" />
                            </toggleGroup>
                         </ToggleButton>
-                        <ToggleButton fx:id="toggleRTAView" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="RTA" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="toggleDrumView" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Drum" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="toggleGroupsView" mnemonicParsing="false" text="Groups" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="togglePhaseView" mnemonicParsing="false" text="Phase" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="toggleBleedView" mnemonicParsing="false" text="Bleed" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleRTAView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="RTA" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleDrumView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Drum" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleGroupsView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Groups" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="togglePhaseView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Phase" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleBleedView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Bleed" toggleGroup="$viewGroup" />
                      </children>
                      <HBox.margin>
                         <Insets />
@@ -225,7 +225,7 @@
       </StackPane>
    </bottom>
    <center>
-      <SplitPane dividerPositions="0.2" BorderPane.alignment="CENTER">
+      <SplitPane fx:id="rootSplit" dividerPositions="0.2" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>

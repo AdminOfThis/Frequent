@@ -110,7 +110,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	@FXML
 	private BorderPane root;
 	@FXML
-	private SplitPane contentPane;
+	private SplitPane contentPane, rootSplit;
 	@FXML
 	private MenuItem closeMenu, menuSave, menuSettings;
 	@FXML
@@ -131,7 +131,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private boolean pause = false;
 	private HashMap<ToggleButton, Node> contentMap = new HashMap<>();
 	private HashMap<Node, PausableView> controllerMap = new HashMap<>();
-	private double channelSplitRatio = 0.8;
+	private double channelSplitRatio = 0.8, rootSplitRatio = 0.8;
 	private ASIOController controller;
 	private TimeKeeperController timeKeeperController;
 	// private DrumController drumController;
@@ -213,8 +213,21 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void initChannelList() {
-		toggleChannels.selectedProperty().bindBidirectional(vChannelLeft.visibleProperty());
-		toggleChannels.selectedProperty().bindBidirectional(vChannelLeft.managedProperty());
+		toggleChannels.setSelected(true);
+		toggleChannels.selectedProperty().addListener((e, oldV, newV) -> {
+			if (newV.booleanValue()) {
+				if (!vChannelLeft.equals(rootSplit.getItems().get(0))) {
+					rootSplit.getItems().add(0, vChannelLeft);
+					rootSplit.setDividerPosition(0, rootSplitRatio);
+				}
+			} else if (rootSplit.getItems().contains(vChannelLeft)) {
+				rootSplitRatio = rootSplit.getDividerPositions()[0];
+				rootSplit.getItems().remove(0);
+			}
+
+		});
+		
+		//pauses the animations for all the vuMeters in the channels section
 		toggleChannels.selectedProperty().addListener(e -> pause(!toggleChannels.isSelected()));
 		togglePreview.selectedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			if (newValue) {
@@ -353,9 +366,14 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void initMenu() {
-
+		// Fit buttons to size
 		toggleFFTView.widthProperty()
 				.addListener((e, oldV, newV) -> Platform.runLater(() -> scaleButtonstoMax(toggleFFTView, toggleRTAView, toggleGroupsView, toggleDrumView, togglePhaseView, toggleBleedView)));
+
+		toggleChannels.widthProperty().addListener((e, oldV, newV) -> Platform.runLater(() -> scaleButtonstoMax(toggleChannels, toggleCue)));
+
+		// Add Accelerator manually, makes working in the scen builder easier, because
+		// save still works
 		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 
 		bindCheckMenuToToggleButton(menuSpectrumView, toggleFFTView);
