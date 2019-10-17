@@ -12,14 +12,14 @@ import control.InputListener;
 
 public class Channel extends Input implements Comparable<Channel>, Comparator<Channel> {
 
-	private static final long		serialVersionUID	= 1L;
-	private transient AsioChannel	channel;
-	private int						channelIndex		= -1;
-	private Group					group;
-	private boolean					hide				= false;
-	private float[]					buffer;
-	private float[]					bufferFull			= new float[ASIOController.DESIRED_BUFFER_SIZE];
-	private Channel					stereoChannel;
+	private static final long serialVersionUID = 1L;
+	private transient AsioChannel channel;
+	private int channelIndex = -1;
+	private Group group;
+	private boolean hide = false;
+	private float[] buffer;
+	private float[] bufferFull = new float[ASIOController.DESIRED_BUFFER_SIZE];
+	private Channel stereoChannel;
 
 	public Channel() {
 		this(null, null);
@@ -149,7 +149,8 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		}
 		setLevel(max, time);
 		synchronized (getListeners()) {
-			for (InputListener l : getListeners()) {
+			for (int i = 0; i < getListeners().size(); i++) {
+				InputListener l = getListeners().get(i);
 				if (l instanceof ChannelListener) {
 					// new Thread(() -> ((ChannelListener)
 					// l).newBuffer(buffer)).start();

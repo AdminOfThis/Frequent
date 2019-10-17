@@ -15,12 +15,12 @@ import org.apache.logging.log4j.Logger;
 import control.ChannelListener;
 import data.Channel;
 import data.Input;
-import debug.ExecutionTimer;
 import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -35,6 +35,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import main.Main;
 
+/**
+ * 
+ * @author AdminOfThis
+ *
+ */
 public class VectorScope extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
 	private static final Logger LOG = LogManager.getLogger(VectorScope.class);
@@ -63,6 +68,8 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	protected Map<Long, float[]> map1, map2;
 	private double decay = 1.0;
 
+	long add1, add2;
+
 	public VectorScope() {
 		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML), this);
 		getChildren().add(p);
@@ -81,10 +88,43 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 			@Override
 			public void handle(final long now) {
-				update();
+				new Thread(() -> update()).start();
+//				update();
 			}
 		};
 		timer.start();
+
+		new Thread() {
+			@SuppressWarnings("unchecked")
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(5000);
+
+						System.out.println("Cleaner runs");
+						for (Map<Long, float[]> map : new Map[] { map1, map2 }) {
+
+							synchronized (map) {
+								if (!map.isEmpty()) {
+									ArrayList<Long> remove = new ArrayList<Long>();
+									Long max = Collections.max(map.keySet());
+									for (Long key : map1.keySet()) {
+										if (key < max - 1000) {
+											remove.add(key);
+										}
+									}
+									map.keySet().removeAll(remove);
+								}
+							}
+						}
+						System.out.println("Cleaner finished");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
+
 	}
 
 	protected ScatterChart<Number, Number> getChart() {
@@ -139,17 +179,21 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	public void newBuffer(final Channel channel, final float[] buffer, final long position) {
 		if (!isPaused()) {
 			try {
-				if (!map1.containsKey(position)) {
+				System.out.println(channel.getName() + " " + position);
+				if (!map1.containsKey(position) && !map2.containsKey(position + 1)) {
 					synchronized (map1) {
 						map1.put(position, buffer);
+						add1++;
 					}
-				} else if (!map2.containsKey(position)) {
+				} else if (!map2.containsKey(position) && !map1.containsKey(position + 1)) {
 					synchronized (map2) {
 						map2.put(position, buffer);
+						add2++;
 					}
 				} else {
 					throw new IllegalArgumentException("Both buffers are filled with this sample position already");
 				}
+
 			} catch (Exception e) {
 				LOG.error("Problem showing vectorscope", e);
 			}
@@ -202,51 +246,49 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				dataToAdd.add(data);
 			}
 			vectorSeries.getData().addAll(dataToAdd);
-			for (Data<Number, Number> d : dataToAdd) {
+			for (int i = 0; i < dataToAdd.size(); i++) {
+				Data<Number, Number> d = dataToAdd.get(i);
 				double percent = d.getXValue().doubleValue() / d.getYValue().doubleValue();
 				if (percent > 1 || percent < -1) {
 					percent = 1.0 / percent;
 				}
 				percent = 1 - Math.abs((percent + 1) / 2.0);
-				d.getNode().setStyle("-fx-background-color: "
-						+ FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
+				d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
 			}
 		} // removing old data points
 		if (vectorSeries.getData().size() > MAX_DATA_POINTS * decay) {
-			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0,
-					(int) Math.round(vectorSeries.getData().size() - MAX_DATA_POINTS * decay));
+			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0, (int) Math.round(vectorSeries.getData().size() - MAX_DATA_POINTS * decay));
 			vectorSeries.getData().removeAll(removeList);
 		}
 	}
 
 	protected void update() {
 		if (!isPaused()) {
-			ArrayList<Long> clearedKeys = null;
-			Map<Long, float[]> copyMap1, copyMap2;
+			ArrayList<Long> keysToDisplay = null;
+			LinkedHashMap<Long, float[]> copyMap1, copyMap2;
 			synchronized (map1) {
 				copyMap1 = new LinkedHashMap<Long, float[]>(map1);
 			}
 			synchronized (map2) {
 				copyMap2 = new LinkedHashMap<Long, float[]>(map2);
 			}
-			for (long key : copyMap1.keySet()) {
+			Long[] keyArray = copyMap1.keySet().toArray(new Long[0]);
+			for (int i = 0; i < keyArray.length; i++) {
+				long key = keyArray[i];
 				if (copyMap2.containsKey(key)) {
 
-					if (clearedKeys == null) {
-						clearedKeys = new ArrayList<>();
+					if (keysToDisplay == null) {
+						keysToDisplay = new ArrayList<>();
 					}
-					clearedKeys.add(key);
+					keysToDisplay.add(key);
 
 				}
-				// else {
-				// break;
-				// TODO
-				// }
 			}
 
 			// clear buffers
-			if (clearedKeys != null) {
-				for (long key : clearedKeys) {
+			if (keysToDisplay != null) {
+				for (int i = 0; i < keysToDisplay.size(); i++) {
+					long key = keysToDisplay.get(i);
 					float[] copy1, copy2;
 					synchronized (map1) {
 						copy1 = map1.get(key);
@@ -254,22 +296,20 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					synchronized (map2) {
 						copy2 = map2.get(key);
 					}
-					if (Main.isDebug()) {
-						ExecutionTimer.executeTime("ShowData", () -> showData(copy1, copy2));
-					} else {
-						showData(copy1, copy2);
-					}
+
+					System.out.println(map1.size() + "(" + add1 + ") " + map2.size() + " (" + add2 + ")");
+					Platform.runLater(() -> showData(copy1, copy2));
+//					showData(copy1, copy2);
 
 				}
 
-				for (long key : clearedKeys) {
-					synchronized (map1) {
-						map1.remove(key);
-					}
-					synchronized (map2) {
-						map1.remove(key);
-					}
+				synchronized (map2) {
+					map2.keySet().removeAll(keysToDisplay);
 				}
+				synchronized (map1) {
+					map1.keySet().removeAll(keysToDisplay);
+				}
+
 			}
 		}
 	}

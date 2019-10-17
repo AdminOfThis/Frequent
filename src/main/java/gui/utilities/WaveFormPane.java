@@ -13,7 +13,11 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.paint.Color;
 import main.Constants;
 import main.Main;
-
+/**
+ * 
+ * @author AdminOfThis
+ *
+ */
 public class WaveFormPane extends ResizableCanvas implements PausableComponent, InputListener {
 
 	private Input input;

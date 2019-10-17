@@ -168,7 +168,7 @@
                   <Insets />
                </VBox.margin>
                <children>
-                  <HBox fx:id="buttonBox" alignment="TOP_RIGHT" HBox.hgrow="ALWAYS" />
+                  <HBox fx:id="buttonBox" alignment="TOP_RIGHT" prefHeight="31.0" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </children>
@@ -212,12 +212,15 @@
                   </HBox>
                </left>
                <right>
-                  <HBox alignment="BOTTOM_RIGHT" fillHeight="false" BorderPane.alignment="CENTER">
+                  <HBox alignment="BOTTOM_RIGHT" fillHeight="false" spacing="5.0" BorderPane.alignment="CENTER">
                      <children>
                         <Separator orientation="VERTICAL" />
                         <Label fx:id="lblLatency" text="[Latency]" />
                         <Label fx:id="lblDriver" text="[Driver]" />
                      </children>
+                     <padding>
+                        <Insets right="5.0" />
+                     </padding>
                   </HBox>
                </right>
             </BorderPane>

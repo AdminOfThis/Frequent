@@ -140,7 +140,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 									if (!Objects.equals(channel.getByteBuffer(), lastCompleteBuffer)) {
 										if (!isFFTing) {
 											isFFTing = true;
-// System.out.println("FFT");
 											lastCompleteBuffer = activeChannel.getBuffer();
 											fftThis(activeChannel.getBuffer());
 											isFFTing = false;
