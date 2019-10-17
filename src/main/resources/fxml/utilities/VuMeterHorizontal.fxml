@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -21,7 +22,10 @@
                </children>
             </HBox>
             <Label fx:id="lblPeak" alignment="CENTER" style="-fx-font-size: 12;" text="dB" StackPane.alignment="CENTER_RIGHT" />
-            <Label fx:id="lblTitle" alignment="CENTER" style="-fx-font-size: 12;" text="Title" StackPane.alignment="CENTER_LEFT" />
+            <Label fx:id="lblTitle" alignment="CENTER" style="-fx-font-size: 12;" text="Title" StackPane.alignment="CENTER_LEFT">
+               <padding>
+                  <Insets left="10.0" />
+               </padding></Label>
          </children>
       </StackPane>
    </children>
