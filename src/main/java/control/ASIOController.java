@@ -122,7 +122,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	@Override
 	public void bufferSwitch(final long sampleTime, final long samplePosition, final Set<AsioChannel> channels) {
 		time = sampleTime;
-		for (AsioChannel channel : channels) {
+		AsioChannel[] channelArray = channels.toArray(new AsioChannel[0]);
+		for (int i = 0; i < channels.size(); i++) {
+			AsioChannel channel = channelArray[i];
 			try {
 				if (channel.isInput() && channel.isActive() && exe != null) {
 					Runnable runnable = () -> {
@@ -148,7 +150,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 							}
 							if (channelList != null) {
 								Channel c = null;
-								for (Channel cTemp : channelList) {
+								for (int j = 0; j < channelList.size(); j++) {
+									Channel cTemp = channelList.get(j);
 									if (cTemp.getChannel().equals(channel)) {
 										c = cTemp;
 										break;
@@ -287,7 +290,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 			for (int i = 0; i < spectrumMap[0].length - 1; i++) {
 				spectrumMap[1][i] = (bufferingBuffer[0][1][i] + bufferingBuffer[1][1][i]) / 2.0;
 			}
-			for (FFTListener l : fftListeners) {
+			for (int i = 0; i < fftListeners.size(); i++) {
+				FFTListener l = fftListeners.get(i);
 				if (l != null) {
 					new Thread(() -> {
 						try {
@@ -499,8 +503,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		// start the driver
 		asioDriver.start();
 		// creating ThreadPool
-		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<Runnable>());
+		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 		LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
 		LOG.info("Buffer size: " + bufferSize);
 		LOG.info("Samplerate: " + sampleRate);

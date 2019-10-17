@@ -144,19 +144,18 @@
                         <Insets />
                      </HBox.margin>
                   </HBox>
-                  <Pane HBox.hgrow="SOMETIMES" />
-                  <HBox alignment="BOTTOM_CENTER" maxHeight="30.0" minHeight="30.0" prefHeight="30.0">
+                  <HBox alignment="CENTER_RIGHT" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" HBox.hgrow="SOMETIMES">
                      <children>
-                        <ToggleButton fx:id="toggleFFTView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Spectrum">
+                        <ToggleButton fx:id="toggleFFTView" mnemonicParsing="false" text="Spectrum">
                            <toggleGroup>
                               <ToggleGroup fx:id="viewGroup" />
                            </toggleGroup>
                         </ToggleButton>
-                        <ToggleButton fx:id="toggleRTAView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="RTA" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="toggleDrumView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Drum" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="toggleGroupsView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Groups" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="togglePhaseView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Phase" toggleGroup="$viewGroup" />
-                        <ToggleButton fx:id="toggleBleedView" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Bleed" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleRTAView" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="RTA" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleDrumView" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Drum" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleGroupsView" mnemonicParsing="false" text="Groups" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="togglePhaseView" mnemonicParsing="false" text="Phase" toggleGroup="$viewGroup" />
+                        <ToggleButton fx:id="toggleBleedView" mnemonicParsing="false" text="Bleed" toggleGroup="$viewGroup" />
                      </children>
                      <HBox.margin>
                         <Insets />
@@ -226,68 +225,70 @@
       </StackPane>
    </bottom>
    <center>
-      <StackPane BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.2" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>
-         <children>
-            <BorderPane styleClass="transparent">
-               <center>
-                  <SplitPane fx:id="contentPane" onDragDropped="#dragDropped" onDragOver="#dragOver" styleClass="transparent">
-                     <BorderPane.margin>
-                        <Insets left="5.0" />
-                     </BorderPane.margin></SplitPane>
-               </center>
-            </BorderPane>
-         </children>
-      </StackPane>
+         <items>
+            <VBox fx:id="vChannelLeft" SplitPane.resizableWithParent="false">
+               <children>
+                  <SplitPane fx:id="channelPane" dividerPositions="0.8" orientation="VERTICAL" style="-fx-padding: 0;" VBox.vgrow="ALWAYS">
+                     <items>
+                        <VBox>
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <ToggleButton fx:id="togglePreview" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" selected="true" text="Wave" HBox.hgrow="ALWAYS">
+                                       <tooltip>
+                                          <Tooltip text="Hides/shows WaveForm for selected channel" />
+                                       </tooltip>
+                                    </ToggleButton>
+                                    <ToggleButton fx:id="toggleGroupChannels" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Group" HBox.hgrow="ALWAYS">
+                                       <tooltip>
+                                          <Tooltip text="Groups the channels by groups if selected" />
+                                       </tooltip>
+                                    </ToggleButton>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="-1.0" top="-1.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <ListView fx:id="channelList" VBox.vgrow="ALWAYS" />
+                           </children>
+                        </VBox>
+                        <VBox fx:id="waveFormPaneParent" SplitPane.resizableWithParent="false">
+                           <children>
+                              <AnchorPane fx:id="waveFormPane" VBox.vgrow="ALWAYS" />
+                              <HBox VBox.vgrow="NEVER">
+                                 <children>
+                                    <ToggleButton fx:id="toggleBtmRaw" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" onAction="#swapWaveRawEvent" prefHeight="30.0" selected="true" text="Raw Data" HBox.hgrow="ALWAYS">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="bottomLeft" />
+                                       </toggleGroup>
+                                    </ToggleButton>
+                                    <ToggleButton fx:id="toggleBtmWave" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" onAction="#swapWaveRawEvent" prefHeight="30.0" text="WaveForm" toggleGroup="$bottomLeft" HBox.hgrow="ALWAYS" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </items>
+                  </SplitPane>
+               </children>
+            </VBox>
+            <StackPane>
+               <children>
+                  <BorderPane styleClass="transparent">
+                     <center>
+                        <SplitPane fx:id="contentPane" onDragDropped="#dragDropped" onDragOver="#dragOver" styleClass="transparent">
+                           <BorderPane.margin>
+                              <Insets left="5.0" />
+                           </BorderPane.margin>
+                        </SplitPane>
+                     </center>
+                  </BorderPane>
+               </children>
+            </StackPane>
+         </items>
+      </SplitPane>
    </center>
-   <left>
-      <VBox>
-         <children>
-            <SplitPane fx:id="channelPane" dividerPositions="0.8" orientation="VERTICAL" style="-fx-padding: 0;" VBox.vgrow="ALWAYS">
-               <items>
-                  <VBox>
-                     <children>
-                        <HBox>
-                           <children>
-                              <ToggleButton fx:id="togglePreview" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" selected="true" text="Wave" HBox.hgrow="ALWAYS">
-                                 <tooltip>
-                                    <Tooltip text="Hides/shows WaveForm for selected channel" />
-                                 </tooltip></ToggleButton>
-                              <ToggleButton fx:id="toggleGroupChannels" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Group" HBox.hgrow="ALWAYS">
-                                 <tooltip>
-                                    <Tooltip text="Groups the channels by groups if selected" />
-                                 </tooltip></ToggleButton>
-                           </children>
-                           <VBox.margin>
-                              <Insets bottom="-1.0" top="-1.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <ListView fx:id="channelList" VBox.vgrow="ALWAYS" />
-                     </children>
-                  </VBox>
-                  <VBox fx:id="waveFormPaneParent" SplitPane.resizableWithParent="false">
-                     <children>
-                        <AnchorPane fx:id="waveFormPane" VBox.vgrow="ALWAYS" />
-                        <HBox VBox.vgrow="NEVER">
-                           <children>
-                              <ToggleButton fx:id="toggleBtmRaw" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" onAction="#swapWaveRawEvent" prefHeight="30.0" selected="true" text="Raw Data" HBox.hgrow="ALWAYS">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="bottomLeft" />
-                                 </toggleGroup>
-                              </ToggleButton>
-                              <ToggleButton fx:id="toggleBtmWave" maxHeight="30.0" maxWidth="500.0" minHeight="30.0" mnemonicParsing="false" onAction="#swapWaveRawEvent" prefHeight="30.0" text="WaveForm" toggleGroup="$bottomLeft" HBox.hgrow="ALWAYS" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </items>
-            </SplitPane>
-         </children>
-         <BorderPane.margin>
-            <Insets top="-25.0" />
-         </BorderPane.margin>
-      </VBox>
-   </left>
 </BorderPane>
