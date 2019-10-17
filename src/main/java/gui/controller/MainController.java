@@ -384,7 +384,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 				r = node;
 			}
 		}
-		LOG.info(max);
 		for (ToggleButton node : button) {
 			if (!node.equals(r)) {
 				node.setPrefWidth(max);
