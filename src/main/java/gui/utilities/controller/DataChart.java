@@ -17,6 +17,7 @@ import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -50,7 +51,8 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 
 			@Override
 			public void handle(final long now) {
-				update();
+
+				new Thread(() -> update()).start();
 			}
 		};
 		timer.start();
@@ -75,7 +77,9 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 				adding.add(new Data<Number, Number>(i, dataCopy.get(i)));
 
 			}
-			series.getData().setAll(adding);
+
+			Platform.runLater(() -> series.getData().setAll(adding));
+
 			if (!series.getData().isEmpty()) {
 				((NumberAxis) chart.getXAxis()).setLowerBound(series.getData().get(0).getXValue().doubleValue());
 				((NumberAxis) chart.getXAxis()).setUpperBound(series.getData().get(series.getData().size() - 1).getXValue().doubleValue());
