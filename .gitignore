@@ -44,5 +44,6 @@ Thumbs.db
 /workdir/*.png
 /workdir/*.properties
 /workdir/rta.temp
+/workdir/*.conf
 /target/
 dependency-reduced-pom.xml

@@ -152,9 +152,8 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 			for (int i = 0; i < getListeners().size(); i++) {
 				InputListener l = getListeners().get(i);
 				if (l instanceof ChannelListener) {
-					// new Thread(() -> ((ChannelListener)
-					// l).newBuffer(buffer)).start();
-					((ChannelListener) l).newBuffer(this, bufferFull, time);
+					new Thread(() -> ((ChannelListener) l).newBuffer(this, bufferFull, time)).start();
+//					((ChannelListener) l).newBuffer(this, bufferFull, time);
 				}
 			}
 		}

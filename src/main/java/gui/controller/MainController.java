@@ -32,7 +32,6 @@ import gui.pausable.PausableView;
 import gui.utilities.WaveFormPane;
 import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.DataChart;
-import gui.utilities.controller.WaveFormChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -72,6 +71,8 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import main.Constants;
+import main.Constants.RESTORE_PANEL;
 import main.Main;
 
 public class MainController implements Initializable, Pausable, CueListener {
@@ -164,6 +165,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 		Main.getInstance().setProgress(0.85);
 		initListener();
 		Main.getInstance().setProgress(0.9);
+		applyLoadedProperties();
+		Main.getInstance().setProgress(0.95);
+
 		resetStatus();
 		bottomLabel.setVisible(false);
 		TimeKeeper.getInstance().addListener(this);
@@ -339,6 +343,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 				} else if (toggleButton.isSelected()) {
 					// on selection
 					Node n = contentMap.get(toggleButton);
+
+					// Saving which view is selected
+					Main.setProperty(Constants.SETTING_RESTORE_PANEL_LAST, toggleButton.getText());
 					if (contentPane.getItems().size() < 1) {
 						contentPane.getItems().add(0, n);
 					} else {
@@ -760,9 +767,11 @@ public class MainController implements Initializable, Pausable, CueListener {
 		Stage settingStage = new Stage();
 		settingStage.setTitle("Settings");
 		FXMLUtil.setIcon(settingStage, Main.getLogoPath());
+		FXMLUtil.setStyleSheet(setting);
+		setting.setStyle(Main.getStyle());
 		settingStage.setScene(new Scene(setting));
 		settingStage.initOwner(root.getScene().getWindow());
-		settingStage.initModality(Modality.APPLICATION_MODAL);
+		settingStage.initModality(Modality.NONE);
 		settingStage.show();
 	}
 
@@ -775,5 +784,32 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 		}
 		return result;
+	}
+
+	private void applyLoadedProperties() {
+		applyPanelProperty();
+	}
+
+	private void applyPanelProperty() {
+		String panel = null;
+		switch (RESTORE_PANEL.valueOf(Main.getProperty(Constants.SETTING_RESTORE_PANEL))) {
+		case LAST:
+			panel = Main.getProperty(Constants.SETTING_RESTORE_PANEL_LAST);
+			break;
+		case SPECIFIC:
+			panel = Main.getProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC);
+			break;
+		case NOTHING:
+		default:
+			break;
+		}
+		if (panel != null) {
+			for (ToggleButton b : contentMap.keySet()) {
+				if (b.getText().equals(panel)) {
+					b.fire();
+					break;
+				}
+			}
+		}
 	}
 }

@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import data.Input;
+import gui.FXMLUtil;
 import gui.controller.MainController;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -37,6 +38,7 @@ public abstract class InputCellContextMenu extends ContextMenu {
 				} else {
 					dialog = new TextInputDialog(input.getName());
 				}
+				FXMLUtil.setStyleSheet(dialog.getDialogPane());
 				Optional<String> result = dialog.showAndWait();
 				if (result.isPresent()) {
 					input.setName(result.get());

@@ -61,14 +61,17 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private ExecutorService exe;
 	private long time;
 	private boolean isFFTing = false;
-	private Object lastCompleteBuffer;;
+	private Object lastCompleteBuffer;
+	private static List<String> driverList;
 
 	/**
 	 * @return Returns the instance of the {@link #ASIOController}, as definded by
 	 *         singleton pattern
 	 */
 	public static ASIOController getInstance() {
+
 		return instance;
+
 	}
 
 	/**
@@ -76,6 +79,13 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	 *         system
 	 */
 	public static List<String> getPossibleDrivers() {
+		if (driverList == null) {
+			driverList = loadPossibleDrivers();
+		}
+		return driverList;
+	}
+
+	private static List<String> loadPossibleDrivers() {
 		ArrayList<String> result = new ArrayList<>();
 		try {
 			List<String> preList = AsioDriver.getDriverNames();
@@ -91,7 +101,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 				} catch (Exception e) {
 					LOG.debug(possibleDriver + " is unavailable");
 				} finally {
-					if (tempDriver != null) {
+					if (tempDriver != null && (ASIOController.getInstance() != null && !tempDriver.getName().equals(ASIOController.getInstance().getDevice()))) {
 						tempDriver.shutdownAndUnloadDriver();
 					}
 				}

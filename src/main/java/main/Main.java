@@ -283,12 +283,17 @@ public class Main extends MainGUI {
 
 	public static void setProperty(String key, Object value) {
 		setProperty(key, value, true);
+
 	}
 
 	public static void setProperty(String key, Object value, boolean save) {
-		properties.put(key, value);
-		if (save) {
-			saveProperties();
+		try {
+			properties.put(key, value);
+			if (save) {
+				saveProperties();
+			}
+		} catch (Exception e) {
+			LOG.warn("Problem saving properties", e);
 		}
 	}
 

@@ -18,6 +18,7 @@ public final class Constants {
 	/* Keys */
 	public static final String SETTING_RESTORE_PANEL = "gui.panel.restore";
 	public static final String SETTING_RESTORE_PANEL_SPECIFIC = "gui.panel.restore.specific";
+	public static final String SETTING_RESTORE_PANEL_LAST = "gui.panel.restore.last";
 
 	public static final String SETTING_RELOAD_LAST_FILE = "data.file.reloadLast";
 	public static final String SETTING_WARN_UNSAVED_CHANGES = "data.save.unsaved.warn";
