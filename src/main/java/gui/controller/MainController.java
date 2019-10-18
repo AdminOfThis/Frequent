@@ -32,6 +32,7 @@ import gui.pausable.PausableView;
 import gui.utilities.WaveFormPane;
 import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.DataChart;
+import gui.utilities.controller.WaveFormChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;

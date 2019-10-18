@@ -10,9 +10,11 @@ import data.Input;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import main.Constants;
 import main.Main;
+
 /**
  * 
  * @author AdminOfThis
@@ -37,7 +39,7 @@ public class WaveFormPane extends ResizableCanvas implements PausableComponent, 
 			@Override
 			public void handle(long now) {
 				if (!isPaused()) {
-					paintWaveForm();
+					new Thread(() -> paintWaveForm()).start();
 				}
 			}
 		};
@@ -66,8 +68,7 @@ public class WaveFormPane extends ResizableCanvas implements PausableComponent, 
 				}
 				double y1 = ((getHeight() - 2.0 * value) / 2.0);
 				double y2 = (y1 + 2.0 * value);
-				getGraphicsContext2D().strokeLine(((double) i) / (waveData.length - 1) * getWidth(), y1,
-						((double) i) / (waveData.length - 1) * getWidth(), y2);
+				getGraphicsContext2D().strokeLine(((double) i) / (waveData.length - 1) * getWidth(), y1, ((double) i) / (waveData.length - 1) * getWidth(), y2);
 			}
 		}
 	}
@@ -88,10 +89,12 @@ public class WaveFormPane extends ResizableCanvas implements PausableComponent, 
 	}
 
 	public void setChannel(Input channel) {
+
 		if (this.input != null) {
 			this.input.removeListener(this);
 		}
-		getGraphicsContext2D().clearRect(0, 0, getWidth(), getHeight());
+		waveData = new double[1024];
+		Platform.runLater(() -> getGraphicsContext2D().clearRect(0, 0, getWidth(), getHeight()));
 		this.input = channel;
 		if (this.input != null) {
 			this.input.addListener(this);
@@ -103,8 +106,7 @@ public class WaveFormPane extends ResizableCanvas implements PausableComponent, 
 		if (waveData.length != Math.floor(getWidth()) / 2) {
 			waveData = Arrays.copyOf(waveData, (int) Math.floor(getWidth()) / 2);
 		}
-		if (Objects.equals(input, this.input) && ASIOController.getInstance() != null && waveData != null
-				&& waveData.length > 10) {
+		if (Objects.equals(input, this.input) && ASIOController.getInstance() != null && waveData != null && waveData.length > 10) {
 			for (int i = 0; i < waveData.length - 1; i++) {
 				waveData[i] = waveData[i + 1];
 			}
