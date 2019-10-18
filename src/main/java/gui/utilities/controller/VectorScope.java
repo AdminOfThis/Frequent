@@ -127,13 +127,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		};
 		chartParent.heightProperty().addListener(lis);
 		chartParent.widthProperty().addListener(lis);
-		NumberAxis x = (NumberAxis) chart.getXAxis();
-		NumberAxis y = (NumberAxis) chart.getYAxis();
-		x.setAnimated(false);
-		y.setAnimated(false);
-		x.lowerBoundProperty().bindBidirectional(x.upperBoundProperty());
-		y.lowerBoundProperty().bindBidirectional(y.upperBoundProperty());
-		x.lowerBoundProperty().bindBidirectional(y.lowerBoundProperty());
 	}
 
 	@Override
@@ -237,11 +230,28 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					percent = 1 - Math.abs((percent + 1) / 2.0);
 					d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
 				}
+
 			} // removing old data points
 			if (vectorSeries.getData().size() > MAX_DATA_POINTS * decay) {
 				List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0, (int) Math.round(vectorSeries.getData().size() - MAX_DATA_POINTS * decay));
 				vectorSeries.getData().removeAll(removeList);
 			}
+
+			float maxX = 0;
+			float maxY = 0;
+			for (Data<Number, Number> data : vectorSeries.getData()) {
+				maxX = Math.max(maxX, Math.abs(data.getXValue().floatValue()));
+				maxY = Math.max(maxY, Math.abs(data.getYValue().floatValue()));
+			}
+
+			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+			NumberAxis yAxis = (NumberAxis) chart.getYAxis();
+
+			xAxis.setLowerBound(-maxX - .01);
+			xAxis.setUpperBound(maxX + .01);
+			yAxis.setLowerBound(-maxY - .01);
+			yAxis.setUpperBound(maxY + .01);
+
 		} catch (Exception e) {
 			LOG.error("Problem while displaying data", e);
 		}
