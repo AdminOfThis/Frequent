@@ -142,12 +142,15 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 
 	public void sendFullBuffer(long time) {
 		float max = 0;
+		float rms = 0;
 		for (float f : bufferFull) {
+			rms += f * f;
 			if (f > max) {
 				max = f;
 			}
 		}
-		setLevel(max, time);
+		rms = (float) Math.sqrt(rms / bufferFull.length);
+		setLevel(max, rms, time);
 		synchronized (getListeners()) {
 			for (int i = 0; i < getListeners().size(); i++) {
 				InputListener l = getListeners().get(i);

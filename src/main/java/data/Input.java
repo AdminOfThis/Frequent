@@ -14,19 +14,21 @@ import control.InputListener;
 
 public abstract class Input implements Serializable {
 
-	private static final long				serialVersionUID	= 1L;
-	private static final Logger				LOG					= LogManager.getLogger(Input.class);
-	public static final Comparator<Input>	COMPARATOR			= (o1, o2) -> {
-																	if (o1 instanceof Channel && o2 instanceof Channel) {
-																		return ((Channel) o1).getChannelIndex() - ((Channel) o2).getChannelIndex();
-																	} else if (o1 instanceof Group && o2 instanceof Group) { return ((Group) o1).getName().compareTo(((Group) o2).getName()); }
-																	return 0;
-																};
-	private String							name;
-	private float							level;
-	private long							time;
-	private transient List<InputListener>	listeners			= Collections.synchronizedList(new ArrayList<>());
-	private String							hexColor;
+	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LogManager.getLogger(Input.class);
+	public static final Comparator<Input> COMPARATOR = (o1, o2) -> {
+		if (o1 instanceof Channel && o2 instanceof Channel) {
+			return ((Channel) o1).getChannelIndex() - ((Channel) o2).getChannelIndex();
+		} else if (o1 instanceof Group && o2 instanceof Group) {
+			return ((Group) o1).getName().compareTo(((Group) o2).getName());
+		}
+		return 0;
+	};
+	private String name;
+	private float level, rmsLevel;
+	private long time;
+	private transient List<InputListener> listeners = Collections.synchronizedList(new ArrayList<>());
+	private String hexColor;
 
 	public Input() {
 		if (listeners == null) {
@@ -78,8 +80,7 @@ public abstract class Input implements Serializable {
 			for (InputListener obs : listeners) {
 				try {
 					obs.levelChanged(this, level, time);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOG.warn("Unable to notify Level Listener", e);
 					LOG.debug("", e);
 				}
@@ -108,8 +109,7 @@ public abstract class Input implements Serializable {
 					c.setColor(hexColor);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 		return true;
@@ -121,6 +121,11 @@ public abstract class Input implements Serializable {
 			this.time = time;
 			notifyListeners();
 		}
+	}
+
+	protected void setLevel(final float level, final float rms, long time) {
+		rmsLevel = rms;
+		setLevel(level, time);
 	}
 
 	public void setName(final String name) {
