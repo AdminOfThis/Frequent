@@ -65,18 +65,22 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 
 	private void update() {
 		if (!isPaused()) {
+			List<Float> dataCopy;
 			synchronized (pendingData) {
-				ArrayList<Data<Number, Number>> adding = new ArrayList<>();
-				for (int i = 0; i < pendingData.size(); i++) {
-					if (showSingleWave && pendingData.get(i) < 0) {
-						break;
-					}
-					adding.add(new Data<Number, Number>(i, pendingData.get(i)));
-				}
-				series.getData().setAll(adding);
+				dataCopy = new ArrayList<>(pendingData);
 			}
-			((NumberAxis) chart.getXAxis()).setLowerBound(series.getData().get(0).getXValue().doubleValue());
-			((NumberAxis) chart.getXAxis()).setUpperBound(series.getData().get(series.getData().size() - 1).getXValue().doubleValue());
+			ArrayList<Data<Number, Number>> adding = new ArrayList<>();
+			for (int i = 0; i < dataCopy.size(); i++) {
+				if (showSingleWave && dataCopy.get(i) < 0) {
+					break;
+				}
+				adding.add(new Data<Number, Number>(i, dataCopy.get(i)));
+			}
+			series.getData().setAll(adding);
+			if (!series.getData().isEmpty()) {
+				((NumberAxis) chart.getXAxis()).setLowerBound(series.getData().get(0).getXValue().doubleValue());
+				((NumberAxis) chart.getXAxis()).setUpperBound(series.getData().get(series.getData().size() - 1).getXValue().doubleValue());
+			}
 		}
 	}
 
