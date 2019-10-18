@@ -64,7 +64,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 			@Override
 			public void handle(final long now) {
-				update();
+				new Thread(() -> update()).start();
 			}
 		};
 		timer.start();

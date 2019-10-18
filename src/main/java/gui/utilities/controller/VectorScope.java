@@ -221,7 +221,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	protected void showData(final float[] x, final float[] y) {
 		// drawing new data
 		try {
-			if (x.length == y.length) {
+			if (x != null && y != null && x.length == y.length) {
 				ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
 				for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.length - 1; index = index + 2) {
 					Data<Number, Number> data = new Data<>(x[index], y[index]);
