@@ -15,6 +15,9 @@ notifications:
     on_failure: change
 deploy:
   provider: releases
+  skip_cleanup: true
+  prerelease: true
+  overwrite: true
   api_key:
     secure: kD639ape8Tfdg7jSg5chwXcNayHDDfDmHqNsnwR3OfZpNVbtBtIe8OkaJmIrlomPi+PPuySOM2mfetPUPg/KmP98hL+7P6ZDPwS7CQNbQpJjSKZahngbnAJecTH9M/r5/otL3WpoViQULx9PnFlcXZfhugiXpq0DhV+LT0XSgkDD5KADKKCXxuowW4rnzp4qNZ/sz9MfudpJ+wzyCnRxP3f8VaFGSHO+Z0oTHzMk7iChUcIU/OW9MqJcY48brkVZlvKyPoRYdfE+Vv5hZjQbzCSVxGwdK4foWmvMe9NiwpQjTRRQsHEQr7p2OgzWUwMuXN1vcmY8VYEVek2plX0HOlb5MMXoW2ChXFyvh8lRKfV+1+XrI45/lqlMHf6kPjO/KG0a68ZJrAXU7c7gd7K9BQeZYUtJWdMXIqTxtWaCn99jkud7bSFH6eVqXv/N7HTUVTomy+nRRKZKe2oUL/cYKpLx5zEJOitj36ka2Jb/mzoVycA3RqPzFu41brGil7Jj+ObmdHmXb+9k+Ilvvayg/MATLEu5I6XfDz30zpKeWUV0biHR4VSCCtdKAZmkW7XEWm4jhy4rksArCtyRT15OqhB8m2CTT+B8lS57agkkCQdjt37Gceunz5NDMSIWWzRhKSzLRpNhTPMTmdXT9TRdVxW/t9EA8Fqh9SLR3ilSrOE=
   file: 
