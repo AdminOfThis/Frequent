@@ -37,7 +37,6 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 	private List<Float> pendingData = Collections.synchronizedList(new ArrayList<>());
 	private Pausable pausableParent;
 	private boolean pause = false;
-	private boolean showSingleWave = false;
 
 	public DataChart() {
 		LOG.debug("Creating new DataChart");
@@ -70,11 +69,11 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 				dataCopy = new ArrayList<>(pendingData);
 			}
 			ArrayList<Data<Number, Number>> adding = new ArrayList<>();
+
 			for (int i = 0; i < dataCopy.size(); i++) {
-				if (showSingleWave && dataCopy.get(i) < 0) {
-					break;
-				}
+
 				adding.add(new Data<Number, Number>(i, dataCopy.get(i)));
+
 			}
 			series.getData().setAll(adding);
 			if (!series.getData().isEmpty()) {
