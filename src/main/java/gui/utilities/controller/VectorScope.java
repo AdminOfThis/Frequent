@@ -137,11 +137,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	@Override
-	public boolean isPaused() {
-		return pause || parentPausable != null && parentPausable.isPaused() || channel1 == null || channel2 == null;
-	}
-
-	@Override
 	public void levelChanged(final Input input, final double level, final long time) {
 		// do nothing, don't care
 	}
@@ -178,6 +173,11 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				LOG.error("Problem showing vectorscope", e);
 			}
 		}
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause || parentPausable != null && parentPausable.isPaused() || channel1 == null || channel2 == null;
 	}
 
 	@Override
@@ -220,26 +220,30 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	protected void showData(final float[] x, final float[] y) {
 		// drawing new data
-		if (x.length == y.length) {
-			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
-			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.length - 1; index = index + 2) {
-				Data<Number, Number> data = new Data<>(x[index], y[index]);
-				dataToAdd.add(data);
-			}
-			vectorSeries.getData().addAll(dataToAdd);
-			for (int i = 0; i < dataToAdd.size(); i++) {
-				Data<Number, Number> d = dataToAdd.get(i);
-				double percent = d.getXValue().doubleValue() / d.getYValue().doubleValue();
-				if (percent > 1 || percent < -1) {
-					percent = 1.0 / percent;
+		try {
+			if (x.length == y.length) {
+				ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
+				for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.length - 1; index = index + 2) {
+					Data<Number, Number> data = new Data<>(x[index], y[index]);
+					dataToAdd.add(data);
 				}
-				percent = 1 - Math.abs((percent + 1) / 2.0);
-				d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
+				vectorSeries.getData().addAll(dataToAdd);
+				for (int i = 0; i < dataToAdd.size(); i++) {
+					Data<Number, Number> d = dataToAdd.get(i);
+					double percent = d.getXValue().doubleValue() / d.getYValue().doubleValue();
+					if (percent > 1 || percent < -1) {
+						percent = 1.0 / percent;
+					}
+					percent = 1 - Math.abs((percent + 1) / 2.0);
+					d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
+				}
+			} // removing old data points
+			if (vectorSeries.getData().size() > MAX_DATA_POINTS * decay) {
+				List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0, (int) Math.round(vectorSeries.getData().size() - MAX_DATA_POINTS * decay));
+				vectorSeries.getData().removeAll(removeList);
 			}
-		} // removing old data points
-		if (vectorSeries.getData().size() > MAX_DATA_POINTS * decay) {
-			List<Data<Number, Number>> removeList = vectorSeries.getData().subList(0, (int) Math.round(vectorSeries.getData().size() - MAX_DATA_POINTS * decay));
-			vectorSeries.getData().removeAll(removeList);
+		} catch (Exception e) {
+			LOG.error("Problem while displaying data", e);
 		}
 	}
 

@@ -21,22 +21,23 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.AnchorPane;
 
 public class DataChart extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
-	private static final Logger			LOG				= LogManager.getLogger(WaveFormChart.class);
-	private static final String			FXML			= "/fxml/utilities/DataChart.fxml";
+	private static final Logger LOG = LogManager.getLogger(WaveFormChart.class);
+	private static final String FXML = "/fxml/utilities/DataChart.fxml";
 	@FXML
-	private LineChart<Number, Number>	chart;
-	private Series<Number, Number>		series			= new Series<>();
-	private Channel						channel;
-	private List<Float>					pendingData		= Collections.synchronizedList(new ArrayList<>());
-	private Pausable					pausableParent;
-	private boolean						pause			= false;
-	private boolean						showSingleWave	= false;
+	private LineChart<Number, Number> chart;
+	private Series<Number, Number> series = new Series<>();
+	private Channel channel;
+	private List<Float> pendingData = Collections.synchronizedList(new ArrayList<>());
+	private Pausable pausableParent;
+	private boolean pause = false;
+	private boolean showSingleWave = false;
 
 	public DataChart() {
 		LOG.debug("Creating new DataChart");
@@ -59,6 +60,7 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		chart.getData().add(series);
+
 	}
 
 	private void update() {
@@ -73,6 +75,8 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 				}
 				series.getData().setAll(adding);
 			}
+			((NumberAxis) chart.getXAxis()).setLowerBound(series.getData().get(0).getXValue().doubleValue());
+			((NumberAxis) chart.getXAxis()).setUpperBound(series.getData().get(series.getData().size() - 1).getXValue().doubleValue());
 		}
 	}
 
@@ -92,8 +96,7 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 					c.addListener(this);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("", e);
 		}
 	}

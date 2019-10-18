@@ -74,13 +74,9 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 		pendingLevelList = Collections.synchronizedList(new ArrayList<Double>());
 		setChannel(channel);
 		AnimationTimer timer = new AnimationTimer() {
-
 			@Override
 			public void handle(final long now) {
-				if (!isPaused()) {
-					new Thread(() -> update()).start();
-
-				}
+				new Thread(() -> update()).start();
 			}
 		};
 		timer.start();
@@ -178,7 +174,7 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 	}
 
 	private void update() {
-		if (!isPaused() || pendingLevelList.isEmpty()) {
+		if (!isPaused()) {
 			synchronized (pendingLevelList) {
 				for (Double peakdB : pendingLevelList) {
 					if (peak < peakdB || timeSincePeak >= PEAK_HOLD) {
