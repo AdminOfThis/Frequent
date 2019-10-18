@@ -22,7 +22,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import main.Constants;
 import main.Constants.RESTORE_PANEL;
-import main.Main;
+import preferences.PropertiesIO;
 
 /**
  * 
@@ -107,18 +107,17 @@ public class SettingsController implements Initializable {
 
 		loadRestorePanel();
 		loadFile();
-
 	}
 
 	private void loadRestorePanel() {
-		setSettingSecure(() -> rBtnPanelNothing.setSelected(Main.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.NOTHING.name())), Constants.SETTING_RESTORE_PANEL);
-		setSettingSecure(() -> rBtnPanelLast.setSelected(Main.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.LAST.name())), Constants.SETTING_RESTORE_PANEL);
-		if (Main.getProperty(Constants.SETTING_RESTORE_PANEL) != null && Main.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.SPECIFIC.name())) {
+		setSettingSecure(() -> rBtnPanelNothing.setSelected(PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.NOTHING.name())), Constants.SETTING_RESTORE_PANEL);
+		setSettingSecure(() -> rBtnPanelLast.setSelected(PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.LAST.name())), Constants.SETTING_RESTORE_PANEL);
+		if (PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL) != null && PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.SPECIFIC.name())) {
 			rBtnPanelSpecific.setSelected(true);
-			if (Main.getProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC) != null) {
+			if (PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC) != null) {
 				for (Toggle t : startUpPanel.getToggles()) {
 					ToggleButton btn = (ToggleButton) t;
-					if (btn.getText().equals(Main.getProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC))) {
+					if (btn.getText().equals(PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC))) {
 						btn.setSelected(true);
 						break;
 					}
@@ -128,8 +127,8 @@ public class SettingsController implements Initializable {
 	}
 
 	private void loadFile() {
-		setSettingSecure(() -> chkRestoreLastFile.setSelected(Boolean.parseBoolean(Main.getProperty(Constants.SETTING_RELOAD_LAST_FILE))), Constants.SETTING_RELOAD_LAST_FILE);
-		setSettingSecure(() -> chkWarnUnsavedChanges.setSelected(Boolean.parseBoolean(Main.getProperty(Constants.SETTING_WARN_UNSAVED_CHANGES))), Constants.SETTING_WARN_UNSAVED_CHANGES);
+		setSettingSecure(() -> chkRestoreLastFile.setSelected(Boolean.parseBoolean(PropertiesIO.getProperty(Constants.SETTING_RELOAD_LAST_FILE))), Constants.SETTING_RELOAD_LAST_FILE);
+		setSettingSecure(() -> chkWarnUnsavedChanges.setSelected(Boolean.parseBoolean(PropertiesIO.getProperty(Constants.SETTING_WARN_UNSAVED_CHANGES))), Constants.SETTING_WARN_UNSAVED_CHANGES);
 
 	}
 
@@ -151,22 +150,22 @@ public class SettingsController implements Initializable {
 
 		// Panel restore
 		if (rBtnPanelNothing.isSelected()) {
-			Main.setProperty(Constants.SETTING_RESTORE_PANEL, RESTORE_PANEL.NOTHING.name(), false);
-			Main.setProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC, Integer.toString(-1));
+			PropertiesIO.setProperty(Constants.SETTING_RESTORE_PANEL, RESTORE_PANEL.NOTHING.name(), false);
+			PropertiesIO.setProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC, Integer.toString(-1), false);
 		} else if (rBtnPanelLast.isSelected()) {
-			Main.setProperty(Constants.SETTING_RESTORE_PANEL, RESTORE_PANEL.LAST.name(), false);
-			Main.setProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC, Integer.toString(-1));
+			PropertiesIO.setProperty(Constants.SETTING_RESTORE_PANEL, RESTORE_PANEL.LAST.name(), false);
+			PropertiesIO.setProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC, Integer.toString(-1), false);
 		} else if (rBtnPanelSpecific.isSelected()) {
-			Main.setProperty(Constants.SETTING_RESTORE_PANEL, RESTORE_PANEL.SPECIFIC.name(), false);
-			Main.setProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC, ((ToggleButton) startUpPanel.getSelectedToggle()).getText());
+			PropertiesIO.setProperty(Constants.SETTING_RESTORE_PANEL, RESTORE_PANEL.SPECIFIC.name(), false);
+			PropertiesIO.setProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC, ((ToggleButton) startUpPanel.getSelectedToggle()).getText(), false);
 		} else {
 			LOG.error("State should not be reached");
 		}
 		// File/saving
-		Main.setProperty(Constants.SETTING_RELOAD_LAST_FILE, Boolean.toString(chkRestoreLastFile.isSelected()));
-		Main.setProperty(Constants.SETTING_WARN_UNSAVED_CHANGES, Boolean.toString(chkWarnUnsavedChanges.isSelected()));
+		PropertiesIO.setProperty(Constants.SETTING_RELOAD_LAST_FILE, Boolean.toString(chkRestoreLastFile.isSelected()), false);
+		PropertiesIO.setProperty(Constants.SETTING_WARN_UNSAVED_CHANGES, Boolean.toString(chkWarnUnsavedChanges.isSelected()), false);
 
-		Main.saveProperties();
+		PropertiesIO.saveProperties();
 		close();
 	}
 

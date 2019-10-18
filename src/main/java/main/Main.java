@@ -3,7 +3,6 @@ package main;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,7 +46,6 @@ public class Main extends MainGUI {
 	private Scene loginScene;
 	private Scene mainScene;
 	private IOChooserController loginController;
-	private static Properties properties = new Properties();
 
 	/**
 	 * The main method of the programm. Starts with parsing arguments, then launches
@@ -156,10 +154,8 @@ public class Main extends MainGUI {
 	}
 
 	private static void loadProperties() {
-		properties = PropertiesIO.loadProperties(new File(propertiesPath));
-		if (!properties.isEmpty()) {
-			LOG.info(properties.size() + " Properties loaded");
-		}
+		PropertiesIO.setSavePath(propertiesPath);
+		PropertiesIO.loadProperties();
 
 	}
 
@@ -196,7 +192,8 @@ public class Main extends MainGUI {
 	 */
 	@Override
 	public boolean close() {
-		if (!Main.isDebug()) {
+
+		if (!Main.isDebug() && PropertiesIO.getBooleanProperty(Constants.SETTING_WARN_UNSAVED_CHANGES)) {
 			LOG.info("Checking for unsaved changes");
 			if (FileIO.unsavedChanges()) {
 				LOG.info("Unsaved changes found");
@@ -277,27 +274,4 @@ public class Main extends MainGUI {
 		return LOGO;
 	}
 
-	public static String getProperty(String key) {
-		return properties.get(key).toString();
-	}
-
-	public static void setProperty(String key, Object value) {
-		setProperty(key, value, true);
-
-	}
-
-	public static void setProperty(String key, Object value, boolean save) {
-		try {
-			properties.put(key, value);
-			if (save) {
-				saveProperties();
-			}
-		} catch (Exception e) {
-			LOG.warn("Problem saving properties", e);
-		}
-	}
-
-	public static void saveProperties() {
-		PropertiesIO.saveProperties(properties, new File(Main.DEFAULT_PROPERTIES_PATH));
-	}
 }

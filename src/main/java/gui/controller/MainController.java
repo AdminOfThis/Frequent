@@ -74,6 +74,7 @@ import javafx.util.Duration;
 import main.Constants;
 import main.Constants.RESTORE_PANEL;
 import main.Main;
+import preferences.PropertiesIO;
 
 public class MainController implements Initializable, Pausable, CueListener {
 
@@ -345,7 +346,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 					Node n = contentMap.get(toggleButton);
 
 					// Saving which view is selected
-					Main.setProperty(Constants.SETTING_RESTORE_PANEL_LAST, toggleButton.getText());
+					PropertiesIO.setProperty(Constants.SETTING_RESTORE_PANEL_LAST, toggleButton.getText());
 					if (contentPane.getItems().size() < 1) {
 						contentPane.getItems().add(0, n);
 					} else {
@@ -791,25 +792,31 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void applyPanelProperty() {
-		String panel = null;
-		switch (RESTORE_PANEL.valueOf(Main.getProperty(Constants.SETTING_RESTORE_PANEL))) {
-		case LAST:
-			panel = Main.getProperty(Constants.SETTING_RESTORE_PANEL_LAST);
-			break;
-		case SPECIFIC:
-			panel = Main.getProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC);
-			break;
-		case NOTHING:
-		default:
-			break;
-		}
-		if (panel != null) {
-			for (ToggleButton b : contentMap.keySet()) {
-				if (b.getText().equals(panel)) {
-					b.fire();
+		try {
+			String panel = null;
+			if (PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL) != null) {
+				switch (RESTORE_PANEL.valueOf(PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL))) {
+				case LAST:
+					panel = PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL_LAST);
+					break;
+				case SPECIFIC:
+					panel = PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL_SPECIFIC);
+					break;
+				case NOTHING:
+				default:
 					break;
 				}
+				if (panel != null) {
+					for (ToggleButton b : contentMap.keySet()) {
+						if (b.getText().equals(panel)) {
+							b.fire();
+							break;
+						}
+					}
+				}
 			}
+		} catch (Exception e) {
+			LOG.warn("Unable to load panel restore settings");
 		}
 	}
 }
