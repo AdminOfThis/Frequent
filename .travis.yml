@@ -4,28 +4,22 @@ jdk:
 os:
 - linux
 dist: trusty
-#before_install:
-#  - "git submodule update --init --recursive"
 before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
-script:  mvn clean compiler:compile compiler:testCompile validate surefire:test package
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- sleep 3
+script: mvn clean compiler:compile compiler:testCompile validate surefire:test package
 notifications:
   email:
     on_success: change
     on_failure: change
 deploy:
-  - provider: releases
-    skip_cleanup: true
-    prerelease: true
-    overwrite: true
-    api_key:
-      secure: SpYg6TM1B2GuiV4Fitq/GjpMbEMRSk/1UWmc+0GTGH9XAsrgx6K5PhAD9bmUxDX0sBmi3PkmkpFKRZ/5PzcTvJvTad3HfC8qg84l+KTJ/1CIJQRy8Ov5a7Pej9pq3wowMdyYFMpRfe43uZkV/6hmhrUohuW1vZNsYp8rd3D1n+4LtpDNlIZfnnrvw4XEKxoQ1AT6e4+FOVL55qEBoVQxaZOTin/SBrAULMrv9p4w21Ijj1Rj/2UzaW96LCTKk6+nmMY3rapCRAXB0I2jkjOLR0UjfDrfs9seCYImk943jOvut9KIed/KY5cBI6zwUj498VL8DcLfr6iUqQZg+ca6sCEGRMd0Gu5OSb7DuzmkLT9yy3wq7lqQGmv18pSvX+FRt2vcUqmacmsBzOiuerk8rgDQrhST/+tknetHBYHgDM/7Q/7auWEq59hueH4T2x0eaZfEWdl4ik8j1UxIfQFr+WhlqwmxAsTd5Hft6SuZkjHVq3fYLnunAhbZ4MSPA81wAxCfJXRZDTCd5GdF1rHxPCUfy6iThm02r8xACWZWPnsFgZbl7n/fUHRsc/j0YewmWoFqjYXzhSEs6Wk9iDDS/6JwbeUeBi0wO2Twz00Fk1r7b1QZ9vxVHom0LKAKOUMnzyDNR+EAhd/kMMFkhjDLOu99uj2I2gJfjuT+sKdhcTY=
-    file_glob: true
-    file: 
-      - "./target/*.jar"
-      - "./target/*.zip"
-    on:
-      repo: AdminOfThis/Frequent
-      tags: true
+  provider: releases
+  api_key:
+    secure: kD639ape8Tfdg7jSg5chwXcNayHDDfDmHqNsnwR3OfZpNVbtBtIe8OkaJmIrlomPi+PPuySOM2mfetPUPg/KmP98hL+7P6ZDPwS7CQNbQpJjSKZahngbnAJecTH9M/r5/otL3WpoViQULx9PnFlcXZfhugiXpq0DhV+LT0XSgkDD5KADKKCXxuowW4rnzp4qNZ/sz9MfudpJ+wzyCnRxP3f8VaFGSHO+Z0oTHzMk7iChUcIU/OW9MqJcY48brkVZlvKyPoRYdfE+Vv5hZjQbzCSVxGwdK4foWmvMe9NiwpQjTRRQsHEQr7p2OgzWUwMuXN1vcmY8VYEVek2plX0HOlb5MMXoW2ChXFyvh8lRKfV+1+XrI45/lqlMHf6kPjO/KG0a68ZJrAXU7c7gd7K9BQeZYUtJWdMXIqTxtWaCn99jkud7bSFH6eVqXv/N7HTUVTomy+nRRKZKe2oUL/cYKpLx5zEJOitj36ka2Jb/mzoVycA3RqPzFu41brGil7Jj+ObmdHmXb+9k+Ilvvayg/MATLEu5I6XfDz30zpKeWUV0biHR4VSCCtdKAZmkW7XEWm4jhy4rksArCtyRT15OqhB8m2CTT+B8lS57agkkCQdjt37Gceunz5NDMSIWWzRhKSzLRpNhTPMTmdXT9TRdVxW/t9EA8Fqh9SLR3ilSrOE=
+  file: 
+    - "./target/*.jar"
+    - "./target/*.zip"
+  on:
+    repo: AdminOfThis/Frequent
+    tags: true
