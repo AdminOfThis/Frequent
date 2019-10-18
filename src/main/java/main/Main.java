@@ -56,6 +56,7 @@ public class Main extends MainGUI {
 	 */
 	public static void main(final String[] args) throws Exception {
 		MainGUI.initialize(POM_TITLE);
+		setTitle(POM_TITLE);
 		LOG.info(" === " + getReadableTitle() + " ===");
 		parseArgs(args);
 		setColors();
