@@ -395,7 +395,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	 */
 	public double getLatency() {
 		if (asioDriver != null) {
-			double inSec = (1.0 / asioDriver.getSampleRate()) * asioDriver.getBufferPreferredSize();
+//			double inSec = (1.0 / asioDriver.getSampleRate()) * asioDriver.getBufferPreferredSize();
+			double inSec = (1.0 / asioDriver.getSampleRate()) * bufferSize;
 			return Math.round(inSec * 10000.0) / 10.0;
 		}
 		return 0;
@@ -582,6 +583,10 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	 */
 	public int getSampleRate() {
 		return (int) Math.floor(sampleRate);
+	}
+
+	public void setDevice(String device) {
+		driverName = device;
 	}
 
 	/**

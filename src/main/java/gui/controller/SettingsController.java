@@ -166,6 +166,12 @@ public class SettingsController implements Initializable {
 		PropertiesIO.setProperty(Constants.SETTING_WARN_UNSAVED_CHANGES, Boolean.toString(chkWarnUnsavedChanges.isSelected()), false);
 
 		PropertiesIO.saveProperties();
+
+		ASIOController.getInstance().setBufferSize(chbBuffer.getValue().intValue());
+		ASIOController.getInstance().setDevice(chbDevice.getValue());
+		ASIOController.getInstance().restart();
+		
+		MainController.getInstance().resetInfosFromDevice();
 		close();
 	}
 

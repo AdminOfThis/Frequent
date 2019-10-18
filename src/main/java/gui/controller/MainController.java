@@ -319,13 +319,17 @@ public class MainController implements Initializable, Pausable, CueListener {
 		controller.addFFTListener((FFTListener) controllerMap.get(contentMap.get(toggleRTAView)));
 		timeKeeperController.setChannels(controller.getInputList());
 		setChannelList(controller.getInputList());
-		lblDriver.setText(ioName);
+		resetInfosFromDevice();
+		if (!BeatDetector.isInitialized()) {
+			BeatDetector.initialize();
+		}
+	}
+
+	public void resetInfosFromDevice() {
+		lblDriver.setText(ASIOController.getInstance().getDevice());
 		lblLatency.setText(controller.getLatency() + "ms ");
 		if (channelList.getItems().size() > 0) {
 			channelList.getSelectionModel().select(0);
-		}
-		if (!BeatDetector.isInitialized()) {
-			BeatDetector.initialize();
 		}
 	}
 
