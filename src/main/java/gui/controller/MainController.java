@@ -602,7 +602,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 					}
 				}
 			}
-			channelList.getItems().sort(Constants.INPUT_COMPARATOR);
+			channelList.getItems().sort(Input.COMPARATOR);
 		}
 	}
 

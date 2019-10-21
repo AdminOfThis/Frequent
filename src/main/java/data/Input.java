@@ -3,6 +3,7 @@ package data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,12 +16,17 @@ public abstract class Input implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LogManager.getLogger(Input.class);
-
+	public static final Comparator<Input> COMPARATOR = (o1, o2) -> {
+		if (o1 instanceof Channel && o2 instanceof Channel) {
+			return ((Channel) o1).getChannelIndex() - ((Channel) o2).getChannelIndex();
+		} else if (o1 instanceof Group && o2 instanceof Group) {
+			return ((Group) o1).getName().compareTo(((Group) o2).getName());
+		}
+		return 0;
+	};
 	private String name;
 	private float level, rmsLevel;
 	private long time;
-
-	private Input stereoChannel;
 	private transient List<InputListener> listeners = Collections.synchronizedList(new ArrayList<>());
 	private String hexColor;
 
@@ -101,10 +107,6 @@ public abstract class Input implements Serializable {
 			}
 			Long.parseLong(color, 16);
 			hexColor = "#" + color;
-			if (isStereo() && !Objects.equals(getStereoChannel().getColor(), hexColor)) {
-				getStereoChannel().setColor(hexColor);
-			}
-
 			if (this instanceof Group) {
 				Group g = (Group) this;
 				for (Channel c : g.getChannelList()) {
@@ -137,36 +139,5 @@ public abstract class Input implements Serializable {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	public Input getStereoChannel() {
-		return stereoChannel;
-	}
-
-	private void removeStereoChannel() {
-		stereoChannel = null;
-	}
-
-	public void setStereoChannel(final Input newChannel) {
-		// if stereo channel is not already equal
-		if (!Objects.equals(newChannel, stereoChannel)) {
-			// if old stereochannel not null
-			if (stereoChannel != null) {
-				// remove reference to this on other channel
-				stereoChannel.removeStereoChannel();
-			}
-			// setting channel
-			stereoChannel = newChannel;
-			// if new channel is not null and does not already reference this as
-			// his pair
-			if (stereoChannel != null && !Objects.equals(stereoChannel.getStereoChannel(), this)) {
-				// setting channel
-				stereoChannel.setStereoChannel(this);
-			}
-		}
-	}
-
-	public boolean isStereo() {
-		return getStereoChannel() != null;
 	}
 }
