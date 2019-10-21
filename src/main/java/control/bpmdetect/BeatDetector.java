@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import data.DrumTrigger;
 import gui.utilities.DrumTriggerListener;
+
 /**
  * 
  * @author AdminOfThis
@@ -23,15 +24,21 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 		CLASSIC, BPM_DETECT
 	};
 
-	private static final Logger				LOG			= LogManager.getLogger(BeatDetector.class);
-	private static final int				LIST_SIZE	= 20;
-	private static BeatDetector				instance;
-	private static boolean					initialized	= false;
-	private List<DrumTrigger>				triggerList	= Collections.synchronizedList(new ArrayList<>());
-	private double							bpm			= 0;
-	private Map<DrumTrigger, List<Long>>	seriesMap	= Collections.synchronizedMap(new HashMap<>());
-	private Mode							mode		= Mode.CLASSIC;
+	private static final Logger LOG = LogManager.getLogger(BeatDetector.class);
+	private static final int LIST_SIZE = 20;
+	private static BeatDetector instance;
+	private static boolean initialized = false;
+	private List<DrumTrigger> triggerList = Collections.synchronizedList(new ArrayList<>());
+	private double bpm = 0;
+	private Map<DrumTrigger, List<Long>> seriesMap = Collections.synchronizedMap(new HashMap<>());
+	private Mode mode = Mode.CLASSIC;
 
+	/**
+	 * Returns the instance of the {@link BeatDetector}, and initializes a new one,
+	 * if instance is currently null
+	 * 
+	 * @return The instance of {@link BeatDetector}
+	 */
 	public static BeatDetector getInstance() {
 		if (instance == null) {
 			instance = new BeatDetector();
@@ -39,6 +46,9 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 		return instance;
 	}
 
+	/**
+	 * Initialized the Beat Detector once new triggers are set
+	 */
 	public static synchronized void initialize() {
 		if (!initialized) {
 			for (String s : DrumTrigger.DEFAULT_NAMES) {
@@ -56,6 +66,11 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 		start();
 	}
 
+	/**
+	 * Adds a new channel as drum trigger
+	 * 
+	 * @param trigger The trigger to add
+	 */
 	public void addDrumTrigger(DrumTrigger trigger) {
 		synchronized (triggerList) {
 			if (!triggerList.contains(trigger)) {
@@ -64,18 +79,33 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 		}
 	}
 
+	/**
+	 * Removes a trigger if it is contained in the trigger list
+	 * 
+	 * @param trigger The trigger to remove
+	 */
 	public void removeDrumTrigger(DrumTrigger trigger) {
 		synchronized (triggerList) {
 			triggerList.remove(trigger);
 		}
 	}
 
+	/**
+	 * Returns the list of all triggers.
+	 * 
+	 * @return The list of all triggers
+	 */
 	public List<DrumTrigger> getTriggerList() {
 		synchronized (triggerList) {
 			return new ArrayList<>(triggerList);
 		}
 	}
 
+	/**
+	 * Returns the detected bpm
+	 * 
+	 * @return The detected bpm
+	 */
 	public double getBPM() {
 		return bpm;
 	}
@@ -95,8 +125,7 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 			}
 			try {
 				Thread.sleep(1000);
-			}
-			catch (InterruptedException e) {
+			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -149,11 +178,18 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 			}
 		}
 	}
-
+/**
+ * Returns wether the {@link BeatDetector} is initialized.
+ * @return #true if the {@link BeatDetector} is initialized, otherwise false
+ */
 	public static synchronized boolean isInitialized() {
 		return initialized;
 	}
 
+	/**
+	 * Returns the BPM as string, with one decimal-point
+	 * @return The detected BPM as String
+	 */
 	public String getBPMString() {
 		return Double.toString(Math.round(bpm * 10.0) / 10.0);
 	}
