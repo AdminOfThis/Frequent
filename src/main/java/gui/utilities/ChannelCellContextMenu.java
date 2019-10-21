@@ -10,29 +10,34 @@ import control.ASIOController;
 import data.Channel;
 import data.Group;
 import data.Input;
+import gui.FXMLUtil;
 import gui.controller.MainController;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
+import main.Main;
 
 public class ChannelCellContextMenu extends InputCellContextMenu {
 
-	private static final Logger	LOG			= LogManager.getLogger(ChannelCellContextMenu.class);
-	private MenuItem			resetName	= new MenuItem("Reset Name");
-	private CheckMenuItem		hide		= new CheckMenuItem("Hide");
-	private CheckMenuItem		showHidden	= new CheckMenuItem("Show Hidden");
-	private MenuItem			newGroup	= new MenuItem("New Group");
-	private Menu				groupMenu	= new Menu("Groups");
-	private Menu				pairingMenu	= new Menu("Pairing");
-	private CheckMenuItem		noPair		= new CheckMenuItem("Unpaired");
+	private static final Logger LOG = LogManager.getLogger(ChannelCellContextMenu.class);
+	private MenuItem resetName = new MenuItem("Reset Name");
+	private CheckMenuItem hide = new CheckMenuItem("Hide");
+	private CheckMenuItem showHidden = new CheckMenuItem("Show Hidden");
+	private MenuItem newGroup = new MenuItem("New Group");
+	private Menu groupMenu = new Menu("Groups");
+	private Menu pairingMenu = new Menu("Pairing");
+	private CheckMenuItem noPair = new CheckMenuItem("Unpaired");
 
 	public ChannelCellContextMenu(final Channel in) {
 		super(in);
+
 		if (in != null) {
 			resetName.setOnAction(e -> {
 				in.setName(in.getChannel().getChannelName());
@@ -55,19 +60,25 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 				}
 			});
 			//
+
+			newGroup.setOnAction(e -> newGroupDialog());
 			setOnShowing(e -> refreshData(in));
 			setAutoHide(true);
-			newGroup.setOnAction(e -> {
-				TextInputDialog newGroupDialog = new TextInputDialog();
-				Optional<String> result = newGroupDialog.showAndWait();
-				if (result.isPresent()) {
-					Group g = new Group(result.get());
-					LOG.info("Created new group: " + g.getName());
-					ASIOController.getInstance().addGroup(g);
-					groupAllSelected(g);
-					MainController.getInstance().refresh();
-				}
-			});
+			setConsumeAutoHidingEvents(false);
+		}
+	}
+
+	private void newGroupDialog() {
+		TextInputDialog newGroupDialog = new TextInputDialog("New Group");
+		FXMLUtil.setStyleSheet(newGroupDialog.getDialogPane());
+		newGroupDialog.getDialogPane().setStyle(Main.getStyle());
+		Optional<String> result = newGroupDialog.showAndWait();
+		if (result.isPresent()) {
+			Group g = new Group(result.get());
+			LOG.info("Created new group: " + g.getName());
+			ASIOController.getInstance().addGroup(g);
+			groupAllSelected(g);
+			MainController.getInstance().refresh();
 		}
 	}
 
@@ -135,7 +146,7 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 				channelCheck.setSelected(c.equals(channel.getStereoChannel()));
 				channelCheck.selectedProperty().addListener((obs, old, newValue) -> {
 					if (newValue) {
-						LOG.info("Setting Stereo Channel of " + channel.getName() + " to " + c.getName());
+						LOG.info("Linking " + channel.getName() + " and " + c.getName() + " to stereo pair");
 						channel.setStereoChannel(c);
 						MainController.getInstance().refresh();
 					}

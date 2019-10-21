@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import control.InputListener;
 import data.Channel;
 import data.Group;
@@ -39,6 +42,7 @@ import main.Constants;
  */
 public class VuMeterMono extends AnchorPane implements Initializable, VuMeterIntf, InputListener {
 
+	private static final Logger LOG = LogManager.getLogger(VuMeterMono.class);
 	private static final String FXML_VERTICAL = "/fxml/utilities/VuMeterVertical.fxml";
 	private static final String FXML_HORIZONTAL = "/fxml/utilities/VuMeterHorizontal.fxml";
 	private static final int PEAK_HOLD = 50;
@@ -135,15 +139,6 @@ public class VuMeterMono extends AnchorPane implements Initializable, VuMeterInt
 				} else {
 					setStyle("");
 				}
-				setOnContextMenuRequested(e -> {
-					ContextMenu menu = null;
-					if (c instanceof Channel) {
-						menu = new ChannelCellContextMenu((Channel) c);
-					} else if (c instanceof Group) {
-						menu = new GroupCellContextMenu((Group) c);
-					}
-					menu.show(vuPane, e.getScreenX(), e.getScreenY());
-				});
 			} else {
 				setTitle("");
 				setOnContextMenuRequested(null);

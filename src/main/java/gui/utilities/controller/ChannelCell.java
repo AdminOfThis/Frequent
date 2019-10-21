@@ -105,15 +105,17 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	}
 
 	private void initContextMenu() {
-		setOnContextMenuRequested(e -> {
-			ContextMenu menu;
-			if (input instanceof Channel) {
-				menu = new ChannelCellContextMenu((Channel) input);
-			} else {
-				menu = new GroupCellContextMenu((Group) input);
-			}
-			menu.show(this, e.getScreenX(), e.getScreenY());
-		});
+
+//		setOnContextMenuRequested(e -> {
+		ContextMenu menu;
+		if (input instanceof Channel) {
+			menu = new ChannelCellContextMenu((Channel) input);
+		} else {
+			menu = new GroupCellContextMenu((Group) input);
+		}
+//			menu.show(this, e.getScreenX(), e.getScreenY());
+//		});
+		setContextMenu(menu);
 	}
 
 	@Override
