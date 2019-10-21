@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import control.InputListener;
 import data.Channel;
 import data.Input;
