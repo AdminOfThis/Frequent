@@ -1,9 +1,12 @@
 package main;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 import control.ASIOController;
 import data.Channel;
+import data.Group;
+import data.Input;
 import javafx.util.StringConverter;
 
 /**
@@ -53,6 +56,15 @@ public final class Constants {
 			}
 			return object.getName();
 		}
+	};
+
+	public static final Comparator<Input> INPUT_COMPARATOR = (o1, o2) -> {
+		if (o1 instanceof Channel && o2 instanceof Channel) {
+			return ((Channel) o1).getChannelIndex() - ((Channel) o2).getChannelIndex();
+		} else if (o1 instanceof Group && o2 instanceof Group) {
+			return ((Group) o1).getName().compareTo(((Group) o2).getName());
+		}
+		return 0;
 	};
 
 	// PRIVATE //

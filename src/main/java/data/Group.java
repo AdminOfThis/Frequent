@@ -16,28 +16,100 @@ public class Group extends Input implements InputListener {
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= 1L;
-	private static final Logger	LOG					= LogManager.getLogger(Group.class);
-	private List<Channel>		channelList			= new ArrayList<>();
-	private List<Double>		channelLevel		= Collections.synchronizedList(new ArrayList<>());
+	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LogManager.getLogger(Group.class);
+	private List<Channel> channelList = new ArrayList<>();
+	private List<Double> channelLevel = Collections.synchronizedList(new ArrayList<>());
+	private Group ghostStereoGroup;
+	private boolean isGhostChannel;
 
 	public Group(String name) {
+		this(name, false);
+	}
+
+	private Group(String name, boolean isGhost) {
 		setName(name);
+		isGhostChannel = isGhost;
+		if (!isGhost) {
+			ghostStereoGroup = new Group("#GhostStereoGroup", true);
+			ghostStereoGroup.setColor(getColor());
+		}
 	}
 
 	public void addChannel(Channel channel) {
 		if (channel != null) {
-			if (!channelList.contains(channel)) {
-				channelList.add(channel);
-				channel.addListener(this);
+			// If stereo channel gets added, check if group is stereo,otherwise make stereo
+			if (channel.isStereo() && !isStereo() && !isGhostChannel) {
+				// copy channels over
+				ghostStereoGroup.setChannelList(getChannelList());
+
+				// ghostStereoGroup.addChannel((Channel) channel.getStereoChannel());
+				setStereoChannel(ghostStereoGroup);
 			}
+			if (channel.isStereo()) {
+				if (this.isGhostChannel) {
+					if (!channelList.contains(channel.getRightChannel())) {
+						channelList.add(channel.getRightChannel());
+						channel.getRightChannel().addListener(this);
+					}
+				} else {
+					if (!channelList.contains(channel.getLeftChannel())) {
+						channelList.add(channel.getLeftChannel());
+						channel.getLeftChannel().addListener(this);
+					}
+					if (!ghostStereoGroup.getChannelList().contains(channel.getRightChannel())) {
+						ghostStereoGroup.addChannel(channel.getRightChannel());
+					}
+				}
+			} else {
+				if (!channelList.contains(channel)) {
+					channelList.add(channel);
+					channel.addListener(this);
+					if (isStereo() && !isGhostChannel) {
+						ghostStereoGroup.addChannel(channel);
+					}
+				}
+			}
+
+			// coloring
 			if (channel.getGroup() != this && channel != null) {
 				channel.setGroup(this);
 				if (this.getColor() != null && !this.getColor().isEmpty() && (channel.getColor() == null || channel.getColor().isEmpty())) {
 					channel.setColor(getColor());
 				}
 			}
+
 			Collections.sort(channelList);
+		}
+	}
+
+	private void setChannelList(List<Channel> channelList2) {
+		for (Channel c : channelList2) {
+			addChannel(c);
+		}
+	}
+
+	public void removeChannel(Channel channel) {
+		if (channel != null) {
+			channel.setGroup(null);
+			channel.removeListener(this);
+			channelList.remove(channel);
+			// check for stereo, if possible make mono
+			boolean stereo = false;
+			for (Channel c : getChannelList()) {
+				if (c.isStereo()) {
+					stereo = true;
+					break;
+				}
+			}
+			// if possible make mono
+			if (!stereo) {
+				// remove all channels from ghost channel
+				while (!ghostStereoGroup.getChannelList().isEmpty()) {
+					ghostStereoGroup.removeChannel(ghostStereoGroup.getChannelList().get(0));
+				}
+				setStereoChannel(null);
+			}
 		}
 	}
 
@@ -48,18 +120,12 @@ public class Group extends Input implements InputListener {
 		return channelList;
 	}
 
-	public void removeChannel(Channel channel) {
-		if (channel != null) {
-			channel.setGroup(null);
-			channel.removeListener(this);
-			channelList.remove(channel);
-		}
-	}
-
 	@Override
 	public void levelChanged(final Input input, final double level, final long time) {
 		synchronized (channelList) {
+
 			channelLevel.add(level);
+
 			if (channelLevel.size() == channelList.size()) {
 				double median = 0;
 				for (double d : channelLevel) {
@@ -67,7 +133,9 @@ public class Group extends Input implements InputListener {
 				}
 				median = median / channelLevel.size();
 				channelLevel.clear();
+
 				this.setLevel((float) median, time);
+
 			}
 		}
 	}

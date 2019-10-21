@@ -33,7 +33,7 @@ import main.Constants;
  * @author AdminOfThis
  *
  */
-public class VuMeterMono extends AnchorPane implements Initializable, VuMeterIntf, InputListener {
+public class VuMeterMono extends VuMeter implements Initializable, InputListener {
 
 	private static final String FXML_VERTICAL = "/fxml/utilities/VuMeterVertical.fxml";
 	private static final String FXML_HORIZONTAL = "/fxml/utilities/VuMeterHorizontal.fxml";
