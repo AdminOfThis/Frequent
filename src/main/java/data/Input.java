@@ -64,6 +64,10 @@ public abstract class Input implements Serializable {
 		return level;
 	}
 
+	public float getRMSLevel() {
+		return rmsLevel;
+	}
+
 	protected List<InputListener> getListeners() {
 		return listeners;
 	}
