@@ -67,6 +67,18 @@ public abstract class Input implements Serializable {
 	}
 
 	public String getName() {
+		if (isStereo()) {
+			if (Objects.equals(this, ((Channel) this).getLeftChannel())) {
+				return name + " L";
+			} else {
+				return name + " R";
+
+			}
+		}
+		return name;
+	}
+
+	protected String getCleanName() {
 		return name;
 	}
 
@@ -132,6 +144,9 @@ public abstract class Input implements Serializable {
 
 	public void setName(final String name) {
 		this.name = name;
+		if (isStereo() && !Objects.equals(getStereoChannel().getName(), getName())) {
+			getStereoChannel().setName(name);
+		}
 	}
 
 	@Override
