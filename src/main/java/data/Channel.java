@@ -19,6 +19,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	private boolean hide = false;
 	private float[] buffer;
 	private float[] bufferFull = new float[ASIOController.DESIRED_BUFFER_SIZE];
+	private Channel stereoChannel;
 
 	public Channel() {
 		this(null, null);
@@ -95,8 +96,16 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		return group;
 	}
 
+	public Channel getStereoChannel() {
+		return stereoChannel;
+	}
+
 	public boolean isHidden() {
 		return hide;
+	}
+
+	private void removeStereoChannel() {
+		stereoChannel = null;
 	}
 
 	public void resetName() {
@@ -170,22 +179,22 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 		this.hide = hide;
 	}
 
-	public Channel getLeftChannel() {
-		if (getStereoChannel() != null) {
-			if (this.compareTo((Channel) getStereoChannel()) < 0) {
-				return this;
-			} else {
-				return (Channel) getStereoChannel();
+	public void setStereoChannel(final Channel newChannel) {
+		// if stereo channel is not already equal
+		if (!Objects.equals(newChannel, stereoChannel)) {
+			// if old stereochannel not null
+			if (stereoChannel != null) {
+				// remove reference to this on other channel
+				stereoChannel.removeStereoChannel();
+			}
+			// setting channel
+			stereoChannel = newChannel;
+			// if new channel is not null and does not already reference this as
+			// his pair
+			if (stereoChannel != null && !Objects.equals(stereoChannel.getStereoChannel(), this)) {
+				// setting channel
+				stereoChannel.setStereoChannel(this);
 			}
 		}
-		return null;
 	}
-
-	public Channel getRightChannel() {
-		if (getLeftChannel() != null) {
-			return (Channel) getLeftChannel().getStereoChannel();
-		}
-		return null;
-	}
-
 }

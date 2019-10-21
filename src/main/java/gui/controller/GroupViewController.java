@@ -18,9 +18,7 @@ import data.Group;
 import data.Input;
 import gui.FXMLUtil;
 import gui.pausable.PausableView;
-import gui.utilities.controller.VuMeter;
 import gui.utilities.controller.VuMeterMono;
-import gui.utilities.controller.VuMeterStereo;
 import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -161,12 +159,7 @@ public class GroupViewController implements Initializable, PausableView {
 		if (g.getColor() == null || g.getColor().isEmpty()) {
 			g.setColor(FXMLUtil.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1, groupList.size() + 1));
 		}
-		VuMeter groupMeter;
-		if (g.isStereo()) {
-			groupMeter = new VuMeterStereo(g, g.getStereoChannel(), Orientation.VERTICAL);
-		} else {
-			groupMeter = new VuMeterMono(g, Orientation.VERTICAL);
-		}
+		VuMeterMono groupMeter = new VuMeterMono(g, Orientation.VERTICAL);
 		groupMeter.setParentPausable(this);
 		groupMeter.setMinWidth(40.0);
 		vuPane.getChildren().add(groupMeter);
@@ -179,15 +172,7 @@ public class GroupViewController implements Initializable, PausableView {
 		scroll.setFitToWidth(true);
 		groupPane.getItems().add(scroll);
 		SplitPane.setResizableWithParent(scroll, false);
-		ArrayList<Channel> channelsToAdd = new ArrayList<>(g.getChannelList());
-		if (g.isStereo()) {
-			for (Channel c : ((Group) g.getStereoChannel()).getChannelList()) {
-				if (!channelsToAdd.contains(c)) {
-					channelsToAdd.add(c);
-				}
-			}
-		}
-		for (Channel c : channelsToAdd) {
+		for (Channel c : g.getChannelList()) {
 			VuMeterMono channelMeter = new VuMeterMono(c, Orientation.VERTICAL);
 			channelMeter.setParentPausable(this);
 			channelMeter.setMinWidth(40.0);
