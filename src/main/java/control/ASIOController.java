@@ -131,7 +131,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	@Override
 	public void bufferSwitch(final long sampleTime, final long samplePosition, final Set<AsioChannel> channels) {
-		time = sampleTime;
+		time = samplePosition;
 		AsioChannel[] channelArray = channels.toArray(new AsioChannel[0]);
 		for (int i = 0; i < channels.size(); i++) {
 			AsioChannel channel = channelArray[i];

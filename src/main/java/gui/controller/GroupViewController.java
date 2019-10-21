@@ -40,22 +40,22 @@ import main.Main;
 
 public class GroupViewController implements Initializable, PausableView {
 
-	private static final Logger					LOG				= LogManager.getLogger(GroupViewController.class);
-	private static final long					TIME_FRAME		= 6000000000l;
-	private static GroupViewController			instance;
+	private static final Logger LOG = LogManager.getLogger(GroupViewController.class);
+	private static final long TIME_FRAME = 600000l;
+	private static GroupViewController instance;
 	@FXML
-	private SplitPane							root;
+	private SplitPane root;
 	@FXML
-	private SplitPane							groupPane;
+	private SplitPane groupPane;
 	@FXML
-	private HBox								vuPane;
+	private HBox vuPane;
 	@FXML
-	private LineChart<Number, Number>			chart;
+	private LineChart<Number, Number> chart;
 	@FXML
-	private ToggleButton						tglTimed;
-	private Map<Group, Map<Long, Double>>		pendingMap		= Collections.synchronizedMap(new HashMap<>());
-	private Map<Group, Series<Number, Number>>	groupSeriesMap	= Collections.synchronizedMap(new HashMap<>());
-	private boolean								pause			= true;
+	private ToggleButton tglTimed;
+	private Map<Group, Map<Long, Double>> pendingMap = Collections.synchronizedMap(new HashMap<>());
+	private Map<Group, Series<Number, Number>> groupSeriesMap = Collections.synchronizedMap(new HashMap<>());
+	private boolean pause = true;
 
 	public static GroupViewController getInstance() {
 		return instance;
@@ -85,7 +85,7 @@ public class GroupViewController implements Initializable, PausableView {
 
 			@Override
 			public void handle(final long now) {
-				update();
+				new Thread(() -> update()).start();
 			}
 		};
 		timer.start();
@@ -122,13 +122,13 @@ public class GroupViewController implements Initializable, PausableView {
 				leveldB = Math.max(leveldB, Constants.FFT_MIN);
 				Data<Number, Number> data = new Data<>(time, leveldB);
 				dataList.add(data);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.warn("", e);
 			}
 		}
 		pendingMap.clear();
 		series.getData().addAll(dataList);
+
 	}
 
 	@Override
