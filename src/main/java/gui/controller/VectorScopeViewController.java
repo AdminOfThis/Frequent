@@ -21,6 +21,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import main.Constants;
 
@@ -50,9 +51,11 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		ArrayList<Node> list = new ArrayList<>();
 		list.add(box1);
 		list.add(box2);
-		// Pane p = new Pane();
-		// HBox.setHgrow(p, Priority.ALWAYS);
-		// list.add(p);
+		Pane p = new Pane();
+		p.setMinWidth(5);
+		p.setPrefWidth(5);
+		p.setMaxWidth(5);
+		list.add(p);
 		list.add(boxDecay);
 		return list;
 	}
