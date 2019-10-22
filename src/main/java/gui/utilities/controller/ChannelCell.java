@@ -36,7 +36,7 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	@FXML
 	private Label lblNumber;
 	private Input input;
-	private VuMeterIntf meter;
+	private VuMeter meter;
 	private Pausable pausable;
 
 	public static String toRGBCode(final Color color) {

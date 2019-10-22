@@ -12,7 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class VuMeterStereo extends AnchorPane implements VuMeterIntf {
+public class VuMeterStereo extends  VuMeter {
 
 	private Pane		root;
 	private VuMeterMono	meter1, meter2;
