@@ -60,6 +60,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		AnchorPane.setBottomAnchor(p, 0.0);
 		AnchorPane.setLeftAnchor(p, 0.0);
 		AnchorPane.setRightAnchor(p, 0.0);
+
 		AnimationTimer timer = new AnimationTimer() {
 
 			@Override
@@ -102,6 +103,13 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		chart.setHorizontalGridLinesVisible(false);
 		chart.setVerticalGridLinesVisible(false);
 		chart.getData().add(series);
+
+		chart.setStyle("-fx-border-color: red");
+
+		xAxis.setPrefHeight(.0);
+		xAxis.setMinHeight(.0);
+		xAxis.setMaxHeight(.0);
+
 		root.setCenter(chart);
 	}
 
@@ -213,7 +221,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	public void showTreshold(boolean value) {
 		if (value) {
-
 			if (!chart.getData().contains(treshold)) {
 				chart.getData().add(treshold);
 			}

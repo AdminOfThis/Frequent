@@ -16,6 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import main.Constants;
 
 public class DrumTriggerItem extends AnchorPane implements Initializable {
@@ -23,6 +24,8 @@ public class DrumTriggerItem extends AnchorPane implements Initializable {
 	// private static final Logger LOG =
 	// Logger.getLogger(DrumTriggerItem.class);
 	private static final String DRUM_ITEM_PATH = "/fxml/utilities/DrumTriggerItem.fxml";
+	@FXML
+	private VBox root;
 	@FXML
 	private Label label;
 	@FXML
@@ -46,12 +49,16 @@ public class DrumTriggerItem extends AnchorPane implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		chart = new WaveFormChart();
-		//Should be own subclass of WaveformChart
+		setStyle("-fx-border-color: blue");
+		chart = new SymmetricWaveFormChart();
+//		chart.maxHeightProperty().bind(chart.prefHeightProperty().divide(2));
+		// Should be own subclass of WaveformChart
 		chart.showTreshold(true);
 		waveFormPane.getChildren().add(chart);
 		AnchorPane.setTopAnchor(chart, .0);
-		AnchorPane.setBottomAnchor(chart, .0);
+//		AnchorPane.setBottomAnchor(chart, 000.0);
+		waveFormPane.heightProperty().addListener((e, oldV, newV) -> AnchorPane.setBottomAnchor(chart, waveFormPane.getHeight() / 2.0));
+
 		AnchorPane.setLeftAnchor(chart, .0);
 		AnchorPane.setRightAnchor(chart, .0);
 		combo.setOnShowing(e -> {
@@ -59,22 +66,26 @@ public class DrumTriggerItem extends AnchorPane implements Initializable {
 				combo.getItems().setAll(ASIOController.getInstance().getInputList());
 			}
 		});
-		combo.getSelectionModel().selectedItemProperty()
-				.addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
-					if (trigger != null) {
-						trigger.setChannel(newValue);
-					}
-					if (chart != null) {
-						chart.setChannel(newValue);
-					}
-				});
+		combo.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
+			if (trigger != null) {
+				trigger.setChannel(newValue);
+			}
+			if (chart != null) {
+				chart.setChannel(newValue);
+			}
+		});
 		combo.setConverter(Constants.CHANNEL_CONVERTER);
 		slider.setMin(Constants.FFT_MIN);
 		slider.valueProperty().addListener(e -> {
 			trigger.setTreshold(slider.getValue());
 			chart.setThreshold(Math.abs(slider.getValue()));
 		});
+
+		waveFormPane.minHeightProperty().bind(chart.heightProperty().multiply(2));
+
 		slider.prefHeightProperty().bind(chart.getYAxis().heightProperty());
+		slider.minHeightProperty().bind(chart.getYAxis().heightProperty());
+		slider.maxHeightProperty().bind(chart.getYAxis().heightProperty());
 		new AutoCompleteComboBoxListener<>(combo);
 		if (trigger != null) {
 			label.setText(trigger.getName());

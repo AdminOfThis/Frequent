@@ -11,7 +11,7 @@ import gui.utilities.DrumTriggerListener;
 
 public class DrumTrigger implements InputListener {
 
-	public static final String[]		DEFAULT_NAMES	= new String[] { "Base", "Snare", "Tom1", "Tom2" };
+	public static final String[]		DEFAULT_NAMES	= new String[] { "Base"/*, "Snare", "Tom1", "Tom2"*/ };
 	private String						name;
 	private Channel						channel;
 	private double						treshold;
