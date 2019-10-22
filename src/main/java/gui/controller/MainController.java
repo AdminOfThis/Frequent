@@ -140,7 +140,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private ASIOController controller;
 	private TimeKeeperController timeKeeperController;
 	// private DrumController drumController;
-	private WaveFormChart waveFormChart;
+	private SymmetricWaveFormChart waveFormChart;
 	private DataChart dataChart;
 
 	@Override
@@ -486,9 +486,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 				}
 			});
 		}
-		AnchorPane.setBottomAnchor(dataChart, .0);
-		waveFormPane.heightProperty().addListener((e, oldV, newV) -> AnchorPane.setBottomAnchor(waveFormChart, waveFormPane.getHeight() / 2.0));
-		AnchorPane.setBottomAnchor(waveFormChart, waveFormPane.getHeight() / 2.0);
 
 		waveFormPane.getChildren().add(dataChart);
 	}

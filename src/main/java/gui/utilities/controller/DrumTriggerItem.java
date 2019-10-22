@@ -36,7 +36,7 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, Pausab
 	private Slider slider;
 	@FXML
 	private AnchorPane waveFormPane;
-	private WaveFormChart chart;
+	private SymmetricWaveFormChart chart;
 	private DrumTrigger trigger;
 
 	private boolean pause = false;
@@ -62,7 +62,7 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, Pausab
 
 		waveFormPane.getChildren().add(chart);
 		AnchorPane.setTopAnchor(chart, .0);
-//		AnchorPane.setBottomAnchor(chart, chart.getHeight()/2.0);
+		AnchorPane.setBottomAnchor(chart, .0);
 		AnchorPane.setLeftAnchor(chart, .0);
 		AnchorPane.setRightAnchor(chart, .0);
 
@@ -84,10 +84,6 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, Pausab
 		slider.valueProperty().addListener(e -> {
 			trigger.setTreshold(slider.getValue());
 			chart.setThreshold(Math.abs(slider.getValue()));
-		});
-
-		waveFormPane.heightProperty().addListener((e, oldV, newV) -> {
-			chart.setPrefHeight(newV.doubleValue() / 2.0);
 		});
 
 		new AutoCompleteComboBoxListener<>(combo);

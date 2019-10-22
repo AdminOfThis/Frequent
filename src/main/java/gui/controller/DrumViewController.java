@@ -67,10 +67,6 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 		sidePane.visibleProperty().bind(btnSetup.selectedProperty());
 		sidePane.managedProperty().bind(btnSetup.selectedProperty());
 
-		if (ASIOController.getInstance() == null) {
-			bpmBox.setVisible(false);
-			bpmBox.setManaged(false);
-		}
 		initData();
 		initChart();
 		initTimer();
@@ -82,7 +78,7 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 		DrumTriggerItem triggerItem = new DrumTriggerItem(trigger);
 		triggerItem.setParentPausable(this);
 		sidePane.visibleProperty().addListener((e, oldV, newV) -> triggerItem.pause(!newV));
-		triggerPane.getChildren().add(triggerItem);
+		triggerPane.getChildren().add(0, triggerItem);
 		VBox.setVgrow(triggerItem, Priority.SOMETIMES);
 		if (seriesMap.get(trigger) == null) {
 			Series<Number, Number> series = new Series<>();
@@ -207,6 +203,7 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 			}
 			double bpm = BeatDetector.getInstance().getBPM();
 			if (bpm > 0) {
+
 				Platform.runLater(() -> lblBPM.setText(BeatDetector.getInstance().getBPMString()));
 			} else {
 				Platform.runLater(() -> lblBPM.setText("Unknown"));

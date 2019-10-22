@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import control.ASIOController;
 import data.DrumTrigger;
 import gui.utilities.DrumTriggerListener;
 
@@ -31,7 +32,7 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 	private List<DrumTrigger> triggerList = Collections.synchronizedList(new ArrayList<>());
 	private double bpm = 0;
 	private Map<DrumTrigger, List<Long>> seriesMap = Collections.synchronizedMap(new HashMap<>());
-	private Mode mode = Mode.CLASSIC;
+	private Mode mode = Mode.BPM_DETECT;
 
 	/**
 	 * Returns the instance of the {@link BeatDetector}, and initializes a new one,
@@ -124,7 +125,7 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 				bpm = BPMBestGuess.getInstance().getBPM();
 			}
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -169,28 +170,34 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 
 	@Override
 	public void tresholdReached(DrumTrigger trigger, double level, double treshold, long time) {
+
+		long timeInMs = (time * (ASIOController.getInstance().getSampleRate() / ASIOController.getInstance().getBufferSize())) * 50;
 		synchronized (seriesMap) {
 			if (seriesMap.get(trigger) == null) {
 				seriesMap.put(trigger, Collections.synchronizedList(new ArrayList<>()));
 			}
 			synchronized (seriesMap.get(trigger)) {
-				seriesMap.get(trigger).add(time);
+				seriesMap.get(trigger).add(timeInMs);
 			}
 		}
 	}
-/**
- * Returns wether the {@link BeatDetector} is initialized.
- * @return #true if the {@link BeatDetector} is initialized, otherwise false
- */
+
+	/**
+	 * Returns wether the {@link BeatDetector} is initialized.
+	 * 
+	 * @return #true if the {@link BeatDetector} is initialized, otherwise false
+	 */
 	public static synchronized boolean isInitialized() {
 		return initialized;
 	}
 
 	/**
 	 * Returns the BPM as string, with one decimal-point
+	 * 
 	 * @return The detected BPM as String
 	 */
 	public String getBPMString() {
-		return Double.toString(Math.round(bpm * 10.0) / 10.0);
+//		return Double.toString(Math.round(bpm * 10.0) / 10.0);
+		return Double.toString(Math.round(bpm));
 	}
 }
