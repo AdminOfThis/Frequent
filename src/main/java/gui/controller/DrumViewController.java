@@ -42,7 +42,7 @@ import javafx.util.StringConverter;
 public class DrumViewController implements Initializable, PausableView, DrumTriggerListener {
 
 	private static final Logger LOG = LogManager.getLogger(DrumViewController.class);
-	private static final long DRUM_TIME_FRAME = 5000000000l;
+	private static final long DRUM_TIME_FRAME = 500000l;
 	@FXML
 	private ScatterChart<Number, Number> drumChart;
 	@FXML
@@ -66,6 +66,7 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 		// MainController.getInstance().setDrumController(this);
 		sidePane.visibleProperty().bind(btnSetup.selectedProperty());
 		sidePane.managedProperty().bind(btnSetup.selectedProperty());
+
 		if (ASIOController.getInstance() == null) {
 			bpmBox.setVisible(false);
 			bpmBox.setManaged(false);
@@ -79,6 +80,8 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 		triggerList.add(trigger);
 		trigger.addListeners(this);
 		DrumTriggerItem triggerItem = new DrumTriggerItem(trigger);
+		triggerItem.setParentPausable(this);
+		sidePane.visibleProperty().addListener((e, oldV, newV) -> triggerItem.pause(!newV));
 		triggerPane.getChildren().add(triggerItem);
 		VBox.setVgrow(triggerItem, Priority.SOMETIMES);
 		if (seriesMap.get(trigger) == null) {
@@ -213,7 +216,6 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 
 	@Override
 	public void tresholdReached(DrumTrigger trigger, double level, double treshold, long time) {
-		// LOG.info("Adding Drum Entry " + trig.getName() + ", " + value);
 		synchronized (pendingMap) {
 			if (pendingMap.get(trigger) == null) {
 				pendingMap.put(trigger, new ArrayList<>());

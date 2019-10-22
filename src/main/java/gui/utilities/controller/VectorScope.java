@@ -175,7 +175,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	@Override
 	public void pause(final boolean pause) {
-		System.out.println("PAUSE");
 		this.pause = pause;
 	}
 

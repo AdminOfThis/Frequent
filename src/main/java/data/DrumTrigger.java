@@ -11,13 +11,14 @@ import gui.utilities.DrumTriggerListener;
 
 public class DrumTrigger implements InputListener {
 
-	public static final String[]		DEFAULT_NAMES	= new String[] { "Base"/*, "Snare", "Tom1", "Tom2"*/ };
-	private String						name;
-	private Channel						channel;
-	private double						treshold;
-	private List<DrumTriggerListener>	listeners		= Collections.synchronizedList(new ArrayList<>());
-	private boolean						below			= true;
-	private BPMDetect					bpmDetect;
+	public static final String[] DEFAULT_NAMES = new String[] { "Base", "Snare", "Tom1", "Tom2" };
+	private static final int BELOW_DELTA = 5;
+	private String name;
+	private Channel channel;
+	private double treshold;
+	private List<DrumTriggerListener> listeners = Collections.synchronizedList(new ArrayList<>());
+	private int below = 0;
+	private BPMDetect bpmDetect;
 
 	public DrumTrigger(final String name) {
 		this.name = name;
@@ -43,15 +44,16 @@ public class DrumTrigger implements InputListener {
 	@Override
 	public void levelChanged(final Input channel, final double level, long time) {
 		double leveldB = Channel.percentToDB(level);
-		if (leveldB >= treshold && below) {
+		if (leveldB >= treshold && below > BELOW_DELTA) {
+
 			synchronized (listeners) {
 				for (DrumTriggerListener obs : listeners) {
 					obs.tresholdReached(this, level, treshold, time);
 				}
 			}
-			below = false;
+			below = 0;
 		} else {
-			below = true;
+			below++;
 		}
 	}
 

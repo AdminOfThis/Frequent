@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -21,11 +22,13 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
       </HBox>
-      <HBox prefHeight="75.0" spacing="5.0">
+      <Separator prefWidth="200.0" />
+      <HBox spacing="5.0" VBox.vgrow="SOMETIMES">
          <children>
-            <AnchorPane fx:id="waveFormPane" prefHeight="200.0" prefWidth="200.0" />
+            <AnchorPane fx:id="waveFormPane" HBox.hgrow="SOMETIMES" />
             <Slider fx:id="slider" blockIncrement="6.0" majorTickUnit="12.0" max="0.0" min="-60.0" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" />
          </children>
       </HBox>
+      <Separator prefWidth="200.0" />
    </children>
 </VBox>

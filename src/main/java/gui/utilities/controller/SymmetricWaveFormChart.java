@@ -10,7 +10,9 @@ public class SymmetricWaveFormChart extends WaveFormChart {
 		reflection.setFraction(1);
 		reflection.setTopOpacity(1.0);
 		reflection.setBottomOpacity(1.0);
-		heightProperty().addListener((e, oldv, newV) -> reflection.setTopOffset(-(newV.doubleValue() / 2.8)));
+		heightProperty().addListener((e, oldv, newV) -> {
+			reflection.setTopOffset(-56);
+		});
 		setEffect(reflection);
 	}
 

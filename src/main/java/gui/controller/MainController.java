@@ -32,6 +32,8 @@ import gui.pausable.PausableView;
 import gui.utilities.WaveFormPane;
 import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.DataChart;
+import gui.utilities.controller.SymmetricWaveFormChart;
+import gui.utilities.controller.WaveFormChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -138,7 +140,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private ASIOController controller;
 	private TimeKeeperController timeKeeperController;
 	// private DrumController drumController;
-	private WaveFormPane waveFormChart;
+	private WaveFormChart waveFormChart;
 	private DataChart dataChart;
 
 	@Override
@@ -463,7 +465,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	private void initWaveForm() {
 		LOG.debug("Loading WaveForm");
-		waveFormChart = new WaveFormPane();
+		waveFormChart = new SymmetricWaveFormChart();
 		waveFormChart.setParentPausable(this);
 		dataChart = new DataChart();
 		for (PausableComponent n : new PausableComponent[] { dataChart, waveFormChart }) {
@@ -484,6 +486,10 @@ public class MainController implements Initializable, Pausable, CueListener {
 				}
 			});
 		}
+		AnchorPane.setBottomAnchor(dataChart, .0);
+		waveFormPane.heightProperty().addListener((e, oldV, newV) -> AnchorPane.setBottomAnchor(waveFormChart, waveFormPane.getHeight() / 2.0));
+		AnchorPane.setBottomAnchor(waveFormChart, waveFormPane.getHeight() / 2.0);
+
 		waveFormPane.getChildren().add(dataChart);
 	}
 

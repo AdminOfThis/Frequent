@@ -104,11 +104,11 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		chart.setVerticalGridLinesVisible(false);
 		chart.getData().add(series);
 
-		chart.setStyle("-fx-border-color: red");
+		chart.setMinHeight(0.0);
 
-		xAxis.setPrefHeight(.0);
 		xAxis.setMinHeight(.0);
 		xAxis.setMaxHeight(.0);
+		xAxis.setPrefHeight(.0);
 
 		root.setCenter(chart);
 	}
