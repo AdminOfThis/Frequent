@@ -187,12 +187,12 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		synchronized (pendingMap) {
 			for (Entry<Long, Double> entry : pendingMap.entrySet()) {
 				try {
-//				if (!styleSet) {
-//					synchronized (series) {
-//						series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
-//					}
-//					styleSet = true;
-//				}
+					if (!styleSet) {
+						synchronized (series) {
+							series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
+						}
+						styleSet = true;
+					}
 					double value = 0;
 					if (channel != null) {
 						value = entry.getValue();
