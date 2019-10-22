@@ -47,6 +47,7 @@ public class DrumTriggerItem extends AnchorPane implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		chart = new WaveFormChart();
+		//Should be own subclass of WaveformChart
 		chart.showTreshold(true);
 		waveFormPane.getChildren().add(chart);
 		AnchorPane.setTopAnchor(chart, .0);

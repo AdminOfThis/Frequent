@@ -40,7 +40,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	private static final Logger LOG = LogManager.getLogger(WaveFormChart.class);
 	private static final String FXML = "/fxml/utilities/WaveFormChart.fxml";
-	private static final long TIME_FRAME = 3000000000l;
+	private static final long TIME_FRAME = 100000l;
 	@FXML
 	private BorderPane root;
 	private XYChart<Number, Number> chart;
@@ -122,7 +122,10 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		if (value < Constants.FFT_MIN) {
 			value = Constants.FFT_MIN;
 		}
-		pendingMap.put(time, value);
+		synchronized (pendingMap) {
+
+			pendingMap.put(time, value);
+		}
 	}
 
 	@Override
@@ -161,43 +164,56 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	}
 
 	private void update() {
+
 		if (!isPaused()) {
 			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-			synchronized (pendingMap) {
-				addNewData();
-				FXMLUtil.updateAxis(xAxis, TIME_FRAME, ASIOController.getInstance().getTime());
+
+			addNewData();
+			FXMLUtil.updateAxis(xAxis, TIME_FRAME, ASIOController.getInstance().getTime());
+			synchronized (series) {
 				FXMLUtil.removeOldData((long) xAxis.getLowerBound(), series);
 			}
-			if (treshold.getData().size() >= 2) {
-				treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
+
+			synchronized (treshold) {
+				if (treshold.getData().size() >= 2) {
+					treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
+				}
 			}
 		}
 	}
 
 	private void addNewData() {
 		ArrayList<Data<Number, Number>> dataList = new ArrayList<>();
-		for (Entry<Long, Double> entry : pendingMap.entrySet()) {
-			try {
-				if (!styleSet) {
-					series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
-					styleSet = true;
+		synchronized (pendingMap) {
+			for (Entry<Long, Double> entry : pendingMap.entrySet()) {
+				try {
+//				if (!styleSet) {
+//					synchronized (series) {
+//						series.getNode().setStyle("-fx-stroke: -fx-accent; -fx-stroke-width: 1px;");
+//					}
+//					styleSet = true;
+//				}
+					double value = 0;
+					if (channel != null) {
+						value = entry.getValue();
+					}
+					value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
+					Data<Number, Number> newData = new Data<>(entry.getKey(), value);
+					dataList.add(newData);
+				} catch (Exception e) {
+					LOG.warn("", e);
 				}
-				double value = 0;
-				if (channel != null) {
-					value = entry.getValue();
-				}
-				value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
-				Data<Number, Number> newData = new Data<>(entry.getKey(), value);
-				dataList.add(newData);
-			} catch (Exception e) {
-				LOG.warn("", e);
 			}
+			pendingMap.clear();
 		}
-		series.getData().addAll(dataList);
+		synchronized (series) {
+			series.getData().addAll(dataList);
+		}
 	}
 
 	public void showTreshold(boolean value) {
 		if (value) {
+
 			if (!chart.getData().contains(treshold)) {
 				chart.getData().add(treshold);
 			}
@@ -209,8 +225,10 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	public void setThreshold(final double value1) {
 		double value = Math.abs(Constants.FFT_MIN) - value1;
 		NumberAxis time = (NumberAxis) chart.getXAxis();
-		treshold.getData().clear();
-		treshold.getData().add(new Data<>(time.getLowerBound(), value));
-		treshold.getData().add(new Data<>(time.getUpperBound() + 10000, value));
+		synchronized (treshold) {
+			treshold.getData().clear();
+			treshold.getData().add(new Data<>(time.getLowerBound(), value));
+			treshold.getData().add(new Data<>(time.getUpperBound() + 10000, value));
+		}
 	}
 }

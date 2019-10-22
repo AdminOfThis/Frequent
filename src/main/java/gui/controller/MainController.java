@@ -52,6 +52,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
@@ -104,8 +105,9 @@ public class MainController implements Initializable, Pausable, CueListener {
 	 */
 	@FXML
 	private ToggleButton toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView, toggleBleedView;
+
 	@FXML
-	private CheckMenuItem menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView, menuBleedView;
+	private RadioMenuItem menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView, menuBleedView;
 	@FXML
 	private ToggleButton togglePreview, toggleCue, toggleChannels, toggleGroupChannels, toggleBtmRaw, toggleBtmWave;
 	@FXML
@@ -168,17 +170,26 @@ public class MainController implements Initializable, Pausable, CueListener {
 		Main.getInstance().setProgress(0.9);
 		applyLoadedProperties();
 		Main.getInstance().setProgress(0.95);
-
+		hideAllDebugModules();
 		resetStatus();
 		bottomLabel.setVisible(false);
 		TimeKeeper.getInstance().addListener(this);
+	}
+
+	private void hideAllDebugModules() {
+		if (!Main.isDebug()) {
+			toggleDrumView.setVisible(false);
+			toggleDrumView.setManaged(false);
+			menuDrumView.setVisible(false);
+		}
+
 	}
 
 	public static MainController getInstance() {
 		return instance;
 	}
 
-	private void bindCheckMenuToToggleButton(final CheckMenuItem menu, final ToggleButton button) {
+	private void bindCheckMenuToToggleButton(final RadioMenuItem menu, final ToggleButton button) {
 		menu.setOnAction(e -> button.fire());
 		button.selectedProperty().addListener((obs, oldVal, newVal) -> {
 			menu.setSelected(newVal);

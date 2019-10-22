@@ -21,6 +21,7 @@ import gui.pausable.PausableView;
 import gui.utilities.DrumTriggerListener;
 import gui.utilities.controller.DrumTriggerItem;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -40,24 +41,24 @@ import javafx.util.StringConverter;
 
 public class DrumViewController implements Initializable, PausableView, DrumTriggerListener {
 
-	private static final Logger									LOG				= LogManager.getLogger(DrumViewController.class);
-	private static final long									DRUM_TIME_FRAME	= 5000000000l;
+	private static final Logger LOG = LogManager.getLogger(DrumViewController.class);
+	private static final long DRUM_TIME_FRAME = 5000000000l;
 	@FXML
-	private ScatterChart<Number, Number>						drumChart;
+	private ScatterChart<Number, Number> drumChart;
 	@FXML
-	private VBox												triggerPane;
+	private VBox triggerPane;
 	@FXML
-	private ScrollPane											sidePane;
+	private ScrollPane sidePane;
 	@FXML
-	private ToggleButton										btnSetup;
+	private ToggleButton btnSetup;
 	@FXML
-	private Label												lblBPM;
+	private Label lblBPM;
 	@FXML
-	private HBox												bpmBox;
-	private List<DrumTrigger>									triggerList		= Collections.synchronizedList(new ArrayList<>());
-	private Map<DrumTrigger, XYChart.Series<Number, Number>>	seriesMap		= Collections.synchronizedMap(new HashMap<>());
-	private Map<DrumTrigger, ArrayList<Data<Number, Number>>>	pendingMap		= Collections.synchronizedMap(new HashMap<>());
-	private boolean												paused			= false;
+	private HBox bpmBox;
+	private List<DrumTrigger> triggerList = Collections.synchronizedList(new ArrayList<>());
+	private Map<DrumTrigger, XYChart.Series<Number, Number>> seriesMap = Collections.synchronizedMap(new HashMap<>());
+	private Map<DrumTrigger, ArrayList<Data<Number, Number>>> pendingMap = Collections.synchronizedMap(new HashMap<>());
+	private boolean paused = false;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
@@ -109,7 +110,9 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 			@Override
 			public Number fromString(final String string) {
 				for (DrumTrigger trig : triggerList) {
-					if (trig.getName().equals(string)) { return triggerList.indexOf(trig); }
+					if (trig.getName().equals(string)) {
+						return triggerList.indexOf(trig);
+					}
 				}
 				return null;
 			}
@@ -119,9 +122,11 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 				DrumTrigger trig = null;
 				try {
 					trig = triggerList.get((int) Math.round((double) object - 1));
+				} catch (Exception e) {
 				}
-				catch (Exception e) {}
-				if (trig != null) { return trig.getName(); }
+				if (trig != null) {
+					return trig.getName();
+				}
 				return null;
 			}
 		});
@@ -142,7 +147,7 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 
 			@Override
 			public void handle(final long now) {
-				updateDrumChart();
+				new Thread(() -> updateDrumChart()).start();
 			}
 		};
 		timer.start();
@@ -186,7 +191,7 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 					for (Data<Number, Number> data : listEntry.getValue()) {
 						dataList.add(data);
 					}
-					series.getData().addAll(dataList);
+					Platform.runLater(() -> series.getData().addAll(dataList));
 				}
 				pendingMap.clear();
 			}
@@ -199,9 +204,9 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 			}
 			double bpm = BeatDetector.getInstance().getBPM();
 			if (bpm > 0) {
-				lblBPM.setText(BeatDetector.getInstance().getBPMString());
+				Platform.runLater(() -> lblBPM.setText(BeatDetector.getInstance().getBPMString()));
 			} else {
-				lblBPM.setText("Unknown");
+				Platform.runLater(() -> lblBPM.setText("Unknown"));
 			}
 		}
 	}

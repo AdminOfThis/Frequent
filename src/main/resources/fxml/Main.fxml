@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
@@ -66,36 +67,39 @@
                           <items>
                               <Menu mnemonicParsing="false" text="View">
                                 <items>
-      							  <CheckMenuItem fx:id="menuSpectrumView" mnemonicParsing="false" text="Spectrum">
+      							  <RadioMenuItem fx:id="menuSpectrumView" mnemonicParsing="false" text="Spectrum">
                                        <accelerator>
                                           <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                        </accelerator>
-                                    </CheckMenuItem>
-                                    <CheckMenuItem fx:id="menuRTAView" mnemonicParsing="false" text="RTA">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="menuToggle" />
+                                       </toggleGroup>
+                                    </RadioMenuItem>
+                                    <RadioMenuItem fx:id="menuRTAView" mnemonicParsing="false" text="RTA" toggleGroup="$menuToggle">
                                        <accelerator>
                                           <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                        </accelerator>
-                                    </CheckMenuItem>
-                                    <CheckMenuItem fx:id="menuDrumView" mnemonicParsing="false" text="Drum">
+                                    </RadioMenuItem>
+                                    <RadioMenuItem fx:id="menuDrumView" mnemonicParsing="false" text="Drum" toggleGroup="$menuToggle">
                                        <accelerator>
                                           <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                        </accelerator>
-                                    </CheckMenuItem>
-                                    <CheckMenuItem fx:id="menuGroupsView" mnemonicParsing="false" text="Groups">
+                                    </RadioMenuItem>
+                                    <RadioMenuItem fx:id="menuGroupsView" mnemonicParsing="false" text="Groups" toggleGroup="$menuToggle">
                                        <accelerator>
                                           <KeyCodeCombination alt="UP" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                        </accelerator>
-                                    </CheckMenuItem>
-                                    <CheckMenuItem fx:id="menuPhaseView" mnemonicParsing="false" text="Phase">
+                                    </RadioMenuItem>
+                                    <RadioMenuItem fx:id="menuPhaseView" mnemonicParsing="false" text="Phase" toggleGroup="$menuToggle">
                                        <accelerator>
                                           <KeyCodeCombination alt="UP" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                        </accelerator>
-                                    </CheckMenuItem>
-                                    <CheckMenuItem fx:id="menuBleedView" mnemonicParsing="false" text="Bleed">
+                                    </RadioMenuItem>
+                                    <RadioMenuItem fx:id="menuBleedView" mnemonicParsing="false" text="Bleed" toggleGroup="$menuToggle">
                                        <accelerator>
                                           <KeyCodeCombination alt="UP" code="DIGIT6" control="UP" meta="UP" shift="UP" shortcut="UP" />
                                        </accelerator>
-                                    </CheckMenuItem>
+                                    </RadioMenuItem>
                                 </items>
                               </Menu>
                               <CheckMenuItem fx:id="menuShowChannels" mnemonicParsing="false" text="Show ChannelList">
