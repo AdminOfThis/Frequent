@@ -29,11 +29,9 @@ import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
-import gui.utilities.WaveFormPane;
 import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.DataChart;
 import gui.utilities.controller.SymmetricWaveFormChart;
-import gui.utilities.controller.WaveFormChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -68,6 +66,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -142,6 +141,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	// private DrumController drumController;
 	private SymmetricWaveFormChart waveFormChart;
 	private DataChart dataChart;
+	private double minHeaderButtonWidth = 0;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
@@ -374,6 +374,10 @@ public class MainController implements Initializable, Pausable, CueListener {
 					buttonBox.getChildren().clear();
 					if (v.getHeader() != null) {
 						buttonBox.getChildren().addAll(v.getHeader());
+						for (Node headerButton : buttonBox.getChildren()) {
+							headerButton.setStyle("-fx-border-color: red");
+							setHeaderButtonWidth(headerButton);
+						}
 					}
 				}
 				for (Entry<Node, PausableView> v : controllerMap.entrySet()) {
@@ -390,10 +394,45 @@ public class MainController implements Initializable, Pausable, CueListener {
 		}
 	}
 
+	private double setHeaderButtonWidth(Node headerButton) {
+		if (headerButton instanceof Region) {
+			if (headerButton instanceof HBox || headerButton instanceof VBox) {
+				Parent parent = (Parent) headerButton;
+				double sum = 0;
+				for (Node child : parent.getChildrenUnmodifiable()) {
+					double childWidth = setHeaderButtonWidth(child);
+					sum += childWidth;
+				}
+
+				((Region) headerButton).setMinWidth(sum);
+				((Region) headerButton).setPrefWidth(sum);
+//				((Region) headerButton).setPrefWidth(max);
+				return sum;
+			} else {
+				Region headerRegion = (Region) headerButton;
+				int minSize = Math.max(0, (int) Math.floor(Math.max(headerRegion.getPrefWidth() - .001, headerRegion.getMinWidth() - .001)));
+				int factor = (int) ((minSize / minHeaderButtonWidth) + 1);
+				double size = factor * minHeaderButtonWidth;
+				double spacing = 0;
+
+				if (headerRegion.getParent() != null && headerRegion.getParent() instanceof HBox) {
+					HBox parent = (HBox) headerRegion.getParent();
+					spacing = (parent.getSpacing() * (parent.getChildren().size() - 1));
+				}
+				size = size - spacing;
+				headerRegion.setMinWidth(size);
+//				headerRegion.setMaxWidth(factor * minHeaderButtonWidth);
+				headerRegion.setPrefWidth(size);
+				return size + spacing;
+			}
+		}
+		return minHeaderButtonWidth;
+	}
+
 	private void initMenu() {
 		// Fit buttons to size
-		toggleFFTView.widthProperty().addListener(
-				(e, oldV, newV) -> Platform.runLater(() -> FXMLUtil.setPrefWidthToMaximumRequired(toggleFFTView, toggleRTAView, toggleGroupsView, toggleDrumView, togglePhaseView, toggleBleedView)));
+		toggleFFTView.widthProperty().addListener((e, oldV, newV) -> Platform
+				.runLater(() -> minHeaderButtonWidth = FXMLUtil.setPrefWidthToMaximumRequired(toggleFFTView, toggleRTAView, toggleGroupsView, toggleDrumView, togglePhaseView, toggleBleedView)));
 
 		toggleChannels.widthProperty().addListener((e, oldV, newV) -> Platform.runLater(() -> FXMLUtil.setPrefWidthToMaximumRequired(toggleChannels, toggleCue)));
 

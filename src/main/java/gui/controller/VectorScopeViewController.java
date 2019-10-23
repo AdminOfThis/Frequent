@@ -51,11 +51,6 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		ArrayList<Node> list = new ArrayList<>();
 		list.add(box1);
 		list.add(box2);
-		Pane p = new Pane();
-		p.setMinWidth(5);
-		p.setPrefWidth(5);
-		p.setMaxWidth(5);
-		list.add(p);
 		list.add(boxDecay);
 		return list;
 	}
