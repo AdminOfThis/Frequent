@@ -12,7 +12,6 @@ import data.Input;
 import gui.pausable.PausableView;
 import gui.utilities.RTACanvas;
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
