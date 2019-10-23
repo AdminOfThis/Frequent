@@ -195,6 +195,8 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				channel2.addListener(this);
 			}
 		}
+		map1.clear();
+		map2.clear();
 	}
 
 	public void setDecay(final double value) {
@@ -284,12 +286,8 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				for (int i = 0; i < keysToDisplay.size(); i++) {
 					long key = keysToDisplay.get(i);
 					float[] copy1, copy2;
-					synchronized (map1) {
-						copy1 = map1.get(key);
-					}
-					synchronized (map2) {
-						copy2 = map2.get(key);
-					}
+					copy1 = map1.get(key);
+					copy2 = map2.get(key);
 
 //					System.out.println(map1.size() + "(" + add1 + ") " + map2.size() + " (" + add2 + ")");
 					Platform.runLater(() -> showData(copy1, copy2));

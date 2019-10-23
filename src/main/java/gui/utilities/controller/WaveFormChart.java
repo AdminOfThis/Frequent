@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -47,7 +48,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	private Series<Number, Number> series = new Series<>();
 	private Series<Number, Number> treshold = new Series<>();
 	private Input channel;
-	private boolean pause = false;
+	private boolean pause = true;
 	private Pausable pausableParent;
 	private boolean styleSet = false;
 	private Map<Long, Double> pendingMap = Collections.synchronizedMap(new HashMap<Long, Double>());
@@ -121,7 +122,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	@Override
 	public boolean isPaused() {
-		return pause || pausableParent != null && pausableParent.isPaused() || channel == null || pendingMap == null;
+		return pause || pausableParent != null && pausableParent.isPaused() || channel == null || pendingMap == null || pendingMap.isEmpty();
 	}
 
 	@Override
@@ -130,10 +131,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		if (value < Constants.FFT_MIN) {
 			value = Constants.FFT_MIN;
 		}
-		synchronized (pendingMap) {
-
-			pendingMap.put(time, value);
-		}
+		pendingMap.put(time, value);
 	}
 
 	@Override
@@ -153,9 +151,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					channel.removeListener(this);
 				}
 				series.getData().clear();
-				synchronized (pendingMap) {
-					pendingMap.clear();
-				}
+				pendingMap.clear();
 				channel = c;
 				if (c != null) {
 					c.addListener(this);
@@ -212,8 +208,9 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					LOG.warn("", e);
 				}
 			}
-			pendingMap.clear();
 		}
+		pendingMap.clear();
+//		}
 		synchronized (series) {
 			series.getData().addAll(dataList);
 		}
