@@ -763,23 +763,25 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	public void setStatus(final String text) {
-		if (text != null && !text.isEmpty()) {
-			lblStatus.setText(text);
-			lblStatus.setVisible(true);
-			Timeline line = new Timeline();
-			KeyFrame key = new KeyFrame(Duration.seconds(5), e -> {
-				if (progStatus.getProgress() == 0) {
-					if (lblStatus.getText().equals(text)) {
-						lblStatus.setText("");
-						lblStatus.setVisible(false);
+		Platform.runLater(() -> {
+			if (text != null && !text.isEmpty()) {
+				lblStatus.setText(text);
+				lblStatus.setVisible(true);
+				Timeline line = new Timeline();
+				KeyFrame key = new KeyFrame(Duration.seconds(5), e -> {
+					if (progStatus.getProgress() == 0) {
+						if (lblStatus.getText().equals(text)) {
+							lblStatus.setText("");
+							lblStatus.setVisible(false);
+						}
+					} else {
+						line.playFrom(Duration.seconds(1));
 					}
-				} else {
-					line.playFrom(Duration.seconds(1));
-				}
-			});
-			line.getKeyFrames().add(key);
-			line.playFromStart();
-		}
+				});
+				line.getKeyFrames().add(key);
+				line.playFromStart();
+			}
+		});
 	}
 
 	public void setStatus(final String text, final double value) {

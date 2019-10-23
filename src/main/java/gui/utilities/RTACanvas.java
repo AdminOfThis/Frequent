@@ -220,7 +220,6 @@ public class RTACanvas extends Canvas implements PausableComponent {
 	}
 
 	private int toInt(Color c) {
-		return (255 << 24) | ((int) (c.getRed() * 255) << 16) | ((int) (c.getGreen() * 255) << 8)
-				| ((int) (c.getBlue() * 255));
+		return (255 << 24) | ((int) (c.getRed() * 255) << 16) | ((int) (c.getGreen() * 255) << 8) | ((int) (c.getBlue() * 255));
 	}
 }

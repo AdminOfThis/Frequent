@@ -26,14 +26,14 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class FFTViewController implements Initializable, FFTListener, PausableView {
 
 	@FXML
-	private ScrollPane			canvasParent;
-	private boolean				pause		= true;
-	private RTACanvas			canvas;
+	private ScrollPane canvasParent;
+	private boolean pause = true;
+	private RTACanvas canvas;
 	@FXML
-	private ToggleButton		tglPlay;
+	private ToggleButton tglPlay;
 	@FXML
-	private Button				btnExport;
-	private List<double[][]>	pendingMap	= Collections.synchronizedList(new ArrayList<>());
+	private Button btnExport;
+	private List<double[][]> pendingMap = Collections.synchronizedList(new ArrayList<>());
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -44,21 +44,20 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 
 			@Override
 			public void handle(long now) {
-				update();
+				new Thread(() -> update()).start();
 			}
 		};
 		timer.start();
 	}
 
 	private void update() {
-		Platform.runLater(() -> {
-			synchronized (pendingMap) {
-				for (double[][] map : pendingMap) {
-					canvas.addLine(map);
-				}
-				pendingMap.clear();
+
+		synchronized (pendingMap) {
+			for (double[][] map : pendingMap) {
+				canvas.addLine(map);
 			}
-		});
+			pendingMap.clear();
+		}
 	}
 
 	@Override
