@@ -375,7 +375,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 					if (v.getHeader() != null) {
 						buttonBox.getChildren().addAll(v.getHeader());
 						for (Node headerButton : buttonBox.getChildren()) {
-							headerButton.setStyle("-fx-border-color: red");
 							setHeaderButtonWidth(headerButton);
 						}
 					}

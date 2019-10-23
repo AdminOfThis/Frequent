@@ -115,6 +115,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	}
 
 	public void setBuffer(final float[] addition, final long time) {
+
 		if (buffer == null) {
 			buffer = addition;
 		} else {
@@ -129,6 +130,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 			if (buffer.length >= ASIOController.DESIRED_BUFFER_SIZE) {
 				bufferFull = Arrays.copyOf(buffer, buffer.length);
 				sendFullBuffer(time);
+
 				buffer = new float[addition.length - count];
 				int tempCount = 0;
 				while (count < addition.length) {
