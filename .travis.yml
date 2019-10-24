@@ -18,10 +18,10 @@ deploy:
   prerelease: true
   overwrite: true
   api_key:
-    secure: bU4Wnwolzul9Yl28y2kGk7RmBmmr8iz9ysUpvBKSQFUlgMxAk/m9tfAtO03M89tdn25vXVFDaS0n99F26n5BXAEgiw4EbW5KAA9UwdGLAHBIFaENtZa8hl4G4KJigczwavy34eje96ykNveZ61MfiL+O5CtlpScg/PLF9FiGwMxlbIVIIAqyoqZo4jQP2XYZNufSnvbnpIKZtiQDw7/RvqysgNYCdYfJVWp3IJz4j5jA9DOxMc0Ut8r+KBXGWT55TOsLh+28JKIIU9tbr3WWdohClKP5r9cZYfy9V0dHmfBbW3BsTEtCbCkHj+wYpiDxet0ibDnWIeWe0O8RJ/rRCUVJjG1tGSJc1ZtQ1gMke0rLKaTIIslGp9SOXKhqy7Vsg+ioedICrPDu7b+thlugQdeM5wLIRmXsKJKGF8rUKp4cWF5JhfOLLJvZWTkihNRXDtT9oGBSuITYmR+GQUxXcj8bAWUPQ7mqaPUjPMCGo99rf6nD8hxLFAMZKJJRzmj7QqU3BWezOfLwCjXegrxu2AIiTN7ZRVb7xpMT0++5HuOUXVtUQ1av2ZGdlv4kRAT/t/efgSKqeeUHIwwrxy0bXNR8egUZQJms++Tek4TN7lP34swtvc9OEdapD9KISVXA9iNhJ47+JIpinD8SzReMyrl3smT8YJca9erd6HCmR/s=
-  file: 
-    - "./target/*.jar"
-    - "./target/*.zip"
+    secure: VbUEN+Dj51gjXXekwTmNegffvCUqJ1we9qbFVjoJtZk0y9asyuu3YqAbKpOASIC4wlLcjWAH1glNnMNCI1d3i3j8HXfzQaY1/k0RUL2ziOcO15YE5DkXz7wBKMih8mYg1ZcF9lRmEcdKYSi9OlrnSpuFXEUP4OQwmZM4DoBuOSk8gD0ja7WRwKmXiTP0MZHUrK3AYtWvMogB8Gt9GaLtKlIZpPi6m5BztKJZnBA997hxznFdd4V5tywntbKDd9BuBc8pJV0p9ZGx0rS7wxata6HDht0CG/pgZruk9bdsatYgWQ+4f2aG5duvv+KQReTM8vXn2aLAMBbwPZyKV/EG5IvW2tzjfVK49BRkfnMLfyEePoMTJQ6DuF21SBfM50iV3CsUDszwqlT9TfA7FSZXkR8rvcCTyHb7aBdsYADHzL7XyPophCuExqT1AgjJ0o+6TgybKdpfhdAf9JBcRRvnLj95aO7eg/ixupjkuK5objdNCO3yykwPHXjhFjBt6eGpyl10cYy2BDhNuXBRXjL+rs8jPUTGQBw4otlrshim7p79i7/yaEVW5b0KtQ+XAye2aQ1YlGBJ027Y02QYH0lUFUwNAB3oW8QiJfkDpceIr94+u5mQOG5J9S2Kufl4/tgsfg8RNgGgCMZASkC4qXZfsC1cGASFup8pT1fsypI9t3M=
+  file:
+  - "./target/*.jar"
+  - "./target/*.zip"
   on:
     repo: AdminOfThis/Frequent
     tags: true
