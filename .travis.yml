@@ -20,8 +20,9 @@ deploy:
   user: "AdminOfThis"
   api_key:
     secure: "efx8e24Kf1P1Zbximv17TAz6Us6zXjIupb2p1Cc8njLMWLuh5T9rvzSxq/ejbpwbyPxq7aUP5P7a0be64Ir6Jgi5QaAVpLh/ySt06vhwvSIrXczhYbWYFy+JVBcIBeRvP01JYJg++RWp8O3Nc6tZDPM/JWG2JG2E1NFfIEdhP50SXMo5vGwLUvMEuD7yYTPAno5xGO4g94IpqyayU/DcQLoz6lVHdTIrSQI6xTlBHRRL+rlpoRTUJpWEspaLdOfGG1Knw+BZLqZKdSpxZTN7Hjny4whGcrgcTQf1pvVY0hjrtdBmOk1AuixNlKYV5sNjyDkh1Ux2omgvKY5M8QzT21VKHliIwhFevUc2QVVPYs7zJW1GC8qDOR3OEb/l6bkuUE43kcURhP0qPAPLUiaE8ECIO1lGSwDUhFeXgNpJCzplvMoQ9OEzWTbG5gFccf3oWehPyI+xaJ34hk0GIOzB3e+NIHTT/8ylUuIW+VwI4G2CCAqZT+wK4mC1NJ0nguYyzYNMWL1BXEWWDPuWoQ0rzPEHHZvXogC5TQeef/Xx1PB2+Mwn4ccHJzMAk5GlMzm4F4q48fF2tSXDOlcdGpUowCiRRi6OOSnQz2sbciUlA2PAJU8d5eENpd26BKgNxnoFaslKQ0M+VxXRLSSqdIH7PfGD/zn4ttfdYvUQk+IOUiw="
+  file_glob: true
   file:
-  - "./target/*.jar"
+  - "./target/Frequent.jar"
   - "./target/*.zip"
   on:
     repo: AdminOfThis/Frequent

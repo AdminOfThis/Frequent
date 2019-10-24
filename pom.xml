@@ -256,7 +256,7 @@
 					<finalName>${project.name}</finalName>
 
 					<descriptors>
-						<descriptor>${basedir}/src/assembly/assemblyJar.xml</descriptor>
+						<!-- <descriptor>${basedir}/src/assembly/assemblyJar.xml</descriptor> -->
 						<!-- <descriptor>${basedir}/src/assembly/rename.xml</descriptor> -->
 						<descriptor>${basedir}/src/assembly/assemblyZip.xml</descriptor>
 					</descriptors>
