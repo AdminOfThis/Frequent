@@ -41,6 +41,7 @@ Thumbs.db
 /bin/
 /build/
 /.settings/
+/workdir/*.jar
 /workdir/*.png
 /workdir/*.properties
 /workdir/rta.temp

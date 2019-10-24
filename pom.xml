@@ -10,7 +10,7 @@
 
 	<modules>
 		<module>util</module>
-		 <module>JavaVersionChecker</module>
+		<module>JavaVersionChecker</module>
 	</modules>
 
 

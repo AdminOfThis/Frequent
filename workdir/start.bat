@@ -1,1 +1,1 @@
-start /B ./java/bin/javaw.exe -jar Frequent.jar -Djava.library.path=./lib
+start /B java -jar JavaVersionChecker.jar 1.8.0 "javaw -jar -Djava.library.path=. -Dlog4j.configurationFile=./log4j2.properties Frequent.jar"
