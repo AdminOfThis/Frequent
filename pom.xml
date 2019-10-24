@@ -130,12 +130,53 @@
 						<configuration>
 							<appendOutput>false</appendOutput>
 							<scope>compile</scope>
-							<outputFile>${project.build.directory}/dependencies/dependencies.txt</outputFile>
+							<outputFile>${project.build.directory}/dependencies.txt</outputFile>
 						</configuration>
 					</execution>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/jars</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.github.adminofthis</groupId>
+									<artifactId>javaVersionChecker</artifactId>
+									<version>0.0.2</version>
+									<type>jar</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.build.directory}</outputDirectory>
+									<destFileName>javaVersionChecker.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/wars</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+
 				</executions>
 
-			</plugin><!--$NO-MVN-MAN-VER$ -->
+			</plugin>
+
+
+			<!--$NO-MVN-MAN-VER$ -->
 
 
 			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>build-helper-maven-plugin</artifactId> 
