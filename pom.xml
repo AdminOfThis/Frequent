@@ -251,20 +251,16 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version><!--$NO-MVN-MAN-VER$-->
 				<configuration>
 					<finalName>${project.name}</finalName>
-
 					<descriptors>
 						<descriptor>${basedir}/src/assembly/assemblyJar.xml</descriptor>
 						<!-- <descriptor>${basedir}/src/assembly/rename.xml</descriptor> -->
 						<descriptor>${basedir}/src/assembly/assemblyZip.xml</descriptor>
 					</descriptors>
-					<!-- get all project dependencies -->
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<appendAssemblyId>false</appendAssemblyId>
-					<!-- MainClass in mainfest make a executable jar -->
+					<!--<appendAssemblyId>false</appendAssemblyId> MainClass in mainfest 
+						make a executable jar -->
 					<archive>
 						<manifest>
 							<mainClass>main.FXMLLauncher</mainClass>
