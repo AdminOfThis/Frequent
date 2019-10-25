@@ -9,10 +9,9 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>util</module>
 		<module>javaVersionChecker</module>
+		<module>util</module>
 	</modules>
-
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
