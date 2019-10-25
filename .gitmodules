@@ -1,6 +1,6 @@
 [submodule "util"]
-	path = util
+	path = _util
 	url = https://github.com/AdminOfThis/Util
 [submodule "javaVersionChecker"]
-	path = javaVersionChecker
+	path = _javaVersionChecker
 	url = https://github.com/AdminOfThis/JavaVersionChecker

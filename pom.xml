@@ -9,8 +9,8 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>javaVersionChecker</module>
-		<module>util</module>
+		<module>_javaVersionChecker</module>
+		<module>_util</module>
 	</modules>
 
 	<properties>
