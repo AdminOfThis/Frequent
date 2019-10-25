@@ -20,10 +20,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
 
-
-
 	<dependencies>
-
 		<dependency>
 			<groupId>com.github.adminofthis</groupId>
 			<artifactId>util</artifactId>
@@ -75,7 +72,6 @@
 			<!-- <scope>test</scope> -->
 		</dependency>
 
-
 	</dependencies>
 
 	<build>
@@ -91,10 +87,7 @@
 			</resource>
 		</resources>
 
-
-
 		<plugins>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
@@ -103,6 +96,7 @@
 					<generateBackupPoms>false</generateBackupPoms>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -134,20 +128,6 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>copy-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/jars</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
-							<overWriteIfNewer>true</overWriteIfNewer>
-						</configuration>
-					</execution>
-
-					<execution>
 						<id>copy</id>
 						<phase>package</phase>
 						<goals>
@@ -170,25 +150,25 @@
 							<overWriteSnapshots>true</overWriteSnapshots>
 						</configuration>
 					</execution>
-
 				</executions>
-
 			</plugin>
 
-
-			<!--$NO-MVN-MAN-VER$ -->
-
-
-			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>build-helper-maven-plugin</artifactId> 
-				<version>1.7</version> <executions> <execution> <id>attach-artifacts</id> 
-				<phase>package</phase> <goals> <goal>attach-artifact</goal> </goals> <configuration> 
-				<artifacts> <artifact> <file>test-${project.version}</file> <type>jar</type> 
-				</artifact> </artifacts> </configuration> </execution> </executions> </plugin> -->
-
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jar-plugin</artifactId> 
-				<version>2.4</version> <executions> <execution> <id>default</id> <goals> 
-				<goal>jar</goal> </goals> <phase>package</phase> </execution> </executions> 
-				</plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							<addExtensions>true</addExtensions>
+							<mainClass>main.Main</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -218,8 +198,6 @@
 				</executions>
 			</plugin>
 
-
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -247,48 +225,59 @@
 				</configuration>
 			</plugin>
 
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.1.1</version><!--$NO-MVN-MAN-VER$ -->
-				<configuration>
-					<finalName>${project.name}</finalName>
-					<descriptors>
-						<descriptor>${basedir}/src/assembly/assemblyJar.xml</descriptor>
-						<!-- <descriptor>${basedir}/src/assembly/rename.xml</descriptor> -->
-						<descriptor>${basedir}/src/assembly/assemblyZip.xml</descriptor>
-					</descriptors>
-					<appendAssemblyId>false</appendAssemblyId>
-					<!-- MainClass in mainfest to make a executable jar -->
-					<archive>
-						<manifest>
-							<mainClass>main.FXMLLauncher</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
 				<executions>
 					<execution>
-						<id>make-assembly</id>
-						<!-- bind to the packaging phase -->
+						<id>jar-with-dependencies</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<finalName>${project.name}</finalName>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<appendAssemblyId>false</appendAssemblyId>
+							<archive>
+								<manifest>
+									<addClasspath>true</addClasspath>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+									<addExtensions>true</addExtensions>
+									<mainClass>main.FXMLLauncher</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</execution>
+					<execution>
+						<id>dist</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>${project.name}</finalName>
+							<descriptors>
+								<descriptor>${basedir}/src/assembly/assemblyZip.xml</descriptor>
+							</descriptors>
+							<appendAssemblyId>false</appendAssemblyId>
+							<archive>
+								<manifest>
+									<addClasspath>true</addClasspath>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+									<addExtensions>true</addExtensions>
+									<mainClass>main.FXMLLauncher</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-
-
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-shade-plugin</artifactId> 
-				<version>3.0.0</version> <executions> <execution> <phase>package</phase> 
-				<goals> <goal>shade</goal> </goals> <configuration> <transformers> <transformer 
-				implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> 
-				<mainClass>main.FXMLLauncher</mainClass> </transformer> </transformers> <shadeTestJar>true</shadeTestJar> 
-				</configuration> </execution> </executions> </plugin> -->
-
 		</plugins>
-
 	</build>
 
 	<repositories>

@@ -9,7 +9,7 @@
 	<fileSets>
 		<fileSet>
 			<directory>${project.basedir}</directory>
-			<outputDirectory>/docs</outputDirectory>
+			<outputDirectory>./docs</outputDirectory>
 			<includes>
 				<include>README*</include>
 				<include>LICENSE*</include>
@@ -32,7 +32,6 @@
 			</includes>
 			<excludes>
 				<exclude>*.log*</exclude>
-				<exclude>*.properties</exclude>
 				<exclude>*.fre</exclude>
 			</excludes>
 		</fileSet>
