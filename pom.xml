@@ -229,7 +229,6 @@
 						<additionalClasspathElement>${java.home}/lib/ext/jfxrt.jar</additionalClasspathElement>
 					</additionalClasspathElements>
 					<printSummary>true</printSummary>
-					<forkCount>0</forkCount>
 					<reuseForks>false</reuseForks>
 					<argLine>-Djava.library.path=. -Djni.library.path=.</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>

@@ -18,15 +18,16 @@ import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import test.SuperTest;
 
-class MainTest {
+class MainTest extends SuperTest {
 
-	private static Exception	e;
-	private static Scene		scene;
+	private static Exception e;
+	private static Scene scene;
 
 	public static Object[][] data() {
 		return new Object[][] { { KeyCode.DIGIT1, false }, { KeyCode.DIGIT2, false }, { KeyCode.DIGIT3, false }, { KeyCode.DIGIT4, false }, { KeyCode.DIGIT5, false }, { KeyCode.DIGIT1, true },
-			{ KeyCode.DIGIT2, true } };
+				{ KeyCode.DIGIT2, true } };
 	}
 
 	// @Test
@@ -37,12 +38,10 @@ class MainTest {
 		Thread thread = new Thread(() -> {
 			try {
 				FXMLLauncher.main(new String[] { "-debug" });
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				e = ex;
 				e.printStackTrace();
-			}
-			finally {
+			} finally {
 				latch.countDown();
 			}
 		});
@@ -50,7 +49,9 @@ class MainTest {
 		thread.start();// Initialize the thread
 		latch.await(10, TimeUnit.SECONDS);
 		scene = Main.getInstance().getScene();
-		if (e != null) { throw e; }
+		if (e != null) {
+			throw e;
+		}
 	}
 
 	public static void clearSyso() {
@@ -93,8 +94,7 @@ class MainTest {
 		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(), new KeyEvent(null, scene, KeyEvent.KEY_PRESSED, "", "", code, false, control, false, false)));
 		try {
 			Thread.sleep(50);
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(), new KeyEvent(null, scene, KeyEvent.KEY_RELEASED, "", "", code, false, control, false, false)));

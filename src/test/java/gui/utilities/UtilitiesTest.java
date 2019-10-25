@@ -2,6 +2,9 @@ package gui.utilities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -30,11 +33,19 @@ public class UtilitiesTest extends Application {
 
 	@BeforeAll
 	public static void startApplication() throws Exception {
+		PrintStream stream = new PrintStream(new OutputStream() {
+
+			@Override
+			public void write(int b) throws IOException {
+			}
+		});
+		System.setOut(stream);
+		System.setErr(stream);
+
 		CountDownLatch latch = new CountDownLatch(1);
 		try {
 			new Thread(() -> launch()).start();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		latch.await(5, TimeUnit.SECONDS);

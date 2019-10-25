@@ -13,8 +13,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import data.Cue;
+import test.SuperTest;
 
-class TimeKeeperTest {
+class TimeKeeperTest extends SuperTest {
 
 	@BeforeAll
 	public static void clearSyso() {

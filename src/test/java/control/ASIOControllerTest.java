@@ -10,7 +10,9 @@ import java.io.PrintStream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ASIOControllerTest {
+import test.SuperTest;
+
+class ASIOControllerTest extends SuperTest {
 
 	@BeforeAll
 	public static void clearSyso() {
