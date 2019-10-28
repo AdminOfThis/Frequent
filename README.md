@@ -12,7 +12,8 @@ The GUI uses JavaFX with some custom built elements to display the data.
 Added some useful functions to access infos from church, since this is my primary use.
 
 
-Dependencies
+
+<h3>Dependencies</h3>
 
  - **JasioHost** library from [mhroth](https://github.com/mhroth) as the underlying ASIO library
  https://github.com/mhroth/jasiohost
@@ -21,7 +22,7 @@ Dependencies
  - **JavaFX** as the gui library
  - **Log4j2** for logging
 
-Build
+<h3>Build</h3>
 The whole project is built with Maven. It currently conatains two submodules, and the main project. The submodules are:
 
  - **Util** A generic library which contains convenience methods for writing/loading properties, handling JavaFX problems, initializing Logging and much more.
