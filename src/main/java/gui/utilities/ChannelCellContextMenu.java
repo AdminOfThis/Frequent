@@ -117,6 +117,9 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 
 	private void refreshData(final Channel channel) {
 		showHidden.setSelected(MainController.getInstance().isShowHidden());
+		if(channel.isHidden()) {
+			hide.setText("Do not hide");
+		}
 		groupMenu.getItems().clear();
 		groupMenu.getItems().add(newGroup);
 		groupMenu.getItems().add(new SeparatorMenuItem());

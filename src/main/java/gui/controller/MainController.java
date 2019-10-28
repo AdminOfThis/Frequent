@@ -122,7 +122,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	@FXML
 	private ListView<Input> channelList;
 	@FXML
-	private CheckMenuItem menuShowCue, menuShowChannels;
+	private CheckMenuItem menuShowCue, menuShowChannels, menuShowHiddenChannels;
 	@FXML
 	private Label lblDriver, lblLatency, lblCurrentSong, lblNextSong;
 	@FXML
@@ -230,6 +230,12 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	private void initChannelList() {
+
+		menuShowHiddenChannels.selectedProperty().addListener((e, oldV, newV) -> {
+			setShowHidden(newV);
+			refreshInputs();
+		});
+
 		toggleChannels.setSelected(true);
 		toggleChannels.selectedProperty().addListener((e, oldV, newV) -> {
 			if (newV.booleanValue()) {
@@ -639,7 +645,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 				// Searching all curent channels that are not in the new list
 				for (Input cNew : channelList.getItems()) {
 					Channel channelNew = (Channel) cNew;
-					if (!newChanneList.contains(channelNew) || channelNew.isHidden()) {
+					if (!newChanneList.contains(channelNew) || (channelNew.isHidden() && !menuShowHiddenChannels.isSelected())) {
 						removeList.add(channelNew);
 					}
 				}
@@ -746,6 +752,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	public void setShowHidden(final boolean showHidden) {
 		this.showHidden = showHidden;
+		menuShowHiddenChannels.setSelected(showHidden);
 	}
 
 	public void setSongs(final Cue current, final Cue next) {

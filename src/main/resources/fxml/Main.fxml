@@ -102,6 +102,7 @@
                                     </RadioMenuItem>
                                 </items>
                               </Menu>
+                              <SeparatorMenuItem mnemonicParsing="false" />
                               <CheckMenuItem fx:id="menuShowChannels" mnemonicParsing="false" text="Show ChannelList">
                                  <accelerator>
                                     <KeyCodeCombination alt="UP" code="DIGIT1" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -112,6 +113,8 @@
                                     <KeyCodeCombination alt="UP" code="DIGIT2" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                                  </accelerator>
                               </CheckMenuItem>
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <CheckMenuItem fx:id="menuShowHiddenChannels" mnemonicParsing="false" text="Show Hidden Channels" />
                           </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Timer">
