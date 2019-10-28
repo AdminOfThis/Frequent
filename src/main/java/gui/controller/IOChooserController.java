@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
+import gui.FXMLUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,20 +22,20 @@ import main.Main;
 
 public class IOChooserController implements Initializable {
 
-	private static final Logger	LOG	= LogManager.getLogger(IOChooserController.class);
+	private static final Logger LOG = LogManager.getLogger(IOChooserController.class);
 	@FXML
-	private Parent				root;
+	private Parent root;
 	@FXML
-	private ChoiceBox<String>	listIO;
+	private ChoiceBox<String> listIO;
 	@FXML
-	private Button				btnStart, btnQuit;
+	private Button btnStart, btnQuit;
 	@FXML
-	private Label				label;
-	private Scene				mainScene;
+	private Label label;
+	private Scene mainScene;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		root.setStyle(Main.getStyle());
+
 		Collection<String> ioList = ASIOController.getPossibleDrivers();
 		LOG.info("Loaded " + ioList.size() + " possible drivers");
 		label.setText(ioList.size() + " Driver(s)");
@@ -62,8 +63,8 @@ public class IOChooserController implements Initializable {
 		Stage stage = null;
 		try {
 			stage = (Stage) listIO.getScene().getWindow();
+		} catch (Exception ex) {
 		}
-		catch (Exception ex) {}
 		if (stage != null) {
 			stage.close();
 		}

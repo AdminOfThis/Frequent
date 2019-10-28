@@ -580,6 +580,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	/**
 	 * Returns the sample rate of the active driver
+	 * 
 	 * @return samplerate
 	 */
 	public int getSampleRate() {
@@ -588,6 +589,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	/**
 	 * Sets the driver to reloaded once {@link #resetRequest()} is called
+	 * 
 	 * @param device
 	 */
 	public void setDevice(String device) {
@@ -595,7 +597,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	/**
-	 * Sets the buffersize, which gets only loaded once the driver ist restarted via {@link #restart()}
+	 * Sets the buffersize, which gets only loaded once the driver ist restarted via
+	 * {@link #restart()}
 	 * 
 	 * @param value The buffer size
 	 */

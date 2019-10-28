@@ -79,7 +79,7 @@
 
 		<resources>
 			<resource>
-				<directory>src/**/resources</directory>
+				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>**/*.java</exclude>
 				</excludes>
@@ -153,29 +153,11 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-							<addExtensions>true</addExtensions>
-							<mainClass>main.Main</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<id>copy-resources</id>
-						<!-- here the phase you need -->
 						<phase>validate</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -228,6 +210,31 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
+					<!-- <execution> -->
+					<!-- <id>jar-with-dependencies</id> -->
+					<!-- <phase>package</phase> -->
+					<!-- <goals> -->
+					<!-- <goal>single</goal> -->
+					<!-- </goals> -->
+					<!-- <configuration> -->
+					<!-- <finalName>${project.name}</finalName> -->
+					<!-- <descriptors> -->
+					<!-- <descriptor>${basedir}/src/assembly/assemblyJar.xml</descriptor> -->
+					<!-- </descriptors> -->
+					<!-- <appendAssemblyId>false</appendAssemblyId> -->
+					<!-- <archive> -->
+					<!-- <manifest> -->
+					<!-- <addClasspath>true</addClasspath> -->
+					<!-- <addDefaultImplementationEntries>true</addDefaultImplementationEntries> -->
+					<!-- <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries> -->
+					<!-- <addExtensions>true</addExtensions> -->
+					<!-- <mainClass>main.FXMLLauncher</mainClass> -->
+					<!-- </manifest> -->
+					<!-- </archive> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
+
+
 					<execution>
 						<id>jar-with-dependencies</id>
 						<phase>package</phase>
@@ -251,6 +258,7 @@
 							</archive>
 						</configuration>
 					</execution>
+
 					<execution>
 						<id>dist</id>
 						<phase>package</phase>
@@ -263,15 +271,6 @@
 								<descriptor>${basedir}/src/assembly/assemblyZip.xml</descriptor>
 							</descriptors>
 							<appendAssemblyId>false</appendAssemblyId>
-							<archive>
-								<manifest>
-									<addClasspath>true</addClasspath>
-									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-									<addExtensions>true</addExtensions>
-									<mainClass>main.FXMLLauncher</mainClass>
-								</manifest>
-							</archive>
 						</configuration>
 					</execution>
 				</executions>
