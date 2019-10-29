@@ -30,17 +30,17 @@ import javafx.stage.Stage;
 public class UtilitiesTest extends Application {
 
 	private static BorderPane root;
-
+private static PrintStream emptyStream;
 	@BeforeAll
 	public static void startApplication() throws Exception {
-		PrintStream stream = new PrintStream(new OutputStream() {
+		emptyStream = new PrintStream(new OutputStream() {
 
 			@Override
 			public void write(int b) throws IOException {
 			}
 		});
-		System.setOut(stream);
-		System.setErr(stream);
+		System.setOut(emptyStream);
+		System.setErr(emptyStream);
 
 		CountDownLatch latch = new CountDownLatch(1);
 		try {
@@ -49,6 +49,13 @@ public class UtilitiesTest extends Application {
 			e.printStackTrace();
 		}
 		latch.await(5, TimeUnit.SECONDS);
+	}
+	
+	@AfterAll
+	public static void closeEmptyStream() {
+		if(emptyStream != null) {
+			emptyStream.close();
+		}
 	}
 
 	@AfterEach

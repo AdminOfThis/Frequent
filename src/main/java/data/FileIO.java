@@ -26,14 +26,14 @@ import gui.controller.TimeKeeperController;
 
 public abstract class FileIO {
 
-	private static final String								PROPERTIES_FILE	= "./frequent.properties";
-	private static final Logger								LOG				= LogManager.getLogger(FileIO.class);
-	public static final String								ENDING			= ".fre";
+	private static final String PROPERTIES_FILE = "./frequent.properties";
+	private static final Logger LOG = LogManager.getLogger(FileIO.class);
+	public static final String ENDING = ".fre";
 	// files
-	private static File										currentDir		= new File(System.getProperty("user.home"));
-	private static File										currentFile;
-	private static List<DataHolder<? extends Serializable>>	holderList		= new ArrayList<>();
-	private static Properties								properties;
+	private static File currentDir = new File(System.getProperty("user.home"));
+	private static File currentFile;
+	private static List<DataHolder<? extends Serializable>> holderList = new ArrayList<>();
+	private static Properties properties;
 
 	private static List<Serializable> collectData() {
 		ArrayList<Serializable> result = new ArrayList<>();
@@ -74,8 +74,7 @@ public abstract class FileIO {
 				if (holder != null) {
 					holder.add(o);
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.warn("Problem loading object", e);
 			}
 		}
@@ -89,8 +88,7 @@ public abstract class FileIO {
 			for (Entry<Class, Integer> o : counterMap.entrySet()) {
 				LOG.info("    " + o.getKey().getSimpleName() + ": " + o.getValue());
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Problem while showing statistics", e);
 		}
 	}
@@ -99,15 +97,24 @@ public abstract class FileIO {
 		if (properties == null) {
 			properties = new Properties();
 		}
+		FileInputStream stream = null;
 		try {
 			File file = new File(PROPERTIES_FILE);
 			if (file.exists()) {
-				properties.load(new FileInputStream(file));
+				stream = new FileInputStream(file);
+				properties.load(stream);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to load properties", e);
 			LOG.debug("", e);
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					LOG.error("Problem closing fileinput stream", e);
+				}
+			}
 		}
 		return properties;
 	}
@@ -135,8 +142,7 @@ public abstract class FileIO {
 					} else {
 						LOG.warn("Nothing loaded");
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOG.error("Unable to open file", e);
 				}
 			}
@@ -155,25 +161,20 @@ public abstract class FileIO {
 					result.add((Serializable) o);
 				}
 			}
-		}
-		catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			LOG.warn("File not found");
 			LOG.debug("", e);
-		}
-		catch (EOFException e) {}
-		catch (IOException e) {
+		} catch (EOFException e) {
+		} catch (IOException e) {
 			LOG.warn("Unable to read file");
 			LOG.debug("", e);
-		}
-		catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			LOG.warn("Class not found");
 			LOG.debug("", e);
-		}
-		finally {
+		} finally {
 			try {
 				stream.close();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				LOG.error("Unable to close file stream");
 				LOG.debug("", e);
 			}
@@ -213,17 +214,14 @@ public abstract class FileIO {
 			for (Serializable o : objects) {
 				stream.writeObject(o);
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			LOG.warn("Unable to write file");
 			LOG.debug("", e);
 			result = false;
-		}
-		finally {
+		} finally {
 			try {
 				stream.close();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				LOG.error("Unable to close file stream");
 				LOG.debug("", e);
 			}
@@ -233,13 +231,22 @@ public abstract class FileIO {
 	}
 
 	private static boolean saveProperties() {
+		FileOutputStream stream =null;
 		try {
-			properties.store(new FileOutputStream(new File(PROPERTIES_FILE)), "");
-		}
-		catch (Exception e) {
+			stream = new FileOutputStream(new File(PROPERTIES_FILE));
+			properties.store(stream, "");
+		} catch (Exception e) {
 			LOG.warn("Unable to save preferences");
 			LOG.debug("", e);
 			return false;
+		}finally {
+			if(stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					LOG.error("Problem closing filoutput stream", e);
+				}
+			}
 		}
 		return true;
 	}

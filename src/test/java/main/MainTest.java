@@ -1,8 +1,5 @@
 package main;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -45,30 +42,12 @@ class MainTest extends SuperTest {
 				latch.countDown();
 			}
 		});
-		clearSyso();
 		thread.start();// Initialize the thread
 		latch.await(10, TimeUnit.SECONDS);
 		scene = Main.getInstance().getScene();
 		if (e != null) {
 			throw e;
 		}
-	}
-
-	public static void clearSyso() {
-		System.setOut(new PrintStream(new OutputStream() {
-
-			@Override
-			public void write(int b) throws IOException {
-				// do nothing
-			}
-		}));
-		System.setErr(new PrintStream(new OutputStream() {
-
-			@Override
-			public void write(int b) throws IOException {
-				// do nothing
-			}
-		}));
 	}
 
 	@AfterAll
