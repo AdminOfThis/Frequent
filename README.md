@@ -20,7 +20,9 @@ Since the project mainly depends on the *jasiohost* library, which in turn uses 
 	 https://github.com/wind-season/jasiohost
  - **JavaFX** as the GUI library, displaying all data
  - **Log4j2** for handling logging to console and to file
- - **JUnit5** for testing the application, especially during the build.
+ https://logging.apache.org/log4j/2.x/
+ - **JUnit5** for testing the application, especially during the build
+ https://junit.org/junit5/
 
 ### Build
 The whole project is built with Maven. It currently conatains two submodules, and the main project. The submodules are:
