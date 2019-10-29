@@ -9,8 +9,8 @@ The intended use-case of this application is to use in a live audio engineering 
 
 ## Code
 ### JRE
-This whole project is developed with, and for, an Oracle Java JRE8 Java installation.
-Alltough possible that it could run with newer Java versions, since they don't include the JavaFX modules anymore, it would be a phuge pain to get it to work. 
+This whole project is developed with and for an Oracle Java JRE8 installation.
+Altough possible that it could run with newer Java versions, since they don't include the JavaFX modules anymore, it would be a huge pain to get it to work. 
 
 Since the project mainly depends on the *jasiohost* library, which in turn uses its precompiled *.dll* files as library, the application is currently (and for the foreseeable future) only able to run on Windows machines.
 ### Dependencies
@@ -25,7 +25,7 @@ Since the project mainly depends on the *jasiohost* library, which in turn uses 
  https://junit.org/junit5/
 
 ### Build
-The whole project is built with Maven. It currently conatains two submodules, and the main project. The submodules are:
+The whole project is built with Maven. It currently contains two submodules, and the main project. The submodules are:
 
  - **Util** A generic library which contains convenience methods for writing/loading properties, handling JavaFX problems, initializing Logging and much more.
  - **JavaVersionChecker** A simple mini project which checks the installed Java Version against a minimum requirement, to see if the programm can even start. Sits in an extra project, because it gets compiled for Java 1.6 to show an Error Message if neccessary.
@@ -33,7 +33,7 @@ The whole project is built with Maven. It currently conatains two submodules, an
 After the main project is checked out, it is required to initialize and update the submodules with `git submodule --init` and `git submodule update --remote`.
 
 The main project can then be built using `mvn clean compiler:compile compiler:testCompile validate surefire:test package`
-It produces a "fat" *jar*, with all dependencies extracted into the jar, as well as a *.zip* file, which contains everything (except a Java8 runtime) required to run the programm.
+It produces a "fat" *jar*, with all dependencies extracted into the jar, as well as a *.zip* file, which contains everything (except a Java8 runtime) required to run the program.
 Those artifacts can be found in the `./target` subdirectory.
 
 ## Usage
@@ -50,12 +50,12 @@ The main Application window has 3 logical regions:
 ![Main Window](https://i.postimg.cc/HkyRbskB/grafik.png)
 ### Channellist
 The channellist on the left of the screen is used to display and select the input channels of the ASIO driver. It also shows a quick overview over the levels by acting as a vertical VU-meter.
-The channels can be renamed, linked into stereo-pairs. and added/removed from groups via the context-menu accessible by right clicking any channel in the list.
+The channels can be renamed, linked into stereo-pairs and added/removed from groups via the context-menu accessible by right clicking any channel in the list.
 
 By default there is also a live preview of the raw data of the selected channel on the bottom of the channel list. This can be paused for a closer look by clicking on the chart, swapped with a waveform-preview by double clicking or using the buttons under the chart, or completely removed by toggling the button above the channellist *Wave*.
 
 ### Modules
-The content of the Module View can be choosen with the buttons on the top-right.
+The content of the Module View can be chosen with the buttons on the top-right.
 Currently there are 5 Modules to choose from:
 
 | Module-Name | Description |
