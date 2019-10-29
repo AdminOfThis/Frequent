@@ -30,14 +30,22 @@ The whole project is built with Maven. It currently conatains two submodules, an
 After the main project is checked out, it is required to initialize and update the submodules with `git submodule --init` and `git submodule update --remote`.
 ## Usage
 Start the program with the *start.bat*, or the *start_with_console.bat* script in the root directory of the *.zip* file.
+### Input Chooser
 You'll be required to choose the correct ASIO driver before the main application launches. 
 ![IO Chooser Window](https://i.postimg.cc/bJvncW72/grafik.png) 
+### Main-Window
 The main Application window has 3 logical regions:
-
  1.  **Channellist** 
  2.  **Menubar**
  3. **Module View**
 ![Main Window](https://i.postimg.cc/HkyRbskB/grafik.png)
+### Channellist
+The channellist on the left of the screen is used to display and select the input channels of the ASIO driver. It also shows a quick overview over the levels by acting as a vertical VU-meter.
+The channels can be renamed, linked into stereo-pairs. and added/removed from groups via the context-menu accessible by right clicking any channel in the list.
+
+By default there is also a live preview of the raw data of the selected channel on the bottom of the channel list. This can be paused for a closer look by clicking on the chart, swapped with a waveform-preview by double clicking or using the buttons under the chart, or completely removed by toggling the button above the channellist *Wave*.
+
+### Modules
 The content of the Module View can be choosen with the buttons on the top-right.
 Currently there are 5 Modules to choose from:
 
@@ -48,3 +56,5 @@ Currently there are 5 Modules to choose from:
 |*Groups* | Displays all the groups and their corresponding channels in one big overview|
 |*Phase*|Shows the phase alignment of two channels, commonly used to see if stereo pairs, such as keyboards and guitars are out of phase |.
 |*Bleed*| Shows the percentage of noise bleed of a selectable master signal into other channels signal. Can be used to check how much of the PA is audible in vocal or other mics. |
+### Modules in Development
+There are other modules, that can be accessed by starting the program with the flag `-debug`, but those are currently not considered useful.
