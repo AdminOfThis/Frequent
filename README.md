@@ -1,5 +1,5 @@
 # Frequent
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c07df06c627a4969b7b173b05bd326fa)](https://www.codacy.com/app/florianhild95/Frequent?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AdminOfThis/Frequent&amp;utm_campaign=Badge_Grade) [![Build Status](https://travis-ci.com/AdminOfThis/Frequent.svg?branch=master)](https://travis-ci.com/AdminOfThis/Frequent) 
+[![Code Quality](https://www.code-inspector.com/project/1259/score/svg)](https://travis-ci.com/AdminOfThis/Frequent) [![Build Status](https://travis-ci.com/AdminOfThis/Frequent.svg?branch=master)](https://travis-ci.com/AdminOfThis/Frequent) 
 
 ## Description
 
