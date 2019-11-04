@@ -1,5 +1,5 @@
 # Frequent
-[![Code Quality](https://www.code-inspector.com/project/1259/score/svg)](https://travis-ci.com/AdminOfThis/Frequent) [![Build Status](https://travis-ci.com/AdminOfThis/Frequent.svg?branch=master)](https://travis-ci.com/AdminOfThis/Frequent) 
+[![Code Quality](https://www.code-inspector.com/project/1259/score/svg)](https://www.code-inspector.com/project/dashboard/1259) [![Build Status](https://travis-ci.com/AdminOfThis/Frequent.svg?branch=master)](https://travis-ci.com/AdminOfThis/Frequent) 
 
 ## Description
 
