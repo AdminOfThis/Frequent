@@ -88,4 +88,14 @@ public class Group extends Input implements InputListener {
 		}
 		return false;
 	}
+
+	public void refreshChannels() {
+		for (Channel c : ASIOController.getInstance().getInputList()) {
+			if (c.getGroup() != null && c.getGroup().getName().equals(getName())) {
+				addChannel(c);
+				c.addListener(this);
+			}
+		}
+		
+	}
 }

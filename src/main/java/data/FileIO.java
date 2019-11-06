@@ -38,7 +38,9 @@ public abstract class FileIO {
 	private static List<Serializable> collectData() {
 		ArrayList<Serializable> result = new ArrayList<>();
 		for (DataHolder<? extends Serializable> h : holderList) {
-			result.addAll(h.getData());
+			if (h != null) {
+				result.addAll(h.getData());
+			}
 		}
 		return result;
 	}
@@ -58,7 +60,6 @@ public abstract class FileIO {
 	}
 
 	private static void handleResult(final List<Serializable> result) {
-		ArrayList<Group> groupList = new ArrayList<>();
 		// Map only for statistics
 		HashMap<Class<?>, Integer> counterMap = new HashMap<>();
 		for (Object o : result) {
@@ -73,28 +74,8 @@ public abstract class FileIO {
 						holder.add(o);
 					}
 				}
-
-//				DataHolder holder = null;
-//				if (o instanceof Cue) {
-//					holder = TimeKeeper.getInstance();
-//				} else if (o instanceof Channel) {
-//					holder = ASIOController.getInstance();
-//				} else if (o instanceof Group) {
-//					groupList.add((Group) o);
-//				} else if(o instanceof ColorEntry) {
-//					holder = ColorController.getInstance();
-//				}
-//				// adding
-//				if (holder != null) {
-//					holder.add(o);
-//				}
 			} catch (Exception e) {
 				LOG.warn("Problem loading object", e);
-			}
-		}
-		for (Group g : groupList) {
-			if (ASIOController.getInstance() != null) {
-				ASIOController.getInstance().add(g);
 			}
 		}
 		try {

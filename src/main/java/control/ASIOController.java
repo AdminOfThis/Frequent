@@ -119,7 +119,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	 *               from {@link #getPossibleDrivers()}
 	 */
 	public ASIOController(final String ioName) {
-		if(instance != null)  {
+		if (instance != null) {
 			LOG.warn("Another driver already exists");
 			shutdown();
 		}
@@ -203,6 +203,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					channelList.remove(oldChannel);
 					channelList.add(channel);
 					channel.setChannel(oldChannel.getChannel());
+					for (Group g : groupList) {
+						g.refreshChannels();
+					}
 				}
 			}
 		} else if (t instanceof Group) {
@@ -210,12 +213,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 			if (!groupList.contains(g)) {
 				groupList.add(g);
 			}
-			for (Channel c : channelList) {
-				if (c.getGroup() != null && c.getGroup().getName().equals(g.getName())) {
-					g.addChannel(c);
-					c.addListener(g);
-				}
-			}
+			g.refreshChannels();
 		}
 	}
 
