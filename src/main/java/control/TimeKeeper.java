@@ -11,17 +11,17 @@ import data.FileIO;
 
 public final class TimeKeeper implements DataHolder<Cue> {
 
-	private static final Logger					LOG					= LogManager.getLogger(TimeKeeper.class);
-	public static final String					DEFAULT_CUE_NAME	= "Song #";
-	private static TimeKeeper					instance;
-	private long								startTime;
-	private long								roundStartTime;
-	private long								pauseStarttime;
-	private long								pauseTime, pauseRoundTime;
-	private List<Cue>							cueList				= new ArrayList<>();
-	private int									activeIndex			= -1;
-	private static final ArrayList<CueListener>	listeners			= new ArrayList<>();
-	private boolean								pause				= false;
+	private static final Logger LOG = LogManager.getLogger(TimeKeeper.class);
+	public static final String DEFAULT_CUE_NAME = "Song #";
+	private static TimeKeeper instance;
+	private long startTime;
+	private long roundStartTime;
+	private long pauseStarttime;
+	private long pauseTime, pauseRoundTime;
+	private List<Cue> cueList = new ArrayList<>();
+	private int activeIndex = -1;
+	private static final ArrayList<CueListener> listeners = new ArrayList<>();
+	private boolean pause = false;
 
 	public static TimeKeeper getInstance() {
 		if (instance == null) {
@@ -130,7 +130,9 @@ public final class TimeKeeper implements DataHolder<Cue> {
 	}
 
 	public Cue getActiveCue() {
-		if (getActiveIndex() < 0) { return null; }
+		if (getActiveIndex() < 0) {
+			return null;
+		}
 		if (cueList.size() < getActiveIndex() + 1) {
 			cueList.add(new Cue(DEFAULT_CUE_NAME + (activeIndex + 1)));
 		}
@@ -156,9 +158,11 @@ public final class TimeKeeper implements DataHolder<Cue> {
 	}
 
 	@Override
-	public void add(Cue t) {
-		if (!cueList.contains(t)) {
-			cueList.add(t);
+	public void add(Object t) {
+		if (t instanceof Cue) {
+			if (!cueList.contains(t)) {
+				cueList.add((Cue) t);
+			}
 		}
 	}
 

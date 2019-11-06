@@ -4,44 +4,43 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
-<BorderPane prefHeight="400.0" prefWidth="300.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
-   <bottom>
-      <HBox alignment="CENTER_RIGHT" spacing="5.0">
-         <children>
-            <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" onAction="#cancel" prefWidth="75.0" text="Cancel" />
-            <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#save" prefWidth="75.0" text="Save" />
-         </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-      </HBox>
-   </bottom>
+<BorderPane prefHeight="400.0" prefWidth="400.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <center>
-      <ListView BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets left="5.0" top="5.0" />
-         </BorderPane.margin>
-      </ListView>
-   </center>
-   <right>
-      <VBox alignment="CENTER" spacing="5.0" BorderPane.alignment="CENTER">
+      <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="150.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" vgrow="NEVER" />
+        </rowConstraints>
          <children>
-            <Button mnemonicParsing="false" prefWidth="100.0" text="Add" />
-            <Button mnemonicParsing="false" prefWidth="100.0" text="Rename" />
-            <ColorPicker prefWidth="100.0" />
-            <Button mnemonicParsing="false" prefWidth="100.0" text="Delete" />
+            <VBox alignment="TOP_CENTER" spacing="5.0" GridPane.columnIndex="1">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#add" prefWidth="999.0" text="Add" />
+                  <Separator prefWidth="200.0" />
+                  <Button fx:id="btnRename" disable="true" mnemonicParsing="false" onAction="#rename" prefWidth="999.0" text="Rename" />
+                  <ColorPicker fx:id="colorPicker" disable="true" prefWidth="999.0" />
+                  <Button fx:id="btnDelete" disable="true" mnemonicParsing="false" onAction="#delete" prefWidth="999.0" text="Delete" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+            <Button fx:id="btnCancel" cancelButton="true" defaultButton="true" mnemonicParsing="false" onAction="#cancel" prefWidth="999.0" text="Close" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <ListView fx:id="list" editable="true" GridPane.rowSpan="2" />
          </children>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
-      </VBox>
-   </right>
+      </GridPane>
+   </center>
 </BorderPane>

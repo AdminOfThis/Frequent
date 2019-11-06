@@ -119,6 +119,10 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	 *               from {@link #getPossibleDrivers()}
 	 */
 	public ASIOController(final String ioName) {
+		if(instance != null)  {
+			LOG.warn("Another driver already exists");
+			shutdown();
+		}
 		LOG.info("Created ASIO Controller");
 		driverName = ioName;
 		instance = this;
@@ -183,7 +187,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	}
 
 	@Override
-	public void add(final Input t) {
+	public void add(final Object t) {
 		if (t instanceof Channel) {
 			Channel channel = (Channel) t;
 			if (!channelList.contains(channel)) {
@@ -557,6 +561,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	public void shutdown() {
 		if (asioDriver != null) {
 			asioDriver.shutdownAndUnloadDriver();
+			FileIO.unregisterSaveData(this);
 		}
 	}
 

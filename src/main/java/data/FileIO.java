@@ -51,10 +51,16 @@ public abstract class FileIO {
 		return currentFile;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static void registerDatahandlers() {
+		registerSaveData(ASIOController.getInstance());
+		registerSaveData(TimeKeeper.getInstance());
+		registerSaveData(ColorController.getInstance());
+	}
+
 	private static void handleResult(final List<Serializable> result) {
 		ArrayList<Group> groupList = new ArrayList<>();
-		HashMap<Class, Integer> counterMap = new HashMap<>();
+		// Map only for statistics
+		HashMap<Class<?>, Integer> counterMap = new HashMap<>();
 		for (Object o : result) {
 			try {
 				if (counterMap.get(o.getClass()) == null) {
@@ -62,18 +68,26 @@ public abstract class FileIO {
 				}
 				counterMap.put(o.getClass(), counterMap.get(o.getClass()) + 1);
 				// finding right controller
-				DataHolder holder = null;
-				if (o instanceof Cue) {
-					holder = TimeKeeper.getInstance();
-				} else if (o instanceof Channel) {
-					holder = ASIOController.getInstance();
-				} else if (o instanceof Group) {
-					groupList.add((Group) o);
+				for (DataHolder<? extends Serializable> holder : holderList) {
+					if (holder != null) {
+						holder.add(o);
+					}
 				}
-				// adding
-				if (holder != null) {
-					holder.add(o);
-				}
+
+//				DataHolder holder = null;
+//				if (o instanceof Cue) {
+//					holder = TimeKeeper.getInstance();
+//				} else if (o instanceof Channel) {
+//					holder = ASIOController.getInstance();
+//				} else if (o instanceof Group) {
+//					groupList.add((Group) o);
+//				} else if(o instanceof ColorEntry) {
+//					holder = ColorController.getInstance();
+//				}
+//				// adding
+//				if (holder != null) {
+//					holder.add(o);
+//				}
 			} catch (Exception e) {
 				LOG.warn("Problem loading object", e);
 			}
@@ -85,7 +99,7 @@ public abstract class FileIO {
 		}
 		try {
 			LOG.info("= Loading statistics: ");
-			for (Entry<Class, Integer> o : counterMap.entrySet()) {
+			for (Entry<Class<?>, Integer> o : counterMap.entrySet()) {
 				LOG.info("    " + o.getKey().getSimpleName() + ": " + o.getValue());
 			}
 		} catch (Exception e) {
@@ -132,7 +146,9 @@ public abstract class FileIO {
 					result = openFile(file);
 					if (result != null && !result.isEmpty()) {
 						for (DataHolder<?> h : holderList) {
-							h.clear();
+							if (h != null) {
+								h.clear();
+							}
 						}
 						handleResult(result);
 						MainController.getInstance().refresh();
@@ -231,7 +247,7 @@ public abstract class FileIO {
 	}
 
 	private static boolean saveProperties() {
-		FileOutputStream stream =null;
+		FileOutputStream stream = null;
 		try {
 			stream = new FileOutputStream(new File(PROPERTIES_FILE));
 			properties.store(stream, "");
@@ -239,8 +255,8 @@ public abstract class FileIO {
 			LOG.warn("Unable to save preferences");
 			LOG.debug("", e);
 			return false;
-		}finally {
-			if(stream != null) {
+		} finally {
+			if (stream != null) {
 				try {
 					stream.close();
 				} catch (IOException e) {
@@ -277,5 +293,9 @@ public abstract class FileIO {
 		}
 		properties.put(key, value);
 		saveProperties();
+	}
+
+	public static void unregisterSaveData(DataHolder<?> holder) {
+		holderList.remove(holder);
 	}
 }

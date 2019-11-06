@@ -173,6 +173,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		applyLoadedProperties();
 		Main.getInstance().setProgress(0.95);
 		hideAllDebugModules();
+		FileIO.registerDatahandlers();
 		resetStatus();
 		bottomLabel.setVisible(false);
 		TimeKeeper.getInstance().addListener(this);

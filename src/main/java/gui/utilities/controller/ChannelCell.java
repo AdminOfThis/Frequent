@@ -25,7 +25,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 
 public class ChannelCell extends ListCell<Input> implements Initializable {
 
@@ -38,13 +37,6 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	private Input input;
 	private VuMeter meter;
 	private Pausable pausable;
-
-	public static String toRGBCode(final Color color) {
-		int red = (int) (color.getRed() * 255);
-		int green = (int) (color.getGreen() * 255);
-		int blue = (int) (color.getBlue() * 255);
-		return String.format("#%02X%02X%02X", red, green, blue);
-	}
 
 	public ChannelCell() {
 		super();
