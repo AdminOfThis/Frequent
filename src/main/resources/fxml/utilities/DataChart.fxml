@@ -5,7 +5,6 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <LineChart fx:id="chart" alternativeRowFillVisible="false" animated="false" axisSortingPolicy="NONE" createSymbols="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" layoutY="2.0" legendSide="TOP" legendVisible="false" minHeight="0.0" minWidth="0.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -13,7 +12,7 @@
           <NumberAxis animated="false" autoRanging="false" forceZeroInRange="false" maxHeight="0.0" minHeight="0.0" minorTickVisible="false" prefHeight="0.0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" />
         </xAxis>
         <yAxis>
-          <NumberAxis animated="false" forceZeroInRange="false" maxWidth="0.0" minWidth="0.0" minorTickVisible="false" prefWidth="0.0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" />
+          <NumberAxis animated="false" autoRanging="false" lowerBound="-1.0" maxWidth="0.0" minWidth="0.0" minorTickVisible="false" prefWidth="0.0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="1.0" />
         </yAxis>
          <padding>
             <Insets bottom="-10.0" left="-10.0" right="-30.0" />

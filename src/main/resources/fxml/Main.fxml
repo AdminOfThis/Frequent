@@ -175,7 +175,7 @@
                   <Insets />
                </VBox.margin>
                <children>
-                  <HBox fx:id="buttonBox" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" />
+                  <HBox fx:id="buttonBox" alignment="CENTER_RIGHT" fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </children>
@@ -235,7 +235,7 @@
       </StackPane>
    </bottom>
    <center>
-      <SplitPane fx:id="rootSplit" dividerPositions="0.2" BorderPane.alignment="CENTER">
+      <SplitPane fx:id="rootSplit" dividerPositions="0.15" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>
