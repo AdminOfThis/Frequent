@@ -3,6 +3,7 @@ name: Release
 on:
   create:
     tags:
+      - test
       - v*
       - 0*
       - 1*
