@@ -16,9 +16,5 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 13
-    - name: Maven compile
-      run: mvn clean compiler:compile compiler:testCompile  --file pom.xml
-    - name: Maven validate
-      run: mvn validate --file pom.xml
-    - name: Maven test
-      run: xvfb-run mvn surefire:test package --file pom.xml
+    - name: Run Maven
+      run: xvfb-run mvn clean compiler:compile compiler:testCompile validate surefire:test package --file pom.xml
