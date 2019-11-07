@@ -255,6 +255,16 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+              <groupId>org.openjfx</groupId>
+              <artifactId>javafx-maven-plugin</artifactId>
+              <version>0.0.3</version>
+              <configuration>
+                  <mainClass>main.FXMLLauncher</mainClass>
+              </configuration>
+          </plugin>
+			
 		</plugins>
 	</build>
 
