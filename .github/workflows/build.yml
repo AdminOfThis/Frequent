@@ -16,6 +16,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 13
+    - name: Java Version
+      run: java -version
     - name: Run Maven
       run: xvfb-run mvn clean compiler:compile compiler:testCompile validate surefire:test package --file pom.xml
     - name: Upload artifact
