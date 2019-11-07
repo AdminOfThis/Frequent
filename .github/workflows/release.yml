@@ -23,6 +23,9 @@ jobs:
     - name: Build with Maven
       run: xvfb-run mvn clean compiler:compile compiler:testCompile validate surefire:test package --file pom.xml
       
+  release:
+    runs-on: ubuntu-latest 
+    steps:
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1.0.0
@@ -33,7 +36,6 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: true
-  
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1.0.1
