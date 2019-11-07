@@ -13,10 +13,10 @@ jobs:
       with:
         submodules: recursive
     - name: Set up JDK 13
-      uses: joschi/setup-jdk@v1
+      uses: actions/setup-jdk@v1
       with:
-        java-version: 'openjdk13'
-        architecture: 'x64'
+        java-version: 13
+        architecture: x64
     - name: Java Version
       run: java -version
     - name: Run Maven
