@@ -37,13 +37,14 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 	private Input input;
 	private VuMeter meter;
 	private Pausable pausable;
+	private Parent graphic;
 
 	public ChannelCell() {
 		super();
 		setPadding(Insets.EMPTY);
-		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML_PATH), this);
-		if (p != null) {
-			setGraphic(p);
+		graphic = FXMLUtil.loadFXML(getClass().getResource(FXML_PATH), this);
+		if (graphic != null) {
+			setGraphic(graphic);
 		} else {
 			LOG.warn("Unable to load ChannelCell");
 		}
@@ -125,7 +126,9 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 		}
 		if (item == null) {
 			meter.setTitle(null);
+			meter.pause(true);
 		} else {
+			meter.pause(false);
 			meter.setTitle(item.getName());
 			if (item instanceof Channel) {
 				lblNumber.setText(Integer.toString(((Channel) item).getChannel().getChannelIndex() + 1));
