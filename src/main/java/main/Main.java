@@ -58,11 +58,12 @@ public class Main extends MainGUI {
 		MainGUI.initialize(POM_TITLE);
 		setTitle(POM_TITLE);
 		LOG.info(" === " + getReadableTitle() + " ===");
-		parseArgs(args);
-		setColors();
-		loadProperties();
-		System.setProperty("javafx.preloader", PreLoader.class.getName());
-		Application.launch(Main.class, args);
+		if (parseArgs(args)) {
+			setColors();
+			loadProperties();
+			System.setProperty("javafx.preloader", PreLoader.class.getName());
+			Application.launch(Main.class, args);
+		}
 	}
 
 	@Override
@@ -86,10 +87,16 @@ public class Main extends MainGUI {
 	 * found
 	 *
 	 * @param args
+	 * @return true if the programm shoudl continue, false if it should terminate
 	 */
-	private static void parseArgs(final String[] args) {
+	private static boolean parseArgs(final String[] args) {
+		boolean result = true;
 		for (String arg : args) {
-			if (arg.equalsIgnoreCase("-debug")) {
+			if (args.length == 1 && arg.equalsIgnoreCase("-version")) {
+				LOG.info(getReadableTitle());
+				System.out.println(getReadableTitle());
+				result = false;
+			} else if (arg.equalsIgnoreCase("-debug")) {
 				debug = true;
 				LOG.info("Enabling debug settings");
 				FileIO.setCurrentDir(new File("."));
@@ -136,6 +143,7 @@ public class Main extends MainGUI {
 				}
 			}
 		}
+		return result;
 	}
 
 	private Scene loadMain() {
