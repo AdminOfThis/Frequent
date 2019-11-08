@@ -27,7 +27,11 @@ jobs:
         architecture: x64
     - name: Java Version
       run: java -version
+    - name: Run Maven (Linux)
+      if: os == 'ubuntu_latest'
+      run: xvfb-run ${maven}
     - name: Run Maven
+      if: os != "ubuntu_latest'
       run: ${maven}
     - name: Upload artifact
       uses: actions/upload-artifact@master
