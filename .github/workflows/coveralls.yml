@@ -27,7 +27,9 @@ jobs:
       if: matrix.os != 'ubuntu-latest'
       run: mvn clean compiler:compile compiler:testCompile validate surefire:test package --file pom.xml
 
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
+    - uses: devmasx/coverage-check-action@v1.1.0
       with:
-        github-token: ${{ secrets.github_token }}
+        type: lcov
+        result_path: coverage/example.lcov
+        min_coverage: 90
+        token: ${{secrets.GITHUB_TOKEN}}
