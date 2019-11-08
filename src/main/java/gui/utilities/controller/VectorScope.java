@@ -194,9 +194,9 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			if (channel2 != null) {
 				channel2.addListener(this);
 			}
+			map1.clear();
+			map2.clear();
 		}
-		map1.clear();
-		map2.clear();
 	}
 
 	public void setDecay(final double value) {
@@ -222,6 +222,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					dataToAdd.add(data);
 				}
 				vectorSeries.getData().addAll(dataToAdd);
+
 				for (int i = 0; i < dataToAdd.size(); i++) {
 					Data<Number, Number> d = dataToAdd.get(i);
 					double percent = d.getXValue().doubleValue() / d.getYValue().doubleValue();
@@ -259,6 +260,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	protected void update() {
+
 		if (!isPaused()) {
 			ArrayList<Long> keysToDisplay = null;
 			LinkedHashMap<Long, float[]> copyMap1, copyMap2;

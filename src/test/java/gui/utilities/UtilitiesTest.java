@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import gui.utilities.controller.BleedMonitor;
+import gui.utilities.controller.VectorScope;
 import gui.utilities.controller.VuMeterMono;
 import gui.utilities.controller.VuMeterStereo;
 import gui.utilities.controller.WaveFormChart;
@@ -30,7 +31,17 @@ import javafx.stage.Stage;
 public class UtilitiesTest extends Application {
 
 	private static BorderPane root;
-private static PrintStream emptyStream;
+	private static PrintStream emptyStream;
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		root = new BorderPane();
+		primaryStage.setScene(new Scene(root));
+		primaryStage.setWidth(800);
+		primaryStage.setHeight(600);
+		primaryStage.show();
+	}
+
 	@BeforeAll
 	public static void startApplication() throws Exception {
 		emptyStream = new PrintStream(new OutputStream() {
@@ -48,12 +59,12 @@ private static PrintStream emptyStream;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		latch.await(5, TimeUnit.SECONDS);
+		latch.await(2, TimeUnit.SECONDS);
 	}
-	
+
 	@AfterAll
 	public static void closeEmptyStream() {
-		if(emptyStream != null) {
+		if (emptyStream != null) {
 			emptyStream.close();
 		}
 	}
@@ -66,15 +77,6 @@ private static PrintStream emptyStream;
 	@AfterAll
 	public static void shutdown() throws Exception {
 		Platform.exit();
-	}
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		root = new BorderPane();
-		primaryStage.setScene(new Scene(root));
-		primaryStage.setWidth(800);
-		primaryStage.setHeight(600);
-		primaryStage.show();
 	}
 
 	@Test
@@ -107,7 +109,7 @@ private static PrintStream emptyStream;
 
 	@Test
 	public void vectorScope() throws InterruptedException, ExecutionException {
-		Node node = new VuMeterStereo(null, null, Orientation.VERTICAL);
+		VectorScope node = new VectorScope();
 		setAsRoot(node);
 		assertEquals(node, root.getCenter());
 	}
