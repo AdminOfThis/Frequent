@@ -15,7 +15,7 @@ jobs:
     - name: Set up JDK 13
       uses: actions/setup-jdk@v1
       with:
-        java-version: 13
+        java-version: '13.0.1'
         architecture: x64
     - name: Java Version
       run: java -version
