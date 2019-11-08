@@ -4,7 +4,16 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: windows-latest
+    env:
+      maven: mvn clean compiler:compile compiler:testCompile validate surefire:test package --file pom.xml
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+        include:
+        # if os is ubuntu, run on xvfb
+        - os: ubuntu-latest
+          maven: xvfb-run mvn clean compiler:compile compiler:testCompile validate surefire:test package --file pom.xml
     
     steps:
     - name: Checkout repository
@@ -19,7 +28,7 @@ jobs:
     - name: Java Version
       run: java -version
     - name: Run Maven
-      run: mvn clean compiler:compile compiler:testCompile validate surefire:test package --file pom.xml
+      run: ${{maven}}
     - name: Upload artifact
       uses: actions/upload-artifact@master
       with:
