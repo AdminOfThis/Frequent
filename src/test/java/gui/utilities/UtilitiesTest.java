@@ -120,6 +120,13 @@ public class UtilitiesTest extends Application {
 		setAsRoot(node);
 		assertEquals(node, root.getCenter());
 	}
+	
+	@Test
+	public void waveFormPane() throws InterruptedException, ExecutionException {
+		Node node = new WaveFormPane();
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
+	}
 
 	@Test
 	public void doughnutChart() throws InterruptedException, ExecutionException {
