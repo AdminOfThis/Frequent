@@ -28,7 +28,7 @@ jobs:
     - name: Java Version
       run: java -version
     - name: Run Maven
-      run: ${{maven}}
+      run: ${maven}
     - name: Upload artifact
       uses: actions/upload-artifact@master
       with:
