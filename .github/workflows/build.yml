@@ -28,10 +28,10 @@ jobs:
       run: java -version
     - name: Run Maven (Linux)
       if: matrix.os == 'ubuntu-latest'
-      run: xvfb-run ${maven}
+      run: xvfb-run mvn clean compiler:compile compiler:testCompile validate surefire:test package --file pom.xml
     - name: Run Maven
       if: matrix.os != 'ubuntu-latest'
-      run: ${maven}
+      run: mvn clean compiler:compile compiler:testCompile validate surefire:test package --file pom.xml
     - name: Upload artifact
       uses: actions/upload-artifact@master
       with:
