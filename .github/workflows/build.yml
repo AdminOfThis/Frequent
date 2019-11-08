@@ -28,10 +28,10 @@ jobs:
     - name: Java Version
       run: java -version
     - name: Run Maven (Linux)
-      if: matrix.os == 'ubuntu_latest'
+      if: matrix.os == 'ubuntu-latest'
       run: xvfb-run ${maven}
     - name: Run Maven
-      if: matrix.os != 'ubuntu_latest'
+      if: matrix.os != 'ubuntu-latest'
       run: ${maven}
     - name: Upload artifact
       uses: actions/upload-artifact@master
