@@ -46,37 +46,37 @@ import javafx.util.StringConverter;
 
 public class TimeKeeperController implements Initializable {
 
-	private static final Logger			LOG	= LogManager.getLogger(TimeKeeperController.class);
-	private static TimeKeeperController	instance;
+	private static final Logger LOG = LogManager.getLogger(TimeKeeperController.class);
+	private static TimeKeeperController instance;
 	@FXML
-	private Parent						paneCue;
+	private Parent paneCue;
 	@FXML
-	private StackPane					piePane;
+	private StackPane piePane;
 	@FXML
-	private PieChart					timeChart;
+	private PieChart timeChart;
 	@FXML
-	private Button						btnTime;
+	private Button btnTime;
 	@FXML
-	private SplitMenuButton				btnStart;
+	private SplitMenuButton btnStart;
 	@FXML
-	private MenuItem					btnStop;
+	private MenuItem btnStop;
 	@FXML
-	private TableView<Cue>				cueTable;
+	private TableView<Cue> cueTable;
 	@FXML
-	private TableColumn<Cue, String>	colName, colTime, colChannel;
+	private TableColumn<Cue, String> colName, colTime, colChannel;
 	@FXML
-	private TextField					txtCue, txtCueName;
+	private TextField txtCue, txtCueName;
 	@FXML
-	private ComboBox<Channel>			choiceCueChannel;
+	private ComboBox<Channel> choiceCueChannel;
 	@FXML
-	private Label						lblTime;
+	private Label lblTime;
 	@FXML
-	private GridPane					infoPane;
+	private GridPane infoPane;
 	/**************
 	 * contextmenu
 	 *************/
 	@FXML
-	private MenuItem					cxtResetChannel, cxtDeleteCue;
+	private MenuItem cxtResetChannel, cxtDeleteCue;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -100,7 +100,6 @@ public class TimeKeeperController implements Initializable {
 			@Override
 			public String toString(Channel object) {
 				if (object == null) {
-					LOG.info("");
 					return "- NONE -";
 				}
 				return object.getName();
@@ -237,7 +236,8 @@ public class TimeKeeperController implements Initializable {
 			}
 		};
 		timer.start();
-		while (TimeKeeper.getInstance().getActiveIndex() < 0) {}
+		while (TimeKeeper.getInstance().getActiveIndex() < 0) {
+		}
 		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
 		cueTable.getSelectionModel().select(0);
 		cueTable.refresh();

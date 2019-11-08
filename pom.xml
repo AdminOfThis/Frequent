@@ -21,14 +21,6 @@
 
 	<dependencies>
 
-		<!-- log4j -->
-		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.11.2</version>
-		</dependency>
-
 		<dependency>
 			<groupId>com.github.adminofthis</groupId>
 			<artifactId>util</artifactId>
@@ -52,33 +44,6 @@
 			<artifactId>JTransforms</artifactId>
 			<version>3.1</version>
 		</dependency>
-
-
-		<!-- JAVAFX -->
-
-		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-controls</artifactId>
-			<version>13.0.1</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-fxml -->
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-fxml</artifactId>
-			<version>13.0.1</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-swing -->
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-swing</artifactId>
-			<version>13.0.1</version>
-		</dependency>
-
-
-
 
 		<dependency>
 			<groupId>org.apache.maven.surefire</groupId>
