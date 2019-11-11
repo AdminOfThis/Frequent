@@ -17,17 +17,17 @@
                <children>
                   <HBox fx:id="box1" alignment="CENTER_RIGHT" spacing="5.0">
                      <children>
-                        <ComboBox fx:id="cmbChannel1" editable="true" minWidth="100.0" prefWidth="150.0" promptText="Channel 1" HBox.hgrow="SOMETIMES" />
+                        <ComboBox fx:id="cmbChannel1" editable="true" minWidth="100.0" promptText="Channel 1" HBox.hgrow="SOMETIMES" />
                      </children>
                   </HBox>
                   <HBox fx:id="box2" alignment="CENTER_RIGHT" spacing="5.0">
                      <children>
-                        <ComboBox fx:id="cmbChannel2" editable="true" minWidth="100.0" prefWidth="150.0" promptText="Channel 2" />
+                        <ComboBox fx:id="cmbChannel2" editable="true" minWidth="100.0" promptText="Channel 2" />
                      </children>
                   </HBox>
                   <HBox fx:id="boxDecay" alignment="CENTER" spacing="5.0">
                      <children>
-                        <Label minWidth="82.0" prefWidth="82.0" text="Decay-Time:" />
+                        <Label minWidth="82.0" text="Decay-Time:" />
                         <Slider fx:id="decaySlider" majorTickUnit="2.0" max="10.0" min="1.0" minWidth="100.0" minorTickCount="1" showTickMarks="true" value="1.0" />
                      </children>
                   </HBox>

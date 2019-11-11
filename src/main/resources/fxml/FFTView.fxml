@@ -13,8 +13,8 @@
    <top>
       <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
          <children>
-            <ToggleButton fx:id="tglPlay" mnemonicParsing="false" onAction="#play" prefWidth="70.0" selected="true" text="Play" />
-            <Button fx:id="btnExport" mnemonicParsing="false" onAction="#export" prefWidth="70.0" text="Export" />
+            <ToggleButton fx:id="tglPlay" mnemonicParsing="false" onAction="#play" selected="true" text="Play" />
+            <Button fx:id="btnExport" mnemonicParsing="false" onAction="#export" text="Export" />
          </children>
       </HBox>
    </top>

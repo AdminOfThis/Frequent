@@ -106,7 +106,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		chart.getData().add(series);
 
 		chart.setMinHeight(0.0);
-		
+
 		xAxis.setMinHeight(.0);
 		xAxis.setMaxHeight(.0);
 		xAxis.setPrefHeight(.0);
@@ -201,8 +201,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					if (channel != null) {
 						value = entry.getValue();
 					}
-					System.out.println(value);
-//					value = Math.abs(value);
 					Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 					dataList.add(newData);
 				} catch (Exception e) {

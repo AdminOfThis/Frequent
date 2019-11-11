@@ -46,6 +46,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
@@ -416,9 +417,11 @@ public class MainController implements Initializable, Pausable, CueListener {
 				return sum;
 			} else {
 				Region headerRegion = (Region) headerButton;
-				int minSize = Math.max(0, (int) Math.floor(Math.max(headerRegion.getPrefWidth() - .001, headerRegion.getMinWidth() - .001)));
+				int minSize = Math.max(0, (int) Math.floor(Math.max(headerRegion.getPrefWidth(), headerRegion.getMinWidth())));
+
 				int factor = (int) ((minSize / minHeaderButtonWidth) + 1);
 				double size = factor * minHeaderButtonWidth;
+
 				double spacing = 0;
 
 				if (headerRegion.getParent() != null && headerRegion.getParent() instanceof HBox) {

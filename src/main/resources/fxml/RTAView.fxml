@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane prefHeight="200.0" prefWidth="400.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.RTAViewController">
+<BorderPane prefHeight="200.0" prefWidth="400.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.RTAViewController">
    <center>
    <HBox fx:id="chartPane" />
    </center>
@@ -17,13 +17,13 @@
             <HBox fx:id="topLeft" HBox.hgrow="ALWAYS" />
             <HBox fx:id="topRight" alignment="TOP_RIGHT" maxWidth="-Infinity" spacing="5.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Slider fx:id="sliderPad" blockIncrement="3.0" majorTickUnit="12.0" max="0.0" min="-60.0" prefWidth="145.0" showTickMarks="true" snapToTicks="true" value="-12.0" />
-                  <ToggleButton fx:id="toggleVPad" mnemonicParsing="false" prefWidth="70.0" text="-12 dB">
+                  <Slider fx:id="sliderPad" blockIncrement="3.0" majorTickUnit="12.0" max="0.0" min="-60.0" prefWidth="100.0" showTickMarks="true" snapToTicks="true" value="-12.0" />
+                  <ToggleButton fx:id="toggleVPad" mnemonicParsing="false" text="-12 dB">
                      <tooltip>
                         <Tooltip text="Virtual Pad (-30dB) for Spectrum analyzer. Does only apply to the chart" />
                      </tooltip>
                   </ToggleButton>
-                  <ToggleButton fx:id="toggleSlowCurve" mnemonicParsing="false" prefWidth="70.0" text="Slow">
+                  <ToggleButton fx:id="toggleSlowCurve" mnemonicParsing="false" text="Slow">
                      <tooltip>
                         <Tooltip text="Adds a slower responding curve to the chart" />
                      </tooltip>
