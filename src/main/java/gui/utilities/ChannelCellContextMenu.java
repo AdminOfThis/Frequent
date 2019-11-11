@@ -1,6 +1,5 @@
 package gui.utilities;
 
-import java.awt.MenuShortcut;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -100,13 +99,13 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 		ArrayList<Input> list = MainController.getInstance().getSelectedChannels();
 		Channel c = null;
 		int i = 0;
-		//Find first channel
+		// Find first channel
 		while (c == null) {
 			if (list.get(i) instanceof Channel) {
 				c = (Channel) list.get(i);
 			}
 		}
-		//Apply setting of hide from first cahnnel to all.
+		// Apply setting of hide from first cahnnel to all.
 		if (c != null) {
 			boolean hide = !c.isHidden();
 			for (Input in : list) {
@@ -120,7 +119,7 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 
 	private void refreshData(final Channel channel) {
 		showHidden.setSelected(MainController.getInstance().isShowHidden());
-		if(channel.isHidden()) {
+		if (channel.isHidden()) {
 			hide.setText("Do not hide");
 		}
 		groupMenu.getItems().clear();

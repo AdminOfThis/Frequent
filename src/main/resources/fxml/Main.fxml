@@ -171,7 +171,7 @@
                   </HBox>
                </children>
             </HBox>
-            <HBox alignment="CENTER_LEFT" maxHeight="31.0" minHeight="31.0" prefHeight="31.0">
+            <HBox alignment="CENTER_LEFT" maxHeight="30.0" minHeight="30.0" prefHeight="30.0">
                <VBox.margin>
                   <Insets />
                </VBox.margin>
