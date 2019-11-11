@@ -33,6 +33,13 @@
 			<version>1.0</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.4</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -71,17 +78,17 @@
 		</resources>
 
 		<plugins>
-		
-		<plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.3</version>
-                <configuration>
-                    <mainClass>main.FXMLLauncher</mainClass>
-                </configuration>
-            </plugin>
-		
-		
+
+			<plugin>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-maven-plugin</artifactId>
+				<version>0.0.3</version>
+				<configuration>
+					<mainClass>main.FXMLLauncher</mainClass>
+				</configuration>
+			</plugin>
+
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
@@ -187,9 +194,9 @@
 					<argLine>-Djava.library.path=. -Djni.library.path=.</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>2</rerunFailingTestsCount>
-<!-- 					<excludes> -->
-<!-- 						<exclude>**/MainTest.java</exclude> -->
-<!-- 					</excludes> -->
+					<!-- <excludes> -->
+					<!-- <exclude>**/MainTest.java</exclude> -->
+					<!-- </excludes> -->
 					<executions>
 						<execution>
 							<phase>test</phase>

@@ -127,8 +127,7 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error(e);
 			}
 		}
 	}

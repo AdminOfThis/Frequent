@@ -101,7 +101,7 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 	}
 
 	public boolean isHidden() {
-		return hide;
+		return hide ;
 	}
 
 	private void removeStereoChannel() {
@@ -198,5 +198,13 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 				stereoChannel.setStereoChannel(this);
 			}
 		}
+	}
+
+	public boolean isStereo() {
+		return getStereoChannel() != null;
+	}
+
+	public boolean isLeftChannel() {
+		return getStereoChannel() != null && compareTo(getStereoChannel())<0;
 	}
 }

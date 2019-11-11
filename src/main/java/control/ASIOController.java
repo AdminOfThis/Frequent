@@ -281,7 +281,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					index[j]++;
 				}
 			}
-			// TODO IST DAS RICHTIG???
 			for (int i = 0; i < bufferCount; i++) {
 				if (index[i] == fftBufferSize) {
 					fftBuffer[i] = applyHannWindow(fftBuffer[i]);

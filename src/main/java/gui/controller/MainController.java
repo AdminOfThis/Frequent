@@ -35,6 +35,7 @@ import gui.utilities.controller.SymmetricWaveFormChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -82,6 +83,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	private static final String SETTINGS_PATH = "/fxml/Settings.fxml";
 	// modules
+	private static final String OVERVIEW_PATH = "/fxml/OverView.fxml";
 	private static final String FFT_PATH = "/fxml/RTAView.fxml";
 	private static final String RTA_PATH = "/fxml/FFTView.fxml";
 	private static final String TIMEKEEPER_PATH = "/fxml/TimeKeeper.fxml";
@@ -110,7 +112,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	@FXML
 	private RadioMenuItem menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView, menuBleedView;
 	@FXML
-	private ToggleButton togglePreview, toggleCue, toggleChannels, toggleGroupChannels, toggleBtmRaw, toggleBtmWave;
+	private ToggleButton togglePreview, toggleCue, toggleChannels, toggleGroupChannels, toggleBtmRaw, toggleBtmWave, tglOverView;
 	@FXML
 	private BorderPane root;
 	@FXML
@@ -131,7 +133,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private Label lblStatus;
 	@FXML
 	private ProgressBar progStatus;
-	private boolean showHidden = false;
 	private boolean pause = false;
 	private HashMap<ToggleButton, Node> contentMap = new HashMap<>();
 	private HashMap<Node, PausableView> controllerMap = new HashMap<>();
@@ -156,14 +157,17 @@ public class MainController implements Initializable, Pausable, CueListener {
 		initChannelList();
 		Main.getInstance().setProgress(0.4);
 		initFullScreen();
-		initChart();
 		Main.getInstance().setProgress(0.45);
-		initRTA();
+		initOverView();
 		Main.getInstance().setProgress(0.5);
-		initDrumMonitor();
-		Main.getInstance().setProgress(0.55);
-		initPhaseMonitor();
+		initChart();
+		Main.getInstance().setProgress(0.65);
+		initRTA();
 		Main.getInstance().setProgress(0.6);
+		initDrumMonitor();
+		Main.getInstance().setProgress(0.65);
+		initPhaseMonitor();
+		Main.getInstance().setProgress(0.7);
 		initBleedView();
 		Main.getInstance().setProgress(0.8);
 		initGroups();
@@ -233,8 +237,8 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private void initChannelList() {
 
 		menuShowHiddenChannels.selectedProperty().addListener((e, oldV, newV) -> {
-			setShowHidden(newV);
 			refreshInputs();
+			refresh();
 		});
 
 		toggleChannels.setSelected(true);
@@ -292,6 +296,16 @@ public class MainController implements Initializable, Pausable, CueListener {
 			}
 		});
 
+	}
+
+	private void initOverView() {
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(OVERVIEW_PATH));
+		if (p != null) {
+			contentMap.put(tglOverView, p);
+			controllerMap.put(p, (PausableView) FXMLUtil.getController());
+		} else {
+			LOG.warn("Unable to load Overview");
+		}
 	}
 
 	private void initChart() {
@@ -571,7 +585,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	}
 
 	public boolean isShowHidden() {
-		return showHidden;
+		return menuShowHiddenChannels.isSelected();
 	}
 
 	@FXML
@@ -629,6 +643,10 @@ public class MainController implements Initializable, Pausable, CueListener {
 		}
 	}
 
+	public BooleanProperty showHiddenProperty() {
+		return menuShowHiddenChannels.selectedProperty();
+	}
+
 	private void refreshInputs() {
 		channelList.getItems().clear();
 		if (ASIOController.getInstance() != null) {
@@ -648,7 +666,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 				// Searching all curent channels that are not in the new list
 				for (Input cNew : channelList.getItems()) {
 					Channel channelNew = (Channel) cNew;
-					if (!newChanneList.contains(channelNew) || (channelNew.isHidden() && !menuShowHiddenChannels.isSelected())) {
+					if (!newChanneList.contains(channelNew) || (channelNew.isHidden() && !isShowHidden())) {
 						removeList.add(channelNew);
 					}
 				}
@@ -658,7 +676,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 				for (Channel channel : newChanneList) {
 					// if channel is not hidden, or showHidden, and if
 					// sterechannel isn't already added to list
-					if ((!channel.isHidden() || showHidden) && (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
+					if ((!channel.isHidden() || isShowHidden()) && (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
 						channelList.getItems().add(channel);
 					}
 				}
@@ -751,11 +769,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	public void setSelectedChannel(final Channel channel) {
 		channelList.selectionModelProperty().get().select(channel);
-	}
-
-	public void setShowHidden(final boolean showHidden) {
-		this.showHidden = showHidden;
-		menuShowHiddenChannels.setSelected(showHidden);
 	}
 
 	public void setSongs(final Cue current, final Cue next) {
@@ -865,7 +878,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 
 	public List<String> getPanels() {
 		List<String> result = new ArrayList<>();
-		// TODO Auto-generated method stub
 		for (Toggle t : toggleFFTView.getToggleGroup().getToggles()) {
 			ToggleButton tglBtn = (ToggleButton) t;
 			result.add(tglBtn.getText());

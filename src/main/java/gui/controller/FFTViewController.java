@@ -72,7 +72,6 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	@Override
 	public void pause(boolean pause) {
 		this.pause = pause;
-		canvas.pause(pause);
 	}
 
 	@Override

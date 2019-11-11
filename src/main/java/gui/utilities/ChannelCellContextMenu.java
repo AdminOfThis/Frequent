@@ -1,5 +1,6 @@
 package gui.utilities;
 
+import java.awt.MenuShortcut;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 				in.setName(in.getChannel().getChannelName());
 			});
 			hide.setOnAction(e -> hideAllSelected());
-			showHidden.setOnAction(e -> MainController.getInstance().setShowHidden(showHidden.isSelected()));
+			showHidden.selectedProperty().bindBidirectional(MainController.getInstance().showHiddenProperty());
 			getItems().add(resetName);
 			getItems().add(new SeparatorMenuItem());
 			getItems().add(hide);
@@ -99,11 +100,13 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 		ArrayList<Input> list = MainController.getInstance().getSelectedChannels();
 		Channel c = null;
 		int i = 0;
+		//Find first channel
 		while (c == null) {
 			if (list.get(i) instanceof Channel) {
 				c = (Channel) list.get(i);
 			}
 		}
+		//Apply setting of hide from first cahnnel to all.
 		if (c != null) {
 			boolean hide = !c.isHidden();
 			for (Input in : list) {

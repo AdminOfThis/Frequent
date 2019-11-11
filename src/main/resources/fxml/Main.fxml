@@ -153,11 +153,12 @@
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" HBox.hgrow="SOMETIMES">
                      <children>
-                        <ToggleButton fx:id="toggleFFTView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Spectrum">
+                        <ToggleButton fx:id="tglOverView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Overview">
                            <toggleGroup>
                               <ToggleGroup fx:id="viewGroup" />
                            </toggleGroup>
                         </ToggleButton>
+                        <ToggleButton fx:id="toggleFFTView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Spectrum" toggleGroup="$viewGroup" />
                         <ToggleButton fx:id="toggleRTAView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="RTA" toggleGroup="$viewGroup" />
                         <ToggleButton fx:id="toggleDrumView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Drum" toggleGroup="$viewGroup" />
                         <ToggleButton fx:id="toggleGroupsView" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Groups" toggleGroup="$viewGroup" />

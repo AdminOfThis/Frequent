@@ -170,7 +170,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	@Override
 	public boolean isPaused() {
-		return pause || parentPausable != null && parentPausable.isPaused() || channel1 == null || channel2 == null;
+		return pause || (parentPausable != null && parentPausable.isPaused()) || channel1 == null || channel2 == null;
 	}
 
 	@Override
@@ -197,6 +197,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			map1.clear();
 			map2.clear();
 		}
+//		System.out.println(c1.getName()+" " + c2.getName());
 	}
 
 	public void setDecay(final double value) {

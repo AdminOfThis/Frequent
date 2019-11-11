@@ -12,12 +12,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class VuMeterStereo extends  VuMeter {
+public class VuMeterStereo extends VuMeter {
 
-	private Pane		root;
-	private VuMeterMono	meter1, meter2;
-	private Pausable	parentPausable;
-	private boolean		pause;
+	private Pane root;
+	private VuMeterMono meter1, meter2;
+	private Pausable parentPausable;
+	private boolean pause;
 
 	public VuMeterStereo(final Input channel1, final Input channel2, final Orientation o) {
 		if (o == Orientation.HORIZONTAL) {
@@ -87,6 +87,5 @@ public class VuMeterStereo extends  VuMeter {
 
 	@Override
 	public void setTitle(String title) {
-		// TODO Auto-generated method stub
 	}
 }
