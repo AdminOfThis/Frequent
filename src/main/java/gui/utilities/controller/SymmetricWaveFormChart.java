@@ -22,11 +22,12 @@ public class SymmetricWaveFormChart extends AnchorPane implements PausableCompon
 		reflection.setFraction(1);
 		reflection.setTopOpacity(1.0);
 		reflection.setBottomOpacity(1.0);
-		reflection.setTopOffset(-56);
+		reflection.setTopOffset(-50);
 //		heightProperty().addListener((e, oldv, newV) -> {
 //			
 //		});
 		chart.setEffect(reflection);
+//		chart.setStyle("-fx-border-color: red; -fx-border-width: 1px; -fx-insets: 0;-fx-margin: 0px;-fx-padding: 0px;");
 
 //		chart.heightProperty().addListener((e, oldV, newV) -> {
 //			setMinHeight(newV.doubleValue() * 2.0);

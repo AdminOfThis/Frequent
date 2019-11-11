@@ -40,7 +40,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	private static final Logger LOG = LogManager.getLogger(WaveFormChart.class);
 	private static final String FXML = "/fxml/utilities/WaveFormChart.fxml";
-	private static final long TIME_FRAME = 100000l;
+	private static final long TIME_FRAME = 300000l;
 	@FXML
 	private BorderPane root;
 	private XYChart<Number, Number> chart;
@@ -83,13 +83,14 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		xAxis.setTickUnit(TIME_FRAME / 10.0);
 		NumberAxis yAxis = new NumberAxis();
 		yAxis.setPrefWidth(0.0);
-		yAxis.setAutoRanging(true);
+		yAxis.setAutoRanging(false);
+		yAxis.setLowerBound(Constants.FFT_MIN);
+		yAxis.setUpperBound(.0);
 		for (NumberAxis axis : new NumberAxis[] { xAxis, yAxis }) {
 			axis.setTickUnit(TIME_FRAME / 10.0);
 			axis.setOpacity(.0);
 		}
 		xAxis.setAutoRanging(false);
-		yAxis.setAutoRanging(true);
 		initArea(xAxis, yAxis);
 		if (chart instanceof LineChart) {
 			((LineChart<Number, Number>) chart).setCreateSymbols(false);
@@ -105,7 +106,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		chart.getData().add(series);
 
 		chart.setMinHeight(0.0);
-
+		
 		xAxis.setMinHeight(.0);
 		xAxis.setMaxHeight(.0);
 		xAxis.setPrefHeight(.0);
@@ -200,7 +201,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 					if (channel != null) {
 						value = entry.getValue();
 					}
-					value = Math.abs(Constants.FFT_MIN) - Math.abs(value);
+					System.out.println(value);
+//					value = Math.abs(value);
 					Data<Number, Number> newData = new Data<>(entry.getKey(), value);
 					dataList.add(newData);
 				} catch (Exception e) {

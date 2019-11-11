@@ -260,7 +260,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	protected void update() {
-
 		if (!isPaused()) {
 			ArrayList<Long> keysToDisplay = null;
 			LinkedHashMap<Long, float[]> copyMap1, copyMap2;
