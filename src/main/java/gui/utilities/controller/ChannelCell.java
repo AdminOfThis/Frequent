@@ -70,6 +70,12 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 
 	private void changeMeter(final Input channel) {
 		boolean refresh = false;
+		if (meter != null) {
+			// trash old meter
+			meter.pause(true);
+			meter.setParentPausable(null);
+			meter.setChannel(null);
+		}
 		if (channel != null && channel instanceof Channel && ((Channel) channel).getStereoChannel() != null) {
 			// stereo
 			if (meter == null || meter instanceof VuMeterMono) {
