@@ -30,7 +30,7 @@ Since the project mainly depends on the *jasiohost* library, which in turn uses 
 The whole project is built with Maven. It currently contains two submodules, and the main project. The submodules are:
 
  - **Util** A generic library which contains convenience methods for writing/loading properties, handling JavaFX problems, initializing Logging and much more.
- - **JavaVersionChecker** A simple mini project which checks the installed Java Version against a minimum requirement, to see if the programm can even start. Sits in an extra project, because it gets compiled for Java 1.6 to show an Error Message if neccessary.
+ - **JavaVersionChecker** A simple mini project which checks the installed Java Version against a minimum requirement, to see if the programm can even start. Sits in an extra project, because it gets compiled for Java 1.7 to show an Error Message if neccessary.
  
 After the main project is checked out, it is required to initialize and update the submodules with `git submodule --init` and `git submodule update --remote`.
 
