@@ -10,8 +10,8 @@ The intended use-case of this application is to use in a live audio engineering 
 
 ## Code
 ### JRE
-This whole project is developed with and for an Oracle Java JRE8 installation.
-Altough possible that it could run with newer Java versions, since they don't include the JavaFX modules anymore, it would be a huge pain to get it to work. 
+This project was originally developed with and for an Oracle Java JRE8 installation.
+It was then upgraded to Java 13, using OpenJDK.
 
 Since the project mainly depends on the *jasiohost* library, which in turn uses its precompiled *.dll* files as library, the application is currently (and for the foreseeable future) only able to run on Windows machines.
 ### Dependencies
@@ -19,7 +19,8 @@ Since the project mainly depends on the *jasiohost* library, which in turn uses 
  https://github.com/mhroth/jasiohost
 	 - Fork from [wind-season](https://github.com/wind-season), which fixes a bug with DANTE Via and MADI-Connections
 	 https://github.com/wind-season/jasiohost
- - **JavaFX** as the GUI library, displaying all data
+ - **OpenJFX** The open source variant of JavaFX as the GUI library, displaying all data
+ https://openjfx.io/
  - **Log4j2** for handling logging to console and to file
  https://logging.apache.org/log4j/2.x/
  - **JUnit5** for testing the application, especially during the build
@@ -33,7 +34,8 @@ The whole project is built with Maven. It currently contains two submodules, and
  
 After the main project is checked out, it is required to initialize and update the submodules with `git submodule --init` and `git submodule update --remote`.
 
-The main project can then be built using `mvn clean compiler:compile compiler:testCompile validate surefire:test package`
+Since the root project contains most of the source code, but since root maven projects must be packaged as `pom`, it requires another set of commands to compile it into a `jar` with the help of several Maven plugins.
+The main project can be built using `mvn clean compiler:compile compiler:testCompile validate surefire:test package`
 It produces a "fat" *jar*, with all dependencies extracted into the jar, as well as a *.zip* file, which contains everything (except a Java8 runtime) required to run the program.
 Those artifacts can be found in the `./target` subdirectory.
 
