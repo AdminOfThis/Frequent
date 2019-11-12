@@ -13,10 +13,15 @@
 		<module>util</module>
 	</modules>
 
+	<scm>
+		<connection>scm:git:git://github.com/AdminOfThis/Frequent.git</connection>
+	</scm>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.13</maven.compiler.target>
 		<maven.compiler.source>1.13</maven.compiler.source>
+
 	</properties>
 
 	<dependencies>
@@ -78,6 +83,25 @@
 		</resources>
 
 		<plugins>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<doCheck>false</doCheck>
+					<doUpdate>false</doUpdate>
+				</configuration>
+			</plugin>
+
 
 			<plugin>
 				<groupId>org.openjfx</groupId>
@@ -212,29 +236,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
-					<!-- <execution> -->
-					<!-- <id>jar-with-dependencies</id> -->
-					<!-- <phase>package</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>single</goal> -->
-					<!-- </goals> -->
-					<!-- <configuration> -->
-					<!-- <finalName>${project.name}</finalName> -->
-					<!-- <descriptors> -->
-					<!-- <descriptor>${basedir}/src/assembly/assemblyJar.xml</descriptor> -->
-					<!-- </descriptors> -->
-					<!-- <appendAssemblyId>false</appendAssemblyId> -->
-					<!-- <archive> -->
-					<!-- <manifest> -->
-					<!-- <addClasspath>true</addClasspath> -->
-					<!-- <addDefaultImplementationEntries>true</addDefaultImplementationEntries> -->
-					<!-- <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries> -->
-					<!-- <addExtensions>true</addExtensions> -->
-					<!-- <mainClass>main.FXMLLauncher</mainClass> -->
-					<!-- </manifest> -->
-					<!-- </archive> -->
-					<!-- </configuration> -->
-					<!-- </execution> -->
+
 
 
 					<execution>
@@ -245,6 +247,7 @@
 						</goals>
 						<configuration>
 							<finalName>${project.name}</finalName>
+							<verbose>false</verbose>
 							<descriptorRefs>
 								<descriptorRef>jar-with-dependencies</descriptorRef>
 							</descriptorRefs>
@@ -257,6 +260,9 @@
 									<addExtensions>true</addExtensions>
 									<mainClass>main.FXMLLauncher</mainClass>
 								</manifest>
+								<manifestEntries>
+									<Implementation-Build>${buildNumber}</Implementation-Build>
+								</manifestEntries>
 							</archive>
 						</configuration>
 					</execution>
@@ -268,6 +274,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<verbose>false</verbose>
 							<finalName>${project.name}</finalName>
 							<descriptors>
 								<descriptor>${basedir}/src/assembly/assemblyZip.xml</descriptor>
