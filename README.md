@@ -25,6 +25,8 @@ Since the project mainly depends on the *jasiohost* library, which in turn uses 
  https://logging.apache.org/log4j/2.x/
  - **JUnit5** for testing the application, especially during the build
  https://junit.org/junit5/
+ - **Apache Commons Collections** for some minor List partitioning https://commons.apache.org/proper/commons-collections/
+ - **JSON** for parsing data received from external sources https://json.org
 
 ### Build
 The whole project is built with Maven. It currently contains two submodules, and the main project. The submodules are:
@@ -60,10 +62,11 @@ By default there is also a live preview of the raw data of the selected channel 
 
 ### Modules
 The content of the Module View can be chosen with the buttons on the top-right.
-Currently there are 5 Modules to choose from:
+Currently there are 6 Modules to choose from:
 
 | Module-Name | Description |
 | --- | --- |
+|*Overview*| A basic view with a VU-Meter for every ASIO-Input. Can be used to have a quick overview on all the input channels without prior configuration or setup|
 |*Spectrum* | The most used view, displays the frequency spectrum of the selected channel, using fourier transformation, in the range from *10Hz* to *20kHz* |
 |*RTA* | Shows the frequency spectrum over time, by coloring more active frequency in a color-shade from yellow to red |
 |*Groups* | Displays all the groups and their corresponding channels in one big overview|
