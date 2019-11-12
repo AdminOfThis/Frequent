@@ -162,7 +162,6 @@ public class OverViewController implements Initializable, PausableView {
 			rows = (int) Math.ceil(channels / (double) channelsPerRow);
 
 		}
-		System.out.println(channels + " " + rows);
 		return rows;
 	}
 
