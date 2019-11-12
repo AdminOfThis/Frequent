@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.commons.collections4.ListUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.Channel;
