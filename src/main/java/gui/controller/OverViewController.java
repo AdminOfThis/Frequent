@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.Channel;
@@ -30,7 +32,10 @@ public class OverViewController implements Initializable, PausableView {
 
 	private static final double GAP = 10.0;
 	private static final Orientation ORIENTATION = Orientation.VERTICAL;
-	private static final int DEFAULT_CHANNELS_PER_ROW = 2;
+	private static final int DEFAULT_CHANNELS_PER_ROW = 8;
+	private static final int MIN_CHANNELS_PER_ROW = 4;
+	private static final int MAX_CHANNELS_PER_ROW = 16;
+
 	@FXML
 	private BorderPane root;
 	@FXML
@@ -80,71 +85,85 @@ public class OverViewController implements Initializable, PausableView {
 				}
 			}
 			int channels = channelsToDisplay.size();
-			int rows = -1;
-			int channelsPerRow = DEFAULT_CHANNELS_PER_ROW;
-			while (rows <= 0 || (channels / (double) rows < 8) || (channels / (double) rows < 8)) {
+
+			if (channels > 0) {
+				int rows = calculateRows(channels);
+
+				// split evenly in Lists with desired size
+				List<List<Channel>> partitionList = ListUtils.partition(channelsToDisplay, (int) Math.ceil(channels / (double) rows));
+
+				for (int rowIndex = 0; rowIndex < partitionList.size(); rowIndex++) {
+					// Getting the matching row list
+					List<Channel> rowList = partitionList.get(rowIndex);
+					for (int columnIndex = 0; columnIndex < rowList.size(); columnIndex++) {
+						// And the channel on that column
+						Channel c = rowList.get(columnIndex);
+						// create VuMeter
+						VuMeter meter;
+						if (c.isStereo()) {
+							meter = new VuMeterStereo(c, c.getStereoChannel(), ORIENTATION);
+						} else {
+							meter = new VuMeterMono(c, ORIENTATION);
+						}
+						meter.setParentPausable(this);
+						flow.add(meter, columnIndex, rowIndex);
+					}
+				}
+				for (int i = flow.getColumnConstraints().size(); i < flow.getColumnCount(); i++) {
+					ColumnConstraints constraint = new ColumnConstraints();
+					constraint.setMinWidth(30.0);
+					constraint.setFillWidth(true);
+					constraint.setPercentWidth(-1);
+					constraint.setPrefWidth(Region.USE_COMPUTED_SIZE);
+					constraint.setHgrow(Priority.SOMETIMES);
+					flow.getColumnConstraints().add(constraint);
+
+				}
+
+				for (int i = flow.getRowConstraints().size(); i < flow.getRowCount(); i++) {
+					RowConstraints constraint = new RowConstraints();
+					constraint.setMinHeight(50.0);
+					constraint.setFillHeight(true);
+					constraint.setPercentHeight(-1);
+					constraint.setPrefHeight(Region.USE_COMPUTED_SIZE);
+					constraint.setVgrow(Priority.SOMETIMES);
+					flow.getRowConstraints().add(constraint);
+				}
+
+			}
+		}
+	}
+
+	private static int calculateRows(int channels) {
+		int rows = -1;
+		int channelsPerRow = DEFAULT_CHANNELS_PER_ROW;
+		int count = 0;
+		while (rows <= 0 || Math.ceil(channels / (double) rows) < MIN_CHANNELS_PER_ROW || Math.ceil(channels / (double) rows) > MAX_CHANNELS_PER_ROW) {
+			// terminate condition, to prevent forever looping
+			count++;
+			if (count > 20) {
+				rows = 1;
+				break;
+			}
+			// on the first run, skip adjustments
+			if (rows >= 0) {
 				// if not enough channels per row, double channels per row
-				if (channels / (double) rows > 16) {
+
+				if (Math.ceil(channels / (double) rows) > MAX_CHANNELS_PER_ROW) {
 					channelsPerRow = channelsPerRow / 2;
 				}
 				// if too many channels per row, half channels per row
-				if (channels / (double) rows < 8) {
+				if (Math.ceil(channels / (double) rows) < MIN_CHANNELS_PER_ROW) {
 					channelsPerRow = channelsPerRow * 2;
 				}
-
-				// results in x number of rows, defined by Channels per row
-
-				rows = (int) Math.ceil(channels / (double) channelsPerRow);
-
 			}
+			// results in x number of rows, defined by Channels per row
 
-			// split evenly in Lists with desired size
+			rows = (int) Math.ceil(channels / (double) channelsPerRow);
 
-			List<List<Channel>> partitionList = ListUtils.partition(channelsToDisplay, channels / rows);
-
-			for (int rowIndex = 0; rowIndex < partitionList.size(); rowIndex++) {
-				// Getting the matching row list
-				List<Channel> rowList = partitionList.get(rowIndex);
-				for (int columnIndex = 0; columnIndex < rowList.size(); columnIndex++) {
-					// And the channel on that column
-					Channel c = rowList.get(columnIndex);
-					// create VuMeter
-					VuMeter meter;
-					if(c.isStereo()) {
-						meter = new VuMeterStereo(c, c.getStereoChannel(), ORIENTATION);
-					} else {
-					meter = new VuMeterMono(c, ORIENTATION);
-					}
-					meter.setParentPausable(this);
-					flow.add(meter, columnIndex, rowIndex);
-				}
-			}
-			for (int i = flow.getColumnConstraints().size(); i < flow.getColumnCount(); i++) {
-				ColumnConstraints constraint = new ColumnConstraints();
-				flow.getColumnConstraints().add(constraint);
-
-			}
-			for (ColumnConstraints constraint : flow.getColumnConstraints()) {
-				constraint.setMinWidth(30.0);
-				constraint.setFillWidth(true);
-				constraint.setPercentWidth(-1);
-				constraint.setPrefWidth(Region.USE_COMPUTED_SIZE);
-				constraint.setHgrow(Priority.SOMETIMES);
-			}
-			for (int i = flow.getRowConstraints().size(); i < flow.getRowCount(); i++) {
-				RowConstraints constraint = new RowConstraints();
-				flow.getRowConstraints().add(constraint);
-			}
-
-			for (RowConstraints constraint : flow.getRowConstraints()) {
-
-				constraint.setMinHeight(50.0);
-				constraint.setFillHeight(true);
-				constraint.setPercentHeight(-1);
-				constraint.setPrefHeight(Region.USE_COMPUTED_SIZE);
-				constraint.setVgrow(Priority.SOMETIMES);
-			}
 		}
+		System.out.println(channels + " " + rows);
+		return rows;
 	}
 
 	@Override
