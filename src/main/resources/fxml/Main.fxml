@@ -8,7 +8,6 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
@@ -65,43 +64,7 @@
                       </Menu>
                         <Menu mnemonicParsing="false" text="View">
                           <items>
-                              <Menu mnemonicParsing="false" text="View">
-                                <items>
-      							  <RadioMenuItem fx:id="menuSpectrumView" mnemonicParsing="false" text="Spectrum">
-                                       <accelerator>
-                                          <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                       </accelerator>
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="menuToggle" />
-                                       </toggleGroup>
-                                    </RadioMenuItem>
-                                    <RadioMenuItem fx:id="menuRTAView" mnemonicParsing="false" text="RTA" toggleGroup="$menuToggle">
-                                       <accelerator>
-                                          <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                       </accelerator>
-                                    </RadioMenuItem>
-                                    <RadioMenuItem fx:id="menuDrumView" mnemonicParsing="false" text="Drum" toggleGroup="$menuToggle">
-                                       <accelerator>
-                                          <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                       </accelerator>
-                                    </RadioMenuItem>
-                                    <RadioMenuItem fx:id="menuGroupsView" mnemonicParsing="false" text="Groups" toggleGroup="$menuToggle">
-                                       <accelerator>
-                                          <KeyCodeCombination alt="UP" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                       </accelerator>
-                                    </RadioMenuItem>
-                                    <RadioMenuItem fx:id="menuPhaseView" mnemonicParsing="false" text="Phase" toggleGroup="$menuToggle">
-                                       <accelerator>
-                                          <KeyCodeCombination alt="UP" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                       </accelerator>
-                                    </RadioMenuItem>
-                                    <RadioMenuItem fx:id="menuBleedView" mnemonicParsing="false" text="Bleed" toggleGroup="$menuToggle">
-                                       <accelerator>
-                                          <KeyCodeCombination alt="UP" code="DIGIT6" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                       </accelerator>
-                                    </RadioMenuItem>
-                                </items>
-                              </Menu>
+                              <Menu fx:id="menuView" mnemonicParsing="false" text="View" />
                               <SeparatorMenuItem mnemonicParsing="false" />
                               <CheckMenuItem fx:id="menuShowChannels" mnemonicParsing="false" text="Show ChannelList">
                                  <accelerator>

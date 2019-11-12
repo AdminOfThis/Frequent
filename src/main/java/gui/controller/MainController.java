@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -51,6 +52,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioMenuItem;
@@ -59,6 +61,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -110,13 +113,13 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private ToggleButton toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView, toggleBleedView;
 
 	@FXML
-	private RadioMenuItem menuSpectrumView, menuRTAView, menuDrumView, menuGroupsView, menuPhaseView, menuBleedView;
-	@FXML
 	private ToggleButton togglePreview, toggleCue, toggleChannels, toggleGroupChannels, toggleBtmRaw, toggleBtmWave, tglOverView;
 	@FXML
 	private BorderPane root;
 	@FXML
 	private SplitPane contentPane, rootSplit;
+	@FXML
+	private Menu menuView;
 	@FXML
 	private MenuItem closeMenu, menuSave, menuSettings;
 	@FXML
@@ -134,7 +137,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 	@FXML
 	private ProgressBar progStatus;
 	private boolean pause = false;
-	private HashMap<ToggleButton, Node> contentMap = new HashMap<>();
+	private LinkedHashMap<ToggleButton, Node> contentMap = new LinkedHashMap<>();
 	private HashMap<Node, PausableView> controllerMap = new HashMap<>();
 	private double channelSplitRatio = 0.8, rootSplitRatio = 0.8;
 	private ASIOController controller;
@@ -166,41 +169,52 @@ public class MainController implements Initializable, Pausable, CueListener {
 		Main.getInstance().setProgress(0.6);
 		initDrumMonitor();
 		Main.getInstance().setProgress(0.65);
-		initPhaseMonitor();
-		Main.getInstance().setProgress(0.7);
-		initBleedView();
-		Main.getInstance().setProgress(0.8);
 		initGroups();
+		Main.getInstance().setProgress(0.7);
+		initPhaseMonitor();
+		Main.getInstance().setProgress(0.8);
+		initBleedView();
 		Main.getInstance().setProgress(0.85);
 		initListener();
 		Main.getInstance().setProgress(0.9);
 		applyLoadedProperties();
 		Main.getInstance().setProgress(0.95);
+
 		hideAllDebugModules();
+		createViewMenu();
+
 		FileIO.registerDatahandlers();
 		resetStatus();
 		bottomLabel.setVisible(false);
 		TimeKeeper.getInstance().addListener(this);
 	}
 
+	private void createViewMenu() {
+		ToggleGroup menuGroup = new ToggleGroup();
+		KeyCode code = KeyCode.DIGIT1;
+		for (ToggleButton b : contentMap.keySet()) {
+			RadioMenuItem menuItem = new RadioMenuItem(b.getText());
+			menuItem.setToggleGroup(menuGroup);
+			menuItem.setOnAction(e -> b.fireEvent(e));
+			menuItem.selectedProperty().bindBidirectional(b.selectedProperty());
+			menuItem.setAccelerator(new KeyCodeCombination(code));
+			code = KeyCode.values()[code.ordinal() + 1];
+			menuView.getItems().add(menuItem);
+		}
+
+	}
+
 	private void hideAllDebugModules() {
 		if (!Main.isDebug()) {
 			toggleDrumView.setVisible(false);
 			toggleDrumView.setManaged(false);
-			menuDrumView.setVisible(false);
+			contentMap.remove(toggleDrumView);
 		}
 
 	}
 
 	public static MainController getInstance() {
 		return instance;
-	}
-
-	private void bindCheckMenuToToggleButton(final RadioMenuItem menu, final ToggleButton button) {
-		menu.setOnAction(e -> button.fire());
-		button.selectedProperty().addListener((obs, oldVal, newVal) -> {
-			menu.setSelected(newVal);
-		});
 	}
 
 	@Override
@@ -462,12 +476,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 		// save still works
 		menuSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 
-		bindCheckMenuToToggleButton(menuSpectrumView, toggleFFTView);
-		bindCheckMenuToToggleButton(menuRTAView, toggleRTAView);
-		bindCheckMenuToToggleButton(menuGroupsView, toggleGroupsView);
-		bindCheckMenuToToggleButton(menuDrumView, toggleDrumView);
-		bindCheckMenuToToggleButton(menuPhaseView, togglePhaseView);
-		bindCheckMenuToToggleButton(menuBleedView, toggleBleedView);
 		menuTimerStart.setOnAction(e -> TimeKeeperController.getInstance().toggleTimer());
 		menuTimerNext.setOnAction(e -> TimeKeeperController.getInstance().round());
 		menuTimerStart.disableProperty().bind(TimeKeeperController.getInstance().getStartButton().disabledProperty());
