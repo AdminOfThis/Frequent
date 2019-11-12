@@ -21,11 +21,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.13</maven.compiler.target>
 		<maven.compiler.source>1.13</maven.compiler.source>
-
 	</properties>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>com.github.adminofthis</groupId>
 			<artifactId>util</artifactId>
@@ -84,23 +82,28 @@
 
 		<plugins>
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.4</version>
-				<executions>
-					<execution>
-						<phase>validate</phase>
-						<goals>
-							<goal>create</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<doCheck>false</doCheck>
-					<doUpdate>false</doUpdate>
-				</configuration>
-			</plugin>
+			 <!-- Write the current git revision into ${buildnumber} and populate ${scmBranch} -->
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>buildnumber-maven-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>create</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <!-- Get the scm revision once for all modules -->
+                <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+                <!-- Don't fail on modified local resources -->
+                <doCheck>false</doCheck>
+                <!-- Don't update SCM -->
+                <doUpdate>false</doUpdate>
+                <!-- Use short version of git revision -->
+            </configuration>
+        </plugin>
 
 
 			<plugin>
@@ -245,6 +248,7 @@
 						<goals>
 							<goal>single</goal>
 						</goals>
+
 						<configuration>
 							<finalName>${project.name}</finalName>
 							<verbose>false</verbose>
@@ -262,6 +266,8 @@
 								</manifest>
 								<manifestEntries>
 									<Implementation-Build>${buildNumber}</Implementation-Build>
+									<Implementation-Branch>${scmBranch}</Implementation-Branch>
+									
 								</manifestEntries>
 							</archive>
 						</configuration>
