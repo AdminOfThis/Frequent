@@ -35,27 +35,27 @@ import main.Constants;
 
 public class RTAViewController implements Initializable, FFTListener, PausableView {
 
-	private static final double		DECAY		= 1.01;
-	private static final Logger		LOG			= LogManager.getLogger(RTAViewController.class);
+	private static final double DECAY = 1.01;
+	private static final Logger LOG = LogManager.getLogger(RTAViewController.class);
 	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
-	private static final int		X_MIN		= 25;
-	private static final int		X_MAX		= 20000;
+	private static final int X_MIN = 25;
+	private static final int X_MAX = 20000;
 	@FXML
-	private HBox					chartPane;
+	private HBox chartPane;
 	@FXML
-	private ToggleButton			toggleSlowCurve, toggleVPad;
+	private ToggleButton toggleSlowCurve, toggleVPad, tglPause;
 	@FXML
-	private Slider					sliderPad;
+	private Slider sliderPad;
 	@FXML
-	private XYChart<Number, Number>	chart;
+	private XYChart<Number, Number> chart;
 	@FXML
-	private HBox					topRight, topLeft;
-	private VuMeterMono				meter;
-	private boolean					pause		= true;
-	private Series<Number, Number>	series		= new Series<>();
-	private Series<Number, Number>	maxSeries	= new Series<>();
-	private Channel					channel;
-	private double[][]				buffer;
+	private HBox topRight, topLeft;
+	private VuMeterMono meter;
+	private boolean pause = true;
+	private Series<Number, Number> series = new Series<>();
+	private Series<Number, Number> maxSeries = new Series<>();
+	private Channel channel;
+	private double[][] buffer;
 
 	@Override
 	public ArrayList<Node> getHeader() {
@@ -63,7 +63,28 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		list.add(sliderPad);
 		list.add(toggleVPad);
 		list.add(toggleSlowCurve);
+		list.add(tglPause);
 		return list;
+	}
+
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		LOG.debug("Loading FFT Chart");
+		topLeft.prefWidthProperty().bind(topRight.widthProperty());
+		initVuMeter();
+		initChart();
+		initButtons();
+		// initTuner();
+		AnimationTimer timer = new AnimationTimer() {
+
+			@Override
+			public void handle(final long now) {
+				if (buffer != null && !isPaused()) {
+					updateChart(buffer);
+				}
+			}
+		};
+		timer.start();
 	}
 
 	// private void initTuner() {
@@ -98,6 +119,8 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 				yAxis.setUpperBound(Math.round(sliderPad.getValue()));
 			}
 		});
+
+		tglPause.selectedProperty().addListener((e, oldV, newV) -> pause(newV));
 	}
 
 	private void initChart() {
@@ -118,26 +141,6 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		chart.setHorizontalZeroLineVisible(false);
 		chartPane.getChildren().add(1, chart);
 		HBox.setHgrow(chart, Priority.ALWAYS);
-	}
-
-	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {
-		LOG.debug("Loading FFT Chart");
-		topLeft.prefWidthProperty().bind(topRight.widthProperty());
-		initVuMeter();
-		initChart();
-		initButtons();
-		// initTuner();
-		AnimationTimer timer = new AnimationTimer() {
-
-			@Override
-			public void handle(final long now) {
-				if (buffer != null && !isPaused()) {
-					updateChart(buffer);
-				}
-			}
-		};
-		timer.start();
 	}
 
 	private void initVuMeter() {
