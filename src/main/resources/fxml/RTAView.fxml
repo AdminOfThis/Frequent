@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane prefHeight="200.0" prefWidth="400.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.RTAViewController">
+<BorderPane fx:id="root" prefHeight="200.0" prefWidth="400.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.RTAViewController">
    <center>
    <HBox fx:id="chartPane" />
    </center>
@@ -27,11 +27,7 @@
                         <Tooltip text="Adds a slower responding curve to the chart" />
                      </tooltip>
                   </ToggleButton>
-                  <ToggleButton fx:id="tglPause" mnemonicParsing="false" text="Pause">
-                     <tooltip>
-                        <Tooltip text="Key: F" />
-                     </tooltip>
-                  </ToggleButton>
+                  <ToggleButton fx:id="tglPause" mnemonicParsing="false" text="Pause" />
               </children>
             </HBox>
          </children>

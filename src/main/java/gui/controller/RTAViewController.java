@@ -29,6 +29,7 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import main.Constants;
@@ -40,6 +41,8 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	// private static final String TUNER_PATH = "/gui/gui/Tuner.fxml";
 	private static final int X_MIN = 25;
 	private static final int X_MAX = 20000;
+	@FXML
+	private BorderPane root;
 	@FXML
 	private HBox chartPane;
 	@FXML
@@ -121,16 +124,6 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		});
 
 		tglPause.selectedProperty().addListener((e, oldV, newV) -> pause(newV));
-		chart.setOnKeyPressed(e -> {
-			switch (e.getCode()) {
-			case K:
-				tglPause.fire();
-				break;
-			default:
-				//do nothing
-				break;
-			}
-		});
 	}
 
 	private void initChart() {
