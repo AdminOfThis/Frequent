@@ -1,8 +1,11 @@
 package control;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +24,9 @@ public class Watchdog implements InputListener {
 	private static final double ALIVE_THRESHOLD = -85;
 
 	private static Watchdog instance;
+
+	private List<WatchdogListener> listeners = Collections.synchronizedList(new ArrayList<WatchdogListener>());
+	private List<Input> missingInputs = Collections.synchronizedList(new ArrayList<Input>());
 
 	private ArrayListValuedHashMap<Long, Input> watchMap = new ArrayListValuedHashMap<Long, Input>();
 	private Map<Input, Long> heartBeatMap = Collections.synchronizedMap(new HashMap<Input, Long>());
@@ -45,7 +51,23 @@ public class Watchdog implements InputListener {
 	}
 
 	private void check() {
-
+		long time = System.currentTimeMillis();
+		for (Entry<Long, Input> entry : watchMap.entries()) {
+			Input input = entry.getValue();
+			long lastHeartbeat = heartBeatMap.get(entry.getValue());
+			// check for heartbeat in allowed time window
+			if (time - lastHeartbeat > entry.getKey()) {
+				// the signals last ehartbeat was too long ago
+				listeners.forEach(l -> new Thread(() -> l.wentSilent(entry.getValue())).start());
+				if (!missingInputs.contains(input)) {
+					missingInputs.add(input);
+				}
+			} else if (missingInputs.contains(entry.getValue())) {
+				// if not missing, but still marked as missing
+				listeners.forEach(l -> new Thread(() -> l.reappeared(entry.getValue())).start());
+				missingInputs.remove(input);
+			}
+		}
 	}
 
 	public void finish() {
@@ -58,6 +80,26 @@ public class Watchdog implements InputListener {
 		Log.info("Watchdog terminated");
 	}
 
+	@Override
+	public void levelChanged(Input input, double level, long time) {
+		double leveldB = Channel.percentToDB(level);
+		if (leveldB > ALIVE_THRESHOLD) {
+			heartBeatMap.put(input, System.currentTimeMillis());
+		}
+	}
+
+	/****** LISTENERS **************/
+	public void addListener(WatchdogListener lis) {
+		if (!listeners.contains(lis)) {
+			listeners.add(lis);
+		}
+	}
+
+	public boolean removeListener(WatchdogListener lis) {
+		return listeners.remove(lis);
+	}
+
+	/******* WatchMap functions ***************/
 	public void addEntry(long seconds, Input channel) {
 		if (!watchMap.containsValue(channel) && channel != null) {
 			watchMap.put(seconds, channel);
@@ -81,12 +123,8 @@ public class Watchdog implements InputListener {
 		return watchMap.size();
 	}
 
-	@Override
-	public void levelChanged(Input input, double level, long time) {
-		double leveldB = Channel.percentToDB(level);
-		if (leveldB > ALIVE_THRESHOLD) {
-			heartBeatMap.put(input, System.currentTimeMillis());
-		}
+	/************* GETTER AND SETTER ****************/
+	public List<Input> getMissingInputs() {
+		return new ArrayList<Input>(missingInputs);
 	}
-
 }
