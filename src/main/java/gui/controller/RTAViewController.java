@@ -121,6 +121,16 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		});
 
 		tglPause.selectedProperty().addListener((e, oldV, newV) -> pause(newV));
+		chart.setOnKeyPressed(e -> {
+			switch (e.getCode()) {
+			case K:
+				tglPause.fire();
+				break;
+			default:
+				//do nothing
+				break;
+			}
+		});
 	}
 
 	private void initChart() {
