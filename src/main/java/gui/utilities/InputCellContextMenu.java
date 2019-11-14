@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import control.Watchdog;
 import data.ColorController;
 import data.ColorEntry;
 import data.Input;
@@ -25,9 +26,11 @@ import main.Main;
 
 public abstract class InputCellContextMenu extends ContextMenu {
 
+	private static final int TIMES[] = { 1, 5, 10, 20, 30, 60, 300 };
 	private static final Logger LOG = LogManager.getLogger(InputCellContextMenu.class);
 	private MenuItem name = new MenuItem("Rename");
 	private Menu colorMenu = new Menu("Color");
+	private Menu watchList = new Menu("Watchdog");
 	private Input input;
 
 	public InputCellContextMenu(final Input in) {
@@ -37,38 +40,54 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		input = in;
 		if (input != null) {
 			// NAME
-			name.setOnAction(e -> {
-				TextInputDialog dialog;
-				if (input == null) {
-					dialog = new TextInputDialog();
-				} else {
-					dialog = new TextInputDialog(input.getName());
-				}
-				FXMLUtil.setStyleSheet(dialog.getDialogPane());
-				Optional<String> result = dialog.showAndWait();
-				if (result.isPresent()) {
-					input.setName(result.get());
-					MainController.getInstance().refresh();
-				}
-			});
+			name.setOnAction(e -> rename());
 
 			MenuItem colorManager = new MenuItem("Color Manager");
-			colorManager.setOnAction(e -> openColorManager()
-
-			);
+			colorManager.setOnAction(e -> openColorManager());
 			colorMenu.getItems().add(colorManager);
 			colorMenu.getItems().add(new SeparatorMenuItem());
 			getItems().add(name);
 			getItems().add(colorMenu);
+			getItems().add(watchList);
+			initWatchDogMenu();
 		}
-		this.focusedProperty().addListener((obs, o, n) -> {
+		focusedProperty().addListener((obs, o, n) -> {
 			if (!n) {
 				hide();
 			}
 		});
-		this.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> hide());
-		this.setOnHidden(e -> MainController.getInstance().refresh());
+		addEventHandler(MouseEvent.MOUSE_CLICKED, e -> hide());
+		setOnHidden(e -> MainController.getInstance().refresh());
 		colorMenu.setOnShowing(e -> refreshColors());
+	}
+
+	private void initWatchDogMenu() {
+		MenuItem disableWatchdog = new MenuItem("Disable Watchdog");
+		watchList.getItems().add(disableWatchdog);
+		disableWatchdog.setOnAction(e -> Watchdog.getInstance().removeEntry(input));
+		for (int i : TIMES) {
+			MenuItem item = new MenuItem(i + "s");
+			watchList.getItems().add(item);
+			item.setOnAction(e -> {
+				Watchdog.getInstance().removeEntry(input);
+				Watchdog.getInstance().addEntry(i, input);
+			});
+		}
+	}
+
+	private void rename() {
+		TextInputDialog dialog;
+		if (input == null) {
+			dialog = new TextInputDialog();
+		} else {
+			dialog = new TextInputDialog(input.getName());
+		}
+		FXMLUtil.setStyleSheet(dialog.getDialogPane());
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			input.setName(result.get());
+			MainController.getInstance().refresh();
+		}
 	}
 
 	private void openColorManager() {
