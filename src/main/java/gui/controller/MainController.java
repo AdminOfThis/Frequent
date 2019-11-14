@@ -19,6 +19,8 @@ import control.ASIOController;
 import control.CueListener;
 import control.FFTListener;
 import control.TimeKeeper;
+import control.Watchdog;
+import control.WatchdogListener;
 import control.bpmdetect.BeatDetector;
 import data.Channel;
 import data.Cue;
@@ -32,6 +34,7 @@ import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
 import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.DataChart;
+import gui.utilities.controller.Dialog;
 import gui.utilities.controller.SymmetricWaveFormChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -82,7 +85,7 @@ import main.Constants.RESTORE_PANEL;
 import main.Main;
 import preferences.PropertiesIO;
 
-public class MainController implements Initializable, Pausable, CueListener {
+public class MainController implements Initializable, Pausable, CueListener, WatchdogListener {
 
 	private static final String SETTINGS_PATH = "/fxml/Settings.fxml";
 	// modules
@@ -103,7 +106,6 @@ public class MainController implements Initializable, Pausable, CueListener {
 	private HBox buttonBox;
 	@FXML
 	private Node bottomLabel;
-
 	@FXML
 	private VBox waveFormPaneParent, vChannelLeft;
 	/**
@@ -187,6 +189,7 @@ public class MainController implements Initializable, Pausable, CueListener {
 		resetStatus();
 		bottomLabel.setVisible(false);
 		TimeKeeper.getInstance().addListener(this);
+		Watchdog.getInstance().addListener(this);
 	}
 
 	private void createViewMenu() {
@@ -925,5 +928,20 @@ public class MainController implements Initializable, Pausable, CueListener {
 		} catch (Exception e) {
 			LOG.warn("Unable to load panel restore settings");
 		}
+	}
+
+	@Override
+	public void wentSilent(Input c, long time) {
+		Dialog dialog = new Dialog("Test");
+		dialog.setTopText("No signal detected for input");
+		dialog.setText(c.getName());
+		dialog.setSubText("for " + time + " s");
+		dialog.setImportant(true);
+
+	}
+
+	@Override
+	public void reappeared(Input c) {
+		// TODO Auto-generated method stub
 	}
 }

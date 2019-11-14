@@ -241,7 +241,7 @@ public class Main extends MainGUI {
 	}
 
 	private static void setColors() {
-		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
+		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus + "; ";
 	}
 
 	public static String getAccentColor() {

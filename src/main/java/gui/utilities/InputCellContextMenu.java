@@ -16,8 +16,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
@@ -30,7 +32,7 @@ public abstract class InputCellContextMenu extends ContextMenu {
 	private static final Logger LOG = LogManager.getLogger(InputCellContextMenu.class);
 	private MenuItem name = new MenuItem("Rename");
 	private Menu colorMenu = new Menu("Color");
-	private Menu watchList = new Menu("Watchdog");
+	Menu watchList = new Menu("Watchdog");
 	private Input input;
 
 	public InputCellContextMenu(final Input in) {
@@ -58,15 +60,25 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		});
 		addEventHandler(MouseEvent.MOUSE_CLICKED, e -> hide());
 		setOnHidden(e -> MainController.getInstance().refresh());
-		colorMenu.setOnShowing(e -> refreshColors());
+		colorMenu.setOnShowing(e -> refresh());
+
+	}
+
+	private void refresh() {
+		refreshColors();
+		refreshWatchdog();
 	}
 
 	private void initWatchDogMenu() {
-		MenuItem disableWatchdog = new MenuItem("Disable Watchdog");
+		ToggleGroup tglGroup = new ToggleGroup();
+		RadioMenuItem disableWatchdog = new RadioMenuItem("Disable Watchdog");
+		disableWatchdog.setToggleGroup(tglGroup);
 		watchList.getItems().add(disableWatchdog);
+		watchList.getItems().add(new SeparatorMenuItem());
 		disableWatchdog.setOnAction(e -> Watchdog.getInstance().removeEntry(input));
 		for (int i : TIMES) {
-			MenuItem item = new MenuItem(i + "s");
+			RadioMenuItem item = new RadioMenuItem(i + "s");
+			item.setToggleGroup(tglGroup);
 			watchList.getItems().add(item);
 			item.setOnAction(e -> {
 				Watchdog.getInstance().removeEntry(input);
@@ -119,6 +131,16 @@ public abstract class InputCellContextMenu extends ContextMenu {
 				MainController.getInstance().refresh();
 			});
 		}
+	}
+
+	private void refreshWatchdog() {
+		long time = Watchdog.getInstance().getTimeForInput(input);
+		if (time == 0) {
+			((RadioMenuItem) watchList.getItems().get(0)).setSelected(true);
+		} else {
+			((RadioMenuItem) watchList.getItems().get((int) time + 1)).setSelected(true);
+		}
+
 	}
 
 }

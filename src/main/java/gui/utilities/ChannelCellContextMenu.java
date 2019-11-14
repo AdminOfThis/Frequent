@@ -49,6 +49,7 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 			getItems().add(new SeparatorMenuItem());
 			// groups
 			getItems().add(groupMenu);
+			getItems().add(watchList);
 			getItems().add(pairingMenu);
 			pairingMenu.getItems().add(noPair);
 			pairingMenu.getItems().add(new SeparatorMenuItem());
