@@ -5,9 +5,9 @@ import gui.controller.MainController;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 
-public abstract class Dialog<T> extends javafx.scene.control.Dialog<T> {
+public abstract class OldDialog<T> extends javafx.scene.control.Dialog<T> {
 
-	public Dialog(String text) {
+	public OldDialog(String text) {
 		setContentText(text);
 		initStyle(StageStyle.UNDECORATED);
 		initModality(Modality.APPLICATION_MODAL);

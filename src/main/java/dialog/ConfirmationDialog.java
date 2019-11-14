@@ -3,7 +3,7 @@ package dialog;
 import javafx.scene.control.ButtonType;
 import javafx.util.Callback;
 
-public class ConfirmationDialog extends Dialog<ButtonType> {
+public class ConfirmationDialog extends OldDialog<ButtonType> {
 
 	public ConfirmationDialog(String text, boolean showCancel) {
 		super(text);

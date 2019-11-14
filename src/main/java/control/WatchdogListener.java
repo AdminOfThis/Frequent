@@ -4,8 +4,8 @@ import data.Input;
 
 public interface WatchdogListener {
 
-	public Void wentSilent(Input c);
+	public void wentSilent(Input c, long time);
 
-	public Void reappeared(Input c);
+	public void reappeared(Input c);
 
 }

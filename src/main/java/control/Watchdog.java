@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -53,17 +54,19 @@ public class Watchdog implements InputListener {
 	private void check() {
 		for (Entry<Long, Input> entry : watchMap.entries()) {
 			Input input = entry.getValue();
-
-			long lastHeartbeat = heartBeatMap.get(entry.getValue());
+			long lastHeartbeat = 0;
+			if (heartBeatMap.containsKey(entry.getValue())) {
+				lastHeartbeat = heartBeatMap.get(entry.getValue());
+			}
 			long time = System.currentTimeMillis();
 
 			// check for heartbeat in allowed time window
 			if (time - lastHeartbeat > entry.getKey() * 1000) {
 				// the signals last ehartbeat was too long ago
-				listeners.forEach(l -> new Thread(() -> l.wentSilent(entry.getValue())).start());
 				if (!missingInputs.contains(input)) {
-					missingInputs.add(input);
+					listeners.forEach(l -> new Thread(() -> l.wentSilent(entry.getValue(), entry.getKey())).start());
 
+					missingInputs.add(input);
 					LOG.info(input.getName() + " signal dissapeared (" + entry.getKey() + "s)");
 				}
 			} else if (missingInputs.contains(entry.getValue())) {
@@ -108,6 +111,7 @@ public class Watchdog implements InputListener {
 	public void addEntry(long seconds, Input channel) {
 		if (!watchMap.containsValue(channel) && channel != null) {
 			watchMap.put(seconds, channel);
+			heartBeatMap.put(channel, System.currentTimeMillis());
 			channel.addListener(this);
 		}
 	}
@@ -120,6 +124,7 @@ public class Watchdog implements InputListener {
 					break;
 				}
 			}
+			missingInputs.remove(input);
 			input.removeListener(this);
 		}
 
@@ -136,5 +141,16 @@ public class Watchdog implements InputListener {
 	/************* GETTER AND SETTER ****************/
 	public List<Input> getMissingInputs() {
 		return new ArrayList<Input>(missingInputs);
+	}
+
+	public long getTimeForInput(Input input) {
+		long result = 0;
+		for (Entry<Long, Input> e : watchMap.entries()) {
+			if (Objects.equals(e.getValue(), input)) {
+				result = e.getKey();
+				break;
+			}
+		}
+		return result;
 	}
 }
