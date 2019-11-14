@@ -83,4 +83,8 @@ public class Dialog implements Initializable {
 		subText.setText(string);
 	}
 
+	public boolean isShowing() {
+		return stage.isShowing();
+	}
+
 }

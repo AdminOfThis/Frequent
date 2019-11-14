@@ -148,6 +148,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	private SymmetricWaveFormChart waveFormChart;
 	private DataChart dataChart;
 	private double minHeaderButtonWidth = 0;
+	private Dialog missingChannelDialog;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
@@ -932,12 +933,24 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	@Override
 	public void wentSilent(Input c, long time) {
-		Dialog dialog = new Dialog("Test");
-		dialog.setTopText("No signal detected for input");
-		dialog.setText(c.getName());
-		dialog.setSubText("for " + time + " s");
-		dialog.setImportant(true);
-
+		if (missingChannelDialog != null && missingChannelDialog.isShowing()) {
+			StringBuilder sb = new StringBuilder();
+			for (Input in : Watchdog.getInstance().getMissingInputs()) {
+				if (!sb.toString().isEmpty()) {
+					sb.append("\r\n");
+				}
+				sb.append(in.getName());
+			}
+			Platform.runLater(() -> missingChannelDialog.setText(sb.toString()));
+		} else {
+			Platform.runLater(() -> {
+				missingChannelDialog = new Dialog("Test");
+				missingChannelDialog.setTopText("No signal detected for input(s)");
+				missingChannelDialog.setText(c.getName());
+				missingChannelDialog.setSubText("for " + time + " s");
+				missingChannelDialog.setImportant(true);
+			});
+		}
 	}
 
 	@Override

@@ -62,6 +62,7 @@ public class Watchdog implements InputListener {
 
 			// check for heartbeat in allowed time window
 			if (time - lastHeartbeat > entry.getKey() * 1000) {
+
 				// the signals last ehartbeat was too long ago
 				if (!missingInputs.contains(input)) {
 					listeners.forEach(l -> new Thread(() -> l.wentSilent(entry.getValue(), entry.getKey())).start());
