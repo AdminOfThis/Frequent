@@ -51,21 +51,26 @@ public class Watchdog implements InputListener {
 	}
 
 	private void check() {
-		long time = System.currentTimeMillis();
 		for (Entry<Long, Input> entry : watchMap.entries()) {
 			Input input = entry.getValue();
+
 			long lastHeartbeat = heartBeatMap.get(entry.getValue());
+			long time = System.currentTimeMillis();
+
 			// check for heartbeat in allowed time window
-			if (time - lastHeartbeat > entry.getKey()) {
+			if (time - lastHeartbeat > entry.getKey() * 1000) {
 				// the signals last ehartbeat was too long ago
 				listeners.forEach(l -> new Thread(() -> l.wentSilent(entry.getValue())).start());
 				if (!missingInputs.contains(input)) {
 					missingInputs.add(input);
+
+					LOG.info(input.getName() + " signal dissapeared (" + entry.getKey() + "s)");
 				}
 			} else if (missingInputs.contains(entry.getValue())) {
 				// if not missing, but still marked as missing
 				listeners.forEach(l -> new Thread(() -> l.reappeared(entry.getValue())).start());
 				missingInputs.remove(input);
+				LOG.info(input.getName() + " signal reappeared");
 			}
 		}
 	}
@@ -109,7 +114,12 @@ public class Watchdog implements InputListener {
 
 	public void removeEntry(Input input) {
 		if (input != null) {
-			watchMap.remove(input);
+			for (Entry<Long, Input> entry : watchMap.entries()) {
+				if (entry.getValue().equals(input)) {
+					watchMap.remove(entry.getKey());
+					break;
+				}
+			}
 			input.removeListener(this);
 		}
 
