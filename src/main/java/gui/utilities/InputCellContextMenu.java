@@ -1,5 +1,6 @@
 package gui.utilities;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -138,7 +139,16 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		if (time == 0) {
 			((RadioMenuItem) watchList.getItems().get(0)).setSelected(true);
 		} else {
-			((RadioMenuItem) watchList.getItems().get((int) time + 1)).setSelected(true);
+			for (MenuItem n : watchList.getItems()) {
+				if (n instanceof RadioMenuItem) {
+					RadioMenuItem item = (RadioMenuItem) n;
+					if (Objects.equals(item.getText(), Long.toString(time) + "s")) {
+						item.setSelected(true);
+						break;
+					}
+				}
+			}
+
 		}
 
 	}
