@@ -100,15 +100,15 @@
 						</configuration>
 					</execution>
 					<!-- set arg line property for failsafe -->
-					<execution>
-						<id>prepare-agent-integration</id>
-						<goals>
-							<goal>prepare-agent-integration</goal>
-						</goals>
-						<configuration>
-							<propertyName>failsafeArgLine</propertyName>
-						</configuration>
-					</execution>
+<!-- 					<execution> -->
+<!-- 						<id>prepare-agent-integration</id> -->
+<!-- 						<goals> -->
+<!-- 							<goal>prepare-agent-integration</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<propertyName>failsafeArgLine</propertyName> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
 					<!-- aggregated unit test coverage report -->
 					<execution>
 						<id>aggregate-reports-ut</id>
