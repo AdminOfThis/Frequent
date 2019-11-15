@@ -20,7 +20,6 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
-import main.Main;
 
 public class ChannelCellContextMenu extends InputCellContextMenu {
 
@@ -70,7 +69,6 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 	private void newGroupDialog() {
 		TextInputDialog newGroupDialog = new TextInputDialog("New Group");
 		FXMLUtil.setStyleSheet(newGroupDialog.getDialogPane());
-		newGroupDialog.getDialogPane().setStyle(Main.getStyle());
 		Optional<String> result = newGroupDialog.showAndWait();
 		if (result.isPresent()) {
 			Group g = new Group(result.get());

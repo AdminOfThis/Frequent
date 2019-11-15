@@ -27,14 +27,13 @@ import data.Cue;
 import data.FileIO;
 import data.Group;
 import data.Input;
-import dialog.InformationDialog;
 import gui.FXMLUtil;
+import gui.dialog.InformationDialog;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
 import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.DataChart;
-import gui.utilities.controller.Dialog;
 import gui.utilities.controller.SymmetricWaveFormChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -49,9 +48,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -148,13 +144,14 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	private SymmetricWaveFormChart waveFormChart;
 	private DataChart dataChart;
 	private double minHeaderButtonWidth = 0;
-	private Dialog missingChannelDialog;
+	private InformationDialog missingChannelDialog;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		instance = this;
 		setStatus("Loading GUI", -1);
-		root.setStyle(Main.getStyle());
+		FXMLUtil.setStyleSheet(root);
+//		root.setStyle(Main.getStyle());
 		Main.getInstance().setProgress(0.3);
 		initWaveForm();
 		Main.getInstance().setProgress(0.35);
@@ -832,25 +829,6 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		stage.setTitle(finalTitle);
 	}
 
-	public ButtonType showConfirmDialog(final String confirm) {
-		Alert alert = new Alert(AlertType.NONE);
-		FXMLUtil.setStyleSheet(alert.getDialogPane());
-		alert.getDialogPane().setStyle(Main.getStyle());
-		alert.initOwner(root.getScene().getWindow());
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.setTitle("Confirmation");
-		alert.setHeaderText("Action is required");
-		alert.setContentText(confirm);
-		alert.getButtonTypes().clear();
-		alert.getButtonTypes().add(ButtonType.CLOSE);
-		alert.getButtonTypes().add(ButtonType.CANCEL);
-		alert.getButtonTypes().add(ButtonType.OK);
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent())
-			return result.get();
-		return ButtonType.CANCEL;
-	}
-
 	private void showSong(final Cue cue, final Label label) {
 		if (cue != null) {
 			String s = cue.getName();
@@ -881,7 +859,6 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		settingStage.setTitle("Settings");
 		FXMLUtil.setIcon(settingStage, Main.getLogoPath());
 		FXMLUtil.setStyleSheet(setting);
-		setting.setStyle(Main.getStyle());
 		settingStage.setScene(new Scene(setting));
 		settingStage.initOwner(root.getScene().getWindow());
 		settingStage.initModality(Modality.NONE);
@@ -933,24 +910,26 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	@Override
 	public void wentSilent(Input c, long time) {
-		if (missingChannelDialog != null && missingChannelDialog.isShowing()) {
-			StringBuilder sb = new StringBuilder();
-			for (Input in : Watchdog.getInstance().getMissingInputs()) {
-				if (!sb.toString().isEmpty()) {
-					sb.append("\r\n");
-				}
-				sb.append(in.getName());
-			}
-			Platform.runLater(() -> missingChannelDialog.setText(sb.toString()));
-		} else {
-			Platform.runLater(() -> {
-				missingChannelDialog = new Dialog("Test");
-				missingChannelDialog.setTopText("No signal detected for input(s)");
-				missingChannelDialog.setText(c.getName());
-				missingChannelDialog.setSubText("for " + time + " s");
-				missingChannelDialog.setImportant(true);
-			});
-		}
+//		if (missingChannelDialog != null && missingChannelDialog.isShowing()) {
+//			StringBuilder sb = new StringBuilder();
+//			for (Input in : Watchdog.getInstance().getMissingInputs()) {
+//				if (!sb.toString().isEmpty()) {
+//					sb.append("\r\n");
+//				}
+//				sb.append(in.getName());
+//			}
+//			Platform.runLater(() -> missingChannelDialog.setText(sb.toString()));
+//		} else {
+		Platform.runLater(() -> {
+			missingChannelDialog = new InformationDialog("Test");
+			missingChannelDialog.setResizable(true);
+			missingChannelDialog.setTopText("No signal detected for input(s)");
+			missingChannelDialog.setText(c.getName());
+			missingChannelDialog.setSubText("for " + time + " s");
+			missingChannelDialog.setImportant(true);
+			missingChannelDialog.show();
+		});
+//		}
 	}
 
 	@Override

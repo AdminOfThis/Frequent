@@ -1,4 +1,4 @@
-package dialog;
+package gui.dialog;
 
 import java.net.URL;
 import java.util.ResourceBundle;

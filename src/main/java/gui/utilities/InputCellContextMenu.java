@@ -10,9 +10,9 @@ import control.Watchdog;
 import data.ColorController;
 import data.ColorEntry;
 import data.Input;
-import dialog.ColorManager;
 import gui.FXMLUtil;
 import gui.controller.MainController;
+import gui.dialog.ColorManager;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -108,7 +108,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 	private void openColorManager() {
 		ColorManager cm = new ColorManager();
 		FXMLUtil.setStyleSheet(cm);
-		cm.setStyle(Main.getStyle());
 		Stage stage = new Stage();
 		stage.setTitle("Color Manager");
 		stage.setScene(new Scene(cm));

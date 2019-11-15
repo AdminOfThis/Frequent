@@ -1,4 +1,4 @@
-package gui.controller;
+package gui.dialog;
 
 import java.net.URL;
 import java.util.Collection;
@@ -8,6 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
+import gui.FXMLUtil;
+import gui.controller.MainController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -46,6 +48,7 @@ public class IOChooserController implements Initializable {
 		btnQuit.setOnAction(e -> ((Stage) btnQuit.getScene().getWindow()).close());
 		btnStart.disableProperty().bind(listIO.getSelectionModel().selectedItemProperty().isNull());
 		// Debug
+		FXMLUtil.setStyleSheet(root);
 	}
 
 	@FXML
@@ -77,6 +80,7 @@ public class IOChooserController implements Initializable {
 		Stage stage = (Stage) listIO.getScene().getWindow();
 		stage.setScene(mainScene);
 		stage.setResizable(true);
+		stage.centerOnScreen();
 	}
 
 	public void startDebug() {

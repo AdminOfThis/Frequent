@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gui.FXMLUtil;
 import javafx.application.Preloader;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,16 +22,16 @@ import main.Main;
 
 public class PreLoader extends Preloader implements Initializable {
 
-	private static final Logger	LOG				= LogManager.getLogger(Preloader.class);
-	private static final String	PRELOADER_PATH	= "/fxml/preloader/SplashScreen.fxml";
-	private static final String	LOGO_SMALL		= "/logo/logo_64.png";
-	private Stage				stage;
+	private static final Logger LOG = LogManager.getLogger(Preloader.class);
+	private static final String PRELOADER_PATH = "/fxml/preloader/SplashScreen.fxml";
+	private static final String LOGO_SMALL = "/logo/logo_64.png";
+	private Stage stage;
 	@FXML
-	private ProgressBar			progress;
+	private ProgressBar progress;
 	@FXML
-	private Label				status;
+	private Label status;
 	@FXML
-	private Label				title, version;
+	private Label title, version;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -45,8 +46,7 @@ public class PreLoader extends Preloader implements Initializable {
 		stage = primaryStage;
 		try {
 			stage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO_SMALL)));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.error("Unable to load logo", e);
 		}
 		stage.initStyle(StageStyle.UNDECORATED);
@@ -58,7 +58,8 @@ public class PreLoader extends Preloader implements Initializable {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(PRELOADER_PATH));
 		loader.setController(this);
 		Parent p = loader.load();
-		p.setStyle(Main.getStyle());
+		FXMLUtil.setStyleSheet(p);
+//		p.setStyle(Main.getStyle());
 		Scene scene = new Scene(p);
 		stage.setScene(scene);
 		stage.show();
