@@ -19,7 +19,7 @@ class ASIOControllerTest extends SuperTest {
 		if (ASIOController.getInstance() == null) {
 			return;
 		}
-		new ASIOController(ASIOController.getPossibleDrivers().get(0));
+		new ASIOController(ASIOController.getPossibleDrivers().get(0).getName());
 		assertNotNull(ASIOController.getInstance().getInputList());
 		assertTrue(ASIOController.getInstance().getInputList().size() > 0);
 	}

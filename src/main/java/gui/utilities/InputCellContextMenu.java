@@ -1,22 +1,26 @@
 package gui.utilities;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import control.Watchdog;
 import data.ColorController;
 import data.ColorEntry;
 import data.Input;
-import dialog.ColorManager;
 import gui.FXMLUtil;
 import gui.controller.MainController;
+import gui.dialog.ColorManager;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
@@ -25,9 +29,11 @@ import main.Main;
 
 public abstract class InputCellContextMenu extends ContextMenu {
 
+	private static final int TIMES[] = { 1, 5, 10, 20, 30, 60, 300 };
 	private static final Logger LOG = LogManager.getLogger(InputCellContextMenu.class);
 	private MenuItem name = new MenuItem("Rename");
 	private Menu colorMenu = new Menu("Color");
+	Menu watchList = new Menu("Watchdog");
 	private Input input;
 
 	public InputCellContextMenu(final Input in) {
@@ -37,44 +43,71 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		input = in;
 		if (input != null) {
 			// NAME
-			name.setOnAction(e -> {
-				TextInputDialog dialog;
-				if (input == null) {
-					dialog = new TextInputDialog();
-				} else {
-					dialog = new TextInputDialog(input.getName());
-				}
-				FXMLUtil.setStyleSheet(dialog.getDialogPane());
-				Optional<String> result = dialog.showAndWait();
-				if (result.isPresent()) {
-					input.setName(result.get());
-					MainController.getInstance().refresh();
-				}
-			});
+			name.setOnAction(e -> rename());
 
 			MenuItem colorManager = new MenuItem("Color Manager");
-			colorManager.setOnAction(e -> openColorManager()
-
-			);
+			colorManager.setOnAction(e -> openColorManager());
 			colorMenu.getItems().add(colorManager);
 			colorMenu.getItems().add(new SeparatorMenuItem());
 			getItems().add(name);
 			getItems().add(colorMenu);
+			getItems().add(watchList);
+			initWatchDogMenu();
 		}
-		this.focusedProperty().addListener((obs, o, n) -> {
+		focusedProperty().addListener((obs, o, n) -> {
 			if (!n) {
 				hide();
 			}
 		});
-		this.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> hide());
-		this.setOnHidden(e -> MainController.getInstance().refresh());
-		colorMenu.setOnShowing(e -> refreshColors());
+		addEventHandler(MouseEvent.MOUSE_CLICKED, e -> hide());
+		setOnHidden(e -> MainController.getInstance().refresh());
+		colorMenu.setOnShowing(e -> refresh());
+
+	}
+
+	private void refresh() {
+		refreshColors();
+		refreshWatchdog();
+	}
+
+	private void initWatchDogMenu() {
+		ToggleGroup tglGroup = new ToggleGroup();
+		RadioMenuItem disableWatchdog = new RadioMenuItem("Disable Watchdog");
+		disableWatchdog.setToggleGroup(tglGroup);
+		watchList.getItems().add(disableWatchdog);
+		watchList.getItems().add(new SeparatorMenuItem());
+		disableWatchdog.setOnAction(e -> Watchdog.getInstance().removeEntry(input));
+		for (int i : TIMES) {
+			RadioMenuItem item = new RadioMenuItem(i + "s");
+			item.setToggleGroup(tglGroup);
+			watchList.getItems().add(item);
+			item.setOnAction(e -> {
+				for (Input channel : MainController.getInstance().getSelectedChannels()) {
+					Watchdog.getInstance().removeEntry(channel);
+					Watchdog.getInstance().addEntry(i, channel);
+				}
+			});
+		}
+	}
+
+	private void rename() {
+		TextInputDialog dialog;
+		if (input == null) {
+			dialog = new TextInputDialog();
+		} else {
+			dialog = new TextInputDialog(input.getName());
+		}
+		FXMLUtil.setStyleSheet(dialog.getDialogPane());
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			input.setName(result.get());
+			MainController.getInstance().refresh();
+		}
 	}
 
 	private void openColorManager() {
 		ColorManager cm = new ColorManager();
 		FXMLUtil.setStyleSheet(cm);
-		cm.setStyle(Main.getStyle());
 		Stage stage = new Stage();
 		stage.setTitle("Color Manager");
 		stage.setScene(new Scene(cm));
@@ -100,6 +133,25 @@ public abstract class InputCellContextMenu extends ContextMenu {
 				MainController.getInstance().refresh();
 			});
 		}
+	}
+
+	private void refreshWatchdog() {
+		long time = Watchdog.getInstance().getTimeForInput(input);
+		if (time == 0) {
+			((RadioMenuItem) watchList.getItems().get(0)).setSelected(true);
+		} else {
+			for (MenuItem n : watchList.getItems()) {
+				if (n instanceof RadioMenuItem) {
+					RadioMenuItem item = (RadioMenuItem) n;
+					if (Objects.equals(item.getText(), Long.toString(time) + "s")) {
+						item.setSelected(true);
+						break;
+					}
+				}
+			}
+
+		}
+
 	}
 
 }

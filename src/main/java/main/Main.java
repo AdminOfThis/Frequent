@@ -10,11 +10,11 @@ import org.apache.logging.log4j.Logger;
 import control.ASIOController;
 import data.FileIO;
 import data.RTAIO;
-import dialog.ConfirmationDialog;
 import gui.FXMLUtil;
 import gui.MainGUI;
-import gui.controller.IOChooserController;
 import gui.controller.MainController;
+import gui.dialog.ConfirmationDialog;
+import gui.dialog.IOChooserController;
 import gui.preloader.PreLoader;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -30,7 +30,7 @@ import preferences.PropertiesIO;
 public class Main extends MainGUI {
 
 	private static final String POM_TITLE = "Frequent";
-	private static final String GUI_IO_CHOOSER = "/fxml/IOChooser.fxml";
+	private static final String GUI_IO_CHOOSER = "/fxml/dialog/IOChooser.fxml";
 	private static final String GUI_MAIN_PATH = "/fxml/Main.fxml";
 	private static final String LOGO = "/logo/logo_64.png";
 	private static final String DEFAULT_PROPERTIES_PATH = "./settings.conf";
@@ -72,9 +72,8 @@ public class Main extends MainGUI {
 		instance = this;
 		notifyPreloader(new Preloader.ProgressNotification(0.1));
 		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
-		FXMLUtil.setStyleSheet(parent);
-		parent.setStyle(Main.getStyle());
 		loginController = (IOChooserController) FXMLUtil.getController();
+		FXMLUtil.setStyleSheet(parent);
 		loginScene = new Scene(parent);
 		notifyPreloader(new Preloader.ProgressNotification(0.2));
 		mainScene = loadMain();
@@ -241,7 +240,8 @@ public class Main extends MainGUI {
 	}
 
 	private static void setColors() {
-		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus;
+		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus + "; ";
+		FXMLUtil.setDefaultStyle(style);
 	}
 
 	public static String getAccentColor() {

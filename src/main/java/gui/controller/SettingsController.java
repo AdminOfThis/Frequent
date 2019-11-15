@@ -68,7 +68,7 @@ public class SettingsController implements Initializable {
 		flwPanel.disableProperty().bind(rBtnPanelSpecific.selectedProperty().not());
 		// Init data
 		chbBuffer.getItems().addAll(BUFFERS);
-		chbDevice.getItems().addAll(ASIOController.getPossibleDrivers());
+		chbDevice.getItems().addAll(ASIOController.getPossibleDriverStrings());
 		if (ASIOController.getInstance() != null) {
 			chbBuffer.setValue(ASIOController.getInstance().getBufferSize());
 			chbDevice.setValue(ASIOController.getInstance().getDevice());
@@ -170,7 +170,7 @@ public class SettingsController implements Initializable {
 		ASIOController.getInstance().setBufferSize(chbBuffer.getValue().intValue());
 		ASIOController.getInstance().setDevice(chbDevice.getValue());
 		ASIOController.getInstance().restart();
-		
+
 		MainController.getInstance().resetInfosFromDevice();
 		close();
 	}
