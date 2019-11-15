@@ -27,6 +27,7 @@ jobs:
       if: matrix.os != 'ubuntu-latest'
       run: mvn clean compiler:compile compiler:testCompile validate verify surefire:test package --file pom.xml
     - name: Upload Coverage Files
+      if: matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v1.0.3
       with:
         token: ${{secrets.CODECOV_TOKEN}} #required
