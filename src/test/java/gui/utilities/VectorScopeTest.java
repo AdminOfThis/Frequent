@@ -66,7 +66,7 @@ public class VectorScopeTest extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		latch.await(2, TimeUnit.SECONDS);
+		latch.await(5, TimeUnit.SECONDS);
 	}
 
 	@AfterEach

@@ -43,7 +43,7 @@ class MainTest extends SuperTest {
 			}
 		});
 		thread.start();// Initialize the thread
-		latch.await(5, TimeUnit.SECONDS);
+		latch.await(8, TimeUnit.SECONDS);
 		scene = Main.getInstance().getScene();
 		if (e != null) {
 			throw e;
@@ -74,10 +74,10 @@ class MainTest extends SuperTest {
 
 		assertFalse(findFullScreenWindow());
 		pushButton(KeyCode.F11, false);
-		Thread.sleep(200);
+		Thread.sleep(1000);
 		assertTrue(findFullScreenWindow());
 		pushButton(KeyCode.F11, false);
-		Thread.sleep(200);
+		Thread.sleep(1000);
 		assertFalse(findFullScreenWindow());
 	}
 

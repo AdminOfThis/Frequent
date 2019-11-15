@@ -19,6 +19,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<testFailureIgnore>true</testFailureIgnore>
 		<maven.compiler.target>1.13</maven.compiler.target>
 		<maven.compiler.source>1.13</maven.compiler.source>
 	</properties>
@@ -82,28 +83,75 @@
 
 		<plugins>
 
-			 <!-- Write the current git revision into ${buildnumber} and populate ${scmBranch} -->
-        <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>buildnumber-maven-plugin</artifactId>
-            <version>1.4</version>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>create</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <configuration>
-                <!-- Get the scm revision once for all modules -->
-                <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
-                <!-- Don't fail on modified local resources -->
-                <doCheck>false</doCheck>
-                <!-- Don't update SCM -->
-                <doUpdate>false</doUpdate>
-                <!-- Use short version of git revision -->
-            </configuration>
-        </plugin>
+
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<!-- set arg line property for surefire -->
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<propertyName>surefireArgLine</propertyName>
+						</configuration>
+					</execution>
+					<!-- set arg line property for failsafe -->
+					<execution>
+						<id>prepare-agent-integration</id>
+						<goals>
+							<goal>prepare-agent-integration</goal>
+						</goals>
+						<configuration>
+							<propertyName>failsafeArgLine</propertyName>
+						</configuration>
+					</execution>
+					<!-- aggregated unit test coverage report -->
+					<execution>
+						<id>aggregate-reports-ut</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report-aggregate</goal>
+						</goals>
+						<configuration>
+							<title>Maven Multimodule Coverage Demo: Coverage of Unit Tests</title>
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+							<dataFileExcludes>
+								<!-- exclude coverage data of integration tests -->
+								<dataFileExclude>**/target/jacoco-it.exec</dataFileExclude>
+							</dataFileExcludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+
+			<!-- Write the current git revision into ${buildnumber} and populate ${scmBranch} -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- Get the scm revision once for all modules -->
+					<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+					<!-- Don't fail on modified local resources -->
+					<doCheck>false</doCheck>
+					<!-- Don't update SCM -->
+					<doUpdate>false</doUpdate>
+					<!-- Use short version of git revision -->
+				</configuration>
+			</plugin>
 
 
 			<plugin>
@@ -218,7 +266,8 @@
 					</additionalClasspathElements>
 					<printSummary>true</printSummary>
 					<reuseForks>false</reuseForks>
-					<argLine>-Djava.library.path=. -Djni.library.path=.</argLine>
+					<argLine>-Djava.library.path=. -Djni.library.path=.
+						${surefireArgLine}</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>2</rerunFailingTestsCount>
 					<!-- <excludes> -->
@@ -267,7 +316,7 @@
 								<manifestEntries>
 									<Implementation-Build>${buildNumber}</Implementation-Build>
 									<Implementation-Branch>${scmBranch}</Implementation-Branch>
-									
+
 								</manifestEntries>
 							</archive>
 						</configuration>
