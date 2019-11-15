@@ -1,6 +1,10 @@
 package main;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Objects;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.Channel;
@@ -14,6 +18,9 @@ import javafx.util.StringConverter;
  *
  */
 public final class Constants {
+	// Will log on behalf of mains class, since it is used there
+	private static final Logger LOG = LogManager.getLogger(Main.class);
+
 	/*************** Settings ********************/
 	/* Keys */
 	public static final String SETTING_RESTORE_PANEL = "gui.panel.restore";
@@ -32,6 +39,11 @@ public final class Constants {
 	public static final double FFT_MIN = -90;
 	public static final double RED = -2.0;
 	public static final double YELLOW = -5.0;
+	public static final UncaughtExceptionHandler EMERGENCY_EXCEPTION_HANDLER = new Thread.UncaughtExceptionHandler() {
+		public void uncaughtException(Thread th, Throwable ex) {
+			LOG.fatal("Uncaught exception in thread \"" + th.getName() + "\".", ex);
+		}
+	};;
 	public static StringConverter<Channel> CHANNEL_CONVERTER = new StringConverter<Channel>() {
 
 		@Override

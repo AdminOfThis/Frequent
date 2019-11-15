@@ -54,15 +54,22 @@ public class Main extends MainGUI {
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(final String[] args) throws Exception {
-		MainGUI.initialize(POM_TITLE);
-		setTitle(POM_TITLE);
-		LOG.info(" === " + getReadableTitle() + " ===");
-		if (parseArgs(args)) {
-			setColors();
-			loadProperties();
-			System.setProperty("javafx.preloader", PreLoader.class.getName());
-			Application.launch(Main.class, args);
+	public static void main(final String[] args) {
+		try {
+			Thread.setDefaultUncaughtExceptionHandler(Constants.EMERGENCY_EXCEPTION_HANDLER);
+			MainGUI.initialize(POM_TITLE);
+			setTitle(POM_TITLE);
+			LOG.info(" === " + getReadableTitle() + " ===");
+			if (parseArgs(args)) {
+				setColors();
+				loadProperties();
+				System.setProperty("javafx.preloader", PreLoader.class.getName());
+				Application.launch(Main.class, args);
+			}
+		} catch (Exception exception) {
+			LOG.fatal("Fatal uncaught exception: ", exception);
+		} catch (Error error) {
+			LOG.fatal("Fatal uncaught error: ", error);
 		}
 	}
 
