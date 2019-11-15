@@ -1,6 +1,6 @@
 # Frequent
 [![Latest Version](https://img.shields.io/github/v/release/AdminOfThis/Frequent?include_prereleases)](https://github.com/AdminOfThis/Frequent/releases)
-[![Code Quality](https://www.code-inspector.com/project/1259/score/svg)](https://www.code-inspector.com/project/dashboard/1259) [![Build Status](https://github.com/AdminOfThis/Frequent/workflows/Build/badge.svg)](https://github.com/AdminOfThis/Frequent/actions) [![Release Status](https://github.com/AdminOfThis/Frequent/workflows/Release/badge.svg)](https://github.com/AdminOfThis/Frequent/releases) [![License: MIT](https://img.shields.io/github/license/AdminOfThis/Frequent)](https://opensource.org/licenses/MIT)
+[![CodeFactor](https://www.codefactor.io/repository/github/adminofthis/frequent/badge)](https://www.codefactor.io/repository/github/adminofthis/frequent) [![Build Status](https://github.com/AdminOfThis/Frequent/workflows/Build/badge.svg)](https://github.com/AdminOfThis/Frequent/actions) [![Release Status](https://github.com/AdminOfThis/Frequent/workflows/Release/badge.svg)](https://github.com/AdminOfThis/Frequent/releases) [![License: MIT](https://img.shields.io/github/license/AdminOfThis/Frequent)](https://opensource.org/licenses/MIT)
 
 ## Description
 
