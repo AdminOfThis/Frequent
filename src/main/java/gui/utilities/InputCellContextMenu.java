@@ -82,8 +82,10 @@ public abstract class InputCellContextMenu extends ContextMenu {
 			item.setToggleGroup(tglGroup);
 			watchList.getItems().add(item);
 			item.setOnAction(e -> {
-				Watchdog.getInstance().removeEntry(input);
-				Watchdog.getInstance().addEntry(i, input);
+				for (Input channel : MainController.getInstance().getSelectedChannels()) {
+					Watchdog.getInstance().removeEntry(channel);
+					Watchdog.getInstance().addEntry(i, channel);
+				}
 			});
 		}
 	}
