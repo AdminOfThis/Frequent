@@ -186,9 +186,13 @@
 	-fx-background-insets: 0;
 }
 
-.button, .toggle-button, .split-menu-button, .text-field, .combo-box, .check-box, .color-picker{
+.button, .toggle-button, .split-menu-button, .text-field, .combo-box, .choice-box, .check-box, .color-picker{
 	-fx-background-radius: 0px;
 	-fx-background-insets: 0px 0px 0px 0px, 0px, 1px, 1px;
+}
+
+.button:default {
+	-fx-background-color: -fx-accent;
 }
 
 .dialog-pane {

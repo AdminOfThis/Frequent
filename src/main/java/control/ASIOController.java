@@ -23,6 +23,7 @@ import com.synthbot.jasiohost.AsioDriverListener;
 import com.synthbot.jasiohost.AsioException;
 
 import data.Channel;
+import data.DriverInfo;
 import data.FileIO;
 import data.Group;
 import data.Input;
@@ -62,7 +63,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private long time;
 	private boolean isFFTing = false;
 	private Object lastCompleteBuffer;
-	private static List<String> driverList;
+	private static List<DriverInfo> driverList;
 
 	/**
 	 * @return Returns the instance of the {@link #ASIOController}, as definded by
@@ -78,15 +79,15 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	 * @return Returns a list of {@link String} of found active ASIO drivers on the
 	 *         system
 	 */
-	public static List<String> getPossibleDrivers() {
+	public static List<DriverInfo> getPossibleDrivers() {
 		if (driverList == null) {
 			driverList = loadPossibleDrivers();
 		}
 		return driverList;
 	}
 
-	private static List<String> loadPossibleDrivers() {
-		ArrayList<String> result = new ArrayList<>();
+	private static List<DriverInfo> loadPossibleDrivers() {
+		ArrayList<DriverInfo> result = new ArrayList<>();
 		try {
 			List<String> preList = AsioDriver.getDriverNames();
 			// checking if connected
@@ -96,7 +97,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					tempDriver = AsioDriver.getDriver(possibleDriver);
 					// adding if inputs avaliable
 					if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
-						result.add(possibleDriver);
+						DriverInfo driverInfo = new DriverInfo(tempDriver);
+						result.add(driverInfo);
 					}
 				} catch (Exception e) {
 					LOG.debug(possibleDriver + " is unavailable");
@@ -109,6 +111,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		} catch (UnsatisfiedLinkError e) {
 			LOG.warn("The corresponding library jasiohost64.dll was not found");
 		}
+
 		return result;
 	}
 
@@ -617,5 +620,13 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	 */
 	public String getDevice() {
 		return driverName;
+	}
+
+	public static List<String> getPossibleDriverStrings() {
+		List<String> result = new ArrayList<String>();
+		for (DriverInfo info : getPossibleDrivers()) {
+			result.add(info.getName());
+		}
+		return result;
 	}
 }

@@ -72,8 +72,8 @@ public class Main extends MainGUI {
 		instance = this;
 		notifyPreloader(new Preloader.ProgressNotification(0.1));
 		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
-		FXMLUtil.setStyleSheet(parent);
 		loginController = (IOChooserController) FXMLUtil.getController();
+		FXMLUtil.setStyleSheet(parent);
 		loginScene = new Scene(parent);
 		notifyPreloader(new Preloader.ProgressNotification(0.2));
 		mainScene = loadMain();
