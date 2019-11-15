@@ -100,7 +100,6 @@ public class SettingsController implements Initializable {
 			flwPanel.getChildren().add(button);
 		}
 		startUpPanel.getToggles().get(1).setSelected(true);
-		;
 	}
 
 	private void loadValues() {
