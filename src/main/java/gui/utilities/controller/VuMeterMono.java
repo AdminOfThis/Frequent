@@ -186,7 +186,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 					if (peakdB >= Constants.FFT_MIN) {
 						Platform.runLater(() -> lblPeak.setText(Math.round(peakdB * 10.0) / 10 + ""));
 					} else {
-						Platform.runLater(() -> lblPeak.setText("-\u221E"));
+						Platform.runLater(() -> lblPeak.setText("-∞"));
 					}
 					if (peakdB > Constants.YELLOW) {
 						if (peakdB >= Constants.RED) {
