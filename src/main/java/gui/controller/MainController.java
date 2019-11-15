@@ -844,7 +844,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	}
 
 	public Stage getStage() {
-		return (Stage) channelList.getScene().getWindow();
+		return (Stage) root.getScene().getWindow();
 	}
 
 	@FXML
@@ -934,6 +934,5 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	@Override
 	public void reappeared(Input c) {
-		// TODO Auto-generated method stub
 	}
 }

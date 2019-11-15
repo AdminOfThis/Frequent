@@ -76,6 +76,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 			}
 		};
 		timer.start();
+
 	}
 
 	public Input getInput() {
@@ -152,7 +153,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 	@Override
 	public void setTitle(final String title) {
 		if (lblTitle != null) {
-			Platform.runLater(() ->lblTitle.setText(title));
+			Platform.runLater(() -> lblTitle.setText(title));
 		}
 	}
 
@@ -210,7 +211,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 			}
 		} else {
 			setTitle("");
-			Platform.runLater(() ->lblPeak.setText(""));
+			Platform.runLater(() -> lblPeak.setText(""));
 			if (orientation == Orientation.VERTICAL) {
 				vuPeakPane.setPrefHeight(0);
 				vuLastPeakPane.setPrefHeight(0);
