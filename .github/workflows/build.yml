@@ -26,6 +26,11 @@ jobs:
     - name: Run Maven
       if: matrix.os != 'ubuntu-latest'
       run: mvn clean compiler:compile compiler:testCompile validate surefire:test package --file pom.xml
+    - name: Upload Coverage Files
+      uses: codecov/codecov-action@v1.0.3
+      with:
+        token: ${{secrets.CODECOV_TOKEN}} #required
+        file: ./target/site/jacoco/jacoco.xml #optional
     - name: Upload artifact
       uses: actions/upload-artifact@master
       with:
