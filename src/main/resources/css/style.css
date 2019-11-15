@@ -134,11 +134,11 @@
 }
 
 .tree-view {
-	-fx-padding: 0em;
+	-fx-padding: 0;
 }
 
 .list-cell .label {
-	-fx-padding: 0em;
+	-fx-padding: 0;
 	-fx-text-fill: white;
 	-fa-background-color: -fx-base;
 }
