@@ -107,7 +107,7 @@
 	-fx-stroke: derive(-fx-base, 80%);
 }
 
-.transparent, .transparent>* {
+.transparent, .transparent {
 	-fx-background-color: transparent;
 	-fx-fill: transparent;
 }
@@ -177,7 +177,7 @@
 	-fx-text-fill: white;
 }
 
-.flat-progress>* {
+.flat-progress {
 	-fx-background-radius: 0;
 	-fx-background-insets: 0;
 }
@@ -201,6 +201,6 @@
 	-fx-background-insets: 0 0 0 0, 0, 1px, 1px;
 }
 
-.dialog-pane>.button-bar .container .button:default {
+.dialog-pane> .button-bar .container .button:default {
 	-fx-background-color: -fx-accent;
 }
