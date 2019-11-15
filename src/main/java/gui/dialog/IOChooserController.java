@@ -113,6 +113,7 @@ public class IOChooserController implements Initializable {
 		try {
 			stage = (Stage) listIO.getScene().getWindow();
 		} catch (Exception ex) {
+			LOG.warn("Unable to read stage", e);
 		}
 		if (stage != null) {
 			stage.close();

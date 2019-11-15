@@ -162,6 +162,8 @@ public abstract class FileIO {
 			LOG.warn("File not found");
 			LOG.debug("", e);
 		} catch (EOFException e) {
+			LOG.warn("End of File reached");
+			LOG.debug("", e);
 		} catch (IOException e) {
 			LOG.warn("Unable to read file");
 			LOG.debug("", e);

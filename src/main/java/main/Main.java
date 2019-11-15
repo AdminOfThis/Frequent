@@ -177,10 +177,7 @@ public class Main extends MainGUI {
 	}
 
 	public void setProgress(final double prog) {
-		try {
-			notifyPreloader(new Preloader.ProgressNotification(prog));
-		} catch (Exception e) {
-		}
+		notifyPreloader(new Preloader.ProgressNotification(prog));
 	}
 
 	@Override
