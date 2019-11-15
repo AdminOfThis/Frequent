@@ -8,10 +8,12 @@ import gui.controller.MainController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -23,6 +25,8 @@ public class Dialog implements Initializable {
 
 	@FXML
 	private BorderPane root;
+	@FXML
+	private VBox center;
 	@FXML
 	private Label text, subText, topText;
 	private Stage stage;
@@ -43,7 +47,8 @@ public class Dialog implements Initializable {
 			stage.initStyle(StageStyle.UNDECORATED);
 			scene.setOnKeyPressed(e -> stage.close());
 			scene.setOnMouseClicked(e -> stage.close());
-
+			stage.sizeToScene();
+			stage.setResizable(false);
 			stage.show();
 			stage.setX((mainStage.getX() + (mainStage.getWidth() / 2.0)) - stage.getWidth() / 2.0);
 			stage.setY((mainStage.getY() + (mainStage.getHeight() / 2.0)) - stage.getHeight() / 2.0);
@@ -57,6 +62,14 @@ public class Dialog implements Initializable {
 		for (Label l : new Label[] { text, subText, topText }) {
 			l.setText("");
 		}
+	}
+
+	public void setCenterNode(Node node) {
+		center.getChildren().setAll(node);
+	}
+
+	public Node getCenterNode() {
+		return center.getChildren().get(0);
 	}
 
 	public void setImportant(boolean value) {
@@ -73,14 +86,23 @@ public class Dialog implements Initializable {
 
 	public void setText(String string) {
 		text.setText(string);
+		sizeToScene();
 	}
 
 	public void setTopText(String string) {
 		topText.setText(string);
+		sizeToScene();
 	}
 
 	public void setSubText(String string) {
 		subText.setText(string);
+		sizeToScene();
+	}
+
+	public void sizeToScene() {
+		if (stage != null) {
+			stage.sizeToScene();
+		}
 	}
 
 	public boolean isShowing() {
