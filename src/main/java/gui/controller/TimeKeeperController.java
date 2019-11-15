@@ -33,7 +33,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -55,11 +54,8 @@ public class TimeKeeperController implements Initializable {
 	@FXML
 	private PieChart timeChart;
 	@FXML
-	private Button btnTime;
-	@FXML
-	private SplitMenuButton btnStart;
-	@FXML
-	private MenuItem btnStop;
+	private Button btnTime, btnStart, btnStop;
+
 	@FXML
 	private TableView<Cue> cueTable;
 	@FXML
@@ -165,16 +161,20 @@ public class TimeKeeperController implements Initializable {
 			if (TimeKeeper.getInstance().getActiveIndex() < 0) {
 				startTimer();
 				btnStart.setText("Pause");
+				btnStop.setDisable(false);
 			} else {
 				TimeKeeper.getInstance().pause();
 				if (btnStart.getText().equals("Pause")) {
 					btnStart.setText("Continue");
 				} else {
 					btnStart.setText("Pause");
+
 				}
 			}
 			e.consume();
 		});
+
+		btnStop.setDisable(true);
 		btnStop.setOnAction(e -> stopTimer());
 		txtCue.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
@@ -197,6 +197,7 @@ public class TimeKeeperController implements Initializable {
 		TimeKeeper.getInstance().reset();
 		// Update GUI
 		btnStart.setText("Start");
+		btnStop.setDisable(true);
 	}
 
 	private void startTimer() {
@@ -337,7 +338,7 @@ public class TimeKeeperController implements Initializable {
 		e.consume();
 	}
 
-	public SplitMenuButton getStartButton() {
+	public Button getStartButton() {
 		return btnStart;
 	}
 

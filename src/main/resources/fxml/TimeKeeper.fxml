@@ -7,7 +7,6 @@
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -21,7 +20,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="paneCue" alignment="CENTER" minWidth="300.0" prefWidth="300.0" spacing="5.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.TimeKeeperController">
+<VBox fx:id="paneCue" alignment="CENTER" minWidth="300.0" prefWidth="300.0" spacing="5.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.TimeKeeperController">
    <children>
       <BorderPane VBox.vgrow="NEVER">
          <center>
@@ -87,17 +86,22 @@
             </ContextMenu>
          </contextMenu>
       </TableView>
-      <HBox spacing="5.0">
+      <VBox spacing="5.0">
          <children>
-            <TextField fx:id="txtCue" promptText="New Cue" HBox.hgrow="ALWAYS" />
-            <Button fx:id="btnTime" mnemonicParsing="false" onAction="#round" text="Next" />
-            <SplitMenuButton fx:id="btnStart" mnemonicParsing="false" text="Start">
-              <items>
-                <MenuItem fx:id="btnStop" mnemonicParsing="false" text="Stop" />
-              </items>
-            </SplitMenuButton>
+            <HBox spacing="5.0">
+               <children>
+                  <TextField fx:id="txtCue" minWidth="100.0" prefWidth="100.0" promptText="New Cue" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="btnTime" mnemonicParsing="false" onAction="#round" prefWidth="60.0" text="Next" HBox.hgrow="SOMETIMES" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" spacing="5.0">
+               <children>
+                  <Button fx:id="btnStart" mnemonicParsing="false" prefWidth="100.0" text="Continue" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="btnStop" mnemonicParsing="false" prefWidth="100.0" text="Stop" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
          </children>
-      </HBox>
+      </VBox>
    </children>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
