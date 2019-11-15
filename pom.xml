@@ -267,14 +267,13 @@
 					</additionalClasspathElements>
 					<printSummary>true</printSummary>
 					<reuseForks>false</reuseForks>
-					<argLine>-Djava.library.path=. -Djni.library.path=.
-						${surefireArgLine}</argLine>
+					<argLine>-Djava.library.path=. -Djni.library.path=. ${surefireArgLine}</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>2</rerunFailingTestsCount>
 					<!-- <excludes> -->
 					<!-- <exclude>**/MainTest.java</exclude> -->
 					<!-- </excludes> -->
-					<executions>
+	<executions>
 						<execution>
 							<phase>test</phase>
 							<goals>
