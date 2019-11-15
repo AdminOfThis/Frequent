@@ -15,10 +15,10 @@ import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -111,8 +111,8 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	}
 
 	@Override
-	public ArrayList<Node> getHeader() {
-		ArrayList<Node> result = new ArrayList<>();
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> result = new ArrayList<>();
 		result.add(tglPlay);
 		result.add(btnExport);
 		return result;

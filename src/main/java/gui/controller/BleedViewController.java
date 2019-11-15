@@ -23,22 +23,23 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import main.Constants;
 
 public class BleedViewController implements Initializable, PausableView {
 
-	private static final Logger			LOG		= LogManager.getLogger(BleedViewController.class);
-	private boolean						pause	= true;
+	private static final Logger LOG = LogManager.getLogger(BleedViewController.class);
+	private boolean pause = true;
 	@FXML
-	private HBox						topBox;
+	private HBox topBox;
 	@FXML
-	private AnchorPane					primaryVuPane;
+	private AnchorPane primaryVuPane;
 	@FXML
-	private HBox						content;
+	private HBox content;
 	@FXML
-	private ComboBox<Channel>			primaryCombo;
-	private VuMeterMono					primaryMeter;
-	private static BleedViewController	instance;
+	private ComboBox<Channel> primaryCombo;
+	private VuMeterMono primaryMeter;
+	private static BleedViewController instance;
 
 	public static BleedViewController getInstance() {
 		return instance;
@@ -81,9 +82,13 @@ public class BleedViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public ArrayList<Node> getHeader() {
-		ArrayList<Node> topList = new ArrayList<>();
-		topList.addAll(topBox.getChildren());
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> topList = new ArrayList<>();
+		for (Node node : topBox.getChildren()) {
+			if (node instanceof Region) {
+				topList.add((Region) node);
+			}
+		}
 		return topList;
 	}
 

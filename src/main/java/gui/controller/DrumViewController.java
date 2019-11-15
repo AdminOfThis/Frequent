@@ -24,7 +24,6 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
@@ -35,6 +34,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -88,8 +88,8 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 	}
 
 	@Override
-	public ArrayList<Node> getHeader() {
-		ArrayList<Node> res = new ArrayList<>();
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> res = new ArrayList<>();
 		res.add(btnSetup);
 		return res;
 	}

@@ -17,7 +17,6 @@ import gui.utilities.controller.VuMeterStereo;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
@@ -61,8 +60,8 @@ public class OverViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public ArrayList<Node> getHeader() {
-		ArrayList<Node> result = new ArrayList<>();
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> result = new ArrayList<>();
 		result.add(tglShowHidden);
 		return result;
 	}

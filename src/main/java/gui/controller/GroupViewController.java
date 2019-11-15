@@ -24,7 +24,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
@@ -34,6 +33,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import main.Constants;
 import main.Main;
@@ -62,8 +62,8 @@ public class GroupViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public ArrayList<Node> getHeader() {
-		ArrayList<Node> res = new ArrayList<>();
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> res = new ArrayList<>();
 		res.add(tglTimed);
 		return res;
 	}

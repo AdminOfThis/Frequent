@@ -3,11 +3,11 @@ package gui.pausable;
 import java.util.ArrayList;
 
 import data.Input;
-import javafx.scene.Node;
+import javafx.scene.layout.Region;
 
 public interface PausableView extends Pausable {
 
-	public ArrayList<Node> getHeader();
+	public ArrayList<Region> getHeader();
 
 	public void refresh();
 

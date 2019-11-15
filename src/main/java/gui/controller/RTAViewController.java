@@ -20,7 +20,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ValueAxis;
@@ -32,6 +31,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import main.Constants;
 
 public class RTAViewController implements Initializable, FFTListener, PausableView {
@@ -61,9 +61,9 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	private double[][] buffer;
 
 	@Override
-	public ArrayList<Node> getHeader() {
-		ArrayList<Node> list = new ArrayList<>();
-		list.add(sliderPad);
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> list = new ArrayList<>();
+//		list.add(sliderPad);
 		list.add(toggleVPad);
 		list.add(toggleSlowCurve);
 		list.add(tglPause);

@@ -411,6 +411,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 					if (v.getHeader() != null) {
 						buttonBox.getChildren().addAll(v.getHeader());
 						for (Node headerButton : buttonBox.getChildren()) {
+							((Region) headerButton).setPrefHeight(buttonBox.getHeight());
 							setHeaderButtonWidth(headerButton);
 						}
 					}

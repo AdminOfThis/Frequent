@@ -16,12 +16,12 @@ import gui.utilities.controller.VuMeterMono;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import main.Constants;
 
 public class VectorScopeViewController implements Initializable, PausableView {
@@ -46,8 +46,8 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	private Channel c1, c2;
 
 	@Override
-	public ArrayList<Node> getHeader() {
-		ArrayList<Node> list = new ArrayList<>();
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> list = new ArrayList<>();
 		list.add(box1);
 		list.add(box2);
 		list.add(boxDecay);

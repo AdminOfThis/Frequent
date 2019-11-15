@@ -134,14 +134,7 @@
                   </HBox>
                </children>
             </HBox>
-            <HBox alignment="CENTER_LEFT" maxHeight="30.0" minHeight="30.0" prefHeight="30.0">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-               <children>
-                  <HBox fx:id="buttonBox" alignment="CENTER_RIGHT" fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" HBox.hgrow="ALWAYS" />
-               </children>
-            </HBox>
+            <HBox fx:id="buttonBox" alignment="CENTER_RIGHT" maxHeight="25.0" minHeight="25.0" prefHeight="25.0" VBox.vgrow="NEVER" />
          </children>
       </VBox>
    </top>
