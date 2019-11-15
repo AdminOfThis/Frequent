@@ -85,7 +85,7 @@
 }
 
 .chart {
-    -fx-padding: 0px;
+    -fx-padding: 0;
 }
 
 .chart .chart-content {
@@ -95,7 +95,7 @@
 
 
 .chart .chart-title .text {
-	-fx-font-size: 20px;
+	-fx-font-size: 20;
 }
 
 .chart-pie .data {
@@ -146,7 +146,7 @@
 
 .split-pane .split-pane-divider{
 	-fx-background-insets: 0;
-	-fx-background-radius: 0px;
+	-fx-background-radius: 0;
 }
 
 .vectorscope .chart-symbol {
@@ -155,9 +155,9 @@
 }
 
 .drumChart .chart-symbol {
-	-fx-pref-height: 50px;
+	-fx-pref-height: 50;
 	-fx-padding: 2px;
-	-fx-border-radius: 0px;
+	-fx-border-radius: 0;
 }
 
 .vuMeter-background {
@@ -187,8 +187,8 @@
 }
 
 .button, .toggle-button, .split-menu-button, .text-field, .combo-box, .choice-box, .check-box, .color-picker{
-	-fx-background-radius: 0px;
-	-fx-background-insets: 0px 0px 0px 0px, 0px, 1px, 1px;
+	-fx-background-radius: 0;
+	-fx-background-insets: 0 0 0 0, 0, 1px, 1px;
 }
 
 .button:default {
@@ -197,8 +197,8 @@
 
 .dialog-pane {
 	-fx-background: derive(-fx-base, 10%);
-	-fx-background-radius: 0px;
-	-fx-background-insets: 0px 0px 0px 0px, 0px, 1px, 1px;
+	-fx-background-radius: 0;
+	-fx-background-insets: 0 0 0 0, 0, 1px, 1px;
 }
 
 .dialog-pane>.button-bar .container .button:default {
