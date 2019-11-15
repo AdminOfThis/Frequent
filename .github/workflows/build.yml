@@ -31,4 +31,3 @@ jobs:
       with:
         name: Frequent
         path: ./target/Frequent.zip
-  
