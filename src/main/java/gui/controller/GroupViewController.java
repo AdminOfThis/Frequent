@@ -41,7 +41,7 @@ import main.Main;
 public class GroupViewController implements Initializable, PausableView {
 
 	private static final Logger LOG = LogManager.getLogger(GroupViewController.class);
-	private static final long TIME_FRAME = 600000l;
+	private static final long TIME_FRAME = 600000L;
 	private static GroupViewController instance;
 	@FXML
 	private SplitPane root;

@@ -164,7 +164,7 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 			seriesMean = seriesMean / seriesMap.size();
 		}
 		// convertion vom nanos to millis, and dividing by 60 to get bpm
-		bpm = 1.0 / (seriesMean / 1000000000l / 60);
+		bpm = 1.0 / (seriesMean / 1000000000L / 60);
 	}
 
 	@Override

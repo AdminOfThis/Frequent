@@ -40,7 +40,7 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 
 	private static final Logger LOG = LogManager.getLogger(WaveFormChart.class);
 	private static final String FXML = "/fxml/utilities/WaveFormChart.fxml";
-	private static final long TIME_FRAME = 300000l;
+	private static final long TIME_FRAME = 300000L;
 	@FXML
 	private BorderPane root;
 	private XYChart<Number, Number> chart;

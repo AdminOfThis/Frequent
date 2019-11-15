@@ -42,7 +42,7 @@ import javafx.util.StringConverter;
 public class DrumViewController implements Initializable, PausableView, DrumTriggerListener {
 
 	private static final Logger LOG = LogManager.getLogger(DrumViewController.class);
-	private static final long DRUM_TIME_FRAME = 500000l;
+	private static final long DRUM_TIME_FRAME = 500000L;
 	@FXML
 	private ScatterChart<Number, Number> drumChart;
 	@FXML
