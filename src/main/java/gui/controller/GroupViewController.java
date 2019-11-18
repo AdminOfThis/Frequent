@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
+import control.InputListener;
 import data.Channel;
 import data.Group;
 import data.Input;
@@ -199,10 +200,21 @@ public class GroupViewController implements Initializable, PausableView {
 				pendingMap.get(group).clear();
 			}
 		}
-		group.addListener((input, level, time) -> {
-			synchronized (pendingMap.get(group)) {
-				pendingMap.get(group).put(time, level);
+
+		group.addListener(new InputListener() {
+
+			@Override
+			public void nameChanged(String name) {}
+
+			@Override
+			public void levelChanged(Input input, double level, long time) {
+				synchronized (pendingMap.get(group)) {
+					pendingMap.get(group).put(time, level);
+				}
 			}
+
+			@Override
+			public void colorChanged(String newColor) {}
 		});
 	}
 

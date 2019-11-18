@@ -60,7 +60,7 @@ public abstract class InputCellContextMenu extends ContextMenu {
 			}
 		});
 		addEventHandler(MouseEvent.MOUSE_CLICKED, e -> hide());
-		setOnHidden(e -> MainController.getInstance().refresh());
+//		setOnHidden(e -> MainController.getInstance().refresh());
 		colorMenu.setOnShowing(e -> refresh());
 
 	}
@@ -101,7 +101,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			input.setName(result.get());
-			MainController.getInstance().refresh();
 		}
 	}
 

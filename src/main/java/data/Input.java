@@ -113,6 +113,8 @@ public abstract class Input implements Serializable {
 					c.setColor(hexColor);
 				}
 			}
+			listeners.forEach(l -> new Thread(() -> l.colorChanged(hexColor)).start());
+
 		} catch (Exception e) {
 			return false;
 		}
@@ -134,6 +136,8 @@ public abstract class Input implements Serializable {
 
 	public void setName(final String name) {
 		this.name = name;
+		listeners.forEach(l -> new Thread(() -> l.nameChanged(name)).start());
+
 	}
 
 	@Override

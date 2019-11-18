@@ -94,4 +94,10 @@ public class DrumTrigger implements InputListener {
 			bpmDetect.detect(getChannel().getBuffer(), ASIOController.getInstance().getSampleRate());
 		}
 	}
+
+	@Override
+	public void nameChanged(String name) {}
+
+	@Override
+	public void colorChanged(String newColor) {}
 }

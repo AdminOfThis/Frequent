@@ -154,4 +154,10 @@ public class Watchdog implements InputListener {
 		}
 		return result;
 	}
+
+	@Override
+	public void nameChanged(String name) {}
+
+	@Override
+	public void colorChanged(String newColor) {}
 }

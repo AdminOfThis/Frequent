@@ -137,4 +137,10 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 			}
 		}
 	}
+
+	@Override
+	public void nameChanged(String name) {}
+
+	@Override
+	public void colorChanged(String newColor) {}
 }

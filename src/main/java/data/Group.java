@@ -16,10 +16,10 @@ public class Group extends Input implements InputListener {
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= 1L;
-	private static final Logger	LOG					= LogManager.getLogger(Group.class);
-	private List<Channel>		channelList			= new ArrayList<>();
-	private List<Double>		channelLevel		= Collections.synchronizedList(new ArrayList<>());
+	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LogManager.getLogger(Group.class);
+	private List<Channel> channelList = new ArrayList<>();
+	private List<Double> channelLevel = Collections.synchronizedList(new ArrayList<>());
 
 	public Group(String name) {
 		setName(name);
@@ -96,6 +96,12 @@ public class Group extends Input implements InputListener {
 				c.addListener(this);
 			}
 		}
-		
+
 	}
+
+	@Override
+	public void nameChanged(String name) {}
+
+	@Override
+	public void colorChanged(String newColor) {}
 }

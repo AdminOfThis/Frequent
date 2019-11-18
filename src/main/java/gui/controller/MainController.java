@@ -469,8 +469,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	private void initMenu() {
 		// Fit buttons to size
-		toggleFFTView.widthProperty().addListener((e, oldV, newV) -> Platform
-				.runLater(() -> minHeaderButtonWidth = FXMLUtil.setPrefWidthToMaximumRequired(toggleFFTView, toggleRTAView, toggleGroupsView, toggleDrumView, togglePhaseView, toggleBleedView)));
+		toggleFFTView.widthProperty().addListener((e, oldV, newV) -> Platform.runLater(() -> minHeaderButtonWidth = FXMLUtil.setPrefWidthToMaximumRequired(toggleFFTView, toggleRTAView, toggleGroupsView, toggleDrumView, togglePhaseView, toggleBleedView)));
 
 		toggleChannels.widthProperty().addListener((e, oldV, newV) -> Platform.runLater(() -> FXMLUtil.setPrefWidthToMaximumRequired(toggleChannels, toggleCue)));
 
@@ -641,6 +640,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	}
 
 	public void refresh() {
+		System.out.println("REFRESH");
 		ObservableList<Integer> selectedItems = FXCollections.observableArrayList(channelList.getSelectionModel().getSelectedIndices());
 		if (controller != null) {
 			refreshInputs();
@@ -934,6 +934,5 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	}
 
 	@Override
-	public void reappeared(Input c) {
-	}
+	public void reappeared(Input c) {}
 }

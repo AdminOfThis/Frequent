@@ -222,4 +222,12 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 		}
 		pendingLevelList.clear();
 	}
+
+	@Override
+	public void nameChanged(String name) {
+		Platform.runLater(() -> lblTitle.setText(name));
+	}
+
+	@Override
+	public void colorChanged(String newColor) {}
 }

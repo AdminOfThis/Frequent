@@ -47,8 +47,7 @@ public class UtilitiesTest extends Application {
 		emptyStream = new PrintStream(new OutputStream() {
 
 			@Override
-			public void write(int b) throws IOException {
-			}
+			public void write(int b) throws IOException {}
 		});
 		System.setOut(emptyStream);
 		System.setErr(emptyStream);
@@ -117,13 +116,6 @@ public class UtilitiesTest extends Application {
 	@Test
 	public void waveFormChart() throws InterruptedException, ExecutionException {
 		Node node = new WaveFormChart();
-		setAsRoot(node);
-		assertEquals(node, root.getCenter());
-	}
-	
-	@Test
-	public void waveFormPane() throws InterruptedException, ExecutionException {
-		Node node = new WaveFormPane();
 		setAsRoot(node);
 		assertEquals(node, root.getCenter());
 	}

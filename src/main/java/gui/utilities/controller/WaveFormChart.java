@@ -234,4 +234,10 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 			treshold.getData().add(new Data<>(time.getUpperBound() + 10000, value));
 		}
 	}
+
+	@Override
+	public void nameChanged(String name) {}
+
+	@Override
+	public void colorChanged(String newColor) {}
 }

@@ -13,22 +13,22 @@ import gui.pausable.PausableComponent;
 
 public class BleedAnalyzer extends Thread implements PausableComponent, ChannelListener {
 
-	private static final Logger	LOG				= LogManager.getLogger(BleedAnalyzer.class);
-	private static final double	MIN_CONFIDENCE	= .5;
-	private boolean				pause			= false;
-	private Pausable			parent;
-	private Channel				primaryChannel, secondaryChannel;
+	private static final Logger LOG = LogManager.getLogger(BleedAnalyzer.class);
+	private static final double MIN_CONFIDENCE = .5;
+	private boolean pause = false;
+	private Pausable parent;
+	private Channel primaryChannel, secondaryChannel;
 	// data
-	private float[]				newData1;
-	private float[]				newData2;
-	private float[]				originalSeries;
-	private float[]				otherSeries;
-	private double				minDiff			= Double.MAX_VALUE;
-	private double				confidence;
-	private int					delay			= 0;
-	private int					shift			= 0;
-	private double				multi;
-	private double				equal;
+	private float[] newData1;
+	private float[] newData2;
+	private float[] originalSeries;
+	private float[] otherSeries;
+	private double minDiff = Double.MAX_VALUE;
+	private double confidence;
+	private int delay = 0;
+	private int shift = 0;
+	private double multi;
+	private double equal;
 
 	public BleedAnalyzer() {
 		LOG.info("New BleedAnalyzer");
@@ -211,4 +211,10 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 			channel.removeListener(this);
 		}
 	}
+
+	@Override
+	public void nameChanged(String name) {}
+
+	@Override
+	public void colorChanged(String newColor) {}
 }

@@ -307,4 +307,10 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			}
 		}
 	}
+
+	@Override
+	public void nameChanged(String name) {}
+
+	@Override
+	public void colorChanged(String newColor) {}
 }
