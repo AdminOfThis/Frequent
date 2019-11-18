@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mortbay.log.Log;
 
 import data.Channel;
 import data.Input;
@@ -84,7 +85,7 @@ public class Watchdog implements InputListener {
 		for (Input input : watchMap.values()) {
 			input.removeListener(this);
 		}
-		LOG.info("Watchdog terminated");
+		Log.info("Watchdog terminated");
 	}
 
 	@Override
@@ -158,10 +159,8 @@ public class Watchdog implements InputListener {
 	}
 
 	@Override
-	public void nameChanged(String name) {
-	}
+	public void nameChanged(String name) {}
 
 	@Override
-	public void colorChanged(String newColor) {
-	}
+	public void colorChanged(String newColor) {}
 }
