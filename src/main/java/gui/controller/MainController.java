@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -909,20 +910,35 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void wentSilent(Input c, long time) {
 		if (missingChannelDialog != null && missingChannelDialog.isShowing()) {
-			StringBuilder sb = new StringBuilder();
-			for (Input in : Watchdog.getInstance().getMissingInputs()) {
-				if (!sb.toString().isEmpty()) {
-					sb.append("\r\n");
+			missingChannelDialog.clear();
+			if (missingChannelDialog.getData() != null && missingChannelDialog.getData() instanceof ArrayListValuedHashMap) {
+				ArrayListValuedHashMap<Long, Input> data = (ArrayListValuedHashMap<Long, Input>) missingChannelDialog.getData();
+				data.put(time, c);
+				for (Long key : data.keySet()) {
+					StringBuilder sb = new StringBuilder();
+					for (Input in : Watchdog.getInstance().getMissingInputs().get(key)) {
+						if (!sb.toString().isEmpty()) {
+							sb.append("\r\n");
+						}
+						sb.append(in.getName());
+					}
+
+					missingChannelDialog.addText(sb.toString());
+					missingChannelDialog.addSubText("for " + key + " s");
+					missingChannelDialog.sizeToScene();
 				}
-				sb.append(in.getName());
+				missingChannelDialog.setData(data);
 			}
-			Platform.runLater(() -> missingChannelDialog.setText(sb.toString()));
 		} else {
 			Platform.runLater(() -> {
 				missingChannelDialog = new InformationDialog("Test");
+				ArrayListValuedHashMap<Long, Input> data = new ArrayListValuedHashMap<>();
+				data.put(time, c);
+				missingChannelDialog.setData(data);
 				missingChannelDialog.setResizable(true);
 				missingChannelDialog.setTopText("No signal detected for input(s)");
 				missingChannelDialog.setText(c.getName());

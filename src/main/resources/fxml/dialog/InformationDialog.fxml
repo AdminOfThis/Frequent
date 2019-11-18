@@ -12,14 +12,14 @@
    <content>
       <BorderPane>
          <center>
-            <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+            <VBox fx:id="center" alignment="CENTER" BorderPane.alignment="CENTER">
                <children>
                   <Label fx:id="topText" style="-fx-text-fill: -fx-accent;" text="Lorem ipsum dolor sit amet">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <VBox fx:id="center" alignment="CENTER">
+                  <VBox alignment="CENTER">
                      <children>
                         <Label fx:id="text" style="-fx-text-fill: -fx-accent;" text="Lorem ipsum dolor sit amet">
                            <font>

@@ -83,7 +83,7 @@ public abstract class InputCellContextMenu extends ContextMenu {
 			watchList.getItems().add(item);
 			item.setOnAction(e -> {
 				for (Input channel : MainController.getInstance().getSelectedChannels()) {
-					Watchdog.getInstance().removeEntry(channel);
+
 					Watchdog.getInstance().addEntry(i, channel);
 				}
 			});

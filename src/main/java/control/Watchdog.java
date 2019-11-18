@@ -27,7 +27,7 @@ public class Watchdog implements InputListener {
 	private static Watchdog instance;
 
 	private List<WatchdogListener> listeners = Collections.synchronizedList(new ArrayList<WatchdogListener>());
-	private List<Input> missingInputs = Collections.synchronizedList(new ArrayList<Input>());
+	private ArrayListValuedHashMap<Long, Input> missingInputs = new ArrayListValuedHashMap<Long, Input>();
 
 	private ArrayListValuedHashMap<Long, Input> watchMap = new ArrayListValuedHashMap<Long, Input>();
 	private Map<Input, Long> heartBeatMap = Collections.synchronizedMap(new HashMap<Input, Long>());
@@ -64,16 +64,15 @@ public class Watchdog implements InputListener {
 			if (time - lastHeartbeat > entry.getKey() * 1000) {
 
 				// the signals last ehartbeat was too long ago
-				if (!missingInputs.contains(input)) {
+				if (!missingInputs.containsValue(input)) {
 					listeners.forEach(l -> new Thread(() -> l.wentSilent(entry.getValue(), entry.getKey())).start());
 
-					missingInputs.add(input);
+					missingInputs.put(entry.getKey(), input);
 					LOG.info(input.getName() + " signal dissapeared (" + entry.getKey() + "s)");
 				}
-			} else if (missingInputs.contains(entry.getValue())) {
+			} else if (missingInputs.containsValue(entry.getValue())) {
 				// if not missing, but still marked as missing
 				listeners.forEach(l -> new Thread(() -> l.reappeared(entry.getValue())).start());
-				missingInputs.remove(input);
 				LOG.info(input.getName() + " signal reappeared");
 			}
 		}
@@ -110,6 +109,7 @@ public class Watchdog implements InputListener {
 
 	/******* WatchMap functions ***************/
 	public void addEntry(long seconds, Input channel) {
+		removeEntry(channel);
 		if (!watchMap.containsValue(channel) && channel != null) {
 			watchMap.put(seconds, channel);
 			heartBeatMap.put(channel, System.currentTimeMillis());
@@ -117,18 +117,21 @@ public class Watchdog implements InputListener {
 		}
 	}
 
-	public void removeEntry(Input input) {
+	public boolean removeEntry(Input input) {
+		boolean success = false;
 		if (input != null) {
 			for (Entry<Long, Input> entry : watchMap.entries()) {
 				if (entry.getValue().equals(input)) {
 					watchMap.remove(entry.getKey());
+					missingInputs.removeMapping(entry.getKey(), input);
+					success = true;
 					break;
 				}
 			}
-			missingInputs.remove(input);
+
 			input.removeListener(this);
 		}
-
+		return success;
 	}
 
 	public void clear() {
@@ -140,8 +143,8 @@ public class Watchdog implements InputListener {
 	}
 
 	/************* GETTER AND SETTER ****************/
-	public List<Input> getMissingInputs() {
-		return new ArrayList<Input>(missingInputs);
+	public ArrayListValuedHashMap<Long, Input> getMissingInputs() {
+		return new ArrayListValuedHashMap<>(missingInputs);
 	}
 
 	public long getTimeForInput(Input input) {
