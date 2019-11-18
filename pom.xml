@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>org.apache.maven.surefire</groupId>
 			<artifactId>surefire-logger-api</artifactId>
-			<version>3.0.0-M3</version>
+			<version>3.0.0-M4</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -267,7 +267,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M3</version>
+				<version>3.0.0-M4</version>
 				<configuration>
 					<additionalClasspathElements>
 						<additionalClasspathElement>${java.home}/lib/ext/jfxrt.jar</additionalClasspathElement>
