@@ -198,7 +198,7 @@
 .dialog-pane {
 	-fx-background: derive(-fx-base, 10%);
 	-fx-background-radius: 0;
-	-fx-background-insets: 0 0 0 0, 0, 1px, 1px;
+	-fx-background-insets: 0;
 }
 
 .dialog-pane> .button-bar .container .button:default {

@@ -13,13 +13,13 @@ import data.Input;
 import gui.FXMLUtil;
 import gui.controller.MainController;
 import gui.dialog.ColorManager;
+import gui.dialog.TextInputDialog;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
@@ -93,9 +93,9 @@ public abstract class InputCellContextMenu extends ContextMenu {
 	private void rename() {
 		TextInputDialog dialog;
 		if (input == null) {
-			dialog = new TextInputDialog();
+			dialog = new TextInputDialog("Rename");
 		} else {
-			dialog = new TextInputDialog(input.getName());
+			dialog = new TextInputDialog("Rename", input.getName());
 		}
 		FXMLUtil.setStyleSheet(dialog.getDialogPane());
 		Optional<String> result = dialog.showAndWait();

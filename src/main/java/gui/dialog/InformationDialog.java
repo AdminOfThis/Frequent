@@ -19,15 +19,18 @@ public class InformationDialog extends CustomDialog<Void> {
 	private Label text, subText, topText;
 
 	public InformationDialog(String title) {
+		this(title, false);
+	}
+
+	public InformationDialog(String title, boolean showOK) {
 		super(FXML_PATH, title);
-
-		getDialogPane().getButtonTypes().add(ButtonType.FINISH);
-		Button finish = (Button) getDialogPane().lookupButton(ButtonType.FINISH);
-		finish.setManaged(false);
-		finish.setManaged(false);
-
-		getDialogPane().getScene().setOnKeyPressed(e2 -> close());
-		getDialogPane().getScene().setOnMouseClicked(e2 -> close());
+		if (!showOK) {
+			Button finish = (Button) getDialogPane().lookupButton(ButtonType.OK);
+			finish.setManaged(false);
+			finish.setManaged(false);
+			getDialogPane().getScene().setOnKeyPressed(e2 -> close());
+			getDialogPane().getScene().setOnMouseClicked(e2 -> close());
+		}
 	}
 
 	@Override

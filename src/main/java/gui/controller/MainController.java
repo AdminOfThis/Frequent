@@ -911,26 +911,26 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	@Override
 	public void wentSilent(Input c, long time) {
-//		if (missingChannelDialog != null && missingChannelDialog.isShowing()) {
-//			StringBuilder sb = new StringBuilder();
-//			for (Input in : Watchdog.getInstance().getMissingInputs()) {
-//				if (!sb.toString().isEmpty()) {
-//					sb.append("\r\n");
-//				}
-//				sb.append(in.getName());
-//			}
-//			Platform.runLater(() -> missingChannelDialog.setText(sb.toString()));
-//		} else {
-		Platform.runLater(() -> {
-			missingChannelDialog = new InformationDialog("Test");
-			missingChannelDialog.setResizable(true);
-			missingChannelDialog.setTopText("No signal detected for input(s)");
-			missingChannelDialog.setText(c.getName());
-			missingChannelDialog.setSubText("for " + time + " s");
-			missingChannelDialog.setImportant(true);
-			missingChannelDialog.show();
-		});
-//		}
+		if (missingChannelDialog != null && missingChannelDialog.isShowing()) {
+			StringBuilder sb = new StringBuilder();
+			for (Input in : Watchdog.getInstance().getMissingInputs()) {
+				if (!sb.toString().isEmpty()) {
+					sb.append("\r\n");
+				}
+				sb.append(in.getName());
+			}
+			Platform.runLater(() -> missingChannelDialog.setText(sb.toString()));
+		} else {
+			Platform.runLater(() -> {
+				missingChannelDialog = new InformationDialog("Test");
+				missingChannelDialog.setResizable(true);
+				missingChannelDialog.setTopText("No signal detected for input(s)");
+				missingChannelDialog.setText(c.getName());
+				missingChannelDialog.setSubText("for " + time + " s");
+				missingChannelDialog.setImportant(true);
+				missingChannelDialog.show();
+			});
+		}
 	}
 
 	@Override

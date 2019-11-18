@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane fx:id="root" prefWidth="300.0" style="-fx-background-color: derive( -fx-base, -80%);" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <content>
+      <BorderPane>
+         <center>
+            <VBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label fx:id="topText" style="-fx-text-fill: -fx-accent;" text="Description">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="text" />
+                  <VBox fx:id="center" alignment="CENTER" />
+               </children>
+            </VBox>
+         </center>
+         <padding>
+            <Insets bottom="20.0" left="50.0" right="50.0" top="50.0" />
+         </padding>
+      </BorderPane>
+   </content>
+   <buttonTypes>
+      <ButtonType fx:constant="CANCEL" />
+      <ButtonType fx:constant="FINISH" />
+   </buttonTypes>
+</DialogPane>
