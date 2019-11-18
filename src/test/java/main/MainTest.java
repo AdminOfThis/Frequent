@@ -23,7 +23,7 @@ import test.SuperTest;
 
 class MainTest extends SuperTest {
 
-	private static final long WAIT_TIME = 100;
+	private static final long WAIT_TIME = 500;
 
 	private static Exception e;
 	private static Scene scene;
@@ -43,7 +43,7 @@ class MainTest extends SuperTest {
 			}
 		});
 		thread.start();// Initialize the thread
-		latch.await(8, TimeUnit.SECONDS);
+		latch.await(10, TimeUnit.SECONDS);
 		scene = Main.getInstance().getScene();
 		if (e != null) {
 			throw e;
@@ -53,17 +53,18 @@ class MainTest extends SuperTest {
 	@AfterAll
 	public static void closeApplication() throws Exception {
 		Thread.sleep(WAIT_TIME);
+		Platform.exit();
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = KeyCode.class, names = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, mode = EnumSource.Mode.INCLUDE)
+	@EnumSource(value = KeyCode.class, names = { "DIGIT1", "DIGIT2", "DIGIT3", "DIGIT4", "DIGIT5", "DIGIT6", "DIGIT7", "DIGIT8", "DIGIT9", "DIGIT0" }, mode = EnumSource.Mode.INCLUDE)
 	public void openModules(KeyCode code) throws Exception {
 		pushButton(code, false);
 		Thread.sleep(WAIT_TIME);
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = KeyCode.class, names = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, mode = EnumSource.Mode.INCLUDE)
+	@EnumSource(value = KeyCode.class, names = { "DIGIT1", "DIGIT2", "DIGIT3", "DIGIT4", "DIGIT5", "DIGIT6", "DIGIT7", "DIGIT8", "DIGIT9", "DIGIT0" }, mode = EnumSource.Mode.INCLUDE)
 	public void pressKeysControlDown(KeyCode code) throws Exception {
 		pushButton(code, true);
 		Thread.sleep(WAIT_TIME);
