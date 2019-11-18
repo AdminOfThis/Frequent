@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.adminofthis</groupId>
@@ -90,7 +89,6 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.5</version>
 				<executions>
-					<!-- set arg line property for surefire -->
 					<execution>
 						<id>prepare-agent</id>
 						<goals>
@@ -100,17 +98,15 @@
 							<propertyName>surefireArgLine</propertyName>
 						</configuration>
 					</execution>
-					<!-- set arg line property for failsafe -->
-<!-- 					<execution> -->
-<!-- 						<id>prepare-agent-integration</id> -->
-<!-- 						<goals> -->
-<!-- 							<goal>prepare-agent-integration</goal> -->
-<!-- 						</goals> -->
-<!-- 						<configuration> -->
-<!-- 							<propertyName>failsafeArgLine</propertyName> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
-					<!-- aggregated unit test coverage report -->
+					<!-- <execution> -->
+					<!-- <id>prepare-agent-integration</id> -->
+					<!-- <goals> -->
+					<!-- <goal>prepare-agent-integration</goal> -->
+					<!-- </goals> -->
+					<!-- <configuration> -->
+					<!-- <propertyName>failsafeArgLine</propertyName> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
 					<execution>
 						<id>aggregate-reports-ut</id>
 						<phase>test</phase>
@@ -121,15 +117,26 @@
 							<title>Maven Multimodule Coverage Demo: Coverage of Unit Tests</title>
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
 							<dataFileExcludes>
-								<!-- exclude coverage data of integration tests -->
+								exclude coverage data of integration tests
 								<dataFileExclude>**/target/jacoco-it.exec</dataFileExclude>
 							</dataFileExcludes>
 						</configuration>
 					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+							<!-- Sets the output directory for the code coverage report. -->
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
-
-
 
 			<!-- Write the current git revision into ${buildnumber} and populate ${scmBranch} -->
 			<plugin>
@@ -273,7 +280,7 @@
 					<!-- <excludes> -->
 					<!-- <exclude>**/MainTest.java</exclude> -->
 					<!-- </excludes> -->
-	<executions>
+					<executions>
 						<execution>
 							<phase>test</phase>
 							<goals>

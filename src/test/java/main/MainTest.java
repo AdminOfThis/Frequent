@@ -56,14 +56,14 @@ class MainTest extends SuperTest {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = KeyCode.class, names = { "F11" }, mode = EnumSource.Mode.EXCLUDE)
+	@EnumSource(value = KeyCode.class, names = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, mode = EnumSource.Mode.INCLUDE)
 	public void openModules(KeyCode code) throws Exception {
 		pushButton(code, false);
 		Thread.sleep(WAIT_TIME);
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = KeyCode.class, names = { "S", "O", "F11" }, mode = EnumSource.Mode.EXCLUDE)
+	@EnumSource(value = KeyCode.class, names = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, mode = EnumSource.Mode.INCLUDE)
 	public void pressKeysControlDown(KeyCode code) throws Exception {
 		pushButton(code, true);
 		Thread.sleep(WAIT_TIME);
