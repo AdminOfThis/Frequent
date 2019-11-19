@@ -104,21 +104,22 @@
 							<propertyName>failsafeArgLine</propertyName>
 						</configuration>
 					</execution>
-					<execution>
-						<id>aggregate-reports-ut</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report-aggregate</goal>
-						</goals>
-						<configuration>
-							<title>Maven Multimodule Coverage Demo: Coverage of Unit Tests</title>
-							<outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
-							<dataFileExcludes>
-								<!-- exclude coverage data of integration tests -->
-								<dataFileExclude>**/target/jacoco-it.exec</dataFileExclude>
-							</dataFileExcludes>
-						</configuration>
-					</execution>
+<!-- 					<execution> -->
+<!-- 						<id>aggregate-reports-ut</id> -->
+<!-- 						<phase>test</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>report-aggregate</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<append>true</append> -->
+<!-- 							<title>${project.name}</title> -->
+<!-- 							<outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory> -->
+<!-- 							<dataFileExcludes> -->
+<!-- 								exclude coverage data of integration tests -->
+<!-- 								<dataFileExclude>**/target/jacoco-it.exec</dataFileExclude> -->
+<!-- 							</dataFileExcludes> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
 					<execution>
 						<id>jacoco-site</id>
 						<phase>verify</phase>
