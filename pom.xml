@@ -106,7 +106,7 @@
 					</execution>
 					<execution>
 						<id>aggregate-reports-ut</id>
-						<phase>surefire:test</phase>
+						<phase>test</phase>
 						<goals>
 							<goal>report-aggregate</goal>
 						</goals>
@@ -120,6 +120,13 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>jacoco-site</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
 						<id>post-unit-test</id>
 						<phase>test</phase>
 						<goals>
@@ -128,7 +135,7 @@
 						<configuration>
 							<!-- Sets the path to the file which contains the execution data. -->
 							<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-<!-- 							Sets the output directory for the code coverage report. -->
+							<!-- Sets the output directory for the code coverage report. -->
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
 						</configuration>
 					</execution>
@@ -271,12 +278,9 @@
 					</additionalClasspathElements>
 					<printSummary>true</printSummary>
 					<reuseForks>false</reuseForks>
-					<argLine>-Djava.library.path=. -Djni.library.path=.</argLine>
+					<argLine>-Djava.library.path=. -Djni.library.path=. ${surefireArgLine}</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>2</rerunFailingTestsCount>
-					<!-- <excludes> -->
-					<!-- <exclude>**/MainTest.java</exclude> -->
-					<!-- </excludes> -->
 					<executions>
 						<execution>
 							<phase>test</phase>
