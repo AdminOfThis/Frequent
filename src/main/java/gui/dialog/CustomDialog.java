@@ -11,7 +11,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import main.Main;
+import main.FXMLMain;
 
 public abstract class CustomDialog<T> extends Dialog<T> implements Initializable {
 
@@ -26,7 +26,7 @@ public abstract class CustomDialog<T> extends Dialog<T> implements Initializable
 		initStyle(StageStyle.UNDECORATED);
 
 		setOnShown(e -> {
-			FXMLUtil.setIcon((Stage) getDialogPane().getScene().getWindow(), Main.getLogoPath());
+			FXMLUtil.setIcon((Stage) getDialogPane().getScene().getWindow(), FXMLMain.getLogoPath());
 		});
 	}
 

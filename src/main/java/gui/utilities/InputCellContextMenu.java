@@ -25,7 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import main.Main;
+import main.FXMLMain;
 
 public abstract class InputCellContextMenu extends ContextMenu {
 
@@ -113,7 +113,7 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		stage.setResizable(false);
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.initOwner(this.getOwnerWindow());
-		FXMLUtil.setIcon(stage, Main.getLogoPath());
+		FXMLUtil.setIcon(stage, FXMLMain.getLogoPath());
 		stage.show();
 	}
 

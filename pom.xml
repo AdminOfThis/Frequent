@@ -63,6 +63,24 @@
 			<scope>test</scope>
 		</dependency>
 
+
+		<!-- TESTFX -->
+		<!-- https://mvnrepository.com/artifact/org.testfx/testfx-junit -->
+		<dependency>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-junit</artifactId>
+			<version>4.0.15-alpha</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-core</artifactId>
+			<version>4.0.15-alpha</version>
+			<scope>test</scope>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -164,7 +182,7 @@
 				<artifactId>javafx-maven-plugin</artifactId>
 				<version>0.0.3</version>
 				<configuration>
-					<mainClass>main.FXMLLauncher</mainClass>
+					<mainClass>main.Main</mainClass>
 				</configuration>
 			</plugin>
 
@@ -321,7 +339,7 @@
 									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 									<addExtensions>true</addExtensions>
-									<mainClass>main.FXMLLauncher</mainClass>
+									<mainClass>main.Main</mainClass>
 								</manifest>
 								<manifestEntries>
 									<Multi-Release>true</Multi-Release>

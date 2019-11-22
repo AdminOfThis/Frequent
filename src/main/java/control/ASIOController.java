@@ -27,7 +27,7 @@ import data.DriverInfo;
 import data.FileIO;
 import data.Group;
 import data.Input;
-import main.Main;
+import main.FXMLMain;
 
 /**
  * @author AdminOfThis
@@ -498,7 +498,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		}
 		if (asioDriver == null) {
 			LOG.warn("Unable to load ASIO driver '" + driverName + "'");
-			Main.getInstance().close();
+			FXMLMain.getInstance().close();
 		}
 		asioDriver.addAsioDriverListener(this);
 		// create a Set of AsioChannels, defining which input and output

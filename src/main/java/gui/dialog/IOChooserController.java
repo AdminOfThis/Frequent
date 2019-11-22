@@ -24,6 +24,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import main.FXMLMain;
 import main.Main;
 
 public class IOChooserController implements Initializable {
@@ -88,7 +89,7 @@ public class IOChooserController implements Initializable {
 		// Quit Button
 		btnQuit.setOnAction(e -> {
 			((Stage) btnQuit.getScene().getWindow()).close();
-			Main.getInstance().close();
+			FXMLMain.getInstance().close();
 		});
 		btnStart.disableProperty().bind(listIO.getSelectionModel().selectedItemProperty().isNull());
 

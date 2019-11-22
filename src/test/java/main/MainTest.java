@@ -1,8 +1,11 @@
 package main;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +36,7 @@ class MainTest {
 		CountDownLatch latch = new CountDownLatch(1);
 		Thread thread = new Thread(() -> {
 			try {
-				FXMLLauncher.main(new String[] { "-debug" });
+				Main.main(new String[] { "-debug" });
 			} catch (Exception ex) {
 				e = ex;
 				e.printStackTrace();
@@ -42,8 +45,8 @@ class MainTest {
 			}
 		});
 		thread.start();// Initialize the thread
-		latch.await(8, TimeUnit.SECONDS);
-		scene = Main.getInstance().getScene();
+		latch.await(10, TimeUnit.SECONDS);
+		scene = FXMLMain.getInstance().getScene();
 		if (e != null) {
 			throw e;
 		}
@@ -66,6 +69,19 @@ class MainTest {
 	public void pressKeysControlDown(KeyCode code) throws Exception {
 		pushButton(code, true);
 		Thread.sleep(WAIT_TIME);
+	}
+
+	@Test
+	public void cmdVersion() throws Exception {
+
+		// setup new Stream for checking
+		final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+		final PrintStream originalOut = System.out;
+
+		System.setOut(new PrintStream(outContent));
+		Main.main(new String[] { "-version" });
+		assertEquals(Main.getReadableTitle() + System.getProperty("line.separator"), outContent.toString());
+		System.setOut(originalOut);
 	}
 
 	@Test

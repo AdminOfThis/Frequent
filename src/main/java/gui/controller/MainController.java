@@ -79,6 +79,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import main.Constants;
 import main.Constants.RESTORE_PANEL;
+import main.FXMLMain;
 import main.Main;
 import preferences.PropertiesIO;
 
@@ -153,33 +154,33 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		setStatus("Loading GUI", -1);
 		FXMLUtil.setStyleSheet(root);
 //		root.setStyle(Main.getStyle());
-		Main.getInstance().setProgress(0.3);
+		FXMLMain.getInstance().setProgress(0.3);
 		initWaveForm();
-		Main.getInstance().setProgress(0.35);
+		FXMLMain.getInstance().setProgress(0.35);
 		initTimekeeper();
 		initMenu();
 		initChannelList();
-		Main.getInstance().setProgress(0.4);
+		FXMLMain.getInstance().setProgress(0.4);
 		initFullScreen();
-		Main.getInstance().setProgress(0.45);
+		FXMLMain.getInstance().setProgress(0.45);
 		initOverView();
-		Main.getInstance().setProgress(0.5);
+		FXMLMain.getInstance().setProgress(0.5);
 		initChart();
-		Main.getInstance().setProgress(0.65);
+		FXMLMain.getInstance().setProgress(0.65);
 		initRTA();
-		Main.getInstance().setProgress(0.6);
+		FXMLMain.getInstance().setProgress(0.6);
 		initDrumMonitor();
-		Main.getInstance().setProgress(0.65);
+		FXMLMain.getInstance().setProgress(0.65);
 		initGroups();
-		Main.getInstance().setProgress(0.7);
+		FXMLMain.getInstance().setProgress(0.7);
 		initPhaseMonitor();
-		Main.getInstance().setProgress(0.8);
+		FXMLMain.getInstance().setProgress(0.8);
 		initBleedView();
-		Main.getInstance().setProgress(0.85);
+		FXMLMain.getInstance().setProgress(0.85);
 		initListener();
-		Main.getInstance().setProgress(0.9);
+		FXMLMain.getInstance().setProgress(0.9);
 		applyLoadedProperties();
-		Main.getInstance().setProgress(0.95);
+		FXMLMain.getInstance().setProgress(0.95);
 
 		hideAllDebugModules();
 		createViewMenu();
@@ -189,6 +190,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		bottomLabel.setVisible(false);
 		TimeKeeper.getInstance().addListener(this);
 		Watchdog.getInstance().addListener(this);
+
 	}
 
 	private void createViewMenu() {
@@ -851,7 +853,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	@FXML
 	private void close(ActionEvent e) {
-		Main.getInstance().close();
+		FXMLMain.getInstance().close();
 	}
 
 	@FXML
@@ -859,7 +861,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		Parent setting = FXMLUtil.loadFXML(getClass().getResource(SETTINGS_PATH));
 		Stage settingStage = new Stage();
 		settingStage.setTitle("Settings");
-		FXMLUtil.setIcon(settingStage, Main.getLogoPath());
+		FXMLUtil.setIcon(settingStage, FXMLMain.getLogoPath());
 		FXMLUtil.setStyleSheet(setting);
 		settingStage.setScene(new Scene(setting));
 		settingStage.initOwner(root.getScene().getWindow());

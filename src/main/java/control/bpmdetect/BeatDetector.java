@@ -119,8 +119,12 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 				clearData();
 				Thread.yield();
 			} else if (mode == Mode.BPM_DETECT) {
-				for (DrumTrigger trigger : triggerList) {
-					trigger.calcBPM();
+				synchronized (triggerList) {
+
+					for (DrumTrigger trigger : triggerList) {
+						trigger.calcBPM();
+					}
+
 				}
 				bpm = BPMBestGuess.getInstance().getBPM();
 			}
