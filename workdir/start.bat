@@ -1,1 +1,1 @@
-start /B java -jar JavaVersionChecker.jar 1.8.0 "javaw -jar -Djava.library.path=. -Dlog4j.configurationFile=./log4j2.properties Frequent.jar"
+javaw -jar JavaVersionChecker.jar 1.8.0 "cmd /c start_without_checks.bat"
