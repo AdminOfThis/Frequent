@@ -88,7 +88,7 @@ public class IOChooserController implements Initializable {
 
 		// Quit Button
 		btnQuit.setOnAction(e -> {
-			((Stage) btnQuit.getScene().getWindow()).close();
+			((Stage) root.getScene().getWindow()).close();
 			FXMLMain.getInstance().close();
 		});
 		btnStart.disableProperty().bind(listIO.getSelectionModel().selectedItemProperty().isNull());

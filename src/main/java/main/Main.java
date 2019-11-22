@@ -47,7 +47,7 @@ public class Main {
 			initialize(POM_TITLE);
 			LOG.info(" === " + getReadableTitle() + " ===");
 			if (parseArgs(args)) {
-				setColors();
+				initColors();
 				loadProperties();
 				System.setProperty("javafx.preloader", PreLoader.class.getName());
 				Application.launch(FXMLMain.class, args);
@@ -155,7 +155,7 @@ public class Main {
 
 	}
 
-	private static void setColors() {
+	public static void initColors() {
 		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus + "; ";
 		FXMLUtil.setDefaultStyle(style);
 	}
@@ -205,6 +205,11 @@ public class Main {
 			return "";
 		}
 		return title.substring(0, 1).toUpperCase() + title.substring(1).toLowerCase();
+	}
+
+	public static void setDebug(boolean value) {
+		debug = value;
+
 	}
 
 }

@@ -36,6 +36,9 @@ public class FXMLMain extends MainGUI {
 	@Override
 	public void init() throws Exception {
 		super.init();
+		if (FXMLUtil.getDefaultStyle().isEmpty()) {
+			Main.initColors();
+		}
 		instance = this;
 		notifyPreloader(new Preloader.ProgressNotification(0.1));
 		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
