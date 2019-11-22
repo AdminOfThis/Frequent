@@ -20,8 +20,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<testFailureIgnore>true</testFailureIgnore>
-		<maven.compiler.target>1.13</maven.compiler.target>
-		<maven.compiler.source>1.13</maven.compiler.source>
+		<maven.compiler.target>13</maven.compiler.target>
+		<maven.compiler.source>13</maven.compiler.source>
 	</properties>
 
 	<dependencies>
@@ -66,7 +66,7 @@
 	</dependencies>
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main</sourceDirectory>
 		<finalName>${project.name}</finalName>
 
 		<resources>
@@ -77,6 +77,8 @@
 				</excludes>
 			</resource>
 		</resources>
+		
+		
 		<plugins>
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -175,11 +177,14 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<source>13</source>
-					<target>13</target>
-					<additionalClasspathElements>
-						<additionalClasspathElement>${java.home}/target/classes/**/*.class</additionalClasspathElement>
-					</additionalClasspathElements>
+					<compilerArgs>
+						<arg>-Xlint:-removal</arg>
+					</compilerArgs>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+<!-- 					<additionalClasspathElements> -->
+<!-- 						<additionalClasspathElement>${java.home}/target/classes/**/*.class</additionalClasspathElement> -->
+<!-- 					</additionalClasspathElements> -->
 				</configuration>
 			</plugin>
 
@@ -243,10 +248,10 @@
 									<directory>src/main/resources</directory>
 									<filtering>true</filtering>
 								</resource>
-								<resource>
-									<directory>src/test/resources</directory>
-									<filtering>true</filtering>
-								</resource>
+<!-- 								<resource> -->
+<!-- 									<directory>src/test/resources</directory> -->
+<!-- 									<filtering>true</filtering> -->
+<!-- 								</resource> -->
 							</resources>
 						</configuration>
 					</execution>
@@ -307,6 +312,7 @@
 									<mainClass>main.FXMLLauncher</mainClass>
 								</manifest>
 								<manifestEntries>
+									<Class-Path>./log</Class-Path>
 									<Implementation-Build>${buildNumber}</Implementation-Build>
 									<Implementation-Branch>${scmBranch}</Implementation-Branch>
 

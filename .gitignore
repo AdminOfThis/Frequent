@@ -46,5 +46,7 @@ Thumbs.db
 /workdir/*.properties
 /workdir/rta.temp
 /workdir/*.conf
+/workdir/logs/
 /target/
 dependency-reduced-pom.xml
+/.apt_generated/
