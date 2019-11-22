@@ -2,9 +2,6 @@ package gui.utilities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +28,6 @@ import javafx.stage.Stage;
 public class UtilitiesTest extends Application {
 
 	private static BorderPane root;
-	private static PrintStream emptyStream;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -44,13 +40,6 @@ public class UtilitiesTest extends Application {
 
 	@BeforeAll
 	public static void startApplication() throws Exception {
-		emptyStream = new PrintStream(new OutputStream() {
-
-			@Override
-			public void write(int b) throws IOException {}
-		});
-		System.setOut(emptyStream);
-		System.setErr(emptyStream);
 
 		CountDownLatch latch = new CountDownLatch(1);
 		try {
@@ -59,13 +48,6 @@ public class UtilitiesTest extends Application {
 			e.printStackTrace();
 		}
 		latch.await(2, TimeUnit.SECONDS);
-	}
-
-	@AfterAll
-	public static void closeEmptyStream() {
-		if (emptyStream != null) {
-			emptyStream.close();
-		}
 	}
 
 	@AfterEach

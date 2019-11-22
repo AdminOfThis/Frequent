@@ -8,15 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import test.SuperTest;
+public class GroupTest {
 
-public class GroupTest extends SuperTest{
-
-	private Group	g1;
+	private Group g1;
 //	private Group	g2;
 
-	private Channel	c1;
-	private Channel	c2;
+	private Channel c1;
+	private Channel c2;
 
 	@Test
 	@BeforeEach
@@ -48,7 +46,6 @@ public class GroupTest extends SuperTest{
 		assertNotNull(c2);
 		assertEquals("Channel 2", c2.getName());
 	}
-
 
 	@Test
 	public void addChannels() {

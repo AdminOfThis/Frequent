@@ -8,9 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import data.Cue;
-import test.SuperTest;
 
-class TimeKeeperTest extends SuperTest {
+class TimeKeeperTest {
 
 	@Test
 	public void instance() {

@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +27,6 @@ import javafx.stage.Stage;
 public class VectorScopeTest extends Application {
 
 	private static BorderPane root;
-	private static PrintStream emptyStream;
 	private static VectorScope vector;
 	private static Channel c1;
 	private static Channel c2;
@@ -51,14 +47,6 @@ public class VectorScopeTest extends Application {
 
 	@BeforeAll
 	public static void startApplication() throws Exception {
-		emptyStream = new PrintStream(new OutputStream() {
-
-			@Override
-			public void write(int b) throws IOException {
-			}
-		});
-		System.setOut(emptyStream);
-		System.setErr(emptyStream);
 
 		CountDownLatch latch = new CountDownLatch(1);
 		try {
@@ -72,13 +60,6 @@ public class VectorScopeTest extends Application {
 	@AfterEach
 	public void sleep() throws InterruptedException {
 		Thread.sleep(500);
-	}
-
-	@AfterAll
-	public static void closeEmptyStream() {
-		if (emptyStream != null) {
-			emptyStream.close();
-		}
 	}
 
 	@AfterAll

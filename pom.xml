@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>com.github.adminofthis</groupId>
 			<artifactId>util</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.3</version>
 		</dependency>
 
 		<dependency>
@@ -76,9 +76,15 @@
 					<exclude>**/*.java</exclude>
 				</excludes>
 			</resource>
+			<resource>
+				<directory>src/test/resources</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
 		</resources>
-		
-		
+
+
 		<plugins>
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -182,9 +188,9 @@
 					</compilerArgs>
 					<source>${maven.compiler.source}</source>
 					<target>${maven.compiler.target}</target>
-<!-- 					<additionalClasspathElements> -->
-<!-- 						<additionalClasspathElement>${java.home}/target/classes/**/*.class</additionalClasspathElement> -->
-<!-- 					</additionalClasspathElements> -->
+					<!-- <additionalClasspathElements> -->
+					<!-- <additionalClasspathElement>${java.home}/target/classes/**/*.class</additionalClasspathElement> -->
+					<!-- </additionalClasspathElements> -->
 				</configuration>
 			</plugin>
 
@@ -242,16 +248,28 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}/target/classes</outputDirectory>
+							<outputDirectory>${project.build.directory}/classes</outputDirectory>
 							<resources>
 								<resource>
 									<directory>src/main/resources</directory>
 									<filtering>true</filtering>
 								</resource>
-<!-- 								<resource> -->
-<!-- 									<directory>src/test/resources</directory> -->
-<!-- 									<filtering>true</filtering> -->
-<!-- 								</resource> -->
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-test-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/test/resources</directory>
+									<filtering>true</filtering>
+								</resource>
 							</resources>
 						</configuration>
 					</execution>
@@ -306,7 +324,7 @@
 									<mainClass>main.FXMLLauncher</mainClass>
 								</manifest>
 								<manifestEntries>
-								<Multi-Release>true</Multi-Release>
+									<Multi-Release>true</Multi-Release>
 									<Implementation-Build>${buildNumber}</Implementation-Build>
 									<Implementation-Branch>${scmBranch}</Implementation-Branch>
 

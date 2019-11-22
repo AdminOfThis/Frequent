@@ -8,12 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import test.SuperTest;
+public class ChannelTest {
 
-public class ChannelTest extends SuperTest{
-
-	private Channel	c1;
-	private Channel	c2;
+	private Channel c1;
+	private Channel c2;
 
 	@Test
 	@BeforeEach

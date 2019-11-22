@@ -6,7 +6,7 @@
 	<Appenders>
 		<Console name="STDOUT" target="SYSTEM_OUT" >
 			<PatternLayout pattern="%d{HH:mm:ss} %-5p %-3L:%-30c{1} - %m%n"/>
-			<ThresholdFilter level="info" />
+			<ThresholdFilter level="warn" />
 		</Console>
 
 		<RollingFile name="FILE" fileName="logs/frequent.log" filePattern="logs/$${date:yyyy-MM}/frequent-%d{MM-dd-yyyy}-%i.log">

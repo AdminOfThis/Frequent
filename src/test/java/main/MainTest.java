@@ -19,9 +19,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import test.SuperTest;
 
-class MainTest extends SuperTest {
+class MainTest {
 
 	private static final long WAIT_TIME = 100;
 

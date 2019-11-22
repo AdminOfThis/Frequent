@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import test.SuperTest;
-
-class ASIOControllerTest extends SuperTest {
+class ASIOControllerTest {
 
 	@Test
 	public void possibleDrivers() {
