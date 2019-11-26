@@ -25,6 +25,7 @@
 	</properties>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>com.github.adminofthis</groupId>
 			<artifactId>util</artifactId>

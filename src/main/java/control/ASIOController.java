@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -62,7 +61,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private ExecutorService exe;
 	private long time;
 	private boolean isFFTing = false;
-	private Object lastCompleteBuffer;
+	private float[] lastCompleteBuffer;
 	private static List<DriverInfo> driverList;
 
 	/**
@@ -154,13 +153,13 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 									LOG.debug("Underflow Exception", e1);
 								}
 								if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
-									if (!Objects.equals(channel.getByteBuffer(), lastCompleteBuffer)) {
-										if (!isFFTing) {
-											isFFTing = true;
-											lastCompleteBuffer = activeChannel.getBuffer();
-											fftThis(activeChannel.getBuffer());
-											isFFTing = false;
-										}
+									if (!isFFTing) {
+										isFFTing = true;
+										lastCompleteBuffer = activeChannel.getBuffer();
+//										fftThis(lastCompleteBuffer);
+
+										fftThis(lastCompleteBuffer);
+										isFFTing = false;
 									}
 								}
 							}
@@ -256,7 +255,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private double[] applyHannWindow(final double[] input) {
 		double[] out = new double[input.length];
 		for (int i = 0; i < input.length; i++) {
-			double mul = 0.5 * (1 - Math.cos(2 * Math.PI * i / input.length - 1));
+			double mul = 0.5 * (1.0 - Math.cos(2 * Math.PI * i / (input.length - 1)));
 			out[i] = mul * input[i];
 		}
 		return out;
@@ -291,18 +290,17 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 					double[] fftData = fftBuffer[i];
 					int baseFrequencyIndex = getBaseFrequencyIndex(fftData);
 					// int baseFrequencyIndex =
-					// getBaseFrequencyIndexHPS(fftData);
-					baseFrequency = getFrequencyForIndex(baseFrequencyIndex, fftData.length, (int) sampleRate) / 2;
-					// System.out.println("Base " + baseFrequency);
+//					getBaseFrequencyIndexHPS(fftData);
+					baseFrequency = getFrequencyForIndex(baseFrequencyIndex, fftData.length, (int) Math.round(sampleRate / 2.0));
 					spectrumMap = getSpectrum(fftData);
 					index[i] = 0;
 				}
 			}
-			bufferingBuffer[1] = bufferingBuffer[0];
-			bufferingBuffer[0] = spectrumMap;
-			for (int i = 0; i < spectrumMap[0].length - 1; i++) {
-				spectrumMap[1][i] = (bufferingBuffer[0][1][i] + bufferingBuffer[1][1][i]) / 2.0;
-			}
+//			bufferingBuffer[1] = bufferingBuffer[0];
+//			bufferingBuffer[0] = spectrumMap;
+//			for (int i = 0; i < spectrumMap[0].length - 1; i++) {
+//				spectrumMap[1][i] = (bufferingBuffer[0][1][i] + bufferingBuffer[1][1][i]) / 2.0;
+//			}
 			for (int i = 0; i < fftListeners.size(); i++) {
 				FFTListener l = fftListeners.get(i);
 				if (l != null) {
