@@ -14,8 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jtransforms.dct.DoubleDCT_1D;
+import org.jtransforms.fft.FloatFFT_1D;
 
+import com.google.inject.internal.util.Objects;
 import com.synthbot.jasiohost.AsioChannel;
 import com.synthbot.jasiohost.AsioDriver;
 import com.synthbot.jasiohost.AsioDriverListener;
@@ -50,14 +51,10 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	// FFT
 	// private float[] output;
 	private int bufferCount;
-	private DoubleDCT_1D fft;
 	private int[] index;
-	private double[][] fftBuffer;
-	private double[][] spectrumMap;
 	private List<Channel> channelList;
 	private List<Group> groupList = new ArrayList<>();
 	private List<FFTListener> fftListeners = new ArrayList<>();
-	private double[][][] bufferingBuffer = new double[2][2][1024];
 	private ExecutorService exe;
 	private long time;
 	private boolean isFFTing = false;
@@ -152,11 +149,10 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 								} catch (BufferUnderflowException e1) {
 									LOG.debug("Underflow Exception", e1);
 								}
-								if (channel.getChannelIndex() == activeChannel.getChannelIndex()) {
+								if (Objects.equal(channel.getChannelIndex(), activeChannel.getChannelIndex())) {
 									if (!isFFTing) {
 										isFFTing = true;
 										lastCompleteBuffer = activeChannel.getBuffer();
-//										fftThis(lastCompleteBuffer);
 
 										fftThis(lastCompleteBuffer);
 										isFFTing = false;
@@ -244,23 +240,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		}
 	}
 
-	/**
-	 * Applies a HannWindow to a signal taken from Bachelor thesis at
-	 * <a href="https://www.vutbr.cz/studium/zaverecne-prace?zp_id=88462">Bachelor
-	 * thesis</a>
-	 * 
-	 * @param input The raw input of the audio signal
-	 * @return data
-	 */
-	private double[] applyHannWindow(final double[] input) {
-		double[] out = new double[input.length];
-		for (int i = 0; i < input.length; i++) {
-			double mul = 0.5 * (1.0 - Math.cos(2 * Math.PI * i / (input.length - 1)));
-			out[i] = mul * input[i];
-		}
-		return out;
-	}
-
 	@Override
 	public void bufferSizeChanged(final int bufferSize) {
 		LOG.info("Buffer size changed");
@@ -273,49 +252,82 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		// channelList.clear();
 	}
 
+	private void applyWindow(float[] from, float[] to) {
+		int M = from.length;
+		for (int n = 0; n < M; n++) {
+			to[n] = from[n] * getHammingValue(n, M);
+		}
+	}
+
+	/**
+	 * Gets the next value of the hamming function.
+	 *
+	 * @param i    the index
+	 * @param size the total size
+	 * @return the hamming value
+	 */
+	private float getHammingValue(int i, int size) {
+		return (float) (0.54 - 0.46 * Math.cos((2 * Math.PI * i) / (size - 1)));
+	}
+
+	private float[] powerSpectrum(float[] window) {
+		float[] powerSpectrum = new float[window.length];
+		float[] fftBuffer = new float[window.length * 2 + 1];
+		System.arraycopy(window, 0, fftBuffer, 0, window.length);
+		FloatFFT_1D fft = new FloatFFT_1D(window.length);
+		fft.realForward(fftBuffer);
+
+		for (int i = 0; i < fftBuffer.length / 2 - 1; i++) {
+			float real = fftBuffer[2 * i];
+			float imag = fftBuffer[2 * i + 1];
+
+			powerSpectrum[i] = (float) Math.sqrt(real * real + imag * imag);
+		}
+
+		return powerSpectrum;
+	}
+
+	/**
+	 * Code of FFT is mostly taken from github.com/akuehntopf
+	 * https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19
+	 * 
+	 * @param output
+	 */
 	private synchronized void fftThis(final float[] output) {
 		try {
-			for (int i = 0; i < DESIRED_BUFFER_SIZE; i++) {
-				for (int j = 0; j < bufferCount; j++) {
-					fftBuffer[j][index[j]] = output[i];
-				}
-				for (int j = 0; j < bufferCount; j++) {
-					index[j]++;
-				}
+
+			float[] windowed = new float[output.length];
+			applyWindow(output, windowed);
+
+			// 3. Calculate Power Spectrum (using FFT)
+			float[] spectrum = powerSpectrum(windowed);
+			double[][] spectrumMap = new double[2][spectrum.length];
+			for (int i = 0; i < spectrum.length; i++) {
+				spectrumMap[1][i] = spectrum[i];
+				spectrumMap[0][i] = getFrequencyForIndex(i, spectrum.length, (float) sampleRate) / 2.0;
+//				System.out.println(spectrumMap[i][1] + " " + spectrumMap[i][0]);
 			}
-			for (int i = 0; i < bufferCount; i++) {
-				if (index[i] == fftBufferSize) {
-					fftBuffer[i] = applyHannWindow(fftBuffer[i]);
-					fft.forward(fftBuffer[i], false);
-					double[] fftData = fftBuffer[i];
-					int baseFrequencyIndex = getBaseFrequencyIndex(fftData);
-					// int baseFrequencyIndex =
-//					getBaseFrequencyIndexHPS(fftData);
-					baseFrequency = getFrequencyForIndex(baseFrequencyIndex, fftData.length, (int) Math.round(sampleRate / 2.0));
-					spectrumMap = getSpectrum(fftData);
-					index[i] = 0;
-				}
-			}
-//			bufferingBuffer[1] = bufferingBuffer[0];
-//			bufferingBuffer[0] = spectrumMap;
-//			for (int i = 0; i < spectrumMap[0].length - 1; i++) {
-//				spectrumMap[1][i] = (bufferingBuffer[0][1][i] + bufferingBuffer[1][1][i]) / 2.0;
-//			}
-			for (int i = 0; i < fftListeners.size(); i++) {
-				FFTListener l = fftListeners.get(i);
-				if (l != null) {
-					new Thread(() -> {
-						try {
-							l.newFFT(spectrumMap);
-						} catch (Exception e) {
-							LOG.warn("Unable to notify FFTListener");
-							LOG.debug("", e);
-						}
-					}).start();
-				}
-			}
+
+			notifyFFTListeners(spectrumMap);
+
 		} catch (Exception e) {
 			LOG.info("Problem on FFT", e);
+		}
+	}
+
+	private void notifyFFTListeners(final double[][] spectrumMap) {
+		for (int i = 0; i < fftListeners.size(); i++) {
+			FFTListener l = fftListeners.get(i);
+			if (l != null) {
+				new Thread(() -> {
+					try {
+						l.newFFT(spectrumMap);
+					} catch (Exception e) {
+						LOG.warn("Unable to notify FFTListener");
+						LOG.debug("", e);
+					}
+				}).start();
+			}
 		}
 	}
 
@@ -329,28 +341,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		return baseFrequency;
 	}
 
-	private int getBaseFrequencyIndex(final double[] spectrum) {
-		double maxVal = Double.NEGATIVE_INFINITY;
-		int maxInd = 0;
-		for (int i = 0; i < spectrum.length; i++) {
-			if (maxVal < spectrum[i]) {
-				maxVal = spectrum[i];
-				maxInd = i;
-			}
-		}
-		// Interpolate
-		// (https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19#file-hps-java-L144)
-		// not necessary, does not help, gives the same results
-		// double mid = spectrum[maxInd];
-		// double left = spectrum[maxInd- 1];
-		// double right = spectrum[maxInd + 1];
-		// double shift = 0.5f*(right-left) / ( 2.0f*mid - left - right );
-		// maxInd = (int) Math.round(maxInd + shift);
-		// maybe useful can be quadratic interpolation:
-		// http://musicweb.ucsd.edu/~trsmyth/analysis/Quadratic_interpolation.html
-		return maxInd;
-	}
-
 	@Override
 	public List<Input> getData() {
 		ArrayList<Input> result = new ArrayList<>();
@@ -361,7 +351,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 
 	// taken from https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19,
 	// author Andreas Kuehntopf
-	private float getFrequencyForIndex(final int index, final int size, final int rate) {
+	private float getFrequencyForIndex(final int index, final int size, final float rate) {
 		return (float) index * (float) rate / size;
 	}
 
@@ -417,33 +407,11 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		}
 	}
 
-	private double[][] getSpectrum(final double[] spectrum) {
-		double[][] result = new double[2][spectrum.length];
-		for (int i = 0; i < spectrum.length; i++) {
-			double level = spectrum[i];
-			result[1][i] = Math.abs(level);
-			result[0][i] = getFrequencyForIndex(i, spectrum.length, (int) sampleRate) / 2.0;
-		}
-		return result;
-	}
-
-	/**
-	 * Returns the spectrumMap that gets calulated by the FFT calculations
-	 * 
-	 * @return twodimensional array, in column 0 are the frequencies in Hertz, in
-	 *         column 1 is the calulated value associated to that frequency
-	 */
-	public double[][] getSpectrumMap() {
-		return spectrumMap;
-	}
-
 	private void initFFT() {
 		// fftBufferSize = 16384;
 		fftBufferSize = DESIRED_BUFFER_SIZE;
 		bufferCount = 1;
 		// fft = new DoubleFFT_1D(fftBufferSize);
-		fft = new DoubleDCT_1D(fftBufferSize);
-		fftBuffer = new double[bufferCount][fftBufferSize];
 		index = new int[bufferCount];
 		for (int i = 0; i < bufferCount; i++) {
 			index[i] = i * fftBufferSize / bufferCount;
