@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import control.ChannelListener;
+import control.FFT;
 import data.Channel;
 import data.Input;
 import gui.FXMLUtil;
@@ -130,9 +131,10 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 
 	@Override
 	public void newBuffer(final Channel channel, final float[] buffer, final long time) {
+		float[] windowed = FFT.applyWindow(buffer);
 		synchronized (pendingData) {
 			pendingData.clear();
-			for (float buf : buffer) {
+			for (float buf : windowed) {
 				pendingData.add(buf);
 			}
 		}

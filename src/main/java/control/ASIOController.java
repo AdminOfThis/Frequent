@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jtransforms.fft.FloatFFT_1D;
 
 import com.google.inject.internal.util.Objects;
 import com.synthbot.jasiohost.AsioChannel;
@@ -33,7 +32,7 @@ import main.FXMLMain;
  * @author AdminOfThis
  *
  */
-public class ASIOController implements AsioDriverListener, DataHolder<Input> {
+public class ASIOController implements AsioDriverListener, DataHolder<Input>, ChannelListener {
 
 	/**
 	 * Default buffer size
@@ -58,7 +57,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	private ExecutorService exe;
 	private long time;
 	private boolean isFFTing = false;
-	private float[] lastCompleteBuffer;
 	private static List<DriverInfo> driverList;
 
 	/**
@@ -140,6 +138,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 			AsioChannel channel = channelArray[i];
 			try {
 				if (channel.isInput() && channel.isActive() && exe != null) {
+					// create new runnable task, for parallel execution
 					Runnable runnable = () -> {
 						try {
 							float[] output = new float[bufferSize];
@@ -149,15 +148,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 								} catch (BufferUnderflowException e1) {
 									LOG.debug("Underflow Exception", e1);
 								}
-								if (Objects.equal(channel.getChannelIndex(), activeChannel.getChannelIndex())) {
-									if (!isFFTing) {
-										isFFTing = true;
-										lastCompleteBuffer = activeChannel.getBuffer();
 
-										fftThis(lastCompleteBuffer);
-										isFFTing = false;
-									}
-								}
 							}
 							if (channelList != null) {
 								Channel c = null;
@@ -200,6 +191,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 				if (oldChannel != null) {
 					channelList.remove(oldChannel);
 					channelList.add(channel);
+					channel.addListener(this);
 					channel.setChannel(oldChannel.getChannel());
 					for (Group g : groupList) {
 						g.refreshChannels();
@@ -249,70 +241,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 	@Override
 	public void clear() {
 		// do nothing
-		// channelList.clear();
-	}
-
-	private void applyWindow(float[] from, float[] to) {
-		int M = from.length;
-		for (int n = 0; n < M; n++) {
-			to[n] = from[n] * getHammingValue(n, M);
-		}
-	}
-
-	/**
-	 * Gets the next value of the hamming function.
-	 *
-	 * @param i    the index
-	 * @param size the total size
-	 * @return the hamming value
-	 */
-	private float getHammingValue(int i, int size) {
-		return (float) (0.54 - 0.46 * Math.cos((2 * Math.PI * i) / (size - 1)));
-	}
-
-	private float[] powerSpectrum(float[] window) {
-		float[] powerSpectrum = new float[window.length];
-		float[] fftBuffer = new float[window.length * 2 + 1];
-		System.arraycopy(window, 0, fftBuffer, 0, window.length);
-		FloatFFT_1D fft = new FloatFFT_1D(window.length);
-		fft.realForward(fftBuffer);
-
-		for (int i = 0; i < fftBuffer.length / 2 - 1; i++) {
-			float real = fftBuffer[2 * i];
-			float imag = fftBuffer[2 * i + 1];
-
-			powerSpectrum[i] = (float) Math.sqrt(real * real + imag * imag);
-		}
-
-		return powerSpectrum;
-	}
-
-	/**
-	 * Code of FFT is mostly taken from github.com/akuehntopf
-	 * https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19
-	 * 
-	 * @param output
-	 */
-	private synchronized void fftThis(final float[] output) {
-		try {
-
-			float[] windowed = new float[output.length];
-			applyWindow(output, windowed);
-
-			// 3. Calculate Power Spectrum (using FFT)
-			float[] spectrum = powerSpectrum(windowed);
-			double[][] spectrumMap = new double[2][spectrum.length];
-			for (int i = 0; i < spectrum.length; i++) {
-				spectrumMap[1][i] = spectrum[i];
-				spectrumMap[0][i] = getFrequencyForIndex(i, spectrum.length, (float) sampleRate) / 2.0;
-//				System.out.println(spectrumMap[i][1] + " " + spectrumMap[i][0]);
-			}
-
-			notifyFFTListeners(spectrumMap);
-
-		} catch (Exception e) {
-			LOG.info("Problem on FFT", e);
-		}
 	}
 
 	private void notifyFFTListeners(final double[][] spectrumMap) {
@@ -349,12 +277,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		return result;
 	}
 
-	// taken from https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19,
-	// author Andreas Kuehntopf
-	private float getFrequencyForIndex(final int index, final int size, final float rate) {
-		return (float) index * (float) rate / size;
-	}
-
 	/**
 	 * Returns the list of {@link Group} that get calculated
 	 * 
@@ -373,7 +295,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 		if (channelList == null) {
 			channelList = new ArrayList<>();
 			for (int i = 0; i < getNoOfInputs(); i++) {
-				channelList.add(new Channel(asioDriver.getChannelInput(i)));
+				Channel channel = new Channel(asioDriver.getChannelInput(i));
+				channelList.add(channel);
+				channel.addListener(this);
 			}
 		}
 		return channelList;
@@ -594,5 +518,37 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input> {
 			result.add(info.getName());
 		}
 		return result;
+	}
+
+	@Override
+	public void levelChanged(Input input, double level, long time) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void nameChanged(String name) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void colorChanged(String newColor) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void newBuffer(Channel channel, float[] buffer, long time) {
+		// if channel is currently selected
+		if (Objects.equal(channel.getChannelIndex(), activeChannel.getChannelIndex())) {
+			if (!isFFTing) {
+				isFFTing = true;
+
+				double[][] spectrum = FFT.fftThis(activeChannel.getBuffer(), (float) sampleRate);
+				notifyFFTListeners(spectrum);
+				isFFTing = false;
+			}
+		}
 	}
 }
