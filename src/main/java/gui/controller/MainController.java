@@ -610,9 +610,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		// Traditional way to get the response value.
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			if (ASIOController.getInstance() != null) {
-				ASIOController.getInstance().addGroup(new Group(result.get()));
-			}
+			ASIOController.getInstance().addGroup(new Group(result.get()));
 			refresh();
 		}
 		e.consume();
@@ -662,40 +660,38 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	private void refreshInputs() {
 		channelList.getItems().clear();
-		if (ASIOController.getInstance() != null) {
-			if (toggleGroupChannels.isSelected()) {
-				// add groups
-				for (Group group : ASIOController.getInstance().getGroupList()) {
-					channelList.getItems().add(group);
-				}
-			} else {
-				// add channels
-				// New Channel List
-				List<Channel> newChanneList = ASIOController.getInstance().getInputList();
-				// channels that are currently in the channelList, but should be removed since
-				// they are not in the new list
-				ArrayList<Channel> removeList = new ArrayList<>();
+		if (toggleGroupChannels.isSelected()) {
+			// add groups
+			for (Group group : ASIOController.getInstance().getGroupList()) {
+				channelList.getItems().add(group);
+			}
+		} else {
+			// add channels
+			// New Channel List
+			List<Channel> newChanneList = ASIOController.getInstance().getInputList();
+			// channels that are currently in the channelList, but should be removed since
+			// they are not in the new list
+			ArrayList<Channel> removeList = new ArrayList<>();
 
-				// Searching all curent channels that are not in the new list
-				for (Input cNew : channelList.getItems()) {
-					Channel channelNew = (Channel) cNew;
-					if (!newChanneList.contains(channelNew) || (channelNew.isHidden() && !isShowHidden())) {
-						removeList.add(channelNew);
-					}
-				}
-				// Removing all old channels
-				channelList.getItems().removeAll(newChanneList);
-
-				for (Channel channel : newChanneList) {
-					// if channel is not hidden, or showHidden, and if
-					// sterechannel isn't already added to list
-					if ((!channel.isHidden() || isShowHidden()) && (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
-						channelList.getItems().add(channel);
-					}
+			// Searching all curent channels that are not in the new list
+			for (Input cNew : channelList.getItems()) {
+				Channel channelNew = (Channel) cNew;
+				if (!newChanneList.contains(channelNew) || (channelNew.isHidden() && !isShowHidden())) {
+					removeList.add(channelNew);
 				}
 			}
-			channelList.getItems().sort(Input.COMPARATOR);
+			// Removing all old channels
+			channelList.getItems().removeAll(newChanneList);
+
+			for (Channel channel : newChanneList) {
+				// if channel is not hidden, or showHidden, and if
+				// sterechannel isn't already added to list
+				if ((!channel.isHidden() || isShowHidden()) && (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
+					channelList.getItems().add(channel);
+				}
+			}
 		}
+		channelList.getItems().sort(Input.COMPARATOR);
 	}
 
 	@FXML
@@ -753,7 +749,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		chooser.getExtensionFilters().add(FILTER);
 		chooser.setSelectedExtensionFilter(FILTER);
 		File result = chooser.showSaveDialog(root.getScene().getWindow());
-		if (result != null && timeKeeperController != null && ASIOController.getInstance() != null) {
+		if (result != null && timeKeeperController != null) {
 			FileIO.save(new ArrayList<>(ASIOController.getInstance().getData()), result);
 		}
 		resetStatus();

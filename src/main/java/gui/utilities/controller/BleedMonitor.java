@@ -34,27 +34,27 @@ import main.Constants;
 
 public class BleedMonitor extends AnchorPane implements Initializable, PausableComponent {
 
-	private static final Logger			LOG			= LogManager.getLogger(BleedMonitor.class);
-	private static final String			FXML		= "/fxml/utilities/BleedMonitor.fxml";
-	private boolean						pause		= false;
-	private Pausable					parent;
+	private static final Logger LOG = LogManager.getLogger(BleedMonitor.class);
+	private static final String FXML = "/fxml/utilities/BleedMonitor.fxml";
+	private boolean pause = false;
+	private Pausable parent;
 	@FXML
-	private AnchorPane					vuPane;
+	private AnchorPane vuPane;
 	@FXML
-	private Pane						bleedPane;
+	private Pane bleedPane;
 	@FXML
-	private VBox						bleedTopPane;
+	private VBox bleedTopPane;
 	@FXML
-	private ComboBox<Channel>			combo;
+	private ComboBox<Channel> combo;
 	@FXML
-	private HBox						root;
+	private HBox root;
 	@FXML
-	private LineChart<Number, Number>	chart;
-	private Series<Number, Number>		series1		= new Series<>();
-	private Series<Number, Number>		series2		= new Series<>();
-	private boolean						maximized	= false;
-	private VuMeterMono					vuMeter;
-	private BleedAnalyzer				analyzer;
+	private LineChart<Number, Number> chart;
+	private Series<Number, Number> series1 = new Series<>();
+	private Series<Number, Number> series2 = new Series<>();
+	private boolean maximized = false;
+	private VuMeterMono vuMeter;
+	private BleedAnalyzer analyzer;
 
 	public BleedMonitor() {
 		analyzer = new BleedAnalyzer();
@@ -117,9 +117,7 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 	}
 
 	public void refresh() {
-		if (ASIOController.getInstance() != null) {
-			combo.getItems().addAll(ASIOController.getInstance().getInputList());
-		}
+		combo.getItems().addAll(ASIOController.getInstance().getInputList());
 	}
 
 	private void update() {
@@ -153,7 +151,7 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 
 	@Override
 	public boolean isPaused() {
-		return pause || (parent != null && parent.isPaused()) || ASIOController.getInstance() == null;
+		return pause || (parent != null && parent.isPaused());
 	}
 
 	@Override

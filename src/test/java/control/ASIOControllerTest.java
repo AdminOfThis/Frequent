@@ -14,7 +14,7 @@ class ASIOControllerTest {
 
 	@Test
 	public void instance() {
-		if (ASIOController.getInstance() == null) {
+		if (ASIOController.getPossibleDrivers() == null || ASIOController.getPossibleDrivers().isEmpty()) {
 			return;
 		}
 		new ASIOController(ASIOController.getPossibleDrivers().get(0).getName());

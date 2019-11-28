@@ -121,10 +121,8 @@ public class FXMLMain extends MainGUI {
 		}
 		LOG.info("Stopping GUI");
 		Platform.exit();
-		if (ASIOController.getInstance() != null) {
-			LOG.info("Stopping AudioDriver");
-			ASIOController.getInstance().shutdown();
-		}
+		LOG.info("Stopping AudioDriver");
+		ASIOController.getInstance().shutdown();
 		LOG.info("Deleting RTA file");
 		RTAIO.deleteFile();
 		LOG.info("Bye");

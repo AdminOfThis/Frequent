@@ -182,33 +182,31 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 	}
 
 	private void updateDrumChart() {
-		if (ASIOController.getInstance() != null) {
-			// Adding pending entries
-			synchronized (pendingMap) {
-				for (Entry<DrumTrigger, ArrayList<Data<Number, Number>>> listEntry : pendingMap.entrySet()) {
-					Series<Number, Number> series = seriesMap.get(listEntry.getKey());
-					ArrayList<Data<Number, Number>> dataList = new ArrayList<>();
-					for (Data<Number, Number> data : listEntry.getValue()) {
-						dataList.add(data);
-					}
-					Platform.runLater(() -> series.getData().addAll(dataList));
+		// Adding pending entries
+		synchronized (pendingMap) {
+			for (Entry<DrumTrigger, ArrayList<Data<Number, Number>>> listEntry : pendingMap.entrySet()) {
+				Series<Number, Number> series = seriesMap.get(listEntry.getKey());
+				ArrayList<Data<Number, Number>> dataList = new ArrayList<>();
+				for (Data<Number, Number> data : listEntry.getValue()) {
+					dataList.add(data);
 				}
-				pendingMap.clear();
+				Platform.runLater(() -> series.getData().addAll(dataList));
 			}
-			// udating xAxis
-			NumberAxis xAxis = (NumberAxis) drumChart.getXAxis();
-			FXMLUtil.updateAxis(xAxis, DRUM_TIME_FRAME, ASIOController.getInstance().getTime());
-			// removing old data
-			for (Series<Number, Number> series : drumChart.getData()) {
-				FXMLUtil.removeOldData((long) xAxis.getLowerBound(), series);
-			}
-			double bpm = BeatDetector.getInstance().getBPM();
-			if (bpm > 0) {
+			pendingMap.clear();
+		}
+		// udating xAxis
+		NumberAxis xAxis = (NumberAxis) drumChart.getXAxis();
+		FXMLUtil.updateAxis(xAxis, DRUM_TIME_FRAME, ASIOController.getInstance().getTime());
+		// removing old data
+		for (Series<Number, Number> series : drumChart.getData()) {
+			FXMLUtil.removeOldData((long) xAxis.getLowerBound(), series);
+		}
+		double bpm = BeatDetector.getInstance().getBPM();
+		if (bpm > 0) {
 
-				Platform.runLater(() -> lblBPM.setText(BeatDetector.getInstance().getBPMString()));
-			} else {
-				Platform.runLater(() -> lblBPM.setText("Unknown"));
-			}
+			Platform.runLater(() -> lblBPM.setText(BeatDetector.getInstance().getBPMString()));
+		} else {
+			Platform.runLater(() -> lblBPM.setText("Unknown"));
 		}
 	}
 

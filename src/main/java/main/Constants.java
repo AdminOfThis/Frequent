@@ -48,11 +48,9 @@ public final class Constants {
 
 		@Override
 		public Channel fromString(final String string) {
-			if (ASIOController.getInstance() != null) {
-				for (Channel c : ASIOController.getInstance().getInputList()) {
-					if (Objects.equals(c.getName(), string)) {
-						return c;
-					}
+			for (Channel c : ASIOController.getInstance().getInputList()) {
+				if (Objects.equals(c.getName(), string)) {
+					return c;
 				}
 			}
 			return null;

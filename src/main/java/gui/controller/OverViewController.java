@@ -73,61 +73,59 @@ public class OverViewController implements Initializable, PausableView {
 		flow.setHgap(GAP);
 		flow.setVgap(GAP);
 		root.setCenter(flow);
-		if (ASIOController.getInstance() != null) {
-			// total number of channels to display
-			ArrayList<Channel> channelsToDisplay = new ArrayList<>();
-			for (Channel c : ASIOController.getInstance().getInputList()) {
-				if ((!c.isHidden() || MainController.getInstance().isShowHidden()) && (!c.isStereo() || c.isLeftChannel())) {
-					channelsToDisplay.add(c);
-				}
+		// total number of channels to display
+		ArrayList<Channel> channelsToDisplay = new ArrayList<>();
+		for (Channel c : ASIOController.getInstance().getInputList()) {
+			if ((!c.isHidden() || MainController.getInstance().isShowHidden()) && (!c.isStereo() || c.isLeftChannel())) {
+				channelsToDisplay.add(c);
 			}
-			int channels = channelsToDisplay.size();
+		}
+		int channels = channelsToDisplay.size();
 
-			if (channels > 0) {
-				int rows = calculateRows(channels);
+		if (channels > 0) {
+			int rows = calculateRows(channels);
 
-				// split evenly in Lists with desired size
-				List<List<Channel>> partitionList = ListUtils.partition(channelsToDisplay, (int) Math.ceil(channels / (double) rows));
+			// split evenly in Lists with desired size
+			List<List<Channel>> partitionList = ListUtils.partition(channelsToDisplay, (int) Math.ceil(channels / (double) rows));
 
-				for (int rowIndex = 0; rowIndex < partitionList.size(); rowIndex++) {
-					// Getting the matching row list
-					List<Channel> rowList = partitionList.get(rowIndex);
-					for (int columnIndex = 0; columnIndex < rowList.size(); columnIndex++) {
-						// And the channel on that column
-						Channel c = rowList.get(columnIndex);
-						// create VuMeter
-						VuMeter meter;
-						if (c.isStereo()) {
-							meter = new VuMeterStereo(c, c.getStereoChannel(), ORIENTATION);
-						} else {
-							meter = new VuMeterMono(c, ORIENTATION);
-						}
-						meter.setParentPausable(this);
-						flow.add(meter, columnIndex, rowIndex);
+			for (int rowIndex = 0; rowIndex < partitionList.size(); rowIndex++) {
+				// Getting the matching row list
+				List<Channel> rowList = partitionList.get(rowIndex);
+				for (int columnIndex = 0; columnIndex < rowList.size(); columnIndex++) {
+					// And the channel on that column
+					Channel c = rowList.get(columnIndex);
+					// create VuMeter
+					VuMeter meter;
+					if (c.isStereo()) {
+						meter = new VuMeterStereo(c, c.getStereoChannel(), ORIENTATION);
+					} else {
+						meter = new VuMeterMono(c, ORIENTATION);
 					}
+					meter.setParentPausable(this);
+					flow.add(meter, columnIndex, rowIndex);
 				}
-				for (int i = flow.getColumnConstraints().size(); i < flow.getColumnCount(); i++) {
-					ColumnConstraints constraint = new ColumnConstraints();
-					constraint.setMinWidth(30.0);
-					constraint.setFillWidth(true);
-					constraint.setPercentWidth(-1);
-					constraint.setPrefWidth(Region.USE_COMPUTED_SIZE);
-					constraint.setHgrow(Priority.SOMETIMES);
-					flow.getColumnConstraints().add(constraint);
-
-				}
-
-				for (int i = flow.getRowConstraints().size(); i < flow.getRowCount(); i++) {
-					RowConstraints constraint = new RowConstraints();
-					constraint.setMinHeight(50.0);
-					constraint.setFillHeight(true);
-					constraint.setPercentHeight(-1);
-					constraint.setPrefHeight(Region.USE_COMPUTED_SIZE);
-					constraint.setVgrow(Priority.SOMETIMES);
-					flow.getRowConstraints().add(constraint);
-				}
+			}
+			for (int i = flow.getColumnConstraints().size(); i < flow.getColumnCount(); i++) {
+				ColumnConstraints constraint = new ColumnConstraints();
+				constraint.setMinWidth(30.0);
+				constraint.setFillWidth(true);
+				constraint.setPercentWidth(-1);
+				constraint.setPrefWidth(Region.USE_COMPUTED_SIZE);
+				constraint.setHgrow(Priority.SOMETIMES);
+				flow.getColumnConstraints().add(constraint);
 
 			}
+
+			for (int i = flow.getRowConstraints().size(); i < flow.getRowCount(); i++) {
+				RowConstraints constraint = new RowConstraints();
+				constraint.setMinHeight(50.0);
+				constraint.setFillHeight(true);
+				constraint.setPercentHeight(-1);
+				constraint.setPrefHeight(Region.USE_COMPUTED_SIZE);
+				constraint.setVgrow(Priority.SOMETIMES);
+				flow.getRowConstraints().add(constraint);
+			}
+
 		}
 	}
 

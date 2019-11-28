@@ -39,9 +39,8 @@ public final class FFT {
 
 	public static float[] applyWindow(float[] from) {
 		float[] result = new float[from.length];
-		int M = from.length;
-		for (int n = 0; n < M; n++) {
-			result[n] = from[n] * getHammingValue(n, M);
+		for (int n = 0; n < from.length; n++) {
+			result[n] = from[n] * getHammingValue(n, from.length);
 		}
 		return result;
 	}

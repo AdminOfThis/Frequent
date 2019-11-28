@@ -69,10 +69,8 @@ public class SettingsController implements Initializable {
 		// Init data
 		chbBuffer.getItems().addAll(BUFFERS);
 		chbDevice.getItems().addAll(ASIOController.getPossibleDriverStrings());
-		if (ASIOController.getInstance() != null) {
-			chbBuffer.setValue(ASIOController.getInstance().getBufferSize());
-			chbDevice.setValue(ASIOController.getInstance().getDevice());
-		}
+		chbBuffer.setValue(ASIOController.getInstance().getBufferSize());
+		chbDevice.setValue(ASIOController.getInstance().getDevice());
 
 		initSpecificPanel();
 		loadValues();

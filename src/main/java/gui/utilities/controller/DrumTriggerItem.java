@@ -66,11 +66,7 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, Pausab
 		AnchorPane.setLeftAnchor(chart, .0);
 		AnchorPane.setRightAnchor(chart, .0);
 
-		combo.setOnShowing(e -> {
-			if (ASIOController.getInstance() != null) {
-				combo.getItems().setAll(ASIOController.getInstance().getInputList());
-			}
-		});
+		combo.setOnShowing(e -> combo.getItems().setAll(ASIOController.getInstance().getInputList()));
 		combo.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Channel>) (observable, oldValue, newValue) -> {
 			if (trigger != null) {
 				trigger.setChannel(newValue);

@@ -90,7 +90,7 @@ public class DrumTrigger implements InputListener {
 	}
 
 	public void calcBPM() {
-		if (ASIOController.getInstance() != null && getChannel() != null) {
+		if (getChannel() != null) {
 			bpmDetect.detect(getChannel().getBuffer(), ASIOController.getInstance().getSampleRate());
 		}
 	}

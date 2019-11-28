@@ -237,8 +237,7 @@ public class TimeKeeperController implements Initializable {
 			}
 		};
 		timer.start();
-		while (TimeKeeper.getInstance().getActiveIndex() < 0) {
-		}
+		while (TimeKeeper.getInstance().getActiveIndex() < 0) {}
 		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
 		cueTable.getSelectionModel().select(0);
 		cueTable.refresh();
@@ -370,9 +369,7 @@ public class TimeKeeperController implements Initializable {
 
 	public void refresh() {
 		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
-		if (ASIOController.getInstance() != null) {
-			choiceCueChannel.getItems().setAll(ASIOController.getInstance().getInputList());
-		}
+		choiceCueChannel.getItems().setAll(ASIOController.getInstance().getInputList());
 	}
 
 	private void enableContextMenu(boolean value) {

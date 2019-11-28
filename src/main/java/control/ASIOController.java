@@ -64,7 +64,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	 *         singleton pattern
 	 */
 	public static ASIOController getInstance() {
-
+		if (instance == null) {
+			instance = new ASIOController(null);
+		}
 		return instance;
 
 	}
@@ -97,7 +99,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				} catch (Exception e) {
 					LOG.debug(possibleDriver + " is unavailable");
 				} finally {
-					if (tempDriver != null && (ASIOController.getInstance() != null && !tempDriver.getName().equals(ASIOController.getInstance().getDevice()))) {
+					if (tempDriver != null && (!tempDriver.getName().equals(ASIOController.getInstance().getDevice()))) {
 						tempDriver.shutdownAndUnloadDriver();
 					}
 				}
@@ -116,6 +118,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	 *               from {@link #getPossibleDrivers()}
 	 */
 	public ASIOController(final String ioName) {
+
 		if (instance != null) {
 			LOG.warn("Another driver already exists");
 			shutdown();
@@ -124,9 +127,11 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 		driverName = ioName;
 		instance = this;
 		FileIO.registerSaveData(this);
-		restart();
-		LOG.info("ASIO driver started");
-		initFFT();
+		if (driverName != null) {
+			restart();
+			LOG.info("ASIO driver started");
+			initFFT();
+		}
 		LOG.info("FFT Analysis started");
 	}
 

@@ -56,9 +56,7 @@ public class BleedViewController implements Initializable, PausableView {
 		AnchorPane.setTopAnchor(primaryMeter, .0);
 		AnchorPane.setLeftAnchor(primaryMeter, .0);
 		AnchorPane.setRightAnchor(primaryMeter, .0);
-		if (ASIOController.getInstance() != null) {
-			primaryCombo.getItems().setAll(ASIOController.getInstance().getInputList());
-		}
+		primaryCombo.getItems().setAll(ASIOController.getInstance().getInputList());
 		primaryCombo.setConverter(Constants.CHANNEL_CONVERTER);
 		primaryCombo.valueProperty().addListener(e -> {
 			primaryMeter.setChannel(primaryCombo.getValue());
@@ -94,9 +92,7 @@ public class BleedViewController implements Initializable, PausableView {
 
 	@Override
 	public void refresh() {
-		if (ASIOController.getInstance() != null) {
-			primaryCombo.getItems().setAll(ASIOController.getInstance().getInputList());
-		}
+		primaryCombo.getItems().setAll(ASIOController.getInstance().getInputList());
 		for (Node n : content.getChildren()) {
 			if (n instanceof BleedMonitor) {
 				((BleedMonitor) n).refresh();

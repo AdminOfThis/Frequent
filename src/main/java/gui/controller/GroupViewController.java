@@ -220,41 +220,39 @@ public class GroupViewController implements Initializable, PausableView {
 
 	@Override
 	public void refresh() {
-		if (ASIOController.getInstance() != null) {
-			vuPane.getChildren().clear();
-			groupPane.getItems().clear();
-			boolean redrawChart = ASIOController.getInstance().getGroupList().size() != chart.getData().size();
-			if (!redrawChart) {
-				for (Group g : ASIOController.getInstance().getGroupList()) {
-					boolean found = false;
-					for (Series<Number, Number> s : chart.getData()) {
-						if (s.getName().equals(g.getName())) {
-							found = true;
-							break;
-						}
-					}
-					if (!found) {
-						redrawChart = true;
+		vuPane.getChildren().clear();
+		groupPane.getItems().clear();
+		boolean redrawChart = ASIOController.getInstance().getGroupList().size() != chart.getData().size();
+		if (!redrawChart) {
+			for (Group g : ASIOController.getInstance().getGroupList()) {
+				boolean found = false;
+				for (Series<Number, Number> s : chart.getData()) {
+					if (s.getName().equals(g.getName())) {
+						found = true;
 						break;
 					}
 				}
+				if (!found) {
+					redrawChart = true;
+					break;
+				}
 			}
-			if (redrawChart) {
-				chart.getData().clear();
-			}
-			ArrayList<Group> groupList = ASIOController.getInstance().getGroupList();
-			for (Group g : groupList) {
-				redrawGroup(redrawChart, groupList, g);
-			}
-			// smoothing out splitPane
-			int divCount = groupPane.getDividerPositions().length;
-			double equalSize = 1.0 / (divCount + 1);
-			double divPosValues[] = new double[divCount];
-			for (int count = 1; count < divCount + 1; count++) {
-				divPosValues[count - 1] = equalSize * count;
-			}
-			groupPane.setDividerPositions(divPosValues);
 		}
+		if (redrawChart) {
+			chart.getData().clear();
+		}
+		ArrayList<Group> groupList = ASIOController.getInstance().getGroupList();
+		for (Group g : groupList) {
+			redrawGroup(redrawChart, groupList, g);
+		}
+		// smoothing out splitPane
+		int divCount = groupPane.getDividerPositions().length;
+		double equalSize = 1.0 / (divCount + 1);
+		double divPosValues[] = new double[divCount];
+		for (int count = 1; count < divCount + 1; count++) {
+			divPosValues[count - 1] = equalSize * count;
+		}
+		groupPane.setDividerPositions(divPosValues);
 	}
 
 	@Override

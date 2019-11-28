@@ -76,10 +76,8 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		HBox.setHgrow(vu2, Priority.SOMETIMES);
 		decaySlider.valueProperty().addListener(e -> vectorScope.setDecay(decaySlider.getValue()));
 		// updating channels
-		if (ASIOController.getInstance() != null) {
-			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
-			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
-		}
+		cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
+		cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
 		cmbChannel1.setConverter(Constants.CHANNEL_CONVERTER);
 		cmbChannel2.setConverter(Constants.CHANNEL_CONVERTER);
 		// adding listener
@@ -119,15 +117,13 @@ public class VectorScopeViewController implements Initializable, PausableView {
 
 	private void refreshComboBoxes() {
 		// refreshing combo boxes
-		if (ASIOController.getInstance() != null) {
-			cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
-			cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
-			if (Objects.equals(vectorScope.getChannel1(), cmbChannel1.getValue())) {
-				cmbChannel1.setValue(vectorScope.getChannel1());
-			}
-			if (Objects.equals(vectorScope.getChannel2(), cmbChannel2.getValue())) {
-				cmbChannel2.setValue(vectorScope.getChannel2());
-			}
+		cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
+		cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
+		if (Objects.equals(vectorScope.getChannel1(), cmbChannel1.getValue())) {
+			cmbChannel1.setValue(vectorScope.getChannel1());
+		}
+		if (Objects.equals(vectorScope.getChannel2(), cmbChannel2.getValue())) {
+			cmbChannel2.setValue(vectorScope.getChannel2());
 		}
 	}
 
