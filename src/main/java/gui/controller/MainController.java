@@ -641,7 +641,6 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	}
 
 	public void refresh() {
-		System.out.println("REFRESH");
 		ObservableList<Integer> selectedItems = FXCollections.observableArrayList(channelList.getSelectionModel().getSelectedIndices());
 		if (controller != null) {
 			refreshInputs();
