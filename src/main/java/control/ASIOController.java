@@ -518,7 +518,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	}
 
 	public boolean isLoaded() {
-		return getDevice().isEmpty();
+		return (getDevice() == null || getDevice().isEmpty());
 	}
 
 	public static List<String> getPossibleDriverStrings() {
