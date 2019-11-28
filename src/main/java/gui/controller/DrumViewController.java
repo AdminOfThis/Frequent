@@ -120,14 +120,19 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 			public String toString(final Number object) {
 				DrumTrigger trig = null;
 				try {
-					trig = triggerList.get((int) object);
+					int index = (int) Math.round((double) object);
+					if (index >= triggerList.size()) {
+						trig = null;
+					} else {
+						trig = triggerList.get(index);
+					}
 				} catch (Exception e) {
 					LOG.warn("Problem on calculating trigger", e);
 				}
 				if (trig != null) {
 					return trig.getName();
 				}
-				return null;
+				return "";
 			}
 		});
 		drumChart.getStyleClass().add("drumChart");
