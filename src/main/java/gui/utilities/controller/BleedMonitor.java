@@ -151,7 +151,7 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 
 	@Override
 	public boolean isPaused() {
-		return pause || (parent != null && parent.isPaused());
+		return pause || (parent != null && parent.isPaused() || ASIOController.getInstance().isLoaded());
 	}
 
 	@Override

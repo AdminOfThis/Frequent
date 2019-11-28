@@ -517,6 +517,10 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 		return driverName;
 	}
 
+	public boolean isLoaded() {
+		return getDevice().isEmpty();
+	}
+
 	public static List<String> getPossibleDriverStrings() {
 		List<String> result = new ArrayList<String>();
 		for (DriverInfo info : getPossibleDrivers()) {
