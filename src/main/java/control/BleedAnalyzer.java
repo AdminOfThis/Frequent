@@ -19,10 +19,10 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 	private Pausable parent;
 	private Channel primaryChannel, secondaryChannel;
 	// data
-	private float[] newData1;
-	private float[] newData2;
-	private float[] originalSeries;
-	private float[] otherSeries;
+	private float[] newData1 = new float[ASIOController.getInstance().getBufferSize()];
+	private float[] newData2 = new float[ASIOController.getInstance().getBufferSize()];
+	private float[] originalSeries = new float[ASIOController.getInstance().getBufferSize()];
+	private float[] otherSeries = new float[ASIOController.getInstance().getBufferSize()];
 	private double minDiff = Double.MAX_VALUE;
 	private double confidence;
 	private int delay = 0;
