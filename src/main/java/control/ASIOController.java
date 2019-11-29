@@ -119,7 +119,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	 */
 	public ASIOController(final String ioName) {
 
-		if (instance != null) {
+		if (instance != null && instance.getDevice() != null && !instance.getDevice().isEmpty()) {
 			LOG.warn("Another driver already exists");
 			shutdown();
 		}
