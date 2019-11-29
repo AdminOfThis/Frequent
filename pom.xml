@@ -57,14 +57,6 @@
 			<version>3.1</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.rollbar/rollbar-java -->
-		<dependency>
-			<groupId>com.rollbar</groupId>
-			<artifactId>rollbar-java</artifactId>
-			<version>1.5.2</version>
-		</dependency>
-
-
 		<!-- https://mvnrepository.com/artifact/com.rollbar/rollbar-log4j2 -->
 		<dependency>
 			<groupId>com.rollbar</groupId>
@@ -366,6 +358,10 @@
 
 						<configuration>
 							<finalName>${project.name}</finalName>
+							<transformers>
+								<transformer implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer">
+								</transformer>
+							</transformers>
 							<verbose>false</verbose>
 							<descriptorRefs>
 								<descriptorRef>jar-with-dependencies</descriptorRef>
