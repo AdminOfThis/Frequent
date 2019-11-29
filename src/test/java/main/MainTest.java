@@ -1,122 +1,117 @@
 package main;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testfx.api.FxRobot;
+import org.testfx.api.FxToolkit;
+import org.testfx.framework.junit5.ApplicationExtension;
+import org.testfx.service.query.EmptyNodeQueryException;
 
-import javafx.application.Platform;
-import javafx.event.Event;
-import javafx.scene.Scene;
+import javafx.scene.Node;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
+@ExtendWith(ApplicationExtension.class)
 class MainTest {
 
-	private static final long WAIT_TIME = 100;
+	@BeforeEach
+	public void before() throws Exception {
+		Stage stage = FxToolkit.registerPrimaryStage();
+		Main.setDebug(true);
+		FxToolkit.setupApplication(FXMLMain.class);
+		do {
+			Thread.yield();
+		} while (!stage.isShowing());
+	}
 
-	private static Exception e;
-	private static Scene scene;
+	@AfterEach
+	public void tearDown(FxRobot robot) throws Exception {
+		FxToolkit.hideStage();
+		robot.release(new KeyCode[] {});
+		robot.release(new MouseButton[] {});
+	}
 
 	@Test
-	@BeforeAll
-	public static void launchApplication() throws Exception {
-		CountDownLatch latch = new CountDownLatch(1);
-		Thread thread = new Thread(() -> {
-			try {
-				Main.main(new String[] { "-debug" });
-			} catch (Exception ex) {
-				e = ex;
-				e.printStackTrace();
-			} finally {
-				latch.countDown();
+	public void clickWaveCharts(FxRobot robot) {
+		robot.clickOn("#toggleBtmRaw");
+		robot.clickOn("#toggleBtmWave");
+	}
+
+	@Test
+	public void clickWave(FxRobot robot) {
+		assertNotNull(robot.lookup("#waveFormPane").query());
+		robot.clickOn("#togglePreview");
+		assertThrows(EmptyNodeQueryException.class, () -> robot.lookup("#waveFormPane").query());
+		robot.clickOn("#togglePreview");
+		assertNotNull(robot.lookup("#waveFormPane").query());
+	}
+
+	@Test
+	public void clickChannel(FxRobot robot) throws InterruptedException {
+		ToggleButton button = robot.lookup("#toggleChannels").query();
+		assertTrue(button.isSelected());
+		robot.clickOn(button);
+		Thread.sleep(5000);
+		assertFalse(button.isSelected());
+		assertThrows(EmptyNodeQueryException.class, () -> robot.lookup("#channelList").query());
+		robot.clickOn(button);
+		assertTrue(button.isSelected());
+		assertNotNull(robot.lookup("#channelList").query());
+		robot.clickOn(button);
+	}
+
+	@Test
+	public void clickModules(FxRobot robot) {
+		for (Node node : robot.lookup("#tglOverView").query().getParent().getChildrenUnmodifiable()) {
+			if (node instanceof ToggleButton) {
+				ToggleButton button = (ToggleButton) node;
+				ArrayList<Node> before = new ArrayList<Node>(((SplitPane) robot.lookup("#contentPane").query()).getItems());
+				robot.clickOn(button);
+				ArrayList<Node> after = new ArrayList<Node>(((SplitPane) robot.lookup("#contentPane").query()).getItems());
+				assertNotEquals(before, after);
 			}
-		});
-		thread.start();// Initialize the thread
-		latch.await(10, TimeUnit.SECONDS);
-		scene = FXMLMain.getInstance().getScene();
-		if (e != null) {
-			throw e;
 		}
 	}
 
-	@AfterAll
-	public static void closeApplication() throws Exception {
-		Thread.sleep(WAIT_TIME);
-	}
-
-	@ParameterizedTest
-	@EnumSource(value = KeyCode.class, names = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, mode = EnumSource.Mode.INCLUDE)
-	public void openModules(KeyCode code) throws Exception {
-		pushButton(code, false);
-		Thread.sleep(WAIT_TIME);
-	}
-
-	@ParameterizedTest
-	@EnumSource(value = KeyCode.class, names = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, mode = EnumSource.Mode.INCLUDE)
-	public void pressKeysControlDown(KeyCode code) throws Exception {
-		pushButton(code, true);
-		Thread.sleep(WAIT_TIME);
-	}
-
 	@Test
-	public void cmdVersion() throws Exception {
-
-		// setup new Stream for checking
-		final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-		final PrintStream originalOut = System.out;
-
-		System.setOut(new PrintStream(outContent));
-		Main.main(new String[] { "-version" });
-		assertEquals(Main.getReadableTitle() + System.getProperty("line.separator"), outContent.toString());
-		System.setOut(originalOut);
-	}
-
-	@Test
-	public void fullScreenToggle() throws Exception {
-
-		assertFalse(findFullScreenWindow());
-		pushButton(KeyCode.F11, false);
-		Thread.sleep(1000);
-		assertTrue(findFullScreenWindow());
-		pushButton(KeyCode.F11, false);
-		Thread.sleep(1000);
-		assertFalse(findFullScreenWindow());
-	}
-
-	private boolean findFullScreenWindow() {
-		boolean foundFullScreen = false;
-
-		for (Window w : Stage.getWindows()) {
-			if (w instanceof Stage) {
-				if (((Stage) w).isFullScreen()) {
-					foundFullScreen = true;
-					break;
+	public void clickModulesAndSubmodules(FxRobot robot) {
+		for (Node node : robot.lookup("#tglOverView").query().getParent().getChildrenUnmodifiable()) {
+			if (node instanceof ToggleButton) {
+				ToggleButton button = (ToggleButton) node;
+				ArrayList<Node> before = new ArrayList<Node>(((SplitPane) robot.lookup("#contentPane").query()).getItems());
+				robot.clickOn(button);
+				ArrayList<Node> after = new ArrayList<Node>(((SplitPane) robot.lookup("#contentPane").query()).getItems());
+				assertNotEquals(before, after);
+				for (Node child : ((HBox) robot.lookup("#buttonBox").query()).getChildren()) {
+					if (child instanceof ToggleButton) {
+						robot.clickOn(child);
+						robot.clickOn(child);
+					}
 				}
 			}
 		}
-		return foundFullScreen;
 	}
 
-	private void pushButton(KeyCode code, boolean control) {
-		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(), new KeyEvent(null, scene, KeyEvent.KEY_PRESSED, "", "", code, false, control, false, false)));
-		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		Platform.runLater(() -> Event.fireEvent(scene.getFocusOwner(), new KeyEvent(null, scene, KeyEvent.KEY_RELEASED, "", "", code, false, control, false, false)));
+	@Test
+	public void checkResizable(FxRobot robot) throws InterruptedException {
+		Stage stage = (Stage) robot.lookup("#root").queryAs(BorderPane.class).getScene().getWindow();
+		assertTrue(stage.isResizable());
+
 	}
+
 }
