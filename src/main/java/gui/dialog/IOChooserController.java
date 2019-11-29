@@ -106,6 +106,8 @@ public class IOChooserController implements Initializable {
 			selectedIO = listIO.getSelectionModel().getSelectedItem().getName();
 		} else if (!listIO.getItems().isEmpty()) {
 			selectedIO = listIO.getItems().get(0).getName();
+		} else {
+			LOG.info("Starting without selected driver, for DEBUG purposes only!");
 		}
 		LOG.info("Loading Main-Window with selected Driver \"" + selectedIO + "\"");
 		launchMain(selectedIO);
@@ -134,7 +136,6 @@ public class IOChooserController implements Initializable {
 
 	public void startDebug() {
 		// if (!listIO.getItems().isEmpty()) {
-		LOG.warn("Starting without selected driver, for DEBUG purposes only!");
 		start(new ActionEvent());
 		// }
 	}

@@ -19,7 +19,6 @@
 		</RollingFile>
 
 		<Rollbar name="ROLLBAR">
-		
 			<accessToken>15be8db3e6a744ceaaeedea7a0dfb20c</accessToken>
 			<ThresholdFilter level="warn" />
 		</Rollbar>
