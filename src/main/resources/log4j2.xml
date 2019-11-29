@@ -1,30 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration strict="true" status="warn" name="XMLConfig">
 
-	<Filter type="ThresholdFilter" level="trace"/>
+	<Filter type="ThresholdFilter" level="trace" />
 
 	<Appenders>
-		<Console name="STDOUT" target="SYSTEM_OUT" >
-			<PatternLayout pattern="%d{HH:mm:ss} %-5p %-3L:%-30c{1} - %m%n"/>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss} %-5p %-3L:%-30c{1} - %m%n" />
 			<ThresholdFilter level="info" />
 		</Console>
 
 		<RollingFile name="FILE" fileName="logs/frequent.log" filePattern="logs/$${date:yyyy-MM}/frequent-%d{MM-dd-yyyy}-%i.log">
-			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %-3L:%-30c{1} - %m%n"/>
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %-3L:%-30c{1} - %m%n" />
 			<Policies>
 				<OnStartupTriggeringPolicy />
 				<TimeBasedTriggeringPolicy />
-				<SizeBasedTriggeringPolicy size="100 MB"/>
+				<SizeBasedTriggeringPolicy size="100 MB" />
 			</Policies>
 		</RollingFile>
+
+		<Rollbar name="ROLLBAR">
+		
+			<accessToken>15be8db3e6a744ceaaeedea7a0dfb20c</accessToken>
+			<ThresholdFilter level="warn" />
+		</Rollbar>
 
 	</Appenders>
 
 
 	<Loggers>
 		<Root level="trace">
-			<AppenderRef ref="STDOUT"/>
+			<AppenderRef ref="STDOUT" />
 			<AppenderRef ref="FILE" />
+			<AppenderRef ref="ROLLBAR" />
 		</Root>
 
 	</Loggers>
