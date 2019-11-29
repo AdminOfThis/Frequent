@@ -19,6 +19,7 @@ import com.google.inject.internal.util.Objects;
 import com.synthbot.jasiohost.AsioChannel;
 import com.synthbot.jasiohost.AsioDriver;
 import com.synthbot.jasiohost.AsioDriverListener;
+import com.synthbot.jasiohost.AsioDriverState;
 import com.synthbot.jasiohost.AsioException;
 
 import data.Channel;
@@ -386,36 +387,42 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 			asioDriver.shutdownAndUnloadDriver();
 		}
 		LOG.info("Loading ASIO driver '" + driverName + "'");
-		try {
-			asioDriver = AsioDriver.getDriver(driverName);
-		} catch (AsioException e) {
-			LOG.error("No ASIO device found");
+		if (driverName != null && !driverName.isEmpty()) {
+			try {
+				asioDriver = AsioDriver.getDriver(driverName);
+			} catch (AsioException e) {
+				LOG.error("No ASIO device found");
+			}
+			if (asioDriver == null) {
+				LOG.warn("Unable to load ASIO driver '" + driverName + "'");
+				FXMLMain.getInstance().close();
+			}
+
+			else if (asioDriver.getCurrentState() == AsioDriverState.LOADED || asioDriver.getCurrentState() == AsioDriverState.INITIALIZED) {
+				asioDriver.addAsioDriverListener(this);
+
+				// create a Set of AsioChannels, defining which input and output
+				// channels will be used
+				Set<AsioChannel> activeChannels = new HashSet<>();
+				// configure the ASIO driver to use the given channels
+				for (int i = 0; i < asioDriver.getNumChannelsInput(); i++) {
+					activeChannels.add(asioDriver.getChannelInput(i));
+				}
+				// activeChannels.add(asioDriver.getChannelInput(0));
+				bufferSize = asioDriver.getBufferPreferredSize();
+				// output = new float[bufferSize];
+				sampleRate = asioDriver.getSampleRate();
+				// create the audio buffers and prepare the driver to run
+				asioDriver.createBuffers(activeChannels);
+				// start the driver
+				asioDriver.start();
+				// creating ThreadPool
+				exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+				LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
+				LOG.info("Buffer size: " + bufferSize);
+				LOG.info("Samplerate: " + sampleRate);
+			}
 		}
-		if (asioDriver == null) {
-			LOG.warn("Unable to load ASIO driver '" + driverName + "'");
-			FXMLMain.getInstance().close();
-		}
-		asioDriver.addAsioDriverListener(this);
-		// create a Set of AsioChannels, defining which input and output
-		// channels will be used
-		Set<AsioChannel> activeChannels = new HashSet<>();
-		// configure the ASIO driver to use the given channels
-		for (int i = 0; i < asioDriver.getNumChannelsInput(); i++) {
-			activeChannels.add(asioDriver.getChannelInput(i));
-		}
-		// activeChannels.add(asioDriver.getChannelInput(0));
-		bufferSize = asioDriver.getBufferPreferredSize();
-		// output = new float[bufferSize];
-		sampleRate = asioDriver.getSampleRate();
-		// create the audio buffers and prepare the driver to run
-		asioDriver.createBuffers(activeChannels);
-		// start the driver
-		asioDriver.start();
-		// creating ThreadPool
-		exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-		LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
-		LOG.info("Buffer size: " + bufferSize);
-		LOG.info("Samplerate: " + sampleRate);
 	}
 
 	@Override
@@ -550,7 +557,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	@Override
 	public void newBuffer(Channel channel, float[] buffer, long time) {
 		// if channel is currently selected
-		if (Objects.equal(channel.getChannelIndex(), activeChannel.getChannelIndex())) {
+		if (activeChannel != null && Objects.equal(channel.getChannelIndex(), activeChannel.getChannelIndex())) {
 			if (!isFFTing) {
 				isFFTing = true;
 
