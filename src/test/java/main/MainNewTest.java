@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
+import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.service.query.EmptyNodeQueryException;
 
 import javafx.scene.Node;
@@ -24,7 +26,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
-class MainNewTest extends FxRobot {
+@ExtendWith(ApplicationExtension.class)
+class MainNewTest {
 
 	@BeforeEach
 	public void before() throws Exception {
@@ -34,72 +37,69 @@ class MainNewTest extends FxRobot {
 		do {
 			Thread.yield();
 		} while (!stage.isShowing());
-
 	}
 
 	@AfterEach
-	public void tearDown() throws Exception {
+	public void tearDown(FxRobot robot) throws Exception {
 		FxToolkit.hideStage();
-		release(new KeyCode[] {});
-		release(new MouseButton[] {});
+		robot.release(new KeyCode[] {});
+		robot.release(new MouseButton[] {});
 	}
 
 	@Test
-	public void clickWaveCharts() {
-		clickOn("#toggleBtmRaw");
-		clickOn("#toggleBtmWave");
+	public void clickWaveCharts(FxRobot robot) {
+		robot.clickOn("#toggleBtmRaw");
+		robot.clickOn("#toggleBtmWave");
 	}
 
 	@Test
-	public void clickWave() {
-		assertNotNull(lookup("#waveFormPane").query());
-		clickOn("#togglePreview");
-		assertThrows(EmptyNodeQueryException.class, () -> lookup("#waveFormPane").query());
-		clickOn("#togglePreview");
-		assertNotNull(lookup("#waveFormPane").query());
+	public void clickWave(FxRobot robot) {
+		assertNotNull(robot.lookup("#waveFormPane").query());
+		robot.clickOn("#togglePreview");
+		assertThrows(EmptyNodeQueryException.class, () -> robot.lookup("#waveFormPane").query());
+		robot.clickOn("#togglePreview");
+		assertNotNull(robot.lookup("#waveFormPane").query());
 	}
 
 	@Test
-	public void clickChannel() throws InterruptedException {
-		ToggleButton button = lookup("#toggleChannels").query();
+	public void clickChannel(FxRobot robot) {
+		ToggleButton button = robot.lookup("#toggleChannels").query();
 		assertTrue(button.isSelected());
-		clickOn(button);
-		Thread.sleep(100);
+		robot.clickOn(button);
 		assertFalse(button.isSelected());
-		assertThrows(EmptyNodeQueryException.class, () -> lookup("#channelList").query());
-		clickOn(button);
-		Thread.sleep(100);
+		assertThrows(EmptyNodeQueryException.class, () -> robot.lookup("#channelList").query());
+		robot.clickOn(button);
 		assertTrue(button.isSelected());
-		assertNotNull(lookup("#channelList").query());
-		clickOn(button);
+		assertNotNull(robot.lookup("#channelList").query());
+		robot.clickOn(button);
 	}
 
 	@Test
-	public void clickModules() {
-		for (Node node : lookup("#tglOverView").query().getParent().getChildrenUnmodifiable()) {
+	public void clickModules(FxRobot robot) {
+		for (Node node : robot.lookup("#tglOverView").query().getParent().getChildrenUnmodifiable()) {
 			if (node instanceof ToggleButton) {
 				ToggleButton button = (ToggleButton) node;
-				ArrayList<Node> before = new ArrayList<Node>(((SplitPane) lookup("#contentPane").query()).getItems());
-				clickOn(button);
-				ArrayList<Node> after = new ArrayList<Node>(((SplitPane) lookup("#contentPane").query()).getItems());
+				ArrayList<Node> before = new ArrayList<Node>(((SplitPane) robot.lookup("#contentPane").query()).getItems());
+				robot.clickOn(button);
+				ArrayList<Node> after = new ArrayList<Node>(((SplitPane) robot.lookup("#contentPane").query()).getItems());
 				assertNotEquals(before, after);
 			}
 		}
 	}
 
 	@Test
-	public void clickModulesAndSubmodules() {
-		for (Node node : lookup("#tglOverView").query().getParent().getChildrenUnmodifiable()) {
+	public void clickModulesAndSubmodules(FxRobot robot) {
+		for (Node node : robot.lookup("#tglOverView").query().getParent().getChildrenUnmodifiable()) {
 			if (node instanceof ToggleButton) {
 				ToggleButton button = (ToggleButton) node;
-				ArrayList<Node> before = new ArrayList<Node>(((SplitPane) lookup("#contentPane").query()).getItems());
-				clickOn(button);
-				ArrayList<Node> after = new ArrayList<Node>(((SplitPane) lookup("#contentPane").query()).getItems());
+				ArrayList<Node> before = new ArrayList<Node>(((SplitPane) robot.lookup("#contentPane").query()).getItems());
+				robot.clickOn(button);
+				ArrayList<Node> after = new ArrayList<Node>(((SplitPane) robot.lookup("#contentPane").query()).getItems());
 				assertNotEquals(before, after);
-				for (Node child : ((HBox) lookup("#buttonBox").query()).getChildren()) {
+				for (Node child : ((HBox) robot.lookup("#buttonBox").query()).getChildren()) {
 					if (child instanceof ToggleButton) {
-						clickOn(child);
-						clickOn(child);
+						robot.clickOn(child);
+						robot.clickOn(child);
 					}
 				}
 			}
@@ -107,8 +107,8 @@ class MainNewTest extends FxRobot {
 	}
 
 	@Test
-	public void checkResizable() throws InterruptedException {
-		Stage stage = (Stage) lookup("#root").queryAs(BorderPane.class).getScene().getWindow();
+	public void checkResizable(FxRobot robot) throws InterruptedException {
+		Stage stage = (Stage) robot.lookup("#root").queryAs(BorderPane.class).getScene().getWindow();
 		assertTrue(stage.isResizable());
 
 	}

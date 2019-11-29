@@ -303,7 +303,7 @@
 					<reuseForks>false</reuseForks>
 					<argLine>-Djava.library.path=. -Djni.library.path=. ${surefireArgLine}</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
-					<rerunFailingTestsCount>2</rerunFailingTestsCount>
+					<rerunFailingTestsCount>1</rerunFailingTestsCount>
 					<executions>
 						<execution>
 							<phase>test</phase>
