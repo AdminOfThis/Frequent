@@ -4,6 +4,8 @@ on: [push, pull_request]
 
 jobs:
   build:
+    env:
+     _JAVA_OPTIONS: ""
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
