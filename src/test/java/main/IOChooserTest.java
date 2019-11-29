@@ -17,7 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 @ExtendWith(ApplicationExtension.class)
-class IOChooserTest2 {
+class IOChooserTest {
 
 	@BeforeEach
 	public void before() throws Exception {
