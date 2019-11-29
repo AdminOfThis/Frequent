@@ -12,7 +12,7 @@
           <NumberAxis animated="false" autoRanging="false" forceZeroInRange="false" maxHeight="0.0" minHeight="0.0" minorTickVisible="false" prefHeight="0.0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" />
         </xAxis>
         <yAxis>
-          <NumberAxis animated="false" autoRanging="false" lowerBound="-1.0" maxWidth="0.0" minWidth="0.0" minorTickVisible="false" prefWidth="0.0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="1.0" />
+          <NumberAxis fx:id="yAxis" animated="false" autoRanging="false" lowerBound="-1.0" maxWidth="0.0" minWidth="0.0" minorTickVisible="false" prefWidth="0.0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" upperBound="1.0" />
         </yAxis>
          <padding>
             <Insets bottom="-10.0" left="-10.0" right="-30.0" />

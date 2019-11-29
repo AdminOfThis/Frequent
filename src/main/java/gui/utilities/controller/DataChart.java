@@ -34,6 +34,8 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 	private static final String FXML = "/fxml/utilities/DataChart.fxml";
 	@FXML
 	private LineChart<Number, Number> chart;
+	@FXML
+	private NumberAxis yAxis;
 	private Series<Number, Number> series = new Series<>();
 	private Channel channel;
 	private List<Float> pendingData = Collections.synchronizedList(new ArrayList<>());
@@ -72,15 +74,19 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 				dataCopy = new ArrayList<>(pendingData);
 			}
 			ArrayList<Data<Number, Number>> adding = new ArrayList<>();
-
+			float max = Float.NEGATIVE_INFINITY;
 			for (int i = 0; i < dataCopy.size(); i++) {
-
+				max = Math.max(max, Math.abs(dataCopy.get(i)));
 				adding.add(new Data<Number, Number>(i, dataCopy.get(i)));
-
 			}
+			max = max + .05f;
+			final float axisTop = Math.max(max, .3f);
+			Platform.runLater(() -> {
 
-			Platform.runLater(() -> series.getData().setAll(adding));
-
+				series.getData().setAll(adding);
+				yAxis.setLowerBound(-axisTop);
+				yAxis.setUpperBound(axisTop);
+			});
 			if (!series.getData().isEmpty()) {
 				((NumberAxis) chart.getXAxis()).setLowerBound(series.getData().get(0).getXValue().doubleValue());
 				((NumberAxis) chart.getXAxis()).setUpperBound(series.getData().get(series.getData().size() - 1).getXValue().doubleValue());
