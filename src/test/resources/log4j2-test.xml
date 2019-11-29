@@ -17,6 +17,11 @@
 				<SizeBasedTriggeringPolicy size="100 MB"/>
 			</Policies>
 		</RollingFile>
+		
+		<Rollbar name="ROLLBAR">
+			<accessToken>15be8db3e6a744ceaaeedea7a0dfb20c</accessToken>
+			<ThresholdFilter level="warn" />
+		</Rollbar>
 
 	</Appenders>
 
@@ -25,6 +30,7 @@
 		<Root level="trace">
 			<AppenderRef ref="STDOUT"/>
 			<AppenderRef ref="FILE" />
+			<AppenderRef ref="ROLLBAR" />
 		</Root>
 
 	</Loggers>
