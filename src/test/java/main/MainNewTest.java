@@ -60,13 +60,15 @@ class MainNewTest extends FxRobot {
 	}
 
 	@Test
-	public void clickChannel() {
+	public void clickChannel() throws InterruptedException {
 		ToggleButton button = lookup("#toggleChannels").query();
 		assertTrue(button.isSelected());
 		clickOn(button);
+		Thread.sleep(100);
 		assertFalse(button.isSelected());
 		assertThrows(EmptyNodeQueryException.class, () -> lookup("#channelList").query());
 		clickOn(button);
+		Thread.sleep(100);
 		assertTrue(button.isSelected());
 		assertNotNull(lookup("#channelList").query());
 		clickOn(button);
