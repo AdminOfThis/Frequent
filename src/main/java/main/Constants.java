@@ -32,6 +32,10 @@ public final class Constants {
 
 	public static final String SETTING_ERROR_REPORTING = "log.reporting";
 
+	public static final int LOG4J_INDEX_REPORTING = 0;
+	public static final int LOG4J_INDEX_VERSION = 1;
+	public static final int LOG4J_INDEX_ENVIRONMENT = 2;
+
 	public enum RESTORE_PANEL {
 		NOTHING, LAST, SPECIFIC
 

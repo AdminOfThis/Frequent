@@ -32,6 +32,7 @@ public class Main {
 	private static String color_focus = "#7DFF2F";
 	private static String style = "";
 	private static String propertiesPath = DEFAULT_PROPERTIES_PATH;
+	private static String[] log4jArgs = new String[3];
 	private static boolean noLog = true;
 	private static boolean development = false;
 	private static Logger LOG = LogManager.getLogger(Main.class);
@@ -53,7 +54,8 @@ public class Main {
 			if (parseArgs(args)) {
 				loadProperties();
 				initColors();
-				initExternalLogging();
+				initLog4jParams();
+
 				System.setProperty("javafx.preloader", PreLoader.class.getName());
 				Application.launch(FXMLMain.class, args);
 			}
@@ -64,8 +66,23 @@ public class Main {
 		}
 	}
 
-	private static void initExternalLogging() {
-		setErrorReporting(!development && PropertiesIO.getBooleanProperty(Constants.SETTING_ERROR_REPORTING, true));
+	private static void initLog4jParams() {
+		setErrorReporting(!development && PropertiesIO.getBooleanProperty(Constants.SETTING_ERROR_REPORTING, true), false);
+		log4jArgs[Constants.LOG4J_INDEX_VERSION] = version;
+		if (development) {
+			LOG.info("Set environment to development");
+			log4jArgs[Constants.LOG4J_INDEX_ENVIRONMENT] = "development";
+		} else {
+			log4jArgs[Constants.LOG4J_INDEX_ENVIRONMENT] = "production";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		for (String s : log4jArgs) {
+			sb.append(s + ",");
+		}
+		String args = sb.substring(0, sb.length() - 1);
+		LOG.debug("Set log4j args to: " + args);
+		MainMapLookup.setMainArguments(log4jArgs);
 	}
 
 	public static void initialize(String pomTitle) {
@@ -231,13 +248,20 @@ public class Main {
 	}
 
 	public static void setErrorReporting(boolean noLog) {
+		setErrorReporting(noLog, true);
+	}
+
+	private static void setErrorReporting(boolean noLog, boolean save) {
 		Main.noLog = noLog;
 		if (!noLog) {
 			LOG.info("Disabled external logging");
-			MainMapLookup.setMainArguments(new String[] { "false" });
+			log4jArgs[Constants.LOG4J_INDEX_REPORTING] = "false";
 
 		} else {
-			MainMapLookup.setMainArguments(new String[] { "true" });
+			log4jArgs[Constants.LOG4J_INDEX_REPORTING] = "true";
+		}
+		if (save) {
+			MainMapLookup.setMainArguments(log4jArgs);
 		}
 		PropertiesIO.setProperty(Constants.SETTING_ERROR_REPORTING, Boolean.toString(noLog));
 	}
