@@ -92,14 +92,14 @@
 			<groupId>org.testfx</groupId>
 			<artifactId>testfx-junit5</artifactId>
 			<version>4.0.16-alpha</version>
-			<scope>test</scope>
+<!-- 			<scope>test</scope> -->
 		</dependency>
 
 		<dependency>
 			<groupId>org.testfx</groupId>
 			<artifactId>testfx-core</artifactId>
 			<version>4.0.16-alpha</version>
-			<scope>test</scope>
+<!-- 			<scope>test</scope> -->
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.testfx/openjfx-monocle -->
@@ -107,7 +107,7 @@
 			<groupId>org.testfx</groupId>
 			<artifactId>openjfx-monocle</artifactId>
 			<version>jdk-12.0.1+2</version>
-			<scope>test</scope>
+<!-- 			<scope>test</scope> -->
 		</dependency>
 
 
@@ -236,9 +236,6 @@
 					</compilerArgs>
 					<source>${maven.compiler.source}</source>
 					<target>${maven.compiler.target}</target>
-					<!-- <additionalClasspathElements> -->
-					<!-- <additionalClasspathElement>${java.home}/target/classes/**/*.class</additionalClasspathElement> -->
-					<!-- </additionalClasspathElements> -->
 				</configuration>
 			</plugin>
 
