@@ -30,6 +30,8 @@ public final class Constants {
 	public static final String SETTING_RELOAD_LAST_FILE = "data.file.reloadLast";
 	public static final String SETTING_WARN_UNSAVED_CHANGES = "data.save.unsaved.warn";
 
+	public static final String SETTING_ERROR_REPORTING = "log.reporting";
+
 	public enum RESTORE_PANEL {
 		NOTHING, LAST, SPECIFIC
 
@@ -43,7 +45,8 @@ public final class Constants {
 		public void uncaughtException(Thread th, Throwable ex) {
 			LOG.fatal("Uncaught exception in thread \"" + th.getName() + "\".", ex);
 		}
-	};;
+	};
+
 	public static StringConverter<Channel> CHANNEL_CONVERTER = new StringConverter<Channel>() {
 
 		@Override

@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
@@ -17,6 +18,8 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" maxHeight="200.0" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
+            <CheckBox fx:id="errorReports" mnemonicParsing="false" onAction="#errorReports" selected="true" text="Send Error Reports" />
+            <Pane HBox.hgrow="SOMETIMES" />
           <Button fx:id="btnQuit" cancelButton="true" mnemonicParsing="false" prefWidth="75.0" text="Quit" />
             <Button fx:id="btnStart" defaultButton="true" mnemonicParsing="false" onAction="#start" prefWidth="75.0" text="Start" />
          </children>

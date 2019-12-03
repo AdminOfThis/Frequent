@@ -186,7 +186,7 @@
 	-fx-background-insets: 0;
 }
 
-.button, .toggle-button, .split-menu-button, .text-field, .combo-box, .choice-box, .check-box, .color-picker{
+.button, .toggle-button, .split-menu-button, .text-field, .combo-box, .choice-box, .check-box .box, .color-picker{
 	-fx-background-radius: 0;
 	-fx-background-insets: 0 0 0 0, 0, 1px, 1px;
 }

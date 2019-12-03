@@ -19,6 +19,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -30,6 +31,8 @@ import main.Main;
 public class IOChooserController implements Initializable {
 
 	private static final Logger LOG = LogManager.getLogger(IOChooserController.class);
+	@FXML
+	private CheckBox errorReports;
 	@FXML
 	private BorderPane root;
 	@FXML
@@ -49,6 +52,7 @@ public class IOChooserController implements Initializable {
 		if (ioList.size() > 1) {
 			appendix += "s";
 		}
+		errorReports.setSelected(Main.isErrorReporting());
 		lblDriverCount.setText(ioList.size() + appendix);
 		listIO.getItems().setAll(ioList);
 		listIO.setCellFactory(e -> new ListCell<>() {
@@ -143,5 +147,10 @@ public class IOChooserController implements Initializable {
 	public void setMainScene(Scene scene) {
 		mainScene = scene;
 		btnStart.requestFocus();
+	}
+
+	@FXML
+	private void errorReports(ActionEvent e) {
+		Main.setErrorReporting(errorReports.isSelected());
 	}
 }

@@ -8,6 +8,7 @@ import java.util.jar.Manifest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.lookup.MainMapLookup;
 
 import data.FileIO;
 import gui.FXMLUtil;
@@ -31,6 +32,8 @@ public class Main {
 	private static String color_focus = "#7DFF2F";
 	private static String style = "";
 	private static String propertiesPath = DEFAULT_PROPERTIES_PATH;
+	private static boolean noLog = true;
+	private static boolean development = false;
 	private static Logger LOG = LogManager.getLogger(Main.class);
 	private static boolean debug = false, fast = false;
 
@@ -43,12 +46,14 @@ public class Main {
 	 */
 	public static void main(final String[] args) {
 		try {
+
 			Thread.setDefaultUncaughtExceptionHandler(Constants.EMERGENCY_EXCEPTION_HANDLER);
 			initialize(POM_TITLE);
 			LOG.info(" === " + getReadableTitle() + " ===");
 			if (parseArgs(args)) {
-				initColors();
 				loadProperties();
+				initColors();
+				initExternalLogging();
 				System.setProperty("javafx.preloader", PreLoader.class.getName());
 				Application.launch(FXMLMain.class, args);
 			}
@@ -57,6 +62,10 @@ public class Main {
 		} catch (Error error) {
 			LOG.fatal("Fatal uncaught error: ", error);
 		}
+	}
+
+	private static void initExternalLogging() {
+		setErrorReporting(!development && PropertiesIO.getBooleanProperty(Constants.SETTING_ERROR_REPORTING, true));
 	}
 
 	public static void initialize(String pomTitle) {
@@ -85,6 +94,11 @@ public class Main {
 			} else if (arg.equalsIgnoreCase("-fast")) {
 				LOG.info("Enabling fast UI elements");
 				fast = true;
+			} else if (arg.equalsIgnoreCase("-nolog")) {
+				noLog = false;
+			} else if (arg.equalsIgnoreCase("-dev") || arg.equalsIgnoreCase("-development")) {
+				LOG.info("Starting in development mode prevents external logging!");
+				development = true;
 			} else if (arg.toLowerCase().startsWith("-base=")) {
 				color_base = arg.replace("-base=", "");
 			} else if (arg.toLowerCase().startsWith("-accent=")) {
@@ -210,6 +224,22 @@ public class Main {
 	public static void setDebug(boolean value) {
 		debug = value;
 
+	}
+
+	public static boolean isErrorReporting() {
+		return noLog;
+	}
+
+	public static void setErrorReporting(boolean noLog) {
+		Main.noLog = noLog;
+		if (!noLog) {
+			LOG.info("Disabled external logging");
+			MainMapLookup.setMainArguments(new String[] { "false" });
+
+		} else {
+			MainMapLookup.setMainArguments(new String[] { "true" });
+		}
+		PropertiesIO.setProperty(Constants.SETTING_ERROR_REPORTING, Boolean.toString(noLog));
 	}
 
 }

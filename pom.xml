@@ -331,7 +331,8 @@
 				<configuration>
 					<printSummary>true</printSummary>
 					<reuseForks>false</reuseForks>
-					<argLine>-Djava.library.path=. -Djni.library.path=. ${surefireArgLine}</argLine>
+					<!-- -dev to prevent rollbar logging-->
+					<argLine>-Djava.library.path=. -Djni.library.path=. -dev ${surefireArgLine}</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>1</rerunFailingTestsCount>
 					<executions>
