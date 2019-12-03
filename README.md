@@ -27,6 +27,7 @@ Since the project mainly depends on the *jasiohost* library, which in turn uses 
  https://junit.org/junit5/
  - **Apache Commons Collections** for some minor List partitioning https://commons.apache.org/proper/commons-collections/
  - **JSON** for parsing data received from external sources https://json.org
+ - **Rollbar** for realtime Exception and Error logging, helps for debugging https://rollbar.com
 
 ### Build
 The whole project is built with Maven. It currently contains two submodules, and the main project. The submodules are:
