@@ -26,7 +26,6 @@ Since the project mainly depends on the *jasiohost* library, which in turn uses 
  - **JUnit5** for testing the application, especially during the build
  https://junit.org/junit5/
  - **Apache Commons Collections** for some minor List partitioning https://commons.apache.org/proper/commons-collections/
- - **JSON** for parsing data received from external sources https://json.org
  - **Rollbar** for realtime Exception and Error logging, helps for debugging https://rollbar.com
 
 ### Build
