@@ -12,7 +12,6 @@ import org.apache.logging.log4j.core.lookup.MainMapLookup;
 
 import data.FileIO;
 import gui.FXMLUtil;
-import gui.MainGUI;
 import gui.preloader.PreLoader;
 import javafx.application.Application;
 import preferences.PropertiesIO;
@@ -161,7 +160,7 @@ public class Main {
 
 	public static String getFromManifest(final String key, final String def, String pomTitle) {
 		try {
-			Enumeration<URL> resources = MainGUI.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+			Enumeration<URL> resources = Main.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
 			while (resources.hasMoreElements()) {
 				try {
 					Manifest manifest = new Manifest(resources.nextElement().openStream());
