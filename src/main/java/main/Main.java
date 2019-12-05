@@ -173,8 +173,7 @@ public class Main {
 				}
 			}
 		} catch (Exception e) {
-			LOG.warn("Unable to read version from manifest");
-			LOG.debug("", e);
+			LOG.warn("Unable to read version from manifest", e);
 		}
 		return def;
 	}
