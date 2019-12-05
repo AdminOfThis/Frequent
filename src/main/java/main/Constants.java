@@ -23,8 +23,14 @@ public final class Constants {
 
 	/*************** Settings ********************/
 	/* Keys */
+	/** Setting, wether a specific panel should be opened on start */
 	public static final String SETTING_RESTORE_PANEL = "gui.panel.restore";
+	/** If open specific panel is selected, index of panel to be openend */
 	public static final String SETTING_RESTORE_PANEL_SPECIFIC = "gui.panel.restore.specific";
+	/**
+	 * if open last is selected, stores the last opened panel, gets updated every
+	 * time a new panel is selected
+	 */
 	public static final String SETTING_RESTORE_PANEL_LAST = "gui.panel.restore.last";
 
 	public static final String SETTING_RELOAD_LAST_FILE = "data.file.reloadLast";

@@ -36,7 +36,7 @@ import main.FXMLMain;
 public class ASIOController implements AsioDriverListener, DataHolder<Input>, ChannelListener {
 
 	/**
-	 * Default buffer size
+	 * Default desired buffer size
 	 */
 	public static final int DESIRED_BUFFER_SIZE = 1024;
 	private static ASIOController instance;
