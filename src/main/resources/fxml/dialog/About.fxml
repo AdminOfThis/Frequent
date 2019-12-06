@@ -14,7 +14,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-
 <BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="400.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.dialog.AboutController">
    <bottom>
       <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
@@ -64,12 +63,12 @@
                   <Image url="@../../logo/logo_512.png" />
                </image>
             </ImageView>
-            <Label text="Build-JDK:" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Label fx:id="lblBuildJDK" text="###" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <Label text="Build-JDK:" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label fx:id="lblBuildJDK" text="###" GridPane.columnIndex="2" GridPane.rowIndex="4" />
             <Label text="Snapshot:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Label fx:id="lblCommit" text="###" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <Label text="Built:" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <Label fx:id="lblCreated" text="###" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <Label text="Built:" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Label fx:id="lblCreated" text="###" GridPane.columnIndex="2" GridPane.rowIndex="5" />
          </children>
       </GridPane>
    </center>
