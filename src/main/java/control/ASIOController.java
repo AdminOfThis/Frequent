@@ -549,7 +549,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 
 	@Override
 	public void colorChanged(String newColor) {
-//do nothing
+		// do nothing
 	}
 
 	@Override
