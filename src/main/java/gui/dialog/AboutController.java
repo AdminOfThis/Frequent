@@ -28,7 +28,8 @@ public class AboutController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		lblName.setText(Main.getOnlyTitle());
 		lblVersion.setText(Main.getVersion());
-		lblCommit.setText(Main.getFromManifest("Implementation-Build", "Unknown"));
+		String commit = Main.getFromManifest("Implementation-Build", "Unknown");
+		lblCommit.setText(commit.substring(0, Math.min(7, commit.length())));
 		lblCreator.setText(Main.getFromManifest("Created-By", "Unknown"));
 		lblBuildJDK.setText(Main.getFromManifest("Build-Jdk", "Unknown"));
 		lblCreated.setText(Main.getFromManifest("Built", "Unknown"));
