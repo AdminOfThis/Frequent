@@ -11,7 +11,7 @@
       <Label fx:id="lblTitle" style="-fx-font-size: 20;" />
       <HBox fx:id="chartParent" alignment="CENTER" fillHeight="false" minHeight="300.0" minWidth="300.0" prefHeight="500.0" prefWidth="500.0" VBox.vgrow="SOMETIMES">
          <children>
-            <ScatterChart fx:id="chart" alternativeRowFillVisible="false" animated="false" horizontalGridLinesVisible="false" legendVisible="false" rotate="45.0" style="-fx-border-color: derive(-fx-base, -10%); -fx-border-width: 2px;" stylesheets="@../../css/style.css" verticalGridLinesVisible="false">
+            <ScatterChart fx:id="chart" alternativeRowFillVisible="false" animated="false" horizontalGridLinesVisible="false" legendVisible="false" rotate="-45.0" style="-fx-border-color: derive(-fx-base, -10%); -fx-border-width: 2px;" stylesheets="@../../css/style.css" verticalGridLinesVisible="false">
                <xAxis>
                   <NumberAxis animated="false" autoRanging="false" lowerBound="-1.0" minorTickCount="0" minorTickLength="0.5" minorTickVisible="false" opacity="0.0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" tickUnit="0.1" upperBound="1.0" />
                </xAxis>

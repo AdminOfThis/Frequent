@@ -29,6 +29,7 @@ import data.FileIO;
 import data.Group;
 import data.Input;
 import gui.FXMLUtil;
+import gui.dialog.AboutController;
 import gui.dialog.InformationDialog;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
@@ -947,5 +948,26 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	}
 
 	@Override
-	public void reappeared(Input c) {}
+	public void reappeared(Input c) {
+		// TODO
+	}
+
+	@FXML
+	private void openAbout(ActionEvent e) {
+
+		Parent about = FXMLUtil.loadFXML(getClass().getResource(AboutController.FXML_PATH));
+		if (about != null) {
+			Stage stageAbout = new Stage();
+			stageAbout.setTitle("About " + Main.getOnlyTitle());
+			FXMLUtil.setIcon(stageAbout, FXMLMain.getLogoPath());
+			stageAbout.setResizable(false);
+//			stageAbout.initStyle(StageStyle.UNDECORATED);
+			stageAbout.initModality(Modality.APPLICATION_MODAL);
+			stageAbout.initOwner(getStage());
+			stageAbout.setScene(new Scene(about));
+			stageAbout.setOnCloseRequest(close -> stageAbout.hide());
+			stageAbout.show();
+
+		}
+	}
 }

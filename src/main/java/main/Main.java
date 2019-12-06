@@ -48,7 +48,7 @@ public class Main {
 		try {
 
 			Thread.setDefaultUncaughtExceptionHandler(Constants.EMERGENCY_EXCEPTION_HANDLER);
-			initialize(POM_TITLE);
+			initialize();
 			LOG.info(" === " + getReadableTitle() + " ===");
 			if (parseArgs(args)) {
 				loadProperties();
@@ -84,9 +84,9 @@ public class Main {
 		MainMapLookup.setMainArguments(log4jArgs);
 	}
 
-	public static void initialize(String pomTitle) {
-		title = getFromManifest(TITLE_KEY, POM_TITLE, pomTitle);
-		version = getFromManifest(VERSION_KEY, "Local Build", pomTitle);
+	public static void initialize() {
+		title = getFromManifest(TITLE_KEY, POM_TITLE);
+		version = getFromManifest(VERSION_KEY, "Local Build");
 	}
 
 	/**
@@ -158,13 +158,13 @@ public class Main {
 		return result;
 	}
 
-	public static String getFromManifest(final String key, final String def, String pomTitle) {
+	public static String getFromManifest(final String key, final String def) {
 		try {
 			Enumeration<URL> resources = Main.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
 			while (resources.hasMoreElements()) {
 				try {
 					Manifest manifest = new Manifest(resources.nextElement().openStream());
-					if (pomTitle.equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Title")))
+					if (POM_TITLE.equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Title")))
 						// check that this is your manifest and do what you need
 						// or get the next one
 						return manifest.getMainAttributes().getValue(key);

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
+
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="400.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.dialog.AboutController">
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button cancelButton="true" defaultButton="true" mnemonicParsing="false" onAction="#close" prefWidth="75.0" text="Close" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </bottom>
+   <center>
+      <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="120.0" />
+          <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" />
+          <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+        </rowConstraints>
+         <BorderPane.margin>
+            <Insets left="5.0" right="5.0" top="5.0" />
+         </BorderPane.margin>
+         <children>
+            <Label text="Name:" GridPane.columnIndex="1" />
+            <Label text="Version:" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="lblName" text="###" GridPane.columnIndex="2" />
+            <Label fx:id="lblVersion" text="###" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label text="Build by:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label fx:id="lblCreator" text="###" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Label text="Repository:" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <Hyperlink onAction="#openGithub" text="Github" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+            <TextArea fx:id="lblLicense" editable="false" wrapText="true" GridPane.columnSpan="3" GridPane.rowIndex="7" />
+            <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.rowSpan="7">
+               <viewport>
+                  <Rectangle2D />
+               </viewport>
+               <image>
+                  <Image url="@../../logo/logo_512.png" />
+               </image>
+            </ImageView>
+            <Label text="Build-JDK:" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Label fx:id="lblBuildJDK" text="###" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <Label text="Snapshot:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="lblCommit" text="###" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Label text="Built:" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label fx:id="lblCreated" text="###" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+         </children>
+      </GridPane>
+   </center>
+</BorderPane>
