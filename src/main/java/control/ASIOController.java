@@ -538,20 +538,18 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 
 	@Override
 	public void levelChanged(Input input, double level, long time) {
-		// TODO Auto-generated method stub
-
+		// do nothing
 	}
 
 	@Override
 	public void nameChanged(String name) {
-		// TODO Auto-generated method stub
+		// do nothing
 
 	}
 
 	@Override
 	public void colorChanged(String newColor) {
-		// TODO Auto-generated method stub
-
+//do nothing
 	}
 
 	@Override
