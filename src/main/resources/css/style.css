@@ -177,16 +177,7 @@
 	-fx-text-fill: white;
 }
 
-.flat-progress {
-	-fx-background-radius: 0;
-	-fx-background-insets: 0;
-}
-
-.flat-progress .bar {
-	-fx-background-insets: 0;
-}
-
-.button, .toggle-button, .split-menu-button, .text-field, .combo-box, .choice-box, .check-box .box, .color-picker{
+.button, .toggle-button, .split-menu-button, .text-field, .combo-box, .choice-box, .check-box .box, .color-picker ,.progress-bar, .progress-bar .bar, .progress-bar .track{
 	-fx-background-radius: 0;
 	-fx-background-insets: 0 0 0 0, 0, 1px, 1px;
 }

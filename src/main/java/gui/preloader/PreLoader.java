@@ -15,16 +15,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import main.FXMLMain;
 import main.Main;
 
 public class PreLoader extends Preloader implements Initializable {
 
 	private static final Logger LOG = LogManager.getLogger(Preloader.class);
 	private static final String PRELOADER_PATH = "/fxml/preloader/SplashScreen.fxml";
-	private static final String LOGO_SMALL = "/logo/logo_64.png";
 	private Stage stage;
 	@FXML
 	private ProgressBar progress;
@@ -44,11 +43,7 @@ public class PreLoader extends Preloader implements Initializable {
 	public void start(Stage primaryStage) throws Exception {
 		LOG.info("Loading SplashScreen");
 		stage = primaryStage;
-		try {
-			stage.getIcons().add(new Image(getClass().getResourceAsStream(LOGO_SMALL)));
-		} catch (Exception e) {
-			LOG.error("Unable to load logo", e);
-		}
+		FXMLUtil.setIcon(stage, FXMLMain.getLogoPath());
 		stage.initStyle(StageStyle.UNDECORATED);
 		stage.setTitle(Main.getReadableTitle());
 		stage.setWidth(400);
