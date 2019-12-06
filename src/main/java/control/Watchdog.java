@@ -71,6 +71,7 @@ public class Watchdog implements InputListener {
 				}
 			} else if (missingInputs.containsValue(entry.getValue())) {
 				// if not missing, but still marked as missing
+				missingInputs.removeMapping(entry.getKey(), input);
 				listeners.forEach(l -> new Thread(() -> l.reappeared(entry.getValue())).start());
 				LOG.info(input.getName() + " signal reappeared");
 			}
@@ -158,10 +159,8 @@ public class Watchdog implements InputListener {
 	}
 
 	@Override
-	public void nameChanged(String name) {
-	}
+	public void nameChanged(String name) {}
 
 	@Override
-	public void colorChanged(String newColor) {
-	}
+	public void colorChanged(String newColor) {}
 }

@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -908,15 +907,28 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void wentSilent(Input c, long time) {
-		if (missingChannelDialog != null && missingChannelDialog.isShowing()) {
+		refreshMissingDialog();
+	}
+
+	private void refreshMissingDialog() {
+
+		Platform.runLater(() -> {
+			if (missingChannelDialog == null || !missingChannelDialog.isShowing()) {
+				missingChannelDialog = new InformationDialog("Test");
+				missingChannelDialog.setResizable(true);
+				missingChannelDialog.setTopText("No signal detected for input(s)");
+				missingChannelDialog.setImportant(true);
+				missingChannelDialog.show();
+			}
+
 			missingChannelDialog.clear();
-			if (missingChannelDialog.getData() != null && missingChannelDialog.getData() instanceof ArrayListValuedHashMap) {
-				ArrayListValuedHashMap<Long, Input> data = (ArrayListValuedHashMap<Long, Input>) missingChannelDialog.getData();
-				data.put(time, c);
-				for (Long key : data.keySet()) {
+			if (Watchdog.getInstance().getMissingInputs().size() == 0) {
+				// If no channels are missing, hide the dialog
+				missingChannelDialog.hide();
+			} else {
+				for (Long key : Watchdog.getInstance().getMissingInputs().keySet()) {
 					StringBuilder sb = new StringBuilder();
 					for (Input in : Watchdog.getInstance().getMissingInputs().get(key)) {
 						if (!sb.toString().isEmpty()) {
@@ -928,28 +940,16 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 					missingChannelDialog.addText(sb.toString());
 					missingChannelDialog.addSubText("for " + key + " s");
 					missingChannelDialog.sizeToScene();
+
 				}
-				missingChannelDialog.setData(data);
 			}
-		} else {
-			Platform.runLater(() -> {
-				missingChannelDialog = new InformationDialog("Test");
-				ArrayListValuedHashMap<Long, Input> data = new ArrayListValuedHashMap<>();
-				data.put(time, c);
-				missingChannelDialog.setData(data);
-				missingChannelDialog.setResizable(true);
-				missingChannelDialog.setTopText("No signal detected for input(s)");
-				missingChannelDialog.setText(c.getName());
-				missingChannelDialog.setSubText("for " + time + " s");
-				missingChannelDialog.setImportant(true);
-				missingChannelDialog.show();
-			});
-		}
+		});
+
 	}
 
 	@Override
 	public void reappeared(Input c) {
-		// TODO
+		refreshMissingDialog();
 	}
 
 	@FXML

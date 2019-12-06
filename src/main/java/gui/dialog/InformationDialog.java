@@ -20,8 +20,6 @@ public class InformationDialog extends CustomDialog<Void> {
 	@FXML
 	private Label text, subText, topText;
 
-	private Object data;
-
 	public InformationDialog(String title) {
 		this(title, false);
 	}
@@ -85,14 +83,6 @@ public class InformationDialog extends CustomDialog<Void> {
 	public void sizeToScene() {
 		Platform.runLater(() -> ((Stage) getDialogPane().getScene().getWindow()).sizeToScene());
 
-	}
-
-	public void setData(Object o) {
-		this.data = o;
-	}
-
-	public Object getData() {
-		return data;
 	}
 
 }
