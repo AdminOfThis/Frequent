@@ -150,12 +150,15 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 						add2++;
 
 						ArrayList<Long> remove = new ArrayList<>();
-						for (Long key : map1.keySet()) {
-							if (key < position) {
-								remove.add(key);
+						synchronized (map1) {
+
+							for (Long key : map1.keySet()) {
+								if (key < position) {
+									remove.add(key);
+								}
 							}
+							map1.keySet().removeAll(remove);
 						}
-						map1.keySet().removeAll(remove);
 
 					}
 				} else {
@@ -180,6 +183,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	public void setChannels(final Channel c1, final Channel c2) {
 		if (!Objects.equals(c1, channel1) || !Objects.equals(c2, channel2)) {
+			vectorSeries.getData().clear();
 			if (channel1 != null) {
 				channel1.removeListener(this);
 			}
@@ -197,7 +201,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			map1.clear();
 			map2.clear();
 		}
-//		System.out.println(c1.getName()+" " + c2.getName());
 	}
 
 	public void setDecay(final double value) {
@@ -216,6 +219,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	protected void showData(final float[] x, final float[] y) {
 		// drawing new data
 		try {
+			// ad new Data
 			if (x != null && y != null && x.length == y.length) {
 				ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
 				for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.length - 1; index = index + 2) {
@@ -223,7 +227,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 					dataToAdd.add(data);
 				}
 				vectorSeries.getData().addAll(dataToAdd);
-
+				// modify existing Data
 				for (int i = 0; i < dataToAdd.size(); i++) {
 					Data<Number, Number> d = dataToAdd.get(i);
 					double percent = d.getXValue().doubleValue() / d.getYValue().doubleValue();
@@ -262,7 +266,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	protected void update() {
 		if (!isPaused()) {
-			ArrayList<Long> keysToDisplay = null;
+			ArrayList<Long> keysToDisplay = new ArrayList<>();
 			LinkedHashMap<Long, float[]> copyMap1, copyMap2;
 			synchronized (map1) {
 				copyMap1 = new LinkedHashMap<Long, float[]>(map1);
@@ -274,28 +278,31 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			for (int i = 0; i < keyArray.length; i++) {
 				long key = keyArray[i];
 				if (copyMap2.containsKey(key)) {
-
-					if (keysToDisplay == null) {
-						keysToDisplay = new ArrayList<>();
-					}
 					keysToDisplay.add(key);
-
 				}
 			}
 
 			// clear buffers
 			if (keysToDisplay != null) {
+				ArrayList<float[]> copies1 = new ArrayList<float[]>();
+				ArrayList<float[]> copies2 = new ArrayList<float[]>();
 				for (int i = 0; i < keysToDisplay.size(); i++) {
 					long key = keysToDisplay.get(i);
 					float[] copy1, copy2;
 					copy1 = map1.get(key);
 					copy2 = map2.get(key);
-
+					copies1.add(copy1);
+					copies2.add(copy2);
 //					System.out.println(map1.size() + "(" + add1 + ") " + map2.size() + " (" + add2 + ")");
-					Platform.runLater(() -> showData(copy1, copy2));
+
 //					showData(copy1, copy2);
 
 				}
+				Platform.runLater(() -> {
+					for (int i = 0; i < copies1.size(); i++) {
+						showData(copies1.get(i), copies2.get(i));
+					}
+				});
 
 				synchronized (map2) {
 					map2.keySet().removeAll(keysToDisplay);

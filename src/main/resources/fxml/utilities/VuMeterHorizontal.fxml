@@ -6,25 +6,39 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 
-<HBox alignment="CENTER_LEFT" minHeight="10.0" minWidth="10.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<HBox alignment="CENTER_LEFT" minHeight="10.0" minWidth="10.0" styleClass="vuMeter-background" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <StackPane fx:id="vuPane" prefWidth="200.0" styleClass="vuMeter-background" HBox.hgrow="ALWAYS">
+      <StackPane fx:id="vuPane" prefWidth="200.0" HBox.hgrow="ALWAYS">
          <children>
             <HBox alignment="CENTER_LEFT">
                <children>
-                  <Pane fx:id="vuPeakPane" prefWidth="0.0" styleClass="vuMeter-meter-horizontal" stylesheets="@../../css/style.css" />
+                  <Pane fx:id="vuPeakPane" prefWidth="50.0" style="-fx-background-color: -fx-accent;" stylesheets="@../../css/style.css" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT">
                <children>
-                  <Pane fx:id="vuLastPeakPane" prefWidth="0.0" />
-                  <Pane prefWidth="5.0" style="-fx-background-color: derive(-fx-accent, -50%);" />
+                  <Pane fx:id="vuRMSPane" prefWidth="30.0" style="-fx-background-color: derive(-fx-accent, -20%);" styleClass="vuMeter-meter-horizontal" stylesheets="@../../css/style.css" />
                </children>
             </HBox>
-            <Label fx:id="lblPeak" alignment="CENTER" style="-fx-font-size: 12;" text="dB" StackPane.alignment="CENTER_RIGHT" />
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Pane fx:id="vuLastPeakPane" prefWidth="70.0" />
+                  <Pane prefWidth="5.0" style="-fx-background-color: derive(-fx-accent, -40%);">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin></Pane>
+               </children>
+            </HBox>
+            <Label fx:id="lblPeak" alignment="CENTER" style="-fx-font-size: 12;" text="dB" StackPane.alignment="CENTER_RIGHT">
+               <StackPane.margin>
+                  <Insets />
+               </StackPane.margin>
+               <padding>
+                  <Insets left="5.0" right="5.0" />
+               </padding></Label>
             <Label fx:id="lblTitle" alignment="CENTER" style="-fx-font-size: 12;" text="Title" StackPane.alignment="CENTER_LEFT">
                <padding>
-                  <Insets left="10.0" />
+                  <Insets left="10.0" right="10.0" />
                </padding></Label>
          </children>
       </StackPane>

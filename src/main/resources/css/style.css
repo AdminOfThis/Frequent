@@ -164,12 +164,8 @@
 	-fx-background-color: derive(-fx-base, -10%);
 }
 
-.vuMeter-meter-horizontal {
-	-fx-background-color: linear-gradient(to left, -fx-accent, derive(-fx-accent, -50%));
-}
-
-.vuMeter-meter-vertical {
-	-fx-background-color: linear-gradient(to bottom, -fx-accent, derive(-fx-accent, -50%));
+.vuMeter-background:selected {
+	-fx-background-color: derive(-fx-base, 50%);
 }
 
 .tree-cell:filled:selected:focused, .tree-cell:filled:selected {

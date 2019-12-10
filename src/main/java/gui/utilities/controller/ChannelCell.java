@@ -41,7 +41,8 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 
 	public ChannelCell() {
 		super();
-		setPadding(Insets.EMPTY);
+		getStyleClass().add("vuMeter-background");
+		setPadding(new Insets(1, 5, 1, 5));
 		graphic = FXMLUtil.loadFXML(getClass().getResource(FXML_PATH), this);
 		if (graphic != null) {
 			setGraphic(graphic);

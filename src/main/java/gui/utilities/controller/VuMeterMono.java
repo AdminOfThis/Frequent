@@ -41,7 +41,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 	@FXML
 	private StackPane vuPane;
 	@FXML
-	private Pane vuPeakPane, vuLastPeakPane;
+	private Pane vuPeakPane, vuRMSPane, vuLastPeakPane;
 	@FXML
 	private Label lblPeak, lblTitle;
 	private Input channel;
@@ -51,7 +51,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 	private Pausable parentPausable;
 	private SimpleBooleanProperty showLabels = new SimpleBooleanProperty(true);
 	private int timeSincePeak = 0;
-	private List<Double> pendingLevelList;
+	private List<double[]> pendingLevelList = Collections.synchronizedList(new ArrayList<double[]>());
 
 	public VuMeterMono(final Input channel, final Orientation o) {
 		orientation = o;
@@ -67,7 +67,6 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 		AnchorPane.setBottomAnchor(p, 0.0);
 		AnchorPane.setLeftAnchor(p, 0.0);
 		AnchorPane.setRightAnchor(p, 0.0);
-		pendingLevelList = Collections.synchronizedList(new ArrayList<Double>());
 		setChannel(channel);
 		AnimationTimer timer = new AnimationTimer() {
 			@Override
@@ -87,6 +86,8 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 	public void initialize(final URL location, final ResourceBundle resources) {
 		lblPeak.visibleProperty().bind(showLabels);
 		lblTitle.visibleProperty().bind(showLabels);
+		lblTitle.rotateProperty().bind(rotateProperty().multiply(-1));
+		lblPeak.rotateProperty().bind(rotateProperty().multiply(-1));
 		lblTitle.prefWidthProperty().addListener(e -> {
 			if (lblTitle.prefHeightProperty().get() > prefWidthProperty().get()) {
 				lblTitle.setRotate(90.0);
@@ -109,7 +110,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 
 	@Override
 	public void levelChanged(final Input input, final double level, final long time) {
-		pendingLevelList.add(Channel.percentToDB(level));
+		pendingLevelList.add(new double[] { Channel.percentToDB(level), Channel.percentToDB(input.getRMSLevel()) });
 	}
 
 	@Override
@@ -164,7 +165,9 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 	private void update() {
 		if (!isPaused()) {
 			synchronized (pendingLevelList) {
-				for (Double peakdB : pendingLevelList) {
+				for (double[] peakArray : pendingLevelList) {
+					double peakdB = peakArray[0];
+					double rmsdB = peakArray[1];
 					if (peak < peakdB || timeSincePeak >= PEAK_HOLD) {
 						peak = peakdB;
 						timeSincePeak = 0;
@@ -172,23 +175,26 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 					if (timeSincePeak < PEAK_HOLD) {
 						timeSincePeak++;
 					}
-					if (orientation == Orientation.VERTICAL) {
-						Platform.runLater(() -> {
+					Platform.runLater(() -> {
+						if (orientation == Orientation.VERTICAL) {
 							vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+							vuRMSPane.setPrefHeight(vuPane.getHeight() * (rmsdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
 							vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
-						});
-					} else {
-						Platform.runLater(() -> {
+
+						} else {
+
 							vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+							vuRMSPane.setPrefWidth(vuPane.getWidth() * (rmsdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
 							vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
-						});
-					}
-					if (peakdB >= Constants.FFT_MIN) {
-						Platform.runLater(() -> lblPeak.setText(Math.round(peakdB * 10.0) / 10 + ""));
-					} else {
-						Platform.runLater(() -> lblPeak.setText("-∞"));
-					}
-					if (peakdB > Constants.YELLOW) {
+
+						}
+						if (peakdB >= Constants.FFT_MIN) {
+							lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
+						} else {
+							lblPeak.setText("-∞");
+						}
+					});
+					if (peakdB >= Constants.YELLOW) {
 						if (peakdB >= Constants.RED) {
 							vuPeakPane.setStyle("-fx-background-color: red");
 						} else {
@@ -214,9 +220,11 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 			Platform.runLater(() -> lblPeak.setText(""));
 			if (orientation == Orientation.VERTICAL) {
 				vuPeakPane.setPrefHeight(0);
+				vuRMSPane.setPrefHeight(0);
 				vuLastPeakPane.setPrefHeight(0);
 			} else {
 				vuPeakPane.setPrefWidth(0);
+				vuRMSPane.setPrefWidth(0);
 				vuLastPeakPane.setPrefWidth(0);
 			}
 		}
