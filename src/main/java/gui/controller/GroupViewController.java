@@ -24,7 +24,9 @@ import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
@@ -35,7 +37,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import main.Constants;
 import main.Main;
 
@@ -48,8 +49,6 @@ public class GroupViewController implements Initializable, PausableView {
 	private SplitPane root;
 	@FXML
 	private SplitPane groupPane;
-	@FXML
-	private HBox vuPane;
 	@FXML
 	private LineChart<Number, Number> chart;
 	@FXML
@@ -160,11 +159,7 @@ public class GroupViewController implements Initializable, PausableView {
 		if (g.getColor() == null || g.getColor().isEmpty()) {
 			g.setColor(FXMLUtil.deriveColor(Main.getAccentColor(), groupList.indexOf(g) + 1, groupList.size() + 1));
 		}
-		VuMeterMono groupMeter = new VuMeterMono(g, Orientation.VERTICAL);
-		groupMeter.setParentPausable(this);
-		groupMeter.setMinWidth(40.0);
-		vuPane.getChildren().add(groupMeter);
-		HBox.setHgrow(groupMeter, Priority.ALWAYS);
+
 		// individual channels
 		HBox groupBox = new HBox();
 		groupBox.setSpacing(5.0);
@@ -172,19 +167,35 @@ public class GroupViewController implements Initializable, PausableView {
 		scroll.setFitToHeight(true);
 		scroll.setFitToWidth(true);
 		groupPane.getItems().add(scroll);
+
 		SplitPane.setResizableWithParent(scroll, false);
 		for (Channel c : g.getChannelList()) {
-			VuMeterMono channelMeter = new VuMeterMono(c, Orientation.VERTICAL);
-			channelMeter.setParentPausable(this);
-			channelMeter.setMinWidth(40.0);
-			VBox.setVgrow(channelMeter, Priority.ALWAYS);
-			groupBox.getChildren().add(channelMeter);
-			HBox.setHgrow(channelMeter, Priority.ALWAYS);
+			groupBox.getChildren().add(createChannelVu(c));
+
 		}
+		groupBox.getChildren().add(0, createGroupVu(g));
 		// adding chart series
 		if (redrawChart) {
 			redrawChart(g);
 		}
+	}
+
+	private Node createGroupVu(Group g) {
+		VuMeterMono groupMeter = new VuMeterMono(g, Orientation.VERTICAL);
+		groupMeter.setParentPausable(this);
+		groupMeter.setMinWidth(40.0);
+		groupMeter.setPadding(new Insets(0, 20, 0, 0));
+		HBox.setHgrow(groupMeter, Priority.ALWAYS);
+
+		return groupMeter;
+	}
+
+	private Node createChannelVu(Input c) {
+		VuMeterMono channelMeter = new VuMeterMono(c, Orientation.VERTICAL);
+		channelMeter.setParentPausable(this);
+		channelMeter.setMinWidth(40.0);
+		HBox.setHgrow(channelMeter, Priority.ALWAYS);
+		return channelMeter;
 	}
 
 	private void redrawChart(final Group group) {
@@ -220,7 +231,6 @@ public class GroupViewController implements Initializable, PausableView {
 
 	@Override
 	public void refresh() {
-		vuPane.getChildren().clear();
 		groupPane.getItems().clear();
 		boolean redrawChart = ASIOController.getInstance().getGroupList().size() != chart.getData().size();
 		if (!redrawChart) {

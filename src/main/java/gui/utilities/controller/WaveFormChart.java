@@ -34,6 +34,7 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import main.Constants;
 
 public class WaveFormChart extends AnchorPane implements Initializable, InputListener, PausableComponent {
@@ -43,6 +44,8 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 	private static final long TIME_FRAME = 300000L;
 	@FXML
 	private BorderPane root;
+	@FXML
+	private VBox vBox;
 	private XYChart<Number, Number> chart;
 	private Series<Number, Number> series = new Series<>();
 	private Series<Number, Number> treshold = new Series<>();

@@ -12,12 +12,7 @@
    <center>
       <SplitPane fx:id="root" dividerPositions="0.5" orientation="VERTICAL">
          <items>
-            <SplitPane dividerPositions="0.3" minHeight="200.0" minWidth="200.0">
-               <items>
-                  <HBox fx:id="vuPane" alignment="CENTER" spacing="5.0" SplitPane.resizableWithParent="false" />
-                  <SplitPane fx:id="groupPane" orientation="VERTICAL" prefHeight="200.0" prefWidth="200.0" />
-               </items>
-            </SplitPane>
+            <SplitPane fx:id="groupPane" orientation="VERTICAL" />
             <LineChart fx:id="chart" animated="false" createSymbols="false" horizontalZeroLineVisible="false" legendSide="RIGHT" verticalZeroLineVisible="false">
               <xAxis>
                 <NumberAxis autoRanging="false" forceZeroInRange="false" side="BOTTOM" tickLabelsVisible="false" tickUnit="5000.0" />
