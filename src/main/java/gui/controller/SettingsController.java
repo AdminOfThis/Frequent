@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
+import control.Watchdog;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,6 +15,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -58,12 +61,18 @@ public class SettingsController implements Initializable {
 	@FXML
 	private CheckBox chkRestoreLastFile, chkWarnUnsavedChanges;
 
+	@FXML
+	private Slider sldrThreshold;
+	@FXML
+	private TextField tfThreshold;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		checkFXML();
 
 		// FXMLUtil.setIcon((Stage) root.getScene().getWindow(), Main.getLogoPath());
-
+		sldrThreshold.valueProperty().addListener((e, newV, oldV) -> tfThreshold.setText(Math.round(newV.doubleValue()) + " dB"));
+		sldrThreshold.setValue(Double.parseDouble(PropertiesIO.getProperty(Constants.SETTING_WATCHDOG_THRESHOLD, Double.toString(Watchdog.DEFAULT_THRESHOLD))));
+		tfThreshold.setText(Math.round(sldrThreshold.getValue()) + " dB");
 		// controls
 		flwPanel.disableProperty().bind(rBtnPanelSpecific.selectedProperty().not());
 		// Init data
@@ -74,20 +83,6 @@ public class SettingsController implements Initializable {
 
 		initSpecificPanel();
 		loadValues();
-	}
-
-	private void checkFXML() {
-		assert root != null : "fx:id=\"root\" was not injected: check your FXML file 'Settings.fxml'.";
-		assert btnCancel != null : "fx:id=\"btnCancel\" was not injected: check your FXML file 'Settings.fxml'.";
-		assert btnSave != null : "fx:id=\"btnSave\" was not injected: check your FXML file 'Settings.fxml'.";
-		assert chbBuffer != null : "fx:id=\"chbBuffer\" was not injected: check your FXML file 'Settings.fxml'.";
-		assert chbDevice != null : "fx:id=\"chbDevice\" was not injected: check your FXML file 'Settings.fxml'.";
-		assert startUp != null : "fx:id=\"startUp\" was not injected: check your FXML file 'Settings.fxml'.";
-		assert rBtnPanelLast != null : "fx:id=\"rBtnLast\" was not injected: check your FXML file 'Settings.fxml'.";
-		assert rBtnPanelSpecific != null : "fx:id=\"rBtnSpecific\" was not injected: check your FXML file 'Settings.fxml'.";
-		assert flwPanel != null : "fx:id=\"flwPanel\" was not injected: check your FXML file 'Settings.fxml'.";
-		assert startUpPanel != null : "fx:id=\"startUpPanel\" was not injected: check your FXML file 'Settings.fxml'.";
-
 	}
 
 	private void initSpecificPanel() {
@@ -126,9 +121,15 @@ public class SettingsController implements Initializable {
 	private void loadFile() {
 		setSettingSecure(() -> chkRestoreLastFile.setSelected(Boolean.parseBoolean(PropertiesIO.getProperty(Constants.SETTING_RELOAD_LAST_FILE))), Constants.SETTING_RELOAD_LAST_FILE);
 		setSettingSecure(() -> chkWarnUnsavedChanges.setSelected(Boolean.parseBoolean(PropertiesIO.getProperty(Constants.SETTING_WARN_UNSAVED_CHANGES))), Constants.SETTING_WARN_UNSAVED_CHANGES);
-
+		setSettingSecure(() -> sldrThreshold.setValue(Double.parseDouble(PropertiesIO.getProperty(Constants.SETTING_WATCHDOG_THRESHOLD))), Constants.SETTING_WATCHDOG_THRESHOLD);
 	}
 
+	/**
+	 * secure in this case means it will not crash if setting can not be loaded
+	 * 
+	 * @param r
+	 * @param setting
+	 */
 	private void setSettingSecure(Runnable r, String setting) {
 		try {
 			r.run();
@@ -161,6 +162,8 @@ public class SettingsController implements Initializable {
 		// File/saving
 		PropertiesIO.setProperty(Constants.SETTING_RELOAD_LAST_FILE, Boolean.toString(chkRestoreLastFile.isSelected()), false);
 		PropertiesIO.setProperty(Constants.SETTING_WARN_UNSAVED_CHANGES, Boolean.toString(chkWarnUnsavedChanges.isSelected()), false);
+//watchdog
+		PropertiesIO.setProperty(Constants.SETTING_WATCHDOG_THRESHOLD, Double.toString(sldrThreshold.getValue()));
 
 		PropertiesIO.saveProperties();
 

@@ -8,6 +8,8 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -50,6 +52,9 @@
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints vgrow="NEVER" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
@@ -98,6 +103,15 @@
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </FlowPane>
+                  <Label text="Missing Signal" GridPane.columnSpan="2" GridPane.rowIndex="14" />
+                  <Label text="Threshold" GridPane.columnIndex="1" GridPane.rowIndex="15" />
+                  <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="13" />
+                  <HBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="15">
+                     <children>
+                        <Slider fx:id="sldrThreshold" blockIncrement="3.0" max="-10.0" min="-90.0" showTickLabels="true" showTickMarks="true" value="-85.0" HBox.hgrow="SOMETIMES" />
+                        <TextField fx:id="tfThreshold" editable="false" prefWidth="100.0" />
+                     </children>
+                  </HBox>
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

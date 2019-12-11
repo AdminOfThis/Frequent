@@ -23,7 +23,7 @@
             <HBox alignment="CENTER_LEFT">
                <children>
                   <Pane fx:id="vuLastPeakPane" prefWidth="70.0" />
-                  <Pane prefWidth="5.0" style="-fx-background-color: derive(-fx-accent, -40%);">
+                  <Pane fx:id="vuPeakMeterPane" prefWidth="5.0" style="-fx-background-color: derive(-fx-accent, -40%);">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></Pane>
@@ -37,9 +37,9 @@
                   <Insets left="5.0" right="5.0" />
                </padding></Label>
             <Label fx:id="lblTitle" alignment="CENTER" style="-fx-font-size: 12;" text="Title" StackPane.alignment="CENTER_LEFT">
-               <padding>
-                  <Insets left="10.0" right="10.0" />
-               </padding></Label>
+               <StackPane.margin>
+                  <Insets left="5.0" right="5.0" />
+               </StackPane.margin></Label>
          </children>
       </StackPane>
    </children>

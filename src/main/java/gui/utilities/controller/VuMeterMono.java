@@ -41,7 +41,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 	@FXML
 	private StackPane vuPane;
 	@FXML
-	private Pane vuPeakPane, vuRMSPane, vuLastPeakPane;
+	private Pane vuPeakPane, vuPeakMeterPane, vuRMSPane, vuLastPeakPane;
 	@FXML
 	private Label lblPeak, lblTitle;
 	private Input channel;
@@ -196,9 +196,9 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 					});
 					if (peakdB >= Constants.YELLOW) {
 						if (peakdB >= Constants.RED) {
-							vuPeakPane.setStyle("-fx-background-color: red");
+							vuPeakMeterPane.setStyle("-fx-background-color: red");
 						} else {
-							vuPeakPane.setStyle("-fx-background-color: yellow");
+							vuPeakMeterPane.setStyle("-fx-background-color: yellow");
 						}
 						Timeline line = new Timeline();
 						double duration;

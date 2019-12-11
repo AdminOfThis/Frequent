@@ -17,11 +17,13 @@ import org.apache.logging.log4j.Logger;
 
 import data.Channel;
 import data.Input;
+import main.Constants;
+import preferences.PropertiesIO;
 
 public class Watchdog implements InputListener {
 
 	private static final Logger LOG = LogManager.getLogger(Watchdog.class);
-	private static final double ALIVE_THRESHOLD = -85;
+	public static final double DEFAULT_THRESHOLD = -85;
 
 	private static Watchdog instance;
 
@@ -91,7 +93,7 @@ public class Watchdog implements InputListener {
 	@Override
 	public void levelChanged(Input input, double level, long time) {
 		double leveldB = Channel.percentToDB(level);
-		if (leveldB > ALIVE_THRESHOLD) {
+		if (leveldB > Double.parseDouble(PropertiesIO.getProperty(Constants.SETTING_WATCHDOG_THRESHOLD, Double.toString(DEFAULT_THRESHOLD)))) {
 			heartBeatMap.put(input, System.currentTimeMillis());
 		}
 	}

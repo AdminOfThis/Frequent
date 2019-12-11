@@ -22,7 +22,7 @@
             </VBox>
             <VBox alignment="BOTTOM_CENTER">
                <children>
-                  <Pane prefHeight="5.0" style="-fx-background-color: derive(-fx-accent, -40%);">
+                  <Pane fx:id="vuPeakMeterPane" prefHeight="5.0" style="-fx-background-color: derive(-fx-accent, -40%);">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin></Pane>
