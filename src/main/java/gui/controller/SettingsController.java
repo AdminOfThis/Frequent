@@ -98,7 +98,8 @@ public class SettingsController implements Initializable {
 	private void loadValues() {
 
 		loadRestorePanel();
-		loadFile();
+		loadFilePanel();
+		loadWatchdogPanel();
 	}
 
 	private void loadRestorePanel() {
@@ -118,9 +119,12 @@ public class SettingsController implements Initializable {
 		}
 	}
 
-	private void loadFile() {
+	private void loadFilePanel() {
 		setSettingSecure(() -> chkRestoreLastFile.setSelected(Boolean.parseBoolean(PropertiesIO.getProperty(Constants.SETTING_RELOAD_LAST_FILE))), Constants.SETTING_RELOAD_LAST_FILE);
 		setSettingSecure(() -> chkWarnUnsavedChanges.setSelected(Boolean.parseBoolean(PropertiesIO.getProperty(Constants.SETTING_WARN_UNSAVED_CHANGES))), Constants.SETTING_WARN_UNSAVED_CHANGES);
+	}
+
+	private void loadWatchdogPanel() {
 		setSettingSecure(() -> sldrThreshold.setValue(Double.parseDouble(PropertiesIO.getProperty(Constants.SETTING_WATCHDOG_THRESHOLD))), Constants.SETTING_WATCHDOG_THRESHOLD);
 	}
 

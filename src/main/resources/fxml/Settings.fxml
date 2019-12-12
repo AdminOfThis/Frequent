@@ -43,8 +43,8 @@
               </columnConstraints>
               <rowConstraints>
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
                   <RowConstraints vgrow="NEVER" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
@@ -57,7 +57,8 @@
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
               </rowConstraints>
                <children>
@@ -89,19 +90,67 @@
                   <RadioButton fx:id="rBtnPanelSpecific" mnemonicParsing="false" text="Show specific Panel on Application Start" toggleGroup="$startUp" GridPane.columnIndex="2" GridPane.rowIndex="7" />
                   <FlowPane fx:id="flwPanel" hgap="10.0" rowValignment="TOP" style="-fx-background-color: derive(-fx-base, 10%);" vgap="10.0" GridPane.columnIndex="2" GridPane.rowIndex="8">
                      <children>
-                        <RadioButton mnemonicParsing="false" text="RadioButton">
+                        <RadioButton mnemonicParsing="false" text="###">
                            <toggleGroup>
                               <ToggleGroup fx:id="startUpPanel" />
                            </toggleGroup>
                         </RadioButton>
-                        <RadioButton mnemonicParsing="false" text="RadioButton" toggleGroup="$startUpPanel" />
-                        <RadioButton mnemonicParsing="false" text="RadioButton" toggleGroup="$startUpPanel" />
-                        <RadioButton mnemonicParsing="false" text="RadioButton" toggleGroup="$startUpPanel" />
-                        <RadioButton mnemonicParsing="false" text="RadioButton" toggleGroup="$startUpPanel" />
+                        <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
+                        <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
+                        <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
+                        <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
+                        <RadioButton mnemonicParsing="false" text="###">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="startUpPanel1" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton mnemonicParsing="false" text="###">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="startUpPanel2" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton mnemonicParsing="false" text="###">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="startUpPanel3" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton mnemonicParsing="false" text="###">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="startUpPanel4" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton mnemonicParsing="false" text="###">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="startUpPanel5" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton mnemonicParsing="false" text="###">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="startUpPanel6" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton mnemonicParsing="false" text="###">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="startUpPanel7" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton mnemonicParsing="false" text="###">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="startUpPanel8" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton mnemonicParsing="false" text="###">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="startUpPanel9" />
+                           </toggleGroup>
+                        </RadioButton>
                      </children>
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
                   </FlowPane>
                   <Label text="Missing Signal" GridPane.columnSpan="2" GridPane.rowIndex="14" />
                   <Label text="Threshold" GridPane.columnIndex="1" GridPane.rowIndex="15" />
@@ -109,9 +158,21 @@
                   <HBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="15">
                      <children>
                         <Slider fx:id="sldrThreshold" blockIncrement="3.0" max="-10.0" min="-90.0" showTickLabels="true" showTickMarks="true" value="-85.0" HBox.hgrow="SOMETIMES" />
-                        <TextField fx:id="tfThreshold" editable="false" prefWidth="100.0" />
+                        <TextField fx:id="tfThreshold" editable="false" prefWidth="70.0" />
                      </children>
                   </HBox>
+                  <Label text="On Reappearance" GridPane.columnIndex="1" GridPane.rowIndex="16" />
+                  <FlowPane hgap="5.0" vgap="5.0" GridPane.columnIndex="2" GridPane.rowIndex="16">
+                     <children>
+                        <RadioButton mnemonicParsing="false" selected="true" text="Hide Notification">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="watchDogDo" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton mnemonicParsing="false" text="Do Nothing" toggleGroup="$watchDogDo" />
+                        <RadioButton mnemonicParsing="false" text="Highlight" toggleGroup="$watchDogDo" />
+                     </children>
+                  </FlowPane>
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -119,7 +180,7 @@
             </GridPane>
          </content>
          <BorderPane.margin>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            <Insets />
          </BorderPane.margin>
       </ScrollPane>
    </center>
