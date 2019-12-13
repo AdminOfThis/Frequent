@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import control.ASIOController;
+import control.FFT;
 import data.Channel;
 import data.RTAIO;
 import gui.FXMLUtil;
@@ -58,13 +60,13 @@ public class RTACanvas extends Canvas implements PausableComponent {
 		setHeight(1.0);
 	}
 
-	public void addLine(final double[][] map) {
+	public void addLine(final float[] map) {
 		if (!exporting) {
 			addLine(map, false);
 		}
 	}
 
-	private void addLine(final double[][] map, final boolean toExport) {
+	private void addLine(final float[] map, final boolean toExport) {
 		if (!isPaused() || toExport) {
 			if (!toExport) {
 				RTAIO.writeToFile(map);
@@ -108,12 +110,12 @@ public class RTACanvas extends Canvas implements PausableComponent {
 		}
 	}
 
-	private ArrayList<Color> createBaseColorList(final double[][] map) {
+	private ArrayList<Color> createBaseColorList(final float[] map) {
 		ArrayList<Color> result = new ArrayList<>();
-		for (int i = 0; i < map[0].length; i++) {
-			double value = map[1][i];
+		for (int i = 0; i < map.length; i++) {
+			double value = map[i];
 			double percent = percentFromRawValue(value);
-			double frequency = map[0][i];
+			double frequency = FFT.getFrequencyForIndex(i, map.length, ASIOController.getInstance().getSampleRate());
 			if (frequency >= 5 && frequency <= 20000) {
 				result.add(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED));
 			}
@@ -167,8 +169,8 @@ public class RTACanvas extends Canvas implements PausableComponent {
 	private RTACanvas recreateCanvas() {
 		RTACanvas printCanvas = new RTACanvas(getWidth(), 1);
 		reset();
-		ArrayList<double[][]> list = RTAIO.readFile();
-		for (double[][] entry : list) {
+		ArrayList<float[]> list = RTAIO.readFile();
+		for (float[] entry : list) {
 			printCanvas.addLine(entry, true);
 		}
 		return printCanvas;

@@ -16,25 +16,19 @@ public final class FFT {
 	 * 
 	 * @param output
 	 */
-	public static double[][] fftThis(final float[] output, float sampleRate) {
-		double[][] spectrumMap = new double[2][output.length];
+	public static float[] fftThis(final float[] output, float sampleRate) {
 
 		try {
 
 			float[] windowed = applyWindow(output);
 
 			// 3. Calculate Power Spectrum (using FFT)
-			float[] spectrum = powerSpectrum(windowed);
-			for (int i = 0; i < spectrum.length; i++) {
-				spectrumMap[1][i] = spectrum[i];
-				spectrumMap[0][i] = getFrequencyForIndex(i, spectrum.length, sampleRate);
-//				System.out.println(spectrumMap[i][1] + " " + spectrumMap[i][0]);
-			}
+			return powerSpectrum(windowed);
 
 		} catch (Exception e) {
 			LOG.info("Problem on FFT", e);
 		}
-		return spectrumMap;
+		return null;
 	}
 
 	public static float[] applyWindow(float[] from) {
@@ -72,10 +66,42 @@ public final class FFT {
 		return powerSpectrum;
 	}
 
-	// taken from https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19,
-	// author Andreas Kuehntopf
-	private static float getFrequencyForIndex(final int index, final int size, final float rate) {
-		return (float) index * (float) rate / size;
+//	// taken from https://gist.github.com/akuehntopf/4da9bced2cb88cfa2d19,
+//	// author Andreas Kuehntopf
+//	private static float getFrequencyForIndex(final int index, final int size, final float rate) {
+//		return (float) index * (float) rate / size;
+//	}
+
+	public static float getFrequencyForIndex(int index, int size, float sampleRate) {
+		float freq = (float) index * (float) sampleRate / (float) size;
+		return freq;
+	}
+
+	public static float getFrequency(float[] map) {
+		int maxBin = 0;
+		float maxVal = Float.NEGATIVE_INFINITY;
+
+		for (int i = 1; i < map.length - 1; i++) {
+			float val = map[i];
+			if (val > maxVal) {
+				maxVal = val;
+				maxBin = i;
+			}
+		}
+//		System.out.println("MAXBIN: " + maxBin);
+
+		// 7. Interpolate
+		float mid = map[maxBin];
+		float left = map[maxBin - 1];
+		float right = map[maxBin + 1];
+		float shift = 0.5f * (right - left) / (2.0f * mid - left - right);
+		float pEst = maxBin + shift;
+//		System.out.println("MAXBIN AFTER INTERPOLATION: " + (int) pEst);
+
+		// 8. Convert to frequency
+		float freq = (float) getFrequencyForIndex((int) pEst, map.length, 8000);
+//		System.out.println("FOUND FREQUENCY: " + freq);
+		return freq;
 	}
 
 }

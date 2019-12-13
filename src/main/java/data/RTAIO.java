@@ -11,14 +11,17 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import control.ASIOController;
+import control.FFT;
+
 public abstract class RTAIO {
 
-	private static final File		tempFile	= new File("rta.temp");
-	private static final Logger		LOG			= LogManager.getLogger(RTAIO.class);
-	public static final String		SEPARATOR	= ";";
-	private static BufferedWriter	writer;
+	private static final File tempFile = new File("rta.temp");
+	private static final Logger LOG = LogManager.getLogger(RTAIO.class);
+	public static final String SEPARATOR = ";";
+	private static BufferedWriter writer;
 
-	public static void writeToFile(double[][] freq) {
+	public static void writeToFile(float[] freq) {
 		new Thread(new Runnable() {
 
 			@Override
@@ -30,8 +33,7 @@ public abstract class RTAIO {
 					try {
 						writer.write(freqToString(freq));
 						writer.flush();
-					}
-					catch (IOException e) {
+					} catch (IOException e) {
 						LOG.warn("Unable to write rta temp");
 						LOG.debug("", e);
 					}
@@ -45,8 +47,7 @@ public abstract class RTAIO {
 			try {
 				writer.flush();
 				writer.close();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.error("Problem closing the rta temp file", e);
 			}
 			writer = null;
@@ -58,27 +59,24 @@ public abstract class RTAIO {
 		tempFile.delete();
 	}
 
-	public static ArrayList<double[][]> readFile() {
-		ArrayList<double[][]> result = new ArrayList<>();
+	public static ArrayList<float[]> readFile() {
+		ArrayList<float[]> result = new ArrayList<>();
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(tempFile));
 			String line;
 			while ((line = reader.readLine()) != null) {
-				double[][] entry = parseLine(line);
+				float[] entry = parseLine(line);
 				result.add(entry);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to reread rta file");
 			LOG.debug("", e);
-		}
-		finally {
+		} finally {
 			if (reader != null) {
 				try {
 					reader.close();
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOG.error("Unable to close reader");
 					LOG.debug("", e);
 				}
@@ -87,32 +85,31 @@ public abstract class RTAIO {
 		return result;
 	}
 
-	private static double[][] parseLine(String line) {
-		ArrayList<Double> result = new ArrayList<>();
+	private static float[] parseLine(String line) {
+		ArrayList<Float> result = new ArrayList<>();
 		String[] split = line.split(SEPARATOR);
 		for (String s : split) {
 			try {
-				double d = Double.parseDouble(s);
+				float d = Float.parseFloat(s);
 				result.add(d);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LOG.debug("Data unparseable");
 				LOG.trace("", e);
 			}
 		}
-		double[][] array = new double[2][result.size()];
+		float[] array = new float[result.size()];
 		int count = 0;
-		for (Double d : result) {
-			array[1][count] = d;
+		for (float d : result) {
+			array[count] = d;
 			count++;
 		}
 		return array;
 	}
 
-	private static String freqToString(double[][] freq) {
+	private static String freqToString(float[] freq) {
 		String result = "";
-		for (int i = 0; i < freq[0].length; i++) {
-			result += Double.toString(Math.round(freq[1][i] * 100.0) / 100.0);
+		for (int i = 0; i < freq.length; i++) {
+			result += Double.toString(Math.round(FFT.getFrequencyForIndex(i, freq.length, ASIOController.getInstance().getSampleRate()) * 100.0) / 100.0);
 			result += SEPARATOR;
 		}
 		// removes to last separator
@@ -125,8 +122,7 @@ public abstract class RTAIO {
 		BufferedWriter w = null;
 		try {
 			w = new BufferedWriter(new FileWriter(tempFile, true));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOG.warn("Unable to create new writer for temp rta file");
 			LOG.debug("", e);
 		}

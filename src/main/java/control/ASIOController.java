@@ -249,7 +249,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 		// do nothing
 	}
 
-	private void notifyFFTListeners(final double[][] spectrumMap) {
+	private void notifyFFTListeners(final float[] spectrumMap) {
 		for (int i = 0; i < fftListeners.size(); i++) {
 			FFTListener l = fftListeners.get(i);
 			if (l != null) {
@@ -559,7 +559,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 			if (!isFFTing) {
 				isFFTing = true;
 
-				double[][] spectrum = FFT.fftThis(activeChannel.getBuffer(), (float) sampleRate);
+				float[] spectrum = FFT.fftThis(activeChannel.getBuffer(), (float) sampleRate);
 
 				notifyFFTListeners(spectrum);
 				isFFTing = false;

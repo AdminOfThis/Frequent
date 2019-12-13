@@ -7,6 +7,8 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import control.ASIOController;
+import control.FFT;
 import control.FFTListener;
 import data.Channel;
 import data.Input;
@@ -15,6 +17,7 @@ import gui.utilities.LogarithmicAxis;
 import gui.utilities.NegativeAreaChart;
 import gui.utilities.controller.VuMeterMono;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -58,7 +61,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	private Series<Number, Number> series = new Series<>();
 	private Series<Number, Number> maxSeries = new Series<>();
 	private Channel channel;
-	private double[][] buffer;
+	private float[] buffer;
 
 	@Override
 	public ArrayList<Region> getHeader() {
@@ -82,9 +85,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 
 			@Override
 			public void handle(final long now) {
-				if (buffer != null && !isPaused()) {
-					updateChart(buffer);
-				}
+				new Thread(() -> updateChart(buffer)).start();
 			}
 		};
 		timer.start();
@@ -159,7 +160,7 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 	}
 
 	@Override
-	public void newFFT(final double[][] map) {
+	public void newFFT(final float[] map) {
 		buffer = map;
 	}
 
@@ -194,32 +195,46 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		}
 	}
 
-	private void updateChart(final double[][] map) {
-		ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
-		for (int count = 0; count < map[0].length; count++) {
-			double frequency = map[0][count];
-			if (frequency >= 5 && frequency <= X_MAX) {
-				double level = Math.abs(map[1][count]);
-				level = Channel.percentToDB(level / 1000.0);
-				Data<Number, Number> data = new XYChart.Data<>(frequency, level);
-				dataList.add(data);
-			}
-		}
-		// max
-		if (series.getData().size() != maxSeries.getData().size()) {
-			maxSeries.getData().setAll(FXCollections.observableArrayList(series.getData()));
-		} else {
-			for (int i = 0; i < maxSeries.getData().size(); i++) {
-				Data<Number, Number> maxData = maxSeries.getData().get(i);
-				Data<Number, Number> data = series.getData().get(i);
-				if (data.getYValue().doubleValue() >= maxData.getYValue().doubleValue()) {
-					maxData.setYValue(data.getYValue());
-				} else {
-					maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
+	private void updateChart(final float[] map) {
+		if (buffer != null && !isPaused()) {
+			ArrayList<XYChart.Data<Number, Number>> dataList = new ArrayList<>();
+			for (int count = 0; count < map.length; count++) {
+				double frequency = FFT.getFrequencyForIndex(count, map.length, ASIOController.getInstance().getSampleRate());
+				if (frequency >= 5 && frequency <= X_MAX) {
+					double level = Math.abs(map[count]);
+					level = Channel.percentToDB(level / 1000.0);
+					Data<Number, Number> data = new XYChart.Data<>(frequency, level);
+					dataList.add(data);
 				}
 			}
+
+			// main freq
+			float freq = (float) (Math.round(FFT.getFrequency(map) * 100.0) / 100.0);
+			Platform.runLater(() -> chart.setTitle(freq + " Hz"));
+			// max
+			synchronized (chart) {
+				synchronized (series) {
+					synchronized (maxSeries) {
+						if (series.getData().size() != maxSeries.getData().size()) {
+							maxSeries.getData().setAll(FXCollections.observableArrayList(series.getData()));
+						} else {
+							for (int i = 0; i < maxSeries.getData().size(); i++) {
+								Data<Number, Number> maxData = maxSeries.getData().get(i);
+								Data<Number, Number> data = series.getData().get(i);
+								if (data.getYValue().doubleValue() >= maxData.getYValue().doubleValue()) {
+									maxData.setYValue(data.getYValue());
+								} else {
+									maxData.setYValue(maxData.getYValue().doubleValue() * DECAY);
+								}
+							}
+						}
+
+						series.getData().setAll(dataList);
+					}
+				}
+			}
+			((LogarithmicAxis) chart.getXAxis()).setLowerBound(FFT.getFrequencyForIndex(1, map.length, ASIOController.getInstance().getSampleRate()));
+
 		}
-		series.getData().setAll(dataList);
-		((LogarithmicAxis) chart.getXAxis()).setLowerBound(map[0][1]);
 	}
 }

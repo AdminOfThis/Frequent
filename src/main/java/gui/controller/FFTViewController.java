@@ -32,7 +32,7 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	private ToggleButton tglPlay;
 	@FXML
 	private Button btnExport;
-	private List<double[][]> pendingMap = Collections.synchronizedList(new ArrayList<>());
+	private List<float[]> pendingMap = Collections.synchronizedList(new ArrayList<>());
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -52,7 +52,7 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	private void update() {
 
 		synchronized (pendingMap) {
-			for (double[][] map : pendingMap) {
+			for (float[] map : pendingMap) {
 				canvas.addLine(map);
 			}
 			pendingMap.clear();
@@ -60,7 +60,7 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	}
 
 	@Override
-	public void newFFT(double[][] map) {
+	public void newFFT(float[] map) {
 		if (!isPaused()) {
 			synchronized (pendingMap) {
 				pendingMap.add(map);
