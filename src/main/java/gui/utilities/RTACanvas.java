@@ -4,6 +4,7 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -33,10 +34,11 @@ import main.Constants;
 public class RTACanvas extends Canvas implements PausableComponent {
 
 	private static final Logger LOG = LogManager.getLogger(RTACanvas.class);
+	private static final int MICROSTEPS = 10;
 	private static final WritablePixelFormat<IntBuffer> PIXEL_FORMAT = PixelFormat.getIntArgbPreInstance();
 	private int count = 0;
 	private GraphicsContext content;
-	private boolean pause = true;
+	private boolean pause = false;
 	private boolean exporting = false;
 	private Pausable pausableParent;
 
@@ -68,44 +70,37 @@ public class RTACanvas extends Canvas implements PausableComponent {
 			if (!toExport) {
 				RTAIO.writeToFile(map);
 			}
-// long before = System.currentTimeMillis();
-// double size = (getWidth() / (map[1].length * MICROSTEPS));
-// if (getHeight() < size * count + size) {
 			setHeight(getHeight() + 1);
-// }
-// long sizeTime = System.currentTimeMillis();
 // adding points
-			ArrayList<Color> baseColors = createBaseColorList(map[1]);
-// long creatTime = System.currentTimeMillis();
+			List<Color> baseColors = createBaseColorList(map);
+
 			drawDots(baseColors);
-// long drawTime = System.currentTimeMillis();
-//
 			count++;
-// long after = System.currentTimeMillis();
-// System.out.println("Size: " + (sizeTime - before) + " Create: " + (creatTime - sizeTime) + " Draw: " + (drawTime - creatTime) + " After: " + (after - before));
 		}
 	}
 
-	private void drawDots(final ArrayList<Color> list) {
+	private void drawDots(final List<Color> list) {
 		if (!list.isEmpty()) {
 			// System.out.println(map[1][pointCount]);
 			PixelWriter p = content.getPixelWriter();
 			int width = (int) Math.floor(getWidth());
 			int[] buffer = new int[width];
-// for (int i = 0; i < (list.size() - 1) * MICROSTEPS; i++) {
-// Color baseColor = list.get(Math.floorDiv(i, MICROSTEPS));
-// Color targetColor = list.get(Math.floorDiv(i, MICROSTEPS) + 1);
-// double percent = (i % MICROSTEPS) / (double) MICROSTEPS;
-// Color resultColor = FXMLUtil.colorFade(percent, baseColor, targetColor);
+//			for (int i = 0; i < ((list.size() - 1) * MICROSTEPS) - 1; i++) {
+//				Color baseColor = list.get(Math.floorDiv(i, MICROSTEPS));
+//				Color targetColor = list.get(Math.floorDiv(i, MICROSTEPS) + 1);
+//				double percent = (i % MICROSTEPS) / (double) MICROSTEPS;
+//				Color resultColor = FXMLUtil.colorFade(percent, baseColor, targetColor);
 //// drawing using pixelWriter
-// buffer[i] = toInt(resultColor);
-// }
+//				buffer[Math.floorDiv(width, 1 + (i * MICROSTEPS))] = toInt(resultColor);
+//			}
 			for (int i = 0; i < width; i++) {
 				int index = (int) Math.round(i * ((list.size() - 1) / getWidth()));
 				Color baseColor = list.get(index);
-// drawing using pixelWriter
+				// drawing using pixelWriter
 				buffer[i] = toInt(baseColor);
+
 			}
+//			System.out.println(buffer[width / 2 - 5]);
 			try {
 				p.setPixels(0, count, width, 1, PIXEL_FORMAT, buffer, 0, buffer.length - 1);
 			} catch (Exception e) {
@@ -114,11 +109,15 @@ public class RTACanvas extends Canvas implements PausableComponent {
 		}
 	}
 
-	private ArrayList<Color> createBaseColorList(final double[] map) {
+	private ArrayList<Color> createBaseColorList(final double[][] map) {
 		ArrayList<Color> result = new ArrayList<>();
-		for (double value : map) {
+		for (int i = 0; i < map[0].length; i++) {
+			double value = map[1][i];
 			double percent = percentFromRawValue(value);
-			result.add(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED));
+			double frequency = map[0][i];
+			if (frequency >= 5 && frequency <= 20000) {
+				result.add(FXMLUtil.colorFade(percent, Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED));
+			}
 		}
 		return result;
 	}
@@ -126,6 +125,7 @@ public class RTACanvas extends Canvas implements PausableComponent {
 	private double percentFromRawValue(final double raw) {
 		double level = Math.abs(raw);
 		level = Channel.percentToDB(level);
+
 		level = Math.abs(level);
 		if (level >= Math.abs(Constants.FFT_MIN)) {
 			level = Math.abs(Constants.FFT_MIN) - 1;
@@ -136,7 +136,7 @@ public class RTACanvas extends Canvas implements PausableComponent {
 
 	@Override
 	public boolean isPaused() {
-		return pause || pausableParent != null && pausableParent.isPaused();
+		return pause || (pausableParent != null && pausableParent.isPaused());
 	}
 
 	@Override

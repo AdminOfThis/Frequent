@@ -560,6 +560,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				isFFTing = true;
 
 				double[][] spectrum = FFT.fftThis(activeChannel.getBuffer(), (float) sampleRate);
+
 				notifyFFTListeners(spectrum);
 				isFFTing = false;
 			}

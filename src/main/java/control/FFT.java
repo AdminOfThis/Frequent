@@ -27,7 +27,7 @@ public final class FFT {
 			float[] spectrum = powerSpectrum(windowed);
 			for (int i = 0; i < spectrum.length; i++) {
 				spectrumMap[1][i] = spectrum[i];
-				spectrumMap[0][i] = getFrequencyForIndex(i, spectrum.length, sampleRate) / 2.0;
+				spectrumMap[0][i] = getFrequencyForIndex(i, spectrum.length, sampleRate);
 //				System.out.println(spectrumMap[i][1] + " " + spectrumMap[i][0]);
 			}
 
