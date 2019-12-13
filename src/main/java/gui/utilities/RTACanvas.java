@@ -34,7 +34,6 @@ import main.Constants;
 public class RTACanvas extends Canvas implements PausableComponent {
 
 	private static final Logger LOG = LogManager.getLogger(RTACanvas.class);
-	private static final int MICROSTEPS = 10;
 	private static final WritablePixelFormat<IntBuffer> PIXEL_FORMAT = PixelFormat.getIntArgbPreInstance();
 	private int count = 0;
 	private GraphicsContext content;

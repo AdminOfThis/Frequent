@@ -11,8 +11,10 @@ import gui.MainGUI;
 import gui.controller.MainController;
 import gui.dialog.ConfirmationDialog;
 import gui.dialog.IOChooserController;
+import gui.dialog.InformationDialog;
 import javafx.application.Platform;
 import javafx.application.Preloader;
+import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -146,6 +148,18 @@ public class FXMLMain extends MainGUI {
 
 	public static String getLogoPath() {
 		return LOGO;
+	}
+
+	public static void showAlreadyRunningDialog() {
+		// this will prepare JavaFX toolkit and environment
+		new JFXPanel();
+		Platform.runLater(() -> {
+			InformationDialog dialog = new InformationDialog("Application is already running", true);
+			dialog.setText("Another instance of this application is already running");
+			dialog.setSubText("Please use the other instance,\r\nor terminate the other instance and launch the application again.");
+			dialog.show();
+			dialog.getDialogPane().getScene().getWindow().centerOnScreen();
+		});
 	}
 
 }

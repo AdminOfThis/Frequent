@@ -2,7 +2,9 @@ package main;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URL;
+import java.nio.channels.FileLock;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 
@@ -42,7 +44,6 @@ public class Main {
 	 * the GUI
 	 * 
 	 * @param args
-	 * @throws Exception
 	 */
 	public static void main(final String[] args) {
 		try {
@@ -51,18 +52,49 @@ public class Main {
 			initialize();
 			LOG.info(" === " + getReadableTitle() + " ===");
 			if (parseArgs(args)) {
+
 				loadProperties();
 				initColors();
 				initLog4jParams();
-
-				System.setProperty("javafx.preloader", PreLoader.class.getName());
-				Application.launch(FXMLMain.class, args);
+				if (createRunningLockFile()) {
+					System.setProperty("javafx.preloader", PreLoader.class.getName());
+					Application.launch(FXMLMain.class, args);
+				} else {
+					LOG.info("Application is already running, unable to run multiple instances");
+					FXMLMain.showAlreadyRunningDialog();
+				}
 			}
 		} catch (Exception exception) {
 			LOG.fatal("Fatal uncaught exception: ", exception);
 		} catch (Error error) {
 			LOG.fatal("Fatal uncaught error: ", error);
 		}
+	}
+
+	@SuppressWarnings("resource")
+	private static boolean createRunningLockFile() {
+		try {
+			final File file = new File(Constants.LOCK_FILE);
+			final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+			final FileLock fileLock = randomAccessFile.getChannel().tryLock();
+			if (fileLock != null) {
+				Runtime.getRuntime().addShutdownHook(new Thread() {
+					public void run() {
+						try {
+							fileLock.release();
+							randomAccessFile.close();
+							file.delete();
+						} catch (Exception e) {
+							// log.error("Unable to remove lock file: " + lockFile, e);
+						}
+					}
+				});
+				return true;
+			}
+		} catch (Exception e) {
+			LOG.error("Unable to create and/or lock file", e);
+		}
+		return false;
 	}
 
 	private static void initLog4jParams() {
@@ -94,7 +126,7 @@ public class Main {
 	 * found
 	 *
 	 * @param args
-	 * @return true if the programm shoudl continue, false if it should terminate
+	 * @return true if the programm should continue, false if it should terminate
 	 */
 	private static boolean parseArgs(final String[] args) {
 		boolean result = true;

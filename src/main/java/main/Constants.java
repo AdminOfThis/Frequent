@@ -70,6 +70,8 @@ public final class Constants {
 		}
 	};
 
+	public static final String LOCK_FILE = "frequent.lock";
+
 	public static StringConverter<Channel> CHANNEL_CONVERTER = new StringConverter<Channel>() {
 
 		@Override

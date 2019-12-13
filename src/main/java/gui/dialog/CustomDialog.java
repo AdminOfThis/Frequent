@@ -21,7 +21,9 @@ public abstract class CustomDialog<T> extends Dialog<T> implements Initializable
 	public CustomDialog(String title) {
 		super();
 		FXMLUtil.setStyleSheet(getDialogPane());
-		initOwner(MainController.getInstance().getStage());
+		if (MainController.getInstance() != null) {
+			initOwner(MainController.getInstance().getStage());
+		}
 		initModality(Modality.APPLICATION_MODAL);
 		initStyle(StageStyle.UNDECORATED);
 
