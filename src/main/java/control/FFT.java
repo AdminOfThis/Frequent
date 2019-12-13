@@ -66,8 +66,7 @@ public final class FFT {
 		for (int i = 0; i < fftBuffer.length / 2 - 1; i++) {
 			float real = fftBuffer[2 * i];
 			float imag = fftBuffer[2 * i + 1];
-
-			powerSpectrum[i] = (float) Math.sqrt(real * real + imag * imag);
+			powerSpectrum[i] = (float) Math.hypot(real, imag);
 		}
 
 		return powerSpectrum;

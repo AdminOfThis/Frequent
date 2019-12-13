@@ -220,5 +220,6 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 			}
 		}
 		series.getData().setAll(dataList);
+		((LogarithmicAxis) chart.getXAxis()).setLowerBound(map[0][1]);
 	}
 }
