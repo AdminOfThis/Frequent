@@ -99,7 +99,7 @@ public final class FFT {
 //		System.out.println("MAXBIN AFTER INTERPOLATION: " + (int) pEst);
 
 		// 8. Convert to frequency
-		float freq = (float) getFrequencyForIndex((int) pEst, map.length, 8000);
+		float freq = (float) getFrequencyForIndex((int) pEst, map.length, ASIOController.getInstance().getSampleRate());
 //		System.out.println("FOUND FREQUENCY: " + freq);
 		return freq;
 	}

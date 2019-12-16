@@ -52,6 +52,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 	private SimpleBooleanProperty showLabels = new SimpleBooleanProperty(true);
 	private int timeSincePeak = 0;
 	private List<double[]> pendingLevelList = Collections.synchronizedList(new ArrayList<double[]>());
+	private Parent content;
 
 	public VuMeterMono(final Input channel, final Orientation o) {
 		orientation = o;
@@ -61,12 +62,12 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 		} else {
 			path = FXML_VERTICAL;
 		}
-		Parent p = FXMLUtil.loadFXML(getClass().getResource(path), this);
-		getChildren().add(p);
-		AnchorPane.setTopAnchor(p, 0.0);
-		AnchorPane.setBottomAnchor(p, 0.0);
-		AnchorPane.setLeftAnchor(p, 0.0);
-		AnchorPane.setRightAnchor(p, 0.0);
+		content = FXMLUtil.loadFXML(getClass().getResource(path), this);
+		AnchorPane.setTopAnchor(content, 0.0);
+		AnchorPane.setBottomAnchor(content, 0.0);
+		AnchorPane.setLeftAnchor(content, 0.0);
+		AnchorPane.setRightAnchor(content, 0.0);
+		getChildren().add(content);
 		setChannel(channel);
 		AnimationTimer timer = new AnimationTimer() {
 			@Override
@@ -164,6 +165,11 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 
 	private void update() {
 		if (!isPaused()) {
+			Platform.runLater(() -> {
+				if (!getChildren().contains(content)) {
+					getChildren().add(content);
+				}
+			});
 			synchronized (pendingLevelList) {
 				for (double[] peakArray : pendingLevelList) {
 					double peakdB = peakArray[0];
@@ -175,25 +181,24 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 					if (timeSincePeak < PEAK_HOLD) {
 						timeSincePeak++;
 					}
-					Platform.runLater(() -> {
-						if (orientation == Orientation.VERTICAL) {
-							vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
-							vuRMSPane.setPrefHeight(vuPane.getHeight() * (rmsdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
-							vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+					if (orientation == Orientation.VERTICAL) {
+						vuPeakPane.setPrefHeight(vuPane.getHeight() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						vuRMSPane.setPrefHeight(vuPane.getHeight() * (rmsdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						vuLastPeakPane.setPrefHeight(vuPane.getHeight() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
 
-						} else {
+					} else {
 
-							vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
-							vuRMSPane.setPrefWidth(vuPane.getWidth() * (rmsdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
-							vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						vuPeakPane.setPrefWidth(vuPane.getWidth() * (peakdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						vuRMSPane.setPrefWidth(vuPane.getWidth() * (rmsdB + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
+						vuLastPeakPane.setPrefWidth(vuPane.getWidth() * (peak + Math.abs(Constants.FFT_MIN)) / Math.abs(Constants.FFT_MIN));
 
-						}
-						if (peakdB >= Constants.FFT_MIN) {
-							lblPeak.setText(Math.round(peakdB * 10.0) / 10 + "");
-						} else {
-							lblPeak.setText("-∞");
-						}
-					});
+					}
+					if (peakdB >= Constants.FFT_MIN) {
+						Platform.runLater(() -> lblPeak.setText(Math.round(peakdB * 10.0) / 10 + ""));
+					} else {
+						Platform.runLater(() -> lblPeak.setText("-∞"));
+					}
+
 					if (peakdB >= Constants.YELLOW) {
 						if (peakdB >= Constants.RED) {
 							vuPeakMeterPane.setStyle("-fx-background-color: red");
@@ -216,17 +221,22 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 				}
 			}
 		} else {
-			setTitle("");
-			Platform.runLater(() -> lblPeak.setText(""));
-			if (orientation == Orientation.VERTICAL) {
-				vuPeakPane.setPrefHeight(0);
-				vuRMSPane.setPrefHeight(0);
-				vuLastPeakPane.setPrefHeight(0);
-			} else {
-				vuPeakPane.setPrefWidth(0);
-				vuRMSPane.setPrefWidth(0);
-				vuLastPeakPane.setPrefWidth(0);
-			}
+			Platform.runLater(() -> {
+				if (getChildren().contains(content)) {
+					getChildren().remove(content);
+				}
+			});
+//			setTitle("");
+//			Platform.runLater(() -> lblPeak.setText(""));
+//			if (orientation == Orientation.VERTICAL) {
+//				vuPeakPane.setPrefHeight(0);
+//				vuRMSPane.setPrefHeight(0);
+//				vuLastPeakPane.setPrefHeight(0);
+//			} else {
+//				vuPeakPane.setPrefWidth(0);
+//				vuRMSPane.setPrefWidth(0);
+//				vuLastPeakPane.setPrefWidth(0);
+//			}
 		}
 		pendingLevelList.clear();
 	}

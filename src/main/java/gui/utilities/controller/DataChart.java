@@ -80,7 +80,7 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 				adding.add(new Data<Number, Number>(i, dataCopy.get(i)));
 			}
 			max = max + .05f;
-			final float axisTop = Math.max(max, .3f);
+			final float axisTop = Math.max(max, .2f);
 			Platform.runLater(() -> {
 
 				series.getData().setAll(adding);
