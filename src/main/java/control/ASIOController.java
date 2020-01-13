@@ -80,7 +80,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 		if (driverList == null) {
 			driverList = loadPossibleDrivers();
 		}
-		return driverList;
+		return new ArrayList<>(driverList);
 	}
 
 	private static List<DriverInfo> loadPossibleDrivers() {
@@ -565,5 +565,12 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				isFFTing = false;
 			}
 		}
+	}
+
+	public void addDriverInfo(DriverInfo info) {
+		if (driverList == null) {
+			driverList = new ArrayList<>();
+		}
+		driverList.add(info);
 	}
 }

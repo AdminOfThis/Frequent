@@ -4,7 +4,7 @@ import com.synthbot.jasiohost.AsioDriver;
 
 public class DriverInfo {
 
-	private String driverName;
+	private String driverName = "UNKNOWN";
 	private int asioVersion;
 	private int version;
 
@@ -17,15 +17,21 @@ public class DriverInfo {
 	private double sampleRate;
 
 	public DriverInfo(final AsioDriver driver) {
-		driverName = driver.getName();
-		inputCount = driver.getNumChannelsInput();
-		outputCount = driver.getNumChannelsOutput();
-		buffer = driver.getBufferPreferredSize();
-		asioVersion = driver.getAsioVersion();
-		latencyInput = driver.getLatencyInput();
-		latencyOutput = driver.getLatencyOutput();
-		sampleRate = driver.getSampleRate();
-		version = driver.getVersion();
+
+		this(driver.getName(), driver.getNumChannelsInput(), driver.getNumChannelsOutput(), driver.getBufferPreferredSize(), driver.getAsioVersion(), driver.getLatencyInput(), driver.getLatencyOutput(), driver.getSampleRate(), driver.getVersion());
+
+	}
+
+	public DriverInfo(String name, int inCount, int outCount, int buff, int asioV, int latIn, int latOut, double sample, int vers) {
+		driverName = name;
+		inputCount = inCount;
+		outputCount = outCount;
+		buffer = buff;
+		asioVersion = asioV;
+		latencyInput = latIn;
+		latencyOutput = latOut;
+		sampleRate = sample;
+		version = vers;
 	}
 
 	public String getName() {

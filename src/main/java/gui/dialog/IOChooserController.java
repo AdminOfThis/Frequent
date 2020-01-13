@@ -54,7 +54,7 @@ public class IOChooserController implements Initializable {
 		}
 		errorReports.setSelected(Main.isErrorReporting());
 		lblDriverCount.setText(ioList.size() + appendix);
-		listIO.getItems().setAll(ioList);
+		setDevices(ioList);
 		listIO.setCellFactory(e -> new ListCell<>() {
 			@Override
 			protected void updateItem(DriverInfo info, boolean empty) {
@@ -101,6 +101,10 @@ public class IOChooserController implements Initializable {
 			listIO.getSelectionModel().select(0);
 		}
 
+	}
+
+	public void setDevices(Collection<DriverInfo> devices) {
+		listIO.getItems().setAll(devices);
 	}
 
 	@FXML
