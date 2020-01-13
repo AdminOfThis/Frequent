@@ -1,6 +1,7 @@
 package data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -14,24 +15,18 @@ import com.synthbot.jasiohost.AsioChannel;
 
 public class ChannelTest {
 
-	private Channel c1;
-	private Channel c2;
+	private Channel[] channel = new Channel[3];
 
 	@Test
 	@BeforeEach
 	public void createChannel() {
-		// Channel 1
-		AsioChannel asio1 = Mockito.mock(AsioChannel.class);
-		Mockito.when(asio1.getChannelIndex()).thenReturn(1);
-		c1 = new Channel(asio1, "Channel 1");
-		assertNotNull(c1);
-		assertEquals("Channel 1", c1.getName());
-		// Channel 2
-		AsioChannel asio2 = Mockito.mock(AsioChannel.class);
-		Mockito.when(asio2.getChannelIndex()).thenReturn(2);
-		c2 = new Channel(asio2, "Channel 2");
-		assertNotNull(c2);
-		assertEquals("Channel 2", c2.getName());
+		for (int i = 0; i < channel.length; i++) {
+			AsioChannel asio = Mockito.mock(AsioChannel.class);
+			Mockito.when(asio.getChannelIndex()).thenReturn(i);
+			channel[i] = new Channel(asio, "Channel " + i);
+			assertNotNull(channel[i]);
+		}
+
 	}
 
 	@Test
@@ -60,23 +55,27 @@ public class ChannelTest {
 
 	@Test
 	public void setStereoChannel() {
-		assertNull(c1.getStereoChannel());
-		assertNull(c2.getStereoChannel());
-		c1.setStereoChannel(c2);
-		assertEquals(c1.getStereoChannel(), c2);
-		assertEquals(c2.getStereoChannel(), c1);
+		assertNull(channel[0].getStereoChannel());
+		assertNull(channel[1].getStereoChannel());
+		channel[0].setStereoChannel(channel[1]);
+		assertEquals(channel[0].getStereoChannel(), channel[1]);
+		assertEquals(channel[1].getStereoChannel(), channel[0]);
+		channel[0].setStereoChannel(channel[2]);
+		assertNull(channel[1].getStereoChannel());
+		assertEquals(channel[0].getStereoChannel(), channel[2]);
+		assertEquals(channel[2].getStereoChannel(), channel[0]);
 	}
 
 	@Test
 	public void equals() {
-		c2.setName(c1.getName());
-		c2.setChannel(c1.getChannel());
-		assertTrue(c1.equals(c2));
+		channel[1].setName(channel[0].getName());
+		channel[1].setChannel(channel[0].getChannel());
+		assertTrue(channel[0].equals(channel[1]));
 	}
 
 	@Test
 	public void compare() {
-		assertNotEquals(0, c1.compareTo(c2));
+		assertNotEquals(0, channel[0].compareTo(channel[1]));
 	}
 
 	@Test
@@ -84,5 +83,29 @@ public class ChannelTest {
 		assertEquals(Double.NEGATIVE_INFINITY, Channel.percentToDB(0.0));
 		assertEquals(0, Channel.percentToDB(1.0));
 		assertEquals(-6, Channel.percentToDB(.5), .1);
+	}
+
+	@Test
+	public void buffer() {
+		for (float f : channel[0].getBuffer()) {
+			assertEquals(.0, f);
+		}
+	}
+
+	@Test
+	public void isHidden() {
+		assertFalse(channel[0].isHidden());
+		channel[0].setHidden(true);
+		assertTrue(channel[0].isHidden());
+		channel[0].setHidden(false);
+		assertFalse(channel[0].isHidden());
+	}
+
+	@Test
+	public void resetName() {
+		String oldName = channel[0].getName();
+		channel[0].resetName();
+		assertNotEquals(oldName, channel[0].getName());
+		assertEquals(channel[0].getName(), channel[0].getChannel().getChannelName());
 	}
 }
