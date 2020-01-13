@@ -1,6 +1,7 @@
 package data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,11 +21,15 @@ public class ChannelTest {
 	@BeforeEach
 	public void createChannel() {
 		// Channel 1
-		c1 = new Channel("Channel 1");
+		AsioChannel asio1 = Mockito.mock(AsioChannel.class);
+		Mockito.when(asio1.getChannelIndex()).thenReturn(1);
+		c1 = new Channel(asio1, "Channel 1");
 		assertNotNull(c1);
 		assertEquals("Channel 1", c1.getName());
 		// Channel 2
-		c2 = new Channel("Channel 2");
+		AsioChannel asio2 = Mockito.mock(AsioChannel.class);
+		Mockito.when(asio2.getChannelIndex()).thenReturn(2);
+		c2 = new Channel(asio2, "Channel 2");
 		assertNotNull(c2);
 		assertEquals("Channel 2", c2.getName());
 	}
@@ -34,6 +39,14 @@ public class ChannelTest {
 		Channel nullChannel = new Channel();
 		assertNull(nullChannel.getName());
 		assertNull(nullChannel.getChannel());
+	}
+
+	@Test
+	public void createUnnamedChannel() {
+		AsioChannel channel = Mockito.mock(AsioChannel.class);
+		Channel unnamedChannel = new Channel(channel);
+		assertNull(unnamedChannel.getName());
+		assertEquals(channel, unnamedChannel.getChannel());
 	}
 
 	@Test
@@ -57,6 +70,12 @@ public class ChannelTest {
 	@Test
 	public void equals() {
 		c2.setName(c1.getName());
+		c2.setChannel(c1.getChannel());
 		assertTrue(c1.equals(c2));
+	}
+
+	@Test
+	public void compare() {
+		assertNotEquals(0, c1.compareTo(c2));
 	}
 }

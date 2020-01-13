@@ -1,7 +1,6 @@
 package data;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Objects;
 
 import com.synthbot.jasiohost.AsioChannel;
@@ -10,7 +9,7 @@ import control.ASIOController;
 import control.ChannelListener;
 import control.InputListener;
 
-public class Channel extends Input implements Comparable<Channel>, Comparator<Channel> {
+public class Channel extends Input implements Comparable<Channel> {
 
 	private static final long serialVersionUID = 1L;
 	private transient AsioChannel channel;
@@ -46,11 +45,6 @@ public class Channel extends Input implements Comparable<Channel>, Comparator<Ch
 
 	public static double percentToDB(final double level) {
 		return 20.0 * Math.log10(level /* / 1000.0 */);
-	}
-
-	@Override
-	public int compare(final Channel o1, final Channel o2) {
-		return o1.getChannelIndex() - o2.getChannelIndex();
 	}
 
 	@Override
