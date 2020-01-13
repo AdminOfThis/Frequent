@@ -1,7 +1,7 @@
 coverage:
   precision: 0
   round: nearest
-  range: 0..70
+  range: 0..75
   status:
     patch: no
     changes: no
