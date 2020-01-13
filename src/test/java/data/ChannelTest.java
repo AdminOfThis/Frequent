@@ -83,8 +83,15 @@ public class ChannelTest {
 
 	@Test
 	public void equals() {
+		assertFalse(channel[0].equals(channel[1]));
 		channel[1].setName(channel[0].getName());
+		assertFalse(channel[0].equals(channel[1]));
 		channel[1].setChannel(channel[0].getChannel());
+		assertTrue(channel[0].equals(channel[1]));
+		Group group = Mockito.mock(Group.class);
+		channel[0].setGroup(group);
+		assertFalse(channel[0].equals(channel[1]));
+		channel[1].setGroup(group);
 		assertTrue(channel[0].equals(channel[1]));
 
 	}
