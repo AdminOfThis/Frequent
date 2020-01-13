@@ -71,6 +71,7 @@ public class ChannelTest {
 		channel[1].setName(channel[0].getName());
 		channel[1].setChannel(channel[0].getChannel());
 		assertTrue(channel[0].equals(channel[1]));
+
 	}
 
 	@Test
@@ -107,5 +108,12 @@ public class ChannelTest {
 		channel[0].resetName();
 		assertNotEquals(oldName, channel[0].getName());
 		assertEquals(channel[0].getName(), channel[0].getChannel().getChannelName());
+	}
+
+	@Test
+	public void setChannelNull() {
+		channel[0].setChannel(null);
+		assertNull(channel[0].getChannel());
+		assertEquals(-1, channel[0].getChannelIndex());
 	}
 }
