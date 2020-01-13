@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import com.synthbot.jasiohost.AsioChannel;
 
 public class ChannelTest {
 
@@ -24,6 +27,22 @@ public class ChannelTest {
 		c2 = new Channel("Channel 2");
 		assertNotNull(c2);
 		assertEquals("Channel 2", c2.getName());
+	}
+
+	@Test
+	public void createNullChannel() {
+		Channel nullChannel = new Channel();
+		assertNull(nullChannel.getName());
+		assertNull(nullChannel.getChannel());
+	}
+
+	@Test
+	public void createFullChannel() {
+		AsioChannel channel = Mockito.mock(AsioChannel.class);
+		String name = "Full Name";
+		Channel nullChannel = new Channel(channel, name);
+		assertEquals(name, nullChannel.getName());
+		assertEquals(channel, nullChannel.getChannel());
 	}
 
 	@Test
