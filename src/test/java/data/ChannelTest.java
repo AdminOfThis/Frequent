@@ -66,6 +66,8 @@ public class ChannelTest {
 		assertTrue(channel[0].isStereo());
 		assertTrue(channel[1].isStereo());
 		assertFalse(channel[2].isStereo());
+		assertTrue(channel[0].isLeftChannel());
+		assertFalse(channel[1].isLeftChannel());
 		channel[0].setStereoChannel(channel[2]);
 		assertNull(channel[1].getStereoChannel());
 		assertEquals(channel[0].getStereoChannel(), channel[2]);
@@ -73,6 +75,9 @@ public class ChannelTest {
 		assertTrue(channel[0].isStereo());
 		assertFalse(channel[1].isStereo());
 		assertTrue(channel[2].isStereo());
+		assertTrue(channel[0].isLeftChannel());
+		assertFalse(channel[2].isLeftChannel());
+
 	}
 
 	@Test
