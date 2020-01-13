@@ -78,4 +78,11 @@ public class ChannelTest {
 	public void compare() {
 		assertNotEquals(0, c1.compareTo(c2));
 	}
+
+	@Test
+	public void percentToDb() {
+		assertEquals(Double.NEGATIVE_INFINITY, Channel.percentToDB(0.0));
+		assertEquals(0, Channel.percentToDB(1.0));
+		assertEquals(-6, Channel.percentToDB(.5), .1);
+	}
 }
