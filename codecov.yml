@@ -1,0 +1,12 @@
+coverage:
+  precision: 0
+  round: nearest
+  range: 0..70
+  status:
+    patch: no
+    changes: no
+    project:
+      default:
+        target: 30%
+        threshold: 5%
+        base: auto
