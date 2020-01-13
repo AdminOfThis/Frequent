@@ -10,8 +10,8 @@ The intended use-case of this application is to use in a live audio engineering 
 
 ## Code
 ### JRE
-This project was originally developed with and for an Oracle Java JRE8 installation.
-It was then upgraded to Java 13, using OpenJDK.
+This project was originally developed with and for an Oracle Java *JRE8* installation.
+It was then upgraded to *Java 13*, using OpenJDK.
 
 Since the project mainly depends on the *jasiohost* library, which in turn uses its precompiled *.dll* files as library, the application is currently (and for the foreseeable future) only able to run on Windows machines.
 ### Dependencies
