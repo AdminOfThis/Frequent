@@ -56,20 +56,7 @@ public class Channel extends Input implements Comparable<Channel> {
 	public boolean equals(final Object obj) {
 		if (obj instanceof Channel) {
 			Channel other = (Channel) obj;
-			if (super.equals(obj) && Objects.equals(getChannelIndex(), other.getChannelIndex())) {
-				// if groups don't exist on both
-				if (getGroup() == null && other.getGroup() == null) {
-					return true;
-				}
-				// if groups exist on both
-				else if (getGroup() != null && other.getGroup() != null) {
-					// check for group equality
-					return Objects.equals(getGroup().getName(), other.getGroup().getName());
-				} else {
-					// if only one has a group
-					return false;
-				}
-			}
+			return super.equals(obj) && Objects.equals(getChannelIndex(), other.getChannelIndex()) && Objects.equals(getGroup(), other.getGroup());
 		}
 		return false;
 	}
