@@ -31,11 +31,9 @@ public class ColorManager extends AnchorPane implements Initializable {
 	private static final Logger LOG = LogManager.getLogger(ColorManager.class);
 	private static final String FXML_PATH = "/fxml/dialog/ColorManager.fxml";
 	@FXML
-	private Button btnCancel;
-	@FXML
 	private ListView<ColorEntry> list;
 	@FXML
-	private Button btnDelete, btnRename;
+	private Button btnAdd, btnCancel, btnDelete, btnRename;
 	@FXML
 	private ColorPicker colorPicker;
 

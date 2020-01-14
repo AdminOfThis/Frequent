@@ -155,39 +155,44 @@ public class Main {
 				color_focus = arg.replace("-focus-color=", "");
 			} else if (arg.toLowerCase().startsWith("-style=")) {
 				LOG.info("Loading custom style");
-				try {
-					style = arg.substring(arg.indexOf("=") + 1);
-					int index = -1;
-					int count = 0;
-					for (String a : args) {
-						if (a.equals(arg)) {
-							index = count;
-							break;
-						}
-						count++;
-					}
-					if (index < 0) {
-						LOG.warn("Error while loading style from commandline");
-						continue;
-					}
-					index++;
-					String a = args[index];
-					while (a != null && !a.startsWith("-")) {
-						style = style + " " + a;
-						index++;
-						if (index >= args.length) {
-							break;
-						}
-						a = args[index];
-					}
-					LOG.info("Loaded style as: " + style);
-				} catch (Exception e) {
-					LOG.warn("Unable to load style from commandline");
-					LOG.debug("", e);
-				}
+				parseStyle(arg, args);
 			}
 		}
 		return result;
+	}
+
+	private static void parseStyle(String arg, String[] args) {
+		try {
+			style = arg.substring(arg.indexOf("=") + 1);
+			int index = -1;
+			int count = 0;
+			for (String a : args) {
+				if (a.equals(arg)) {
+					index = count;
+					break;
+				}
+				count++;
+			}
+			if (index < 0) {
+				LOG.warn("Error while loading style from commandline");
+				return;
+			}
+			index++;
+			String a = args[index];
+			while (a != null && !a.startsWith("-")) {
+				style = style + " " + a;
+				index++;
+				if (index >= args.length) {
+					break;
+				}
+				a = args[index];
+			}
+			LOG.info("Loaded style as: " + style);
+		} catch (Exception e) {
+			LOG.warn("Unable to load style from commandline");
+			LOG.debug("", e);
+		}
+
 	}
 
 	public static String getFromManifest(final String key, final String def) {
@@ -234,6 +239,9 @@ public class Main {
 	}
 
 	public static String getStyle() {
+		if (style == null || style.isEmpty()) {
+			initColors();
+		}
 		return style;
 	}
 

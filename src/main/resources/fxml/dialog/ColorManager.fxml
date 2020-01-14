@@ -25,7 +25,7 @@
          <children>
             <VBox alignment="TOP_CENTER" spacing="5.0" GridPane.columnIndex="1">
                <children>
-                  <Button mnemonicParsing="false" onAction="#add" prefWidth="999.0" text="Add" />
+                  <Button fx:id="btnAdd" mnemonicParsing="false" onAction="#add" prefWidth="999.0" text="Add" />
                   <Separator prefWidth="200.0" />
                   <Button fx:id="btnRename" disable="true" mnemonicParsing="false" onAction="#rename" prefWidth="999.0" text="Rename" />
                   <ColorPicker fx:id="colorPicker" disable="true" prefWidth="999.0" />
