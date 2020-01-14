@@ -71,7 +71,9 @@ class ColorManagerTest {
 //		assertEquals(0, list.getItems().size());
 		robot.clickOn("#btnAdd");
 		int before = list.getItems().size();
-		robot.clickOn(list.getChildrenUnmodifiable().get(0));
+		robot.clickOn(list);
+		robot.press(KeyCode.DOWN);
+		robot.release(KeyCode.DOWN);
 		robot.clickOn("#btnDelete");
 		int after = list.getItems().size();
 		assertEquals(before - 1, after);
