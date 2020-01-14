@@ -66,7 +66,7 @@ class ColorManagerTest {
 	}
 
 	@Test
-	public void removeColor(FxRobot robot) throws InterruptedException {
+	public void removeColor(FxRobot robot) {
 		ListView<?> list = robot.lookup("#list").queryListView();
 //		assertEquals(0, list.getItems().size());
 		robot.clickOn("#btnAdd");
@@ -77,7 +77,6 @@ class ColorManagerTest {
 		robot.clickOn("#btnDelete");
 		int after = list.getItems().size();
 		assertEquals(before - 1, after);
-//		Thread.sleep(50000);
 	}
 
 }
