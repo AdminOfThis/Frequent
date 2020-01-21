@@ -47,7 +47,7 @@ Start the program with the *start.bat*, or the *start_with_console.bat* script i
 The third script, *start_without_checks.bat* starts the main project directly instead of checking for a *JRE* beforehand. If Java8 is installed, this works perfectly fine, but it won't display an error dialog otherwise.
 ### Input Chooser
 You'll be required to choose the correct ASIO driver before the main application launches. 
-![IO Chooser Window](https://i.postimg.cc/bJvncW72/grafik.png) 
+![IO Chooser Window](https://i.postimg.cc/FzZXxKwc/grafik.png) 
 ### Main-Window
 The main Application window has 3 logical regions:
  1.  **Channellist** 
