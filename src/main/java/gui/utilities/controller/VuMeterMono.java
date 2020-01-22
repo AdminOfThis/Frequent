@@ -200,20 +200,19 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 					}
 
 					if (peakdB >= Constants.YELLOW) {
+						double duration;
+						String style = vuPeakMeterPane.getStyle();
 						if (peakdB >= Constants.RED) {
 							vuPeakMeterPane.setStyle("-fx-background-color: red");
+							duration = 5;
 						} else {
 							vuPeakMeterPane.setStyle("-fx-background-color: yellow");
-						}
-						Timeline line = new Timeline();
-						double duration;
-						if (peakdB >= -2.0) {
-							duration = 10;
-						} else {
 							duration = 3;
 						}
+						Timeline line = new Timeline();
+
 						KeyFrame frame = new KeyFrame(Duration.seconds(duration), e -> {
-							vuPeakPane.setStyle("");
+							vuPeakMeterPane.setStyle(style);
 						});
 						line.getKeyFrames().add(frame);
 						line.playFromStart();
