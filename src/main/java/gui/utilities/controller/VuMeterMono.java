@@ -225,17 +225,6 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 					getChildren().remove(content);
 				}
 			});
-//			setTitle("");
-//			Platform.runLater(() -> lblPeak.setText(""));
-//			if (orientation == Orientation.VERTICAL) {
-//				vuPeakPane.setPrefHeight(0);
-//				vuRMSPane.setPrefHeight(0);
-//				vuLastPeakPane.setPrefHeight(0);
-//			} else {
-//				vuPeakPane.setPrefWidth(0);
-//				vuRMSPane.setPrefWidth(0);
-//				vuLastPeakPane.setPrefWidth(0);
-//			}
 		}
 		pendingLevelList.clear();
 	}

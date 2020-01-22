@@ -246,7 +246,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	protected void update() {
-		if (!isPaused()) {
+		if (!isPaused() && ring != null) {
 
 			float[][] copy = Arrays.copyOf(ring, ring.length);
 
