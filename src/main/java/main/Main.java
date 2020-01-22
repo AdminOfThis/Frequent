@@ -296,6 +296,7 @@ public class Main {
 			log4jArgs[Constants.LOG4J_INDEX_REPORTING] = "false";
 
 		} else {
+			LOG.info("Enabled external logging");
 			log4jArgs[Constants.LOG4J_INDEX_REPORTING] = "true";
 		}
 		if (save) {

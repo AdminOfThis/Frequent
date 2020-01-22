@@ -83,8 +83,11 @@ public class IOChooserController implements Initializable {
 				String sampleRate = formatter.format(info.getSampleRate()) + " Hz";
 				lblSampleRate.setText(sampleRate);
 				lblBuffer.setText(Integer.toString(info.getBuffer()));
-				lblLatencyIn.setText(Integer.toString(info.getLatencyInput()) + " ms");
-				lblLatencyOut.setText(Integer.toString(info.getLatencyOutput()) + " ms");
+				double latency = (double) info.getBuffer() * 1 / info.getSampleRate() * 1000.0;
+				double latencyIn = Math.round((latency + (info.getLatencyInput() / 1000.0)) * 10.0) / 10.0;
+				double latencyOut = Math.round((latency + (info.getLatencyOutput() / 1000.0)) * 10.0) / 10.0;
+				lblLatencyIn.setText(Double.toString(latencyIn) + " ms");
+				lblLatencyOut.setText(Double.toString(latencyOut) + " ms");
 				lblInput.setText(Integer.toString(info.getInputCount()));
 				lblOutput.setText(Integer.toString(info.getOutputCount()));
 			}
