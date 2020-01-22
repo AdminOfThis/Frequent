@@ -43,7 +43,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	private HBox boxDecay;
 	private VectorScope vectorScope;
 	private VuMeterMono vu1, vu2;
-	private Channel c1, c2;
+//	private Channel c1, c2;
 
 	@Override
 	public ArrayList<Region> getHeader() {
@@ -80,15 +80,13 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		cmbChannel2.setConverter(Constants.CHANNEL_CONVERTER);
 		// adding listener
 		cmbChannel1.valueProperty().addListener((obs, old, newV) -> {
-			if (!Objects.equals(c1, newV)) {
-				c1 = newV;
+			if (!Objects.equals(old, newV)) {
 				vectorScope.setChannels(newV, cmbChannel2.getValue());
 				vu1.setChannel(newV);
 			}
 		});
 		cmbChannel2.valueProperty().addListener((obs, old, newV) -> {
-			if (!Objects.equals(c2, newV)) {
-				c2 = newV;
+			if (!Objects.equals(old, newV)) {
 				vectorScope.setChannels(cmbChannel1.getValue(), newV);
 				vu2.setChannel(newV);
 			}
@@ -111,6 +109,10 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	@Override
 	public void refresh() {
 		refreshComboBoxes();
+		if (MainController.getInstance().getSelectedChannels().size() == 2) {
+			cmbChannel1.setValue((Channel) MainController.getInstance().getSelectedChannels().get(0));
+			cmbChannel2.setValue((Channel) MainController.getInstance().getSelectedChannels().get(1));
+		}
 	}
 
 	private void refreshComboBoxes() {

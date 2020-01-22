@@ -177,14 +177,15 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 			}
 
 			// clearing ring buffer
-			synchronized (ring) {
-				for (float[] arr : ring) {
-					for (int i = 0; i < arr.length; i++) {
-						arr[i] = 0;
+			if (ring != null) {
+				synchronized (ring) {
+					for (float[] arr : ring) {
+						for (int i = 0; i < arr.length; i++) {
+							arr[i] = 0;
+						}
 					}
 				}
 			}
-
 		}
 	}
 
