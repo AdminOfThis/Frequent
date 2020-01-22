@@ -58,7 +58,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	// data
 	private Channel channel1, channel2;
 	private double decay = 1;
-	private float[][] ring = new float[2][(int) Math.round(ASIOController.getInstance().getBufferSize() * decay)];
+	private float[][] ring;
 	int position;
 
 	public VectorScope() {
@@ -126,6 +126,9 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	public void newBuffer(final Channel channel, final float[] buffer, final long position) {
 		if (!isPaused()) {
 			try {
+				if (ring == null) {
+					setDecay(1.0);
+				}
 				int channelIndex = 0;
 				if (Objects.equals(channel2, channel)) {
 					channelIndex = 1;
