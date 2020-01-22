@@ -34,7 +34,7 @@ public class Main {
 	private static String style = "";
 	private static String propertiesPath = DEFAULT_PROPERTIES_PATH;
 	private static String[] log4jArgs = new String[3];
-	private static boolean noLog = true;
+	private static boolean externalLog = true;
 	private static boolean development = false;
 	private static Logger LOG = LogManager.getLogger(Main.class);
 	private static boolean debug = false, fast = false;
@@ -102,6 +102,7 @@ public class Main {
 		log4jArgs[Constants.LOG4J_INDEX_VERSION] = version;
 		if (development) {
 			LOG.info("Set environment to development");
+			LOG.info("Disabling external error logging due to development mode");
 			log4jArgs[Constants.LOG4J_INDEX_ENVIRONMENT] = "development";
 		} else {
 			log4jArgs[Constants.LOG4J_INDEX_ENVIRONMENT] = "production";
@@ -143,7 +144,7 @@ public class Main {
 				LOG.info("Enabling fast UI elements");
 				fast = true;
 			} else if (arg.equalsIgnoreCase("-nolog")) {
-				noLog = false;
+				externalLog = false;
 			} else if (arg.equalsIgnoreCase("-dev") || arg.equalsIgnoreCase("-development")) {
 				LOG.info("Starting in development mode prevents external logging!");
 				development = true;
@@ -282,7 +283,7 @@ public class Main {
 	}
 
 	public static boolean isErrorReporting() {
-		return noLog;
+		return externalLog;
 	}
 
 	public static void setErrorReporting(boolean noLog) {
@@ -290,14 +291,14 @@ public class Main {
 	}
 
 	private static void setErrorReporting(boolean noLog, boolean save) {
-		Main.noLog = noLog;
+		externalLog = noLog;
 		if (!noLog) {
 			LOG.info("Disabled external logging");
-			log4jArgs[Constants.LOG4J_INDEX_REPORTING] = "false";
+			log4jArgs[Constants.LOG4J_INDEX_REPORTING] = Boolean.toString(false);
 
 		} else {
 			LOG.info("Enabled external logging");
-			log4jArgs[Constants.LOG4J_INDEX_REPORTING] = "true";
+			log4jArgs[Constants.LOG4J_INDEX_REPORTING] = Boolean.toString(true);
 		}
 		if (save) {
 			MainMapLookup.setMainArguments(log4jArgs);
