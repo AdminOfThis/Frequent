@@ -203,6 +203,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 						g.refreshChannels();
 					}
 				}
+				channelList.sort(Channel.COMPARATOR);
 			}
 		} else if (t instanceof Group) {
 			Group g = (Group) t;

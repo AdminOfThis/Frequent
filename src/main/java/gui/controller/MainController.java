@@ -820,12 +820,16 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	}
 
 	public void setTitle(final String title) {
-		Stage stage = (Stage) channelList.getScene().getWindow();
-		String finalTitle = Main.getReadableTitle();
-		if (title != null && !title.isEmpty()) {
-			finalTitle += " - " + title;
+		try {
+			Stage stage = (Stage) channelList.getScene().getWindow();
+			String finalTitle = Main.getReadableTitle();
+			if (title != null && !title.isEmpty()) {
+				finalTitle += " - " + title;
+			}
+			stage.setTitle(finalTitle);
+		} catch (Exception e) {
+			LOG.error("Unable to set window title", e);
 		}
-		stage.setTitle(finalTitle);
 	}
 
 	private void showSong(final Cue cue, final Label label) {
