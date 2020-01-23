@@ -41,6 +41,10 @@ import main.Main;
 public class VectorScope extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
 	private static final Logger LOG = LogManager.getLogger(VectorScope.class);
+
+	private static final int X = 0;
+	private static final int Y = 1;
+
 	private static final String FXML = "/fxml/utilities/VectorScope.fxml";
 	// GUI
 	// private static final int DOTS_PER_BUFFER = 500;
@@ -59,7 +63,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	private Channel channel1, channel2;
 	private double decay = 1;
 	private float[][] ring;
-	int position;
 
 	public VectorScope() {
 		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML), this);
@@ -135,7 +138,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				}
 				synchronized (ring) {
 					int pos = (int) (position % ring[0].length);
-					this.position = pos;
 					for (int i = 0; i < buffer.length; i++) {
 						int posElement = (pos + i) % ring[0].length;
 						ring[channelIndex][posElement] = buffer[i];
@@ -203,58 +205,50 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		lblTitle.setText(title);
 	}
 
-	protected void showData(final float[] x, final float[] y) {
-		// drawing new data
-		try {
-			// ad new Data
-			ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
-			for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < x.length - 1; index = index + 2) {
-				Data<Number, Number> data = new Data<>(x[index], y[index]);
-				dataToAdd.add(data);
-			}
-			vectorSeries.getData().clear();
-			vectorSeries.getData().addAll(dataToAdd);
-			// modify existing Data
-			for (int i = 0; i < dataToAdd.size(); i++) {
-				Data<Number, Number> d = dataToAdd.get(i);
-				double percent = d.getXValue().doubleValue() / d.getYValue().doubleValue();
-				if (percent > 1 || percent < -1) {
-					percent = 1.0 / percent;
-				}
-				percent = 1 - Math.abs((percent + 1) / 2.0);
-				d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(percent, Color.web(Main.getAccentColor()), Color.RED)));
-			}
-
-			float maxX = 0;
-			float maxY = 0;
-			for (Data<Number, Number> data : vectorSeries.getData()) {
-				maxX = Math.max(maxX, Math.abs(data.getXValue().floatValue()));
-				maxY = Math.max(maxY, Math.abs(data.getYValue().floatValue()));
-			}
-
-			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-			NumberAxis yAxis = (NumberAxis) chart.getYAxis();
-
-			xAxis.setLowerBound(-maxX - .01);
-			xAxis.setUpperBound(maxX + .01);
-			yAxis.setLowerBound(-maxY - .01);
-			yAxis.setUpperBound(maxY + .01);
-
-		} catch (Exception e) {
-			LOG.error("Problem while displaying data", e);
-		}
-	}
-
 	protected void update() {
 		if (!isPaused() && ring != null) {
 
 			float[][] copy = Arrays.copyOf(ring, ring.length);
 
-			Platform.runLater(() -> {
-				synchronized (copy) {
-					showData(copy[0], copy[1]);
+			// drawing new data
+			try {
+				// ad new Data
+				ArrayList<Data<Number, Number>> dataToAdd = new ArrayList<>();
+				for (int index = 0; /* index < DOTS_PER_BUFFER && */ index < copy[X].length - 1; index = index + 2) {
+					Data<Number, Number> data = new Data<>(copy[X][index], copy[Y][index]);
+					dataToAdd.add(data);
 				}
-			});
+				Platform.runLater(() -> vectorSeries.getData().setAll(dataToAdd));
+				// modify existing Data
+				for (int i = 0; i < dataToAdd.size(); i++) {
+					Data<Number, Number> d = dataToAdd.get(i);
+					double percent = d.getXValue().doubleValue() / d.getYValue().doubleValue();
+					if (percent > 1 || percent < -1) {
+						percent = 1.0 / percent;
+					}
+					double per = 1 - Math.abs((percent + 1) / 2.0);
+					Platform.runLater(() -> d.getNode().setStyle("-fx-background-color: " + FXMLUtil.toRGBCode(FXMLUtil.colorFade(per, Color.web(Main.getAccentColor()), Color.RED))));
+				}
+
+				float maxX = 0;
+				float maxY = 0;
+				for (Data<Number, Number> data : vectorSeries.getData()) {
+					maxX = Math.max(maxX, Math.abs(data.getXValue().floatValue()));
+					maxY = Math.max(maxY, Math.abs(data.getYValue().floatValue()));
+				}
+
+				NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+				NumberAxis yAxis = (NumberAxis) chart.getYAxis();
+
+				xAxis.setLowerBound(-maxX - .01);
+				xAxis.setUpperBound(maxX + .01);
+				yAxis.setLowerBound(-maxY - .01);
+				yAxis.setUpperBound(maxY + .01);
+
+			} catch (Exception e) {
+				LOG.error("Problem while displaying data", e);
+			}
+
 		}
 	}
 

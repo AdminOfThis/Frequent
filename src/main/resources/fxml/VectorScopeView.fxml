@@ -28,7 +28,7 @@
                   <HBox fx:id="boxDecay" alignment="CENTER" spacing="5.0">
                      <children>
                         <Label alignment="CENTER_RIGHT" nodeOrientation="RIGHT_TO_LEFT" text="Decay:" />
-                        <Slider fx:id="decaySlider" majorTickUnit="2.5" max="10.0" min="0.5" minWidth="100.0" minorTickCount="4" showTickMarks="true" value="1.0" />
+                        <Slider fx:id="decaySlider" majorTickUnit="2.5" max="10.0" min="0.5" minWidth="100.0" minorTickCount="4" showTickMarks="true" value="2.5" />
                      </children>
                   </HBox>
                </children>

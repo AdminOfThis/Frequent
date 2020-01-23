@@ -202,6 +202,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 							peakText = Math.round(peak * 10.0) / 10 + "";
 						}
 						Platform.runLater(() -> lblPeak.setText(peakText));
+
 					} else {
 						Platform.runLater(() -> lblPeak.setText("-∞"));
 					}

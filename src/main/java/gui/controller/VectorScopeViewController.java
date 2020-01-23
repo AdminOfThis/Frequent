@@ -109,6 +109,7 @@ public class VectorScopeViewController implements Initializable, PausableView {
 	@Override
 	public void refresh() {
 		refreshComboBoxes();
+		vectorScope.setDecay(decaySlider.getValue());
 		if (MainController.getInstance().getSelectedChannels().size() == 2) {
 			cmbChannel1.setValue((Channel) MainController.getInstance().getSelectedChannels().get(0));
 			cmbChannel2.setValue((Channel) MainController.getInstance().getSelectedChannels().get(1));
