@@ -4,7 +4,7 @@ coverage:
   range: 0..75
   status:
     patch: yes
-    changes: yes
+    changes: no
     project:
       default:
         target: 30%
