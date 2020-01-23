@@ -94,7 +94,15 @@ public class Main {
 		} catch (Exception e) {
 			LOG.error("Unable to create and/or lock file", e);
 		}
-		return false;
+		if (Main.isDevelopment()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private static boolean isDevelopment() {
+		return development;
 	}
 
 	private static void initLog4jParams() {

@@ -51,6 +51,9 @@ public class SettingsController implements Initializable {
 	private ComboBox<String> chbDevice;
 
 	@FXML
+	private RadioButton rBtndbCurrent, rBtndbPeak;
+
+	@FXML
 	private ToggleGroup startUp, startUpPanel;
 
 	@FXML
@@ -97,12 +100,17 @@ public class SettingsController implements Initializable {
 
 	private void loadValues() {
 
-		loadRestorePanel();
+		loadGUIPanel();
 		loadFilePanel();
 		loadWatchdogPanel();
 	}
 
-	private void loadRestorePanel() {
+	private void loadGUIPanel() {
+		// db current or Peak
+		setSettingSecure(() -> rBtndbCurrent.setSelected(!PropertiesIO.getProperty(Constants.SETTING_DB_LABEL_CURRENT).equals(Boolean.toString(false))), Constants.SETTING_DB_LABEL_CURRENT);
+		setSettingSecure(() -> rBtndbPeak.setSelected(PropertiesIO.getProperty(Constants.SETTING_DB_LABEL_CURRENT).equals(Boolean.toString(false))), Constants.SETTING_DB_LABEL_CURRENT);
+
+		// panel selection
 		setSettingSecure(() -> rBtnPanelNothing.setSelected(PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.NOTHING.name())), Constants.SETTING_RESTORE_PANEL);
 		setSettingSecure(() -> rBtnPanelLast.setSelected(PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.LAST.name())), Constants.SETTING_RESTORE_PANEL);
 		if (PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL) != null && PropertiesIO.getProperty(Constants.SETTING_RESTORE_PANEL).equals(RESTORE_PANEL.SPECIFIC.name())) {
@@ -150,6 +158,8 @@ public class SettingsController implements Initializable {
 	@FXML
 	private void save(ActionEvent e) {
 
+		// gui db label
+		PropertiesIO.setProperty(Constants.SETTING_DB_LABEL_CURRENT, Boolean.toString(rBtndbCurrent.isSelected()), false);
 		// Panel restore
 		if (rBtnPanelNothing.isSelected()) {
 			PropertiesIO.setProperty(Constants.SETTING_RESTORE_PANEL, RESTORE_PANEL.NOTHING.name(), false);

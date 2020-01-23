@@ -34,6 +34,9 @@ public final class Constants {
 
 	/*************** Settings ********************/
 	/* Keys */
+
+	/** Setting wether the db Label should display current or peak values */
+	public static final String SETTING_DB_LABEL_CURRENT = "gui.label.db.current";
 	/** Setting, wether a specific panel should be opened on start */
 	public static final String SETTING_RESTORE_PANEL = "gui.panel.restore";
 	/** If open specific panel is selected, index of panel to be openend */

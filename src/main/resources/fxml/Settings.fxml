@@ -51,6 +51,8 @@
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints vgrow="NEVER" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
@@ -77,18 +79,18 @@
                   <Separator GridPane.columnSpan="4" GridPane.rowIndex="3" />
                   <Label text="Audio-Device" GridPane.columnSpan="2" />
                   <Label text="User-Interface" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-                  <CheckBox fx:id="chkRestoreLastFile" mnemonicParsing="false" text="Reload last File when opening the Application" GridPane.columnIndex="2" GridPane.rowIndex="11" />
-                  <Label text="Load and Save" GridPane.columnSpan="2" GridPane.rowIndex="10" />
-                  <Separator GridPane.columnSpan="4" GridPane.rowIndex="9" />
-                  <CheckBox fx:id="chkWarnUnsavedChanges" mnemonicParsing="false" selected="true" text="Warn about unsaved changes when closing" GridPane.columnIndex="2" GridPane.rowIndex="12" />
-                  <RadioButton fx:id="rBtnPanelNothing" mnemonicParsing="false" selected="true" text="Show nothing on Application start" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                  <CheckBox fx:id="chkRestoreLastFile" mnemonicParsing="false" text="Reload last File when opening the Application" GridPane.columnIndex="2" GridPane.rowIndex="13" />
+                  <Label text="Load and Save" GridPane.columnSpan="2" GridPane.rowIndex="12" />
+                  <Separator GridPane.columnSpan="4" GridPane.rowIndex="11" />
+                  <CheckBox fx:id="chkWarnUnsavedChanges" mnemonicParsing="false" selected="true" text="Warn about unsaved changes when closing" GridPane.columnIndex="2" GridPane.rowIndex="14" />
+                  <RadioButton fx:id="rBtnPanelNothing" mnemonicParsing="false" selected="true" text="Show nothing on Application start" GridPane.columnIndex="2" GridPane.rowIndex="7">
                      <toggleGroup>
                         <ToggleGroup fx:id="startUp" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton fx:id="rBtnPanelLast" mnemonicParsing="false" text="Show last used Panel on Application start" toggleGroup="$startUp" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                  <RadioButton fx:id="rBtnPanelSpecific" mnemonicParsing="false" text="Show specific Panel on Application Start" toggleGroup="$startUp" GridPane.columnIndex="2" GridPane.rowIndex="7" />
-                  <FlowPane fx:id="flwPanel" hgap="10.0" rowValignment="TOP" style="-fx-background-color: derive(-fx-base, 10%);" vgap="10.0" GridPane.columnIndex="2" GridPane.rowIndex="8">
+                  <RadioButton fx:id="rBtnPanelLast" mnemonicParsing="false" text="Show last used Panel on Application start" toggleGroup="$startUp" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+                  <RadioButton fx:id="rBtnPanelSpecific" mnemonicParsing="false" text="Show specific Panel on Application Start" toggleGroup="$startUp" GridPane.columnIndex="2" GridPane.rowIndex="9" />
+                  <FlowPane fx:id="flwPanel" hgap="10.0" rowValignment="TOP" style="-fx-background-color: derive(-fx-base, 10%);" vgap="10.0" GridPane.columnIndex="2" GridPane.rowIndex="10">
                      <children>
                         <RadioButton mnemonicParsing="false" text="###">
                            <toggleGroup>
@@ -152,17 +154,17 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
                   </FlowPane>
-                  <Label text="Missing Signal" GridPane.columnSpan="2" GridPane.rowIndex="14" />
-                  <Label text="Threshold" GridPane.columnIndex="1" GridPane.rowIndex="15" />
-                  <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="13" />
-                  <HBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="15">
+                  <Label text="Missing Signal" GridPane.columnSpan="2" GridPane.rowIndex="16" />
+                  <Label text="Threshold" GridPane.columnIndex="1" GridPane.rowIndex="17" />
+                  <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="15" />
+                  <HBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="17">
                      <children>
                         <Slider fx:id="sldrThreshold" blockIncrement="3.0" max="-10.0" min="-90.0" showTickLabels="true" showTickMarks="true" value="-85.0" HBox.hgrow="SOMETIMES" />
                         <TextField fx:id="tfThreshold" editable="false" prefWidth="70.0" />
                      </children>
                   </HBox>
-                  <Label text="On Reappearance" GridPane.columnIndex="1" GridPane.rowIndex="16" />
-                  <FlowPane hgap="5.0" vgap="5.0" GridPane.columnIndex="2" GridPane.rowIndex="16">
+                  <Label text="On Reappearance" GridPane.columnIndex="1" GridPane.rowIndex="18" />
+                  <FlowPane hgap="5.0" vgap="5.0" GridPane.columnIndex="2" GridPane.rowIndex="18">
                      <children>
                         <RadioButton mnemonicParsing="false" selected="true" text="Hide Notification">
                            <toggleGroup>
@@ -173,6 +175,19 @@
                         <RadioButton mnemonicParsing="false" text="Highlight" toggleGroup="$watchDogDo" />
                      </children>
                   </FlowPane>
+                  <Label text="On startup" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                  <Label text="dB-Values" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <HBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                     <children>
+                        <RadioButton fx:id="rBtndbCurrent" mnemonicParsing="false" selected="true" text="Current">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="dbValues" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton fx:id="rBtndbPeak" mnemonicParsing="false" text="Peak" toggleGroup="$dbValues" />
+                     </children>
+                  </HBox>
+                  <Separator GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="6" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

@@ -27,6 +27,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import main.Constants;
+import preferences.PropertiesIO;
 
 /**
  * 
@@ -194,7 +195,13 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 
 					}
 					if (peakdB >= Constants.FFT_MIN) {
-						Platform.runLater(() -> lblPeak.setText(Math.round(peakdB * 10.0) / 10 + ""));
+						String peakText;
+						if (PropertiesIO.getBooleanProperty(Constants.SETTING_DB_LABEL_CURRENT)) {
+							peakText = Math.round(peakdB * 10.0) / 10 + "";
+						} else {
+							peakText = Math.round(peak * 10.0) / 10 + "";
+						}
+						Platform.runLater(() -> lblPeak.setText(peakText));
 					} else {
 						Platform.runLater(() -> lblPeak.setText("-∞"));
 					}
@@ -213,6 +220,7 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 
 						KeyFrame frame = new KeyFrame(Duration.seconds(duration), e -> {
 							vuPeakMeterPane.setStyle(style);
+							line.stop();
 						});
 						line.getKeyFrames().add(frame);
 						line.playFromStart();
