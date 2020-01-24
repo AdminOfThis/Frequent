@@ -73,6 +73,7 @@ public class Main {
 
 	@SuppressWarnings("resource")
 	private static boolean createRunningLockFile() {
+		boolean result = false;
 		try {
 			final File file = new File(Constants.LOCK_FILE);
 			final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
@@ -85,7 +86,7 @@ public class Main {
 							randomAccessFile.close();
 							file.delete();
 						} catch (Exception e) {
-							// log.error("Unable to remove lock file: " + lockFile, e);
+							LOG.error("Unable to remove lock file: " + fileLock, e);
 						}
 					}
 				});
@@ -95,9 +96,10 @@ public class Main {
 			LOG.error("Unable to create and/or lock file", e);
 		}
 		if (Main.isDevelopment()) {
+			// continue to launch either way
 			return true;
 		} else {
-			return false;
+			return result;
 		}
 	}
 
