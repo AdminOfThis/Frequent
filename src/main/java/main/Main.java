@@ -2,9 +2,7 @@ package main;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.net.URL;
-import java.nio.channels.FileLock;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 
@@ -56,7 +54,7 @@ public class Main {
 				loadProperties();
 				initColors();
 				initLog4jParams();
-				if (createRunningLockFile()) {
+				if (checkIfStart()) {
 					System.setProperty("javafx.preloader", PreLoader.class.getName());
 					Application.launch(FXMLMain.class, args);
 				} else {
@@ -71,35 +69,14 @@ public class Main {
 		}
 	}
 
-	@SuppressWarnings("resource")
-	private static boolean createRunningLockFile() {
-		boolean result = false;
-		try {
-			final File file = new File(Constants.LOCK_FILE);
-			final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
-			final FileLock fileLock = randomAccessFile.getChannel().tryLock();
-			if (fileLock != null) {
-				Runtime.getRuntime().addShutdownHook(new Thread() {
-					public void run() {
-						try {
-							fileLock.release();
-							randomAccessFile.close();
-							file.delete();
-						} catch (Exception e) {
-							LOG.error("Unable to remove lock file: " + fileLock, e);
-						}
-					}
-				});
-				return true;
-			}
-		} catch (Exception e) {
-			LOG.error("Unable to create and/or lock file", e);
-		}
+	private static boolean checkIfStart() {
+		boolean alreadyRunning = MainUtil.createRunningLockFile(Constants.LOCK_FILE);
 		if (Main.isDevelopment()) {
 			// continue to launch either way
+			LOG.info("Already an instance running, starting anyway because of development mode");
 			return true;
 		} else {
-			return result;
+			return alreadyRunning;
 		}
 	}
 
