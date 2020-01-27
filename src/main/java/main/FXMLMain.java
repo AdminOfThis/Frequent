@@ -31,14 +31,20 @@ public class FXMLMain extends MainGUI {
 
 	private static FXMLMain instance;
 
+	private Scene loginScene;
+	private Scene mainScene;
+	private IOChooserController loginController;
+
 	/******************* GETTERS AND SETTERS ****************/
 
 	public static FXMLMain getInstance() {
 		return instance;
 	}
+
 	public static String getLogoPath() {
 		return LOGO;
 	}
+
 	public static void showAlreadyRunningDialog() {
 		// this will prepare JavaFX toolkit and environment
 		new JFXPanel();
@@ -50,12 +56,6 @@ public class FXMLMain extends MainGUI {
 			dialog.getDialogPane().getScene().getWindow().centerOnScreen();
 		});
 	}
-
-	private Scene loginScene;
-
-	private Scene mainScene;
-
-	private IOChooserController loginController;
 
 	/**
 	 * stops all running threads and terminates the gui

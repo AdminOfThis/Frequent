@@ -13,6 +13,24 @@ public class NearestToneInfo {
 	private static int[][]		halftoneDiffs;
 	private static double[][]	allTonesFreqs;
 	private static String[][]	allTonesNames;
+	private String				name;
+	private double				freq;
+	private double				deviation;
+	private double				deviationInCents;
+	private boolean				isDeviationPositive;
+	private int					idx1;							// octave
+	private int					idx2;							// halftoneDiff
+
+	public NearestToneInfo(String name, double f, double d, double dc, boolean isPositive, int i1, int i2) {
+		this.name = name;
+		this.freq = f;
+		this.deviation = d;
+		this.deviationInCents = dc;
+		this.isDeviationPositive = isPositive;
+		this.idx1 = i1;
+		this.idx2 = i2;
+	}
+
 	public static NearestToneInfo findNearestTone(double freq) {
 		initIfNeeded();
 		double distance = Math.abs(allTonesFreqs[0][0] - freq);
@@ -45,6 +63,7 @@ public class NearestToneInfo {
 		NearestToneInfo nearest = new NearestToneInfo(allTonesNames[idx1][idx2], allTonesFreqs[idx1][idx2], distance, distanceInCents, positive, idx1, idx2);
 		return nearest;
 	}
+
 	public static String[][] getAllTones() {
 		String[][] names = new String[octaves][halftonesPerScale];
 		names[0] = new String[] { "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0" };
@@ -57,6 +76,7 @@ public class NearestToneInfo {
 		names[7] = new String[] { "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7" };
 		return names;
 	}
+
 	public static double[][] getAllTonesFreqsRelativeToRefFreq() {
 		double[][] freqs = new double[octaves][halftonesPerScale];
 		int[][] n = getHalftonesDiffsToA4();
@@ -67,6 +87,7 @@ public class NearestToneInfo {
 		}
 		return freqs;
 	}
+
 	public static int[][] getHalftonesDiffsToA4() {
 		int[][] count = new int[octaves][halftonesPerScale];
 		count[0] = new int[] { -57, -56, -55, -54, -53, -52, -51, -50, -49, -48, -47, -46 };
@@ -79,6 +100,7 @@ public class NearestToneInfo {
 		count[7] = new int[] { 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38 };
 		return count;
 	}
+
 	private static void initIfNeeded() {
 		if (allTonesNames == null) {
 			allTonesNames = getAllTones();
@@ -89,28 +111,6 @@ public class NearestToneInfo {
 		if (allTonesFreqs == null) {
 			allTonesFreqs = getAllTonesFreqsRelativeToRefFreq();
 		}
-	}
-	private String				name;
-	private double				freq;
-
-	private double				deviation;
-
-	private double				deviationInCents;
-
-	private boolean				isDeviationPositive;
-
-	private int					idx1;							// octave
-
-	private int					idx2;							// halftoneDiff
-
-	public NearestToneInfo(String name, double f, double d, double dc, boolean isPositive, int i1, int i2) {
-		this.name = name;
-		this.freq = f;
-		this.deviation = d;
-		this.deviationInCents = dc;
-		this.isDeviationPositive = isPositive;
-		this.idx1 = i1;
-		this.idx2 = i2;
 	}
 
 	public double getDeviation() {

@@ -16,6 +16,14 @@ public final class BPMBestGuess {
 	private static double DECAY_RATE = 0.999;
 	private static double DELETE_THRESHHOLD = 0.01;
 	private static BPMBestGuess instance;
+	private Map<Double, Double> bpmEntries = Collections.synchronizedMap(new HashMap<Double, Double>());
+	private double confidence = 0;
+	private long lastCalc;
+	private double bpm;
+
+	private BPMBestGuess() {
+	}
+
 	/**
 	 * Returns the singleton isntance of {@link BPMBestGuess}
 	 * 
@@ -26,14 +34,6 @@ public final class BPMBestGuess {
 			instance = new BPMBestGuess();
 		}
 		return instance;
-	}
-	private Map<Double, Double> bpmEntries = Collections.synchronizedMap(new HashMap<Double, Double>());
-	private double confidence = 0;
-	private long lastCalc;
-
-	private double bpm;
-
-	private BPMBestGuess() {
 	}
 
 	/**

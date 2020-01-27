@@ -45,9 +45,6 @@ public class GroupViewController implements Initializable, PausableView {
 	private static final Logger LOG = LogManager.getLogger(GroupViewController.class);
 	private static final long TIME_FRAME = 600000L;
 	private static GroupViewController instance;
-	public static GroupViewController getInstance() {
-		return instance;
-	}
 	@FXML
 	private SplitPane root;
 	@FXML
@@ -58,8 +55,11 @@ public class GroupViewController implements Initializable, PausableView {
 	private ToggleButton tglTimed;
 	private Map<Group, Map<Long, Double>> pendingMap = Collections.synchronizedMap(new HashMap<>());
 	private Map<Group, Series<Number, Number>> groupSeriesMap = Collections.synchronizedMap(new HashMap<>());
-
 	private boolean pause = true;
+
+	public static GroupViewController getInstance() {
+		return instance;
+	}
 
 	@Override
 	public ArrayList<Region> getHeader() {

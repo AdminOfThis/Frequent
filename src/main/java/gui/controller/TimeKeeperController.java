@@ -47,18 +47,15 @@ public class TimeKeeperController implements Initializable {
 
 	private static final Logger LOG = LogManager.getLogger(TimeKeeperController.class);
 	private static TimeKeeperController instance;
-	public static TimeKeeperController getInstance() {
-		return instance;
-	}
 	@FXML
 	private Parent paneCue;
 	@FXML
 	private StackPane piePane;
 	@FXML
 	private PieChart timeChart;
-
 	@FXML
 	private Button btnTime, btnStart, btnStop;
+
 	@FXML
 	private TableView<Cue> cueTable;
 	@FXML
@@ -71,12 +68,15 @@ public class TimeKeeperController implements Initializable {
 	private Label lblTime;
 	@FXML
 	private GridPane infoPane;
-
 	/**************
 	 * contextmenu
 	 *************/
 	@FXML
 	private MenuItem cxtResetChannel, cxtDeleteCue;
+
+	public static TimeKeeperController getInstance() {
+		return instance;
+	}
 
 	public Button getRoundButton() {
 		return btnTime;

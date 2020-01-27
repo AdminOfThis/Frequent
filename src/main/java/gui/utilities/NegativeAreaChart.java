@@ -17,6 +17,10 @@ public class NegativeAreaChart extends AreaChart<Number, Number> {
 
 	private static final int SUBDIVISION_POINTS = 6;
 
+	public NegativeAreaChart(Axis<Number> xAxis, Axis<Number> yAxis) {
+		super(xAxis, yAxis);
+	}
+
 	public static final Point2D[] subdividePoints(final Point2D[] POINTS, final int SUB_DEVISIONS) {
 		assert POINTS != null;
 		assert POINTS.length >= 3;
@@ -34,10 +38,6 @@ public class NegativeAreaChart extends AreaChart<Number, Number> {
 			}
 		}
 		return subdividedPoints;
-	}
-
-	public NegativeAreaChart(Axis<Number> xAxis, Axis<Number> yAxis) {
-		super(xAxis, yAxis);
 	}
 
 	/**

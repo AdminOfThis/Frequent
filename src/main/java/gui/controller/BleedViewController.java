@@ -30,9 +30,6 @@ public class BleedViewController implements Initializable, PausableView {
 
 	private static final Logger LOG = LogManager.getLogger(BleedViewController.class);
 	private static BleedViewController instance;
-	public static BleedViewController getInstance() {
-		return instance;
-	}
 	private boolean pause = true;
 	@FXML
 	private HBox topBox;
@@ -42,8 +39,11 @@ public class BleedViewController implements Initializable, PausableView {
 	private HBox content;
 	@FXML
 	private ComboBox<Channel> primaryCombo;
-
 	private VuMeterMono primaryMeter;
+
+	public static BleedViewController getInstance() {
+		return instance;
+	}
 
 	@Override
 	public ArrayList<Region> getHeader() {

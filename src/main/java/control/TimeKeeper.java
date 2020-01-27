@@ -15,24 +15,24 @@ public final class TimeKeeper implements DataHolder<Cue> {
 	public static final String DEFAULT_CUE_NAME = "Song #";
 	private static TimeKeeper instance;
 	private static final ArrayList<CueListener> listeners = new ArrayList<>();
-	public static TimeKeeper getInstance() {
-		if (instance == null) {
-			instance = new TimeKeeper();
-		}
-		return instance;
-	}
 	private long startTime;
 	private long roundStartTime;
 	private long pauseStarttime;
 	private long pauseTime, pauseRoundTime;
 	private List<Cue> cueList = new ArrayList<>();
 	private int activeIndex = -1;
-
 	private boolean pause = false;
 
 	private TimeKeeper() {
 		FileIO.registerSaveData(this);
 		reset();
+	}
+
+	public static TimeKeeper getInstance() {
+		if (instance == null) {
+			instance = new TimeKeeper();
+		}
+		return instance;
 	}
 
 	@Override

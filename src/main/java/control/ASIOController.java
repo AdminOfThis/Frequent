@@ -44,6 +44,51 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	private static int fftBufferSize;
 	private static List<DriverInfo> driverList;
 
+	private String driverName;
+
+	private AsioDriver asioDriver;
+
+	private int bufferSize = 1024;
+
+	private double sampleRate;
+
+	private Channel activeChannel;
+	private float baseFrequency = -1;
+	// FFT
+	// private float[] output;
+	private int bufferCount;
+	private int[] index;
+	private List<Channel> channelList;
+	private List<Group> groupList = new ArrayList<>();
+	private List<FFTListener> fftListeners = new ArrayList<>();
+	private ExecutorService exe;
+	private long time;
+	private boolean isFFTing = false;
+
+	/**
+	 * Constructor of the ASIOController
+	 * 
+	 * @param ioName Name of the chosen ASIO driver, should be chosen of the list
+	 *               from {@link #getPossibleDrivers()}
+	 */
+	public ASIOController(final String ioName) {
+
+		if (instance != null && instance.getDevice() != null && !instance.getDevice().isEmpty()) {
+			LOG.warn("Another driver already exists");
+			shutdown();
+		}
+		LOG.info("Created ASIO Controller");
+		driverName = ioName;
+		instance = this;
+		FileIO.registerSaveData(this);
+		if (driverName != null) {
+			restart();
+			LOG.info("ASIO driver started");
+			initFFT();
+		}
+		LOG.info("FFT Analysis started");
+	}
+
 	/**
 	 * @return Returns the instance of the {@link #ASIOController}, as definded by
 	 *         singleton pattern
@@ -110,51 +155,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 		return result;
 	}
 
-	private String driverName;
-	private AsioDriver asioDriver;
-	private int bufferSize = 1024;
-	private double sampleRate;
-	private Channel activeChannel;
-	private float baseFrequency = -1;
-	// FFT
-	// private float[] output;
-	private int bufferCount;
-	private int[] index;
-	private List<Channel> channelList;
-	private List<Group> groupList = new ArrayList<>();
-
-	private List<FFTListener> fftListeners = new ArrayList<>();
-
-	private ExecutorService exe;
-
-	private long time;
-
-	private boolean isFFTing = false;
-
-	/**
-	 * Constructor of the ASIOController
-	 * 
-	 * @param ioName Name of the chosen ASIO driver, should be chosen of the list
-	 *               from {@link #getPossibleDrivers()}
-	 */
-	public ASIOController(final String ioName) {
-
-		if (instance != null && instance.getDevice() != null && !instance.getDevice().isEmpty()) {
-			LOG.warn("Another driver already exists");
-			shutdown();
-		}
-		LOG.info("Created ASIO Controller");
-		driverName = ioName;
-		instance = this;
-		FileIO.registerSaveData(this);
-		if (driverName != null) {
-			restart();
-			LOG.info("ASIO driver started");
-			initFFT();
-		}
-		LOG.info("FFT Analysis started");
-	}
-
 	@Override
 	public void add(final Object t) {
 		if (t instanceof Channel) {
@@ -188,6 +188,11 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 		}
 	}
 
+	/**
+	 * Adds a new member to the list of available devices
+	 * 
+	 * @param info A new {@link DriverInfo} objects, representing the ASIO driver
+	 */
 	public void addDriverInfo(DriverInfo info) {
 		if (driverList == null) {
 			driverList = new ArrayList<>();

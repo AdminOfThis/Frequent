@@ -98,9 +98,6 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	private static final Logger LOG = LogManager.getLogger(MainController.class);
 	private static final ExtensionFilter FILTER = new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
 	private static MainController instance;
-	public static MainController getInstance() {
-		return instance;
-	}
 	@FXML
 	private AnchorPane waveFormPane;
 	@FXML
@@ -109,12 +106,12 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	private Node bottomLabel;
 	@FXML
 	private VBox waveFormPaneParent, vChannelLeft;
-
 	/**
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
 	@FXML
 	private ToggleButton toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView, toggleBleedView;
+
 	@FXML
 	private ToggleButton togglePreview, toggleCue, toggleChannels, toggleGroupChannels, toggleBtmRaw, toggleBtmWave, tglOverView;
 	@FXML
@@ -149,8 +146,11 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	private SymmetricWaveFormChart waveFormChart;
 	private DataChart dataChart;
 	private double minHeaderButtonWidth = 0;
-
 	private InformationDialog missingChannelDialog;
+
+	public static MainController getInstance() {
+		return instance;
+	}
 
 	@Override
 	public void currentCue(final Cue cue, final Cue next) {

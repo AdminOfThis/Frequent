@@ -27,18 +27,11 @@ public class Watchdog implements InputListener {
 
 	private static Watchdog instance;
 
-	public static Watchdog getInstance() {
-		if (instance == null) {
-			instance = new Watchdog();
-		}
-		return instance;
-	}
 	private List<WatchdogListener> listeners = Collections.synchronizedList(new ArrayList<WatchdogListener>());
-
 	private ArrayListValuedHashMap<Long, Input> missingInputs = new ArrayListValuedHashMap<Long, Input>();
+
 	private ArrayListValuedHashMap<Long, Input> watchMap = new ArrayListValuedHashMap<Long, Input>();
 	private Map<Input, Long> heartBeatMap = Collections.synchronizedMap(new HashMap<Input, Long>());
-
 	private ScheduledExecutorService exec;
 
 	private Watchdog() {
@@ -50,6 +43,13 @@ public class Watchdog implements InputListener {
 				LOG.warn("Problem on watchdog", e);
 			}
 		}, 5, 1, TimeUnit.SECONDS);
+	}
+
+	public static Watchdog getInstance() {
+		if (instance == null) {
+			instance = new Watchdog();
+		}
+		return instance;
 	}
 
 	/******* WatchMap functions ***************/

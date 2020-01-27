@@ -15,17 +15,17 @@ import control.DataHolder;
 public class ColorController implements DataHolder<ColorEntry> {
 
 	private static ColorController instance;
+	private List<ColorEntry> colors = Collections.synchronizedList(new ArrayList<ColorEntry>());
+
+	private ColorController() {
+		FileIO.registerSaveData(this);
+	}
+
 	public static ColorController getInstance() {
 		if (instance == null) {
 			instance = new ColorController();
 		}
 		return instance;
-	}
-
-	private List<ColorEntry> colors = Collections.synchronizedList(new ArrayList<ColorEntry>());
-
-	private ColorController() {
-		FileIO.registerSaveData(this);
 	}
 
 	@Override

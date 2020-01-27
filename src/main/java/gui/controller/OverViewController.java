@@ -33,6 +33,15 @@ public class OverViewController implements Initializable, PausableView {
 	private static final int MIN_CHANNELS_PER_ROW = 4;
 	private static final int MAX_CHANNELS_PER_ROW = 16;
 
+	@FXML
+	private BorderPane root;
+	@FXML
+	private ToggleButton tglShowHidden;
+	@FXML
+	private GridPane flow;
+
+	private boolean pause = true;
+
 	private static int calculateRows(int channels) {
 		int rows = -1;
 		int channelsPerRow = DEFAULT_CHANNELS_PER_ROW;
@@ -63,15 +72,6 @@ public class OverViewController implements Initializable, PausableView {
 		}
 		return rows;
 	}
-	@FXML
-	private BorderPane root;
-	@FXML
-	private ToggleButton tglShowHidden;
-
-	@FXML
-	private GridPane flow;
-
-	private boolean pause = true;
 
 	@Override
 	public ArrayList<Region> getHeader() {

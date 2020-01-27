@@ -29,6 +29,16 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 	private static final int LIST_SIZE = 20;
 	private static BeatDetector instance;
 	private static boolean initialized = false;
+	private List<DrumTrigger> triggerList = Collections.synchronizedList(new ArrayList<>());
+	private double bpm = 0;
+	private Map<DrumTrigger, List<Long>> seriesMap = Collections.synchronizedMap(new HashMap<>());
+	private Mode mode = Mode.BPM_DETECT;
+
+	private BeatDetector() {
+		setDaemon(true);
+		start();
+	}
+
 	/**
 	 * Returns the instance of the {@link BeatDetector}, and initializes a new one,
 	 * if instance is currently null
@@ -41,6 +51,7 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 		}
 		return instance;
 	}
+
 	/**
 	 * Initialized the Beat Detector once new triggers are set
 	 */
@@ -55,6 +66,7 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 			initialized = true;
 		}
 	}
+
 	/**
 	 * Returns wether the {@link BeatDetector} is initialized.
 	 * 
@@ -62,18 +74,6 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 	 */
 	public static synchronized boolean isInitialized() {
 		return initialized;
-	}
-	private List<DrumTrigger> triggerList = Collections.synchronizedList(new ArrayList<>());
-
-	private double bpm = 0;
-
-	private Map<DrumTrigger, List<Long>> seriesMap = Collections.synchronizedMap(new HashMap<>());
-
-	private Mode mode = Mode.BPM_DETECT;
-
-	private BeatDetector() {
-		setDaemon(true);
-		start();
 	}
 
 	/**
