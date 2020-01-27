@@ -3,7 +3,7 @@ coverage:
   round: nearest
   range: 0..75
   status:
-    patch: yes
+    patch: no
     changes: no
     project:
       default:
