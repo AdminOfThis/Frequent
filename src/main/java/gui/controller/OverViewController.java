@@ -33,14 +33,52 @@ public class OverViewController implements Initializable, PausableView {
 	private static final int MIN_CHANNELS_PER_ROW = 4;
 	private static final int MAX_CHANNELS_PER_ROW = 16;
 
+	private static int calculateRows(int channels) {
+		int rows = -1;
+		int channelsPerRow = DEFAULT_CHANNELS_PER_ROW;
+		int count = 0;
+		while (rows <= 0 || Math.ceil(channels / (double) rows) < MIN_CHANNELS_PER_ROW || Math.ceil(channels / (double) rows) > MAX_CHANNELS_PER_ROW) {
+			// terminate condition, to prevent forever looping
+			count++;
+			if (count > 20) {
+				rows = 1;
+				break;
+			}
+			// on the first run, skip adjustments
+			if (rows >= 0) {
+				// if not enough channels per row, double channels per row
+
+				if (Math.ceil(channels / (double) rows) > MAX_CHANNELS_PER_ROW) {
+					channelsPerRow = channelsPerRow / 2;
+				}
+				// if too many channels per row, half channels per row
+				if (Math.ceil(channels / (double) rows) < MIN_CHANNELS_PER_ROW) {
+					channelsPerRow = channelsPerRow * 2;
+				}
+			}
+			// results in x number of rows, defined by Channels per row
+
+			rows = (int) Math.ceil(channels / (double) channelsPerRow);
+
+		}
+		return rows;
+	}
 	@FXML
 	private BorderPane root;
 	@FXML
 	private ToggleButton tglShowHidden;
+
 	@FXML
 	private GridPane flow;
 
 	private boolean pause = true;
+
+	@Override
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> result = new ArrayList<>();
+		result.add(tglShowHidden);
+		return result;
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -50,20 +88,13 @@ public class OverViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public void pause(boolean pause) {
-		this.pause = pause;
-	}
-
-	@Override
 	public boolean isPaused() {
 		return pause;
 	}
 
 	@Override
-	public ArrayList<Region> getHeader() {
-		ArrayList<Region> result = new ArrayList<>();
-		result.add(tglShowHidden);
-		return result;
+	public void pause(boolean pause) {
+		this.pause = pause;
 	}
 
 	@Override
@@ -127,37 +158,6 @@ public class OverViewController implements Initializable, PausableView {
 			}
 
 		}
-	}
-
-	private static int calculateRows(int channels) {
-		int rows = -1;
-		int channelsPerRow = DEFAULT_CHANNELS_PER_ROW;
-		int count = 0;
-		while (rows <= 0 || Math.ceil(channels / (double) rows) < MIN_CHANNELS_PER_ROW || Math.ceil(channels / (double) rows) > MAX_CHANNELS_PER_ROW) {
-			// terminate condition, to prevent forever looping
-			count++;
-			if (count > 20) {
-				rows = 1;
-				break;
-			}
-			// on the first run, skip adjustments
-			if (rows >= 0) {
-				// if not enough channels per row, double channels per row
-
-				if (Math.ceil(channels / (double) rows) > MAX_CHANNELS_PER_ROW) {
-					channelsPerRow = channelsPerRow / 2;
-				}
-				// if too many channels per row, half channels per row
-				if (Math.ceil(channels / (double) rows) < MIN_CHANNELS_PER_ROW) {
-					channelsPerRow = channelsPerRow * 2;
-				}
-			}
-			// results in x number of rows, defined by Channels per row
-
-			rows = (int) Math.ceil(channels / (double) channelsPerRow);
-
-		}
-		return rows;
 	}
 
 	@Override

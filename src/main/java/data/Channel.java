@@ -12,12 +12,16 @@ import control.InputListener;
 public class Channel extends Input implements Comparable<Channel> {
 
 	private static final long serialVersionUID = 1L;
+	public static double percentToDB(final double level) {
+		return 20.0 * Math.log10(level /* / 1000.0 */);
+	}
 	private transient AsioChannel channel;
 	private int channelIndex = -1;
 	private Group group;
 	private boolean hide = false;
 	private float[] buffer;
 	private float[] bufferFull = new float[ASIOController.DESIRED_BUFFER_SIZE];
+
 	private Channel stereoChannel;
 
 	public Channel() {
@@ -41,10 +45,6 @@ public class Channel extends Input implements Comparable<Channel> {
 
 	public Channel(final String name) {
 		this(null, name);
-	}
-
-	public static double percentToDB(final double level) {
-		return 20.0 * Math.log10(level /* / 1000.0 */);
 	}
 
 	@Override
@@ -85,13 +85,38 @@ public class Channel extends Input implements Comparable<Channel> {
 		return hide;
 	}
 
-	private void removeStereoChannel() {
-		stereoChannel = null;
+	public boolean isLeftChannel() {
+		return getStereoChannel() != null && compareTo(getStereoChannel()) < 0;
+	}
+
+	public boolean isStereo() {
+		return getStereoChannel() != null;
 	}
 
 	public void resetName() {
 		if (channel != null) {
 			setName(channel.getChannelName());
+		}
+	}
+
+	public void sendFullBuffer(long time) {
+		float max = 0;
+		float rms = 0;
+		for (float f : bufferFull) {
+			rms += f * f;
+			if (f > max) {
+				max = f;
+			}
+		}
+		rms = (float) Math.sqrt(rms / bufferFull.length);
+		setLevel(max, rms, time);
+		synchronized (getListeners()) {
+			for (int i = 0; i < getListeners().size(); i++) {
+				InputListener l = getListeners().get(i);
+				if (l instanceof ChannelListener) {
+					new Thread(() -> ((ChannelListener) l).newBuffer(this, bufferFull, time)).start();
+				}
+			}
 		}
 	}
 
@@ -123,27 +148,6 @@ public class Channel extends Input implements Comparable<Channel> {
 		}
 	}
 
-	public void sendFullBuffer(long time) {
-		float max = 0;
-		float rms = 0;
-		for (float f : bufferFull) {
-			rms += f * f;
-			if (f > max) {
-				max = f;
-			}
-		}
-		rms = (float) Math.sqrt(rms / bufferFull.length);
-		setLevel(max, rms, time);
-		synchronized (getListeners()) {
-			for (int i = 0; i < getListeners().size(); i++) {
-				InputListener l = getListeners().get(i);
-				if (l instanceof ChannelListener) {
-					new Thread(() -> ((ChannelListener) l).newBuffer(this, bufferFull, time)).start();
-				}
-			}
-		}
-	}
-
 	public void setChannel(final AsioChannel channel) {
 		this.channel = channel;
 		if (channel != null) {
@@ -151,10 +155,6 @@ public class Channel extends Input implements Comparable<Channel> {
 		} else {
 			channelIndex = -1;
 		}
-	}
-
-	protected void setGroup(final Group group) {
-		this.group = group;
 	}
 
 	public void setHidden(final boolean hide) {
@@ -180,11 +180,11 @@ public class Channel extends Input implements Comparable<Channel> {
 		}
 	}
 
-	public boolean isStereo() {
-		return getStereoChannel() != null;
+	private void removeStereoChannel() {
+		stereoChannel = null;
 	}
 
-	public boolean isLeftChannel() {
-		return getStereoChannel() != null && compareTo(getStereoChannel()) < 0;
+	protected void setGroup(final Group group) {
+		this.group = group;
 	}
 }

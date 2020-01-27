@@ -66,19 +66,6 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 		}
 	}
 
-	private void newGroupDialog() {
-		TextInputDialog newGroupDialog = new TextInputDialog("New Group");
-		FXMLUtil.setStyleSheet(newGroupDialog.getDialogPane());
-		Optional<String> result = newGroupDialog.showAndWait();
-		if (result.isPresent()) {
-			Group g = new Group(result.get());
-			LOG.info("Created new group: " + g.getName());
-			ASIOController.getInstance().addGroup(g);
-			groupAllSelected(g);
-			MainController.getInstance().refresh();
-		}
-	}
-
 	private void groupAllSelected(final Group g) {
 		ArrayList<Input> list = MainController.getInstance().getSelectedChannels();
 		for (Input i : list) {
@@ -113,6 +100,19 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 					c2.setHidden(hide);
 				}
 			}
+		}
+	}
+
+	private void newGroupDialog() {
+		TextInputDialog newGroupDialog = new TextInputDialog("New Group");
+		FXMLUtil.setStyleSheet(newGroupDialog.getDialogPane());
+		Optional<String> result = newGroupDialog.showAndWait();
+		if (result.isPresent()) {
+			Group g = new Group(result.get());
+			LOG.info("Created new group: " + g.getName());
+			ASIOController.getInstance().addGroup(g);
+			groupAllSelected(g);
+			MainController.getInstance().refresh();
 		}
 	}
 

@@ -35,57 +35,12 @@ public abstract class FileIO {
 	private static List<DataHolder<? extends Serializable>> holderList = new ArrayList<>();
 	private static Properties properties;
 
-	private static List<Serializable> collectData() {
-		ArrayList<Serializable> result = new ArrayList<>();
-		for (DataHolder<? extends Serializable> h : holderList) {
-			if (h != null) {
-				result.addAll(h.getData());
-			}
-		}
-		return result;
-	}
-
 	public static File getCurrentDir() {
 		return currentDir;
 	}
 
 	public static File getCurrentFile() {
 		return currentFile;
-	}
-
-	public static void registerDatahandlers() {
-		registerSaveData(ASIOController.getInstance());
-		registerSaveData(TimeKeeper.getInstance());
-		registerSaveData(ColorController.getInstance());
-	}
-
-	private static void handleResult(final List<Serializable> result) {
-		// Map only for statistics
-		HashMap<Class<?>, Integer> counterMap = new HashMap<>();
-		for (Object o : result) {
-			try {
-				if (counterMap.get(o.getClass()) == null) {
-					counterMap.put(o.getClass(), 0);
-				}
-				counterMap.put(o.getClass(), counterMap.get(o.getClass()) + 1);
-				// finding right controller
-				for (DataHolder<? extends Serializable> holder : holderList) {
-					if (holder != null) {
-						holder.add(o);
-					}
-				}
-			} catch (Exception e) {
-				LOG.warn("Problem loading object", e);
-			}
-		}
-		try {
-			LOG.info("= Loading statistics: ");
-			for (Entry<Class<?>, Integer> o : counterMap.entrySet()) {
-				LOG.info("    " + o.getKey().getSimpleName() + ": " + o.getValue());
-			}
-		} catch (Exception e) {
-			LOG.warn("Problem while showing statistics", e);
-		}
 	}
 
 	public static Properties loadProperties() {
@@ -147,46 +102,17 @@ public abstract class FileIO {
 		return false;
 	}
 
-	private static List<Serializable> openFile(final File file) {
-		ArrayList<Serializable> result = new ArrayList<>();
-		ObjectInputStream stream = null;
-		try {
-			stream = new ObjectInputStream(new FileInputStream(file));
-			Object o;
-			while ((o = stream.readObject()) != null) {
-				if (o instanceof Serializable) {
-					result.add((Serializable) o);
-				}
-			}
-		} catch (FileNotFoundException e) {
-			LOG.warn("File not found");
-			LOG.debug("", e);
-		} catch (EOFException e) {
-			LOG.warn("End of File reached");
-			LOG.debug("", e);
-		} catch (IOException e) {
-			LOG.warn("Unable to read file");
-			LOG.debug("", e);
-		} catch (ClassNotFoundException e) {
-			LOG.warn("Class not found");
-			LOG.debug("", e);
-		} finally {
-			try {
-				stream.close();
-			} catch (IOException e) {
-				LOG.error("Unable to close file stream");
-				LOG.debug("", e);
-			}
-		}
-		LOG.info("Successfully loaded " + result.size() + " object(s)");
-		return result;
-	}
-
 	public static String readPropertiesString(final String key, final String defaultValue) {
 		if (properties == null) {
 			loadProperties();
 		}
 		return properties.getProperty(key, defaultValue);
+	}
+
+	public static void registerDatahandlers() {
+		registerSaveData(ASIOController.getInstance());
+		registerSaveData(TimeKeeper.getInstance());
+		registerSaveData(ColorController.getInstance());
 	}
 
 	public static void registerSaveData(final DataHolder<? extends Serializable> holder) {
@@ -229,29 +155,12 @@ public abstract class FileIO {
 		return result;
 	}
 
-	private static boolean saveProperties() {
-		FileOutputStream stream = null;
-		try {
-			stream = new FileOutputStream(new File(PROPERTIES_FILE));
-			properties.store(stream, "");
-		} catch (Exception e) {
-			LOG.warn("Unable to save preferences");
-			LOG.debug("", e);
-			return false;
-		} finally {
-			if (stream != null) {
-				try {
-					stream.close();
-				} catch (IOException e) {
-					LOG.error("Problem closing filoutput stream", e);
-				}
-			}
-		}
-		return true;
-	}
-
 	public static void setCurrentDir(final File file) {
 		currentDir = file;
+	}
+
+	public static void unregisterSaveData(DataHolder<?> holder) {
+		holderList.remove(holder);
 	}
 
 	public static boolean unsavedChanges() {
@@ -278,7 +187,98 @@ public abstract class FileIO {
 		saveProperties();
 	}
 
-	public static void unregisterSaveData(DataHolder<?> holder) {
-		holderList.remove(holder);
+	private static List<Serializable> collectData() {
+		ArrayList<Serializable> result = new ArrayList<>();
+		for (DataHolder<? extends Serializable> h : holderList) {
+			if (h != null) {
+				result.addAll(h.getData());
+			}
+		}
+		return result;
+	}
+
+	private static void handleResult(final List<Serializable> result) {
+		// Map only for statistics
+		HashMap<Class<?>, Integer> counterMap = new HashMap<>();
+		for (Object o : result) {
+			try {
+				if (counterMap.get(o.getClass()) == null) {
+					counterMap.put(o.getClass(), 0);
+				}
+				counterMap.put(o.getClass(), counterMap.get(o.getClass()) + 1);
+				// finding right controller
+				for (DataHolder<? extends Serializable> holder : holderList) {
+					if (holder != null) {
+						holder.add(o);
+					}
+				}
+			} catch (Exception e) {
+				LOG.warn("Problem loading object", e);
+			}
+		}
+		try {
+			LOG.info("= Loading statistics: ");
+			for (Entry<Class<?>, Integer> o : counterMap.entrySet()) {
+				LOG.info("    " + o.getKey().getSimpleName() + ": " + o.getValue());
+			}
+		} catch (Exception e) {
+			LOG.warn("Problem while showing statistics", e);
+		}
+	}
+
+	private static List<Serializable> openFile(final File file) {
+		ArrayList<Serializable> result = new ArrayList<>();
+		ObjectInputStream stream = null;
+		try {
+			stream = new ObjectInputStream(new FileInputStream(file));
+			Object o;
+			while ((o = stream.readObject()) != null) {
+				if (o instanceof Serializable) {
+					result.add((Serializable) o);
+				}
+			}
+		} catch (FileNotFoundException e) {
+			LOG.warn("File not found");
+			LOG.debug("", e);
+		} catch (EOFException e) {
+			LOG.warn("End of File reached");
+			LOG.debug("", e);
+		} catch (IOException e) {
+			LOG.warn("Unable to read file");
+			LOG.debug("", e);
+		} catch (ClassNotFoundException e) {
+			LOG.warn("Class not found");
+			LOG.debug("", e);
+		} finally {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				LOG.error("Unable to close file stream");
+				LOG.debug("", e);
+			}
+		}
+		LOG.info("Successfully loaded " + result.size() + " object(s)");
+		return result;
+	}
+
+	private static boolean saveProperties() {
+		FileOutputStream stream = null;
+		try {
+			stream = new FileOutputStream(new File(PROPERTIES_FILE));
+			properties.store(stream, "");
+		} catch (Exception e) {
+			LOG.warn("Unable to save preferences");
+			LOG.debug("", e);
+			return false;
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					LOG.error("Problem closing filoutput stream", e);
+				}
+			}
+		}
+		return true;
 	}
 }

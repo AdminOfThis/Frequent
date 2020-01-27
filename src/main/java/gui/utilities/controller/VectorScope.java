@@ -89,14 +89,13 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	}
 
-	protected ScatterChart<Number, Number> getChart() {
-		return chart;
-	}
-
 	public VectorScope(final PausableView parent) {
 		this();
 		parentPausable = parent;
 	}
+
+	@Override
+	public void colorChanged(String newColor) {}
 
 	public Channel getChannel1() {
 		return channel1;
@@ -121,9 +120,17 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 	}
 
 	@Override
+	public boolean isPaused() {
+		return pause || (parentPausable != null && parentPausable.isPaused()) || channel1 == null || channel2 == null || Objects.equals(channel1, channel2);
+	}
+
+	@Override
 	public void levelChanged(final Input input, final double level, final long time) {
 		// do nothing, don't care
 	}
+
+	@Override
+	public void nameChanged(String name) {}
 
 	@Override
 	public void newBuffer(final Channel channel, final float[] buffer, final long position) {
@@ -148,11 +155,6 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 				LOG.error("Problem showing vectorscope", e);
 			}
 		}
-	}
-
-	@Override
-	public boolean isPaused() {
-		return pause || (parentPausable != null && parentPausable.isPaused()) || channel1 == null || channel2 == null || Objects.equals(channel1, channel2);
 	}
 
 	@Override
@@ -205,6 +207,10 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 		lblTitle.setText(title);
 	}
 
+	protected ScatterChart<Number, Number> getChart() {
+		return chart;
+	}
+
 	protected void update() {
 		if (!isPaused() && ring != null) {
 
@@ -251,10 +257,4 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 		}
 	}
-
-	@Override
-	public void nameChanged(String name) {}
-
-	@Override
-	public void colorChanged(String newColor) {}
 }

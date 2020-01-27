@@ -62,9 +62,67 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 	}
 
 	@Override
+	public void colorChanged(String newColor) {}
+
+	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		chart.getData().add(series);
 
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause || pausableParent != null && pausableParent.isPaused() || channel == null;
+	}
+
+	@Override
+	public void levelChanged(final Input input, final double level, final long time) {
+		// do nothing
+	}
+
+	@Override
+	public void nameChanged(String name) {}
+
+	@Override
+	public void newBuffer(final Channel channel, final float[] buffer, final long time) {
+		float[] windowed = FFT.applyWindow(buffer);
+		synchronized (pendingData) {
+			pendingData.clear();
+			for (float buf : windowed) {
+				pendingData.add(buf);
+			}
+		}
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		this.pause = pause;
+	}
+
+	public void setChannel(final Channel c) {
+		try {
+			if (!Objects.equals(c, channel)) {
+				if (channel != null) {
+					channel.removeListener(this);
+				}
+				series.getData().clear();
+				pendingData.clear();
+				synchronized (pendingData) {
+					pendingData.clear();
+				}
+				channel = c;
+				if (c != null) {
+					c.addListener(this);
+				}
+			}
+		} catch (Exception e) {
+			LOG.warn("", e);
+		}
+	}
+
+	@Override
+	public void setParentPausable(Pausable parent) {
+		pausableParent = parent;
 	}
 
 	private void update() {
@@ -93,62 +151,4 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 			}
 		}
 	}
-
-	public void setChannel(final Channel c) {
-		try {
-			if (!Objects.equals(c, channel)) {
-				if (channel != null) {
-					channel.removeListener(this);
-				}
-				series.getData().clear();
-				pendingData.clear();
-				synchronized (pendingData) {
-					pendingData.clear();
-				}
-				channel = c;
-				if (c != null) {
-					c.addListener(this);
-				}
-			}
-		} catch (Exception e) {
-			LOG.warn("", e);
-		}
-	}
-
-	@Override
-	public void pause(boolean pause) {
-		this.pause = pause;
-	}
-
-	@Override
-	public boolean isPaused() {
-		return pause || pausableParent != null && pausableParent.isPaused() || channel == null;
-	}
-
-	@Override
-	public void setParentPausable(Pausable parent) {
-		pausableParent = parent;
-	}
-
-	@Override
-	public void levelChanged(final Input input, final double level, final long time) {
-		// do nothing
-	}
-
-	@Override
-	public void newBuffer(final Channel channel, final float[] buffer, final long time) {
-		float[] windowed = FFT.applyWindow(buffer);
-		synchronized (pendingData) {
-			pendingData.clear();
-			for (float buf : windowed) {
-				pendingData.add(buf);
-			}
-		}
-	}
-
-	@Override
-	public void nameChanged(String name) {}
-
-	@Override
-	public void colorChanged(String newColor) {}
 }

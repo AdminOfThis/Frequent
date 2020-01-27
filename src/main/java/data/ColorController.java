@@ -14,9 +14,7 @@ import control.DataHolder;
  */
 public class ColorController implements DataHolder<ColorEntry> {
 
-	private List<ColorEntry> colors = Collections.synchronizedList(new ArrayList<ColorEntry>());
 	private static ColorController instance;
-
 	public static ColorController getInstance() {
 		if (instance == null) {
 			instance = new ColorController();
@@ -24,30 +22,10 @@ public class ColorController implements DataHolder<ColorEntry> {
 		return instance;
 	}
 
+	private List<ColorEntry> colors = Collections.synchronizedList(new ArrayList<ColorEntry>());
+
 	private ColorController() {
 		FileIO.registerSaveData(this);
-	}
-
-	public List<ColorEntry> getColors() {
-		return colors;
-	}
-
-	public void addColor(String name, String color) {
-		ColorEntry entry = new ColorEntry(name, color);
-		colors.add(entry);
-	}
-
-	public void removeColor(String name) {
-		for (ColorEntry e : colors) {
-			if (e.getName().equals(name)) {
-				colors.remove(e);
-				break;
-			}
-		}
-	}
-
-	public void removeColor(ColorEntry entry) {
-		colors.remove(entry);
 	}
 
 	@Override
@@ -59,9 +37,18 @@ public class ColorController implements DataHolder<ColorEntry> {
 		}
 	}
 
+	public void addColor(String name, String color) {
+		ColorEntry entry = new ColorEntry(name, color);
+		colors.add(entry);
+	}
+
 	@Override
-	public void set(List<ColorEntry> list) {
-		colors = Collections.synchronizedList(list);
+	public void clear() {
+		colors.clear();
+	}
+
+	public List<ColorEntry> getColors() {
+		return colors;
 	}
 
 	@Override
@@ -69,8 +56,21 @@ public class ColorController implements DataHolder<ColorEntry> {
 		return colors;
 	}
 
+	public void removeColor(ColorEntry entry) {
+		colors.remove(entry);
+	}
+
+	public void removeColor(String name) {
+		for (ColorEntry e : colors) {
+			if (e.getName().equals(name)) {
+				colors.remove(e);
+				break;
+			}
+		}
+	}
+
 	@Override
-	public void clear() {
-		colors.clear();
+	public void set(List<ColorEntry> list) {
+		colors = Collections.synchronizedList(list);
 	}
 }

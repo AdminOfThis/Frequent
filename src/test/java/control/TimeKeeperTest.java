@@ -12,19 +12,17 @@ import data.Cue;
 class TimeKeeperTest {
 
 	@Test
-	public void instance() {
-		assertNotNull(TimeKeeper.getInstance());
+	public void addCue() {
+		Cue cue = new Cue("TestCue");
+		TimeKeeper.getInstance().add(cue);
+		assertEquals(cue, TimeKeeper.getInstance().getNextCue());
+		TimeKeeper.getInstance().round();
+		assertEquals(cue, TimeKeeper.getInstance().getActiveCue());
 	}
 
-	@Test()
-	public void start() throws InterruptedException {
-		TimeKeeper.getInstance().round();
-		// assertEquals(0, TimeKeeper.getInstance().getActiveIndex());
-		Thread.sleep(100);
-		assertTrue(TimeKeeper.getInstance().getRoundTime() > 0);
-		// assertEquals(new Cue(TimeKeeper.DEFAULT_CUE_NAME + "1"),
-		// TimeKeeper.getInstance().getActiveCue());
-		assertEquals(null, TimeKeeper.getInstance().getNextCue());
+	@Test
+	public void instance() {
+		assertNotNull(TimeKeeper.getInstance());
 	}
 
 	@Test()
@@ -37,12 +35,14 @@ class TimeKeeperTest {
 		assertEquals(null, TimeKeeper.getInstance().getNextCue());
 	}
 
-	@Test
-	public void addCue() {
-		Cue cue = new Cue("TestCue");
-		TimeKeeper.getInstance().add(cue);
-		assertEquals(cue, TimeKeeper.getInstance().getNextCue());
+	@Test()
+	public void start() throws InterruptedException {
 		TimeKeeper.getInstance().round();
-		assertEquals(cue, TimeKeeper.getInstance().getActiveCue());
+		// assertEquals(0, TimeKeeper.getInstance().getActiveIndex());
+		Thread.sleep(100);
+		assertTrue(TimeKeeper.getInstance().getRoundTime() > 0);
+		// assertEquals(new Cue(TimeKeeper.DEFAULT_CUE_NAME + "1"),
+		// TimeKeeper.getInstance().getActiveCue());
+		assertEquals(null, TimeKeeper.getInstance().getNextCue());
 	}
 }

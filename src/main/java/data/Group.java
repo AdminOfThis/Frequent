@@ -41,36 +41,8 @@ public class Group extends Input implements InputListener {
 		}
 	}
 
-	/*******************
-	 * GETTER AND SETTER
-	 ********************/
-	public List<Channel> getChannelList() {
-		return channelList;
-	}
-
-	public void removeChannel(Channel channel) {
-		if (channel != null) {
-			channel.setGroup(null);
-			channel.removeListener(this);
-			channelList.remove(channel);
-		}
-	}
-
 	@Override
-	public void levelChanged(final Input input, final double level, final long time) {
-		synchronized (channelList) {
-			channelLevel.add(level);
-			if (channelLevel.size() == channelList.size()) {
-				double median = 0;
-				for (double d : channelLevel) {
-					median += d;
-				}
-				median = median / channelLevel.size();
-				channelLevel.clear();
-				this.setLevel((float) median, time);
-			}
-		}
-	}
+	public void colorChanged(String newColor) {}
 
 	public void delete() {
 		LOG.info("Deleting group " + getName());
@@ -89,6 +61,32 @@ public class Group extends Input implements InputListener {
 		return false;
 	}
 
+	/*******************
+	 * GETTER AND SETTER
+	 ********************/
+	public List<Channel> getChannelList() {
+		return channelList;
+	}
+
+	@Override
+	public void levelChanged(final Input input, final double level, final long time) {
+		synchronized (channelList) {
+			channelLevel.add(level);
+			if (channelLevel.size() == channelList.size()) {
+				double median = 0;
+				for (double d : channelLevel) {
+					median += d;
+				}
+				median = median / channelLevel.size();
+				channelLevel.clear();
+				this.setLevel((float) median, time);
+			}
+		}
+	}
+
+	@Override
+	public void nameChanged(String name) {}
+
 	public void refreshChannels() {
 		for (Channel c : ASIOController.getInstance().getInputList()) {
 			if (c.getGroup() != null && c.getGroup().getName().equals(getName())) {
@@ -99,9 +97,11 @@ public class Group extends Input implements InputListener {
 
 	}
 
-	@Override
-	public void nameChanged(String name) {}
-
-	@Override
-	public void colorChanged(String newColor) {}
+	public void removeChannel(Channel channel) {
+		if (channel != null) {
+			channel.setGroup(null);
+			channel.removeListener(this);
+			channelList.remove(channel);
+		}
+	}
 }

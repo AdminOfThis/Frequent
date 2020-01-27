@@ -29,11 +29,6 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 	private static final int LIST_SIZE = 20;
 	private static BeatDetector instance;
 	private static boolean initialized = false;
-	private List<DrumTrigger> triggerList = Collections.synchronizedList(new ArrayList<>());
-	private double bpm = 0;
-	private Map<DrumTrigger, List<Long>> seriesMap = Collections.synchronizedMap(new HashMap<>());
-	private Mode mode = Mode.BPM_DETECT;
-
 	/**
 	 * Returns the instance of the {@link BeatDetector}, and initializes a new one,
 	 * if instance is currently null
@@ -46,7 +41,6 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 		}
 		return instance;
 	}
-
 	/**
 	 * Initialized the Beat Detector once new triggers are set
 	 */
@@ -61,6 +55,21 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 			initialized = true;
 		}
 	}
+	/**
+	 * Returns wether the {@link BeatDetector} is initialized.
+	 * 
+	 * @return #true if the {@link BeatDetector} is initialized, otherwise false
+	 */
+	public static synchronized boolean isInitialized() {
+		return initialized;
+	}
+	private List<DrumTrigger> triggerList = Collections.synchronizedList(new ArrayList<>());
+
+	private double bpm = 0;
+
+	private Map<DrumTrigger, List<Long>> seriesMap = Collections.synchronizedMap(new HashMap<>());
+
+	private Mode mode = Mode.BPM_DETECT;
 
 	private BeatDetector() {
 		setDaemon(true);
@@ -81,14 +90,22 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 	}
 
 	/**
-	 * Removes a trigger if it is contained in the trigger list
+	 * Returns the detected bpm
 	 * 
-	 * @param trigger The trigger to remove
+	 * @return The detected bpm
 	 */
-	public void removeDrumTrigger(DrumTrigger trigger) {
-		synchronized (triggerList) {
-			triggerList.remove(trigger);
-		}
+	public double getBPM() {
+		return bpm;
+	}
+
+	/**
+	 * Returns the BPM as string, with one decimal-point
+	 * 
+	 * @return The detected BPM as String
+	 */
+	public String getBPMString() {
+//		return Double.toString(Math.round(bpm * 10.0) / 10.0);
+		return Double.toString(Math.round(bpm));
 	}
 
 	/**
@@ -103,12 +120,14 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 	}
 
 	/**
-	 * Returns the detected bpm
+	 * Removes a trigger if it is contained in the trigger list
 	 * 
-	 * @return The detected bpm
+	 * @param trigger The trigger to remove
 	 */
-	public double getBPM() {
-		return bpm;
+	public void removeDrumTrigger(DrumTrigger trigger) {
+		synchronized (triggerList) {
+			triggerList.remove(trigger);
+		}
 	}
 
 	@Override
@@ -136,15 +155,16 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 		}
 	}
 
-	private void clearData() {
+	@Override
+	public void tresholdReached(DrumTrigger trigger, double level, double treshold, long time) {
+
+		long timeInMs = (time * (ASIOController.getInstance().getSampleRate() / ASIOController.getInstance().getBufferSize())) * 50;
 		synchronized (seriesMap) {
-			for (Entry<DrumTrigger, List<Long>> entry : seriesMap.entrySet()) {
-				synchronized (entry.getValue()) {
-					if (entry.getValue().size() >= LIST_SIZE) {
-						List<Long> list = entry.getValue();
-						seriesMap.put(entry.getKey(), list.subList(list.size() - LIST_SIZE, list.size()));
-					}
-				}
+			if (seriesMap.get(trigger) == null) {
+				seriesMap.put(trigger, Collections.synchronizedList(new ArrayList<>()));
+			}
+			synchronized (seriesMap.get(trigger)) {
+				seriesMap.get(trigger).add(timeInMs);
 			}
 		}
 	}
@@ -171,36 +191,16 @@ public final class BeatDetector extends Thread implements DrumTriggerListener {
 		bpm = 1.0 / (seriesMean / 1000000000L / 60);
 	}
 
-	@Override
-	public void tresholdReached(DrumTrigger trigger, double level, double treshold, long time) {
-
-		long timeInMs = (time * (ASIOController.getInstance().getSampleRate() / ASIOController.getInstance().getBufferSize())) * 50;
+	private void clearData() {
 		synchronized (seriesMap) {
-			if (seriesMap.get(trigger) == null) {
-				seriesMap.put(trigger, Collections.synchronizedList(new ArrayList<>()));
-			}
-			synchronized (seriesMap.get(trigger)) {
-				seriesMap.get(trigger).add(timeInMs);
+			for (Entry<DrumTrigger, List<Long>> entry : seriesMap.entrySet()) {
+				synchronized (entry.getValue()) {
+					if (entry.getValue().size() >= LIST_SIZE) {
+						List<Long> list = entry.getValue();
+						seriesMap.put(entry.getKey(), list.subList(list.size() - LIST_SIZE, list.size()));
+					}
+				}
 			}
 		}
-	}
-
-	/**
-	 * Returns wether the {@link BeatDetector} is initialized.
-	 * 
-	 * @return #true if the {@link BeatDetector} is initialized, otherwise false
-	 */
-	public static synchronized boolean isInitialized() {
-		return initialized;
-	}
-
-	/**
-	 * Returns the BPM as string, with one decimal-point
-	 * 
-	 * @return The detected BPM as String
-	 */
-	public String getBPMString() {
-//		return Double.toString(Math.round(bpm * 10.0) / 10.0);
-		return Double.toString(Math.round(bpm));
 	}
 }

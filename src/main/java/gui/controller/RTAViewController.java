@@ -91,6 +91,47 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		timer.start();
 	}
 
+	@Override
+	public boolean isPaused() {
+		return pause;
+	}
+
+	@Override
+	public void newFFT(final float[] map) {
+		buffer = map;
+	}
+
+	@Override
+	public void pause(final boolean pause) {
+		if (this.pause != pause) {
+			this.pause = pause;
+			if (pause) {
+				LOG.debug(getClass().getSimpleName() + "; pausing animations");
+			} else {
+				LOG.debug(getClass().getSimpleName() + "; playing animations");
+			}
+		}
+	}
+
+	@Override
+	public void refresh() {
+		if (channel == null) {
+			chart.setTitle("");
+		} else {
+			chart.setTitle(channel.getName());
+		}
+	}
+
+	@Override
+	public void setSelectedChannel(final Input input) {
+		if (input instanceof Channel) {
+			Channel channel = (Channel) input;
+			this.channel = channel;
+			meter.setChannel(channel);
+			chart.setTitle(channel.getName());
+		}
+	}
+
 	// private void initTuner() {
 	// Parent p = FXMLUtil.loadFXML(TUNER_PATH);
 	// TunerController tunerController = (TunerController)
@@ -152,47 +193,6 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 		meter.setParentPausable(this);
 		meter.setPrefWidth(50.0);
 		chartPane.getChildren().add(0, meter);
-	}
-
-	@Override
-	public boolean isPaused() {
-		return pause;
-	}
-
-	@Override
-	public void newFFT(final float[] map) {
-		buffer = map;
-	}
-
-	@Override
-	public void pause(final boolean pause) {
-		if (this.pause != pause) {
-			this.pause = pause;
-			if (pause) {
-				LOG.debug(getClass().getSimpleName() + "; pausing animations");
-			} else {
-				LOG.debug(getClass().getSimpleName() + "; playing animations");
-			}
-		}
-	}
-
-	@Override
-	public void refresh() {
-		if (channel == null) {
-			chart.setTitle("");
-		} else {
-			chart.setTitle(channel.getName());
-		}
-	}
-
-	@Override
-	public void setSelectedChannel(final Input input) {
-		if (input instanceof Channel) {
-			Channel channel = (Channel) input;
-			this.channel = channel;
-			meter.setChannel(channel);
-			chart.setTitle(channel.getName());
-		}
 	}
 
 	private void updateChart(final float[] map) {

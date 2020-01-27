@@ -35,6 +35,14 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	private List<float[]> pendingMap = Collections.synchronizedList(new ArrayList<>());
 
 	@Override
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> result = new ArrayList<>();
+		result.add(tglPlay);
+		result.add(btnExport);
+		return result;
+	}
+
+	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		canvas = new RTACanvas(canvasParent);
 		canvas.setParentPausable(this);
@@ -49,14 +57,9 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 		timer.start();
 	}
 
-	private void update() {
-
-		synchronized (pendingMap) {
-			for (float[] map : pendingMap) {
-				canvas.addLine(map);
-			}
-			pendingMap.clear();
-		}
+	@Override
+	public boolean isPaused() {
+		return pause;
 	}
 
 	@Override
@@ -75,8 +78,16 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	}
 
 	@Override
-	public boolean isPaused() {
-		return pause;
+	public void refresh() {
+		// nothing to do
+	}
+
+	@Override
+	public void setSelectedChannel(Input in) {
+		canvas.reset();
+		synchronized (pendingMap) {
+			pendingMap.clear();
+		}
 	}
 
 	@FXML
@@ -110,23 +121,12 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 		e.consume();
 	}
 
-	@Override
-	public ArrayList<Region> getHeader() {
-		ArrayList<Region> result = new ArrayList<>();
-		result.add(tglPlay);
-		result.add(btnExport);
-		return result;
-	}
+	private void update() {
 
-	@Override
-	public void refresh() {
-		// nothing to do
-	}
-
-	@Override
-	public void setSelectedChannel(Input in) {
-		canvas.reset();
 		synchronized (pendingMap) {
+			for (float[] map : pendingMap) {
+				canvas.addLine(map);
+			}
 			pendingMap.clear();
 		}
 	}

@@ -14,6 +14,10 @@ public class ConfirmationDialog extends CustomDialog<ButtonType> {
 	@FXML
 	private Label lblText;
 
+	public ConfirmationDialog(String text) {
+		this(text, false);
+	}
+
 	public ConfirmationDialog(String text, boolean showCancel) {
 		super(FXML_PATH, text);
 		lblText.setText(text);
@@ -21,10 +25,6 @@ public class ConfirmationDialog extends CustomDialog<ButtonType> {
 			getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
 		}
 
-	}
-
-	public ConfirmationDialog(String text) {
-		this(text, false);
 	}
 
 	@Override

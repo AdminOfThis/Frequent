@@ -7,26 +7,6 @@ public /**
 		 */
 class CatmullRom {
 
-	private CatmullRomSpline splineXValues;
-	private CatmullRomSpline splineYValues;
-
-	// ******************** Constructors
-	// **************************************
-	public CatmullRom(final Point2D P0, final Point2D P1, final Point2D P2, final Point2D P3) {
-		assert P0 != null : "p0 cannot be null";
-		assert P1 != null : "p1 cannot be null";
-		assert P2 != null : "p2 cannot be null";
-		assert P3 != null : "p3 cannot be null";
-		splineXValues = new CatmullRomSpline(P0.getX(), P1.getX(), P2.getX(), P3.getX());
-		splineYValues = new CatmullRomSpline(P0.getY(), P1.getY(), P2.getY(), P3.getY());
-	}
-
-	// ******************** Methods
-	// *******************************************
-	public Point2D q(final double T) {
-		return new Point2D(splineXValues.q(T), splineYValues.q(T));
-	}
-
 	// ******************** Inner Classes
 	// *************************************
 	class CatmullRomSpline {
@@ -50,5 +30,25 @@ class CatmullRom {
 		protected double q(final double T) {
 			return 0.5 * ((2 * p1) + (p2 - p0) * T + (2 * p0 - 5 * p1 + 4 * p2 - p3) * T * T + (3 * p1 - p0 - 3 * p2 + p3) * T * T * T);
 		}
+	}
+	private CatmullRomSpline splineXValues;
+
+	private CatmullRomSpline splineYValues;
+
+	// ******************** Constructors
+	// **************************************
+	public CatmullRom(final Point2D P0, final Point2D P1, final Point2D P2, final Point2D P3) {
+		assert P0 != null : "p0 cannot be null";
+		assert P1 != null : "p1 cannot be null";
+		assert P2 != null : "p2 cannot be null";
+		assert P3 != null : "p3 cannot be null";
+		splineXValues = new CatmullRomSpline(P0.getX(), P1.getX(), P2.getX(), P3.getX());
+		splineYValues = new CatmullRomSpline(P0.getY(), P1.getY(), P2.getY(), P3.getY());
+	}
+
+	// ******************** Methods
+	// *******************************************
+	public Point2D q(final double T) {
+		return new Point2D(splineXValues.q(T), splineYValues.q(T));
 	}
 }

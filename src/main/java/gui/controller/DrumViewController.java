@@ -61,6 +61,13 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 	private boolean paused = false;
 
 	@Override
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> res = new ArrayList<>();
+		res.add(btnSetup);
+		return res;
+	}
+
+	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		LOG.debug("Loading DrumController");
 		// MainController.getInstance().setDrumController(this);
@@ -70,6 +77,44 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 		initData();
 		initChart();
 		initTimer();
+	}
+
+	@Override
+	public boolean isPaused() {
+		return paused;
+	}
+
+	@Override
+	public void pause(final boolean pause) {
+		paused = pause;
+	}
+
+	@Override
+	public void refresh() {
+		// not needed
+	}
+
+	@Override
+	public void setSelectedChannel(final Input in) {
+		// not needed
+	}
+
+	public void show() {
+		Stage stage = (Stage) btnSetup.getScene().getWindow();
+		if (!stage.isShowing()) {
+			stage.show();
+			stage.requestFocus();
+		}
+	}
+
+	@Override
+	public void tresholdReached(DrumTrigger trigger, double level, double treshold, long time) {
+		synchronized (pendingMap) {
+			if (pendingMap.get(trigger) == null) {
+				pendingMap.put(trigger, new ArrayList<>());
+			}
+			pendingMap.get(trigger).add(new XYChart.Data<>(time, triggerList.indexOf(trigger) + 1));
+		}
 	}
 
 	private void addTrigger(final DrumTrigger trigger) {
@@ -85,13 +130,6 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 			seriesMap.put(trigger, series);
 			drumChart.getData().add(series);
 		}
-	}
-
-	@Override
-	public ArrayList<Region> getHeader() {
-		ArrayList<Region> res = new ArrayList<>();
-		res.add(btnSetup);
-		return res;
 	}
 
 	private void initChart() {
@@ -158,34 +196,6 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 		timer.start();
 	}
 
-	@Override
-	public boolean isPaused() {
-		return paused;
-	}
-
-	@Override
-	public void pause(final boolean pause) {
-		paused = pause;
-	}
-
-	@Override
-	public void refresh() {
-		// not needed
-	}
-
-	@Override
-	public void setSelectedChannel(final Input in) {
-		// not needed
-	}
-
-	public void show() {
-		Stage stage = (Stage) btnSetup.getScene().getWindow();
-		if (!stage.isShowing()) {
-			stage.show();
-			stage.requestFocus();
-		}
-	}
-
 	private void updateDrumChart() {
 		// Adding pending entries
 		synchronized (pendingMap) {
@@ -212,16 +222,6 @@ public class DrumViewController implements Initializable, PausableView, DrumTrig
 			Platform.runLater(() -> lblBPM.setText(BeatDetector.getInstance().getBPMString()));
 		} else {
 			Platform.runLater(() -> lblBPM.setText("Unknown"));
-		}
-	}
-
-	@Override
-	public void tresholdReached(DrumTrigger trigger, double level, double treshold, long time) {
-		synchronized (pendingMap) {
-			if (pendingMap.get(trigger) == null) {
-				pendingMap.put(trigger, new ArrayList<>());
-			}
-			pendingMap.get(trigger).add(new XYChart.Data<>(time, triggerList.indexOf(trigger) + 1));
 		}
 	}
 }

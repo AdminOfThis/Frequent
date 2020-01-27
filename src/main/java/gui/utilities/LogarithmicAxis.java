@@ -23,12 +23,32 @@ import javafx.util.Duration;
 public class LogarithmicAxis extends ValueAxis<Number> {
 
 	/**
+	 * Exception to be thrown when a bound value isn't supported by the logarithmic
+	 * axis<br>
+	 * <br>
+	 * 
+	 * @author Kevin Senechal mailto: kevin.senechal@dooapp.com
+	 * 
+	 */
+	public class IllegalLogarithmicRangeException extends Exception {
+
+		private static final long serialVersionUID = -1538510063673324657L;
+
+		/**
+		 * @param string
+		 */
+		public IllegalLogarithmicRangeException(String message) {
+			super(message);
+		}
+	}
+	/**
 	 * The time of animation in ms
 	 */
 	private static final double ANIMATION_TIME = 2000;
 	private final Timeline lowerRangeTimeline = new Timeline();
 	private final Timeline upperRangeTimeline = new Timeline();
 	private final DoubleProperty logUpperBound = new SimpleDoubleProperty();
+
 	private final DoubleProperty logLowerBound = new SimpleDoubleProperty();
 
 	public LogarithmicAxis() {
@@ -43,6 +63,27 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 			bindLogBoundsToDefaultBounds();
 		} catch (IllegalLogarithmicRangeException e) {
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public double getDisplayPosition(Number value) {
+		double delta = logUpperBound.get() - logLowerBound.get();
+		double deltaV = Math.log10(value.doubleValue()) - logLowerBound.get();
+		if (getSide().isVertical()) {
+			return (1. - ((deltaV) / delta)) * getHeight();
+		} else {
+			return ((deltaV) / delta) * getWidth();
+		}
+	}
+
+	@Override
+	public Number getValueForDisplay(double displayPosition) {
+		double delta = logUpperBound.get() - logLowerBound.get();
+		if (getSide().isVertical()) {
+			return Math.pow(10, (((displayPosition - getHeight()) / -getHeight()) * delta) + logLowerBound.get());
+		} else {
+			return Math.pow(10, (((displayPosition / getWidth()) * delta) + logLowerBound.get()));
 		}
 	}
 
@@ -190,47 +231,6 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 			}
 			lowerBoundProperty().set(lowerBound.doubleValue());
 			upperBoundProperty().set(upperBound.doubleValue());
-		}
-	}
-
-	@Override
-	public Number getValueForDisplay(double displayPosition) {
-		double delta = logUpperBound.get() - logLowerBound.get();
-		if (getSide().isVertical()) {
-			return Math.pow(10, (((displayPosition - getHeight()) / -getHeight()) * delta) + logLowerBound.get());
-		} else {
-			return Math.pow(10, (((displayPosition / getWidth()) * delta) + logLowerBound.get()));
-		}
-	}
-
-	@Override
-	public double getDisplayPosition(Number value) {
-		double delta = logUpperBound.get() - logLowerBound.get();
-		double deltaV = Math.log10(value.doubleValue()) - logLowerBound.get();
-		if (getSide().isVertical()) {
-			return (1. - ((deltaV) / delta)) * getHeight();
-		} else {
-			return ((deltaV) / delta) * getWidth();
-		}
-	}
-
-	/**
-	 * Exception to be thrown when a bound value isn't supported by the logarithmic
-	 * axis<br>
-	 * <br>
-	 * 
-	 * @author Kevin Senechal mailto: kevin.senechal@dooapp.com
-	 * 
-	 */
-	public class IllegalLogarithmicRangeException extends Exception {
-
-		private static final long serialVersionUID = -1538510063673324657L;
-
-		/**
-		 * @param string
-		 */
-		public IllegalLogarithmicRangeException(String message) {
-			super(message);
 		}
 	}
 }

@@ -74,6 +74,9 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		timer.start();
 	}
 
+	@Override
+	public void colorChanged(String newColor) {}
+
 	public Axis<Number> getYAxis() {
 		return chart.getYAxis();
 	}
@@ -117,12 +120,6 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		root.setCenter(chart);
 	}
 
-	private void initArea(final NumberAxis xAxis, final NumberAxis yAxis) {
-		chart = new NegativeAreaChart(xAxis, yAxis);
-		xAxis.setTickUnit(TIME_FRAME / 10.0);
-		chart.setTitleSide(Side.TOP);
-	}
-
 	@Override
 	public boolean isPaused() {
 		return pause || pausableParent != null && pausableParent.isPaused() || channel == null || pendingMap == null || pendingMap.isEmpty();
@@ -136,6 +133,9 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		}
 		pendingMap.put(time, value);
 	}
+
+	@Override
+	public void nameChanged(String name) {}
 
 	@Override
 	public void pause(final boolean pause) {
@@ -170,22 +170,23 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		pausableParent = parent;
 	}
 
-	private void update() {
+	public void setThreshold(final double value1) {
+		double value = Math.abs(Constants.FFT_MIN) - value1;
+		NumberAxis time = (NumberAxis) chart.getXAxis();
+		synchronized (treshold) {
+			treshold.getData().clear();
+			treshold.getData().add(new Data<>(time.getLowerBound(), value));
+			treshold.getData().add(new Data<>(time.getUpperBound() + 10000, value));
+		}
+	}
 
-		if (!isPaused()) {
-			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-
-			addNewData();
-			FXMLUtil.updateAxis(xAxis, TIME_FRAME, ASIOController.getInstance().getTime());
-			synchronized (series) {
-				FXMLUtil.removeOldData((long) xAxis.getLowerBound(), series);
+	public void showTreshold(boolean value) {
+		if (value) {
+			if (!chart.getData().contains(treshold)) {
+				chart.getData().add(treshold);
 			}
-
-			synchronized (treshold) {
-				if (treshold.getData().size() >= 2) {
-					treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
-				}
-			}
+		} else {
+			chart.getData().remove(treshold);
 		}
 	}
 
@@ -218,29 +219,28 @@ public class WaveFormChart extends AnchorPane implements Initializable, InputLis
 		}
 	}
 
-	public void showTreshold(boolean value) {
-		if (value) {
-			if (!chart.getData().contains(treshold)) {
-				chart.getData().add(treshold);
+	private void initArea(final NumberAxis xAxis, final NumberAxis yAxis) {
+		chart = new NegativeAreaChart(xAxis, yAxis);
+		xAxis.setTickUnit(TIME_FRAME / 10.0);
+		chart.setTitleSide(Side.TOP);
+	}
+
+	private void update() {
+
+		if (!isPaused()) {
+			NumberAxis xAxis = (NumberAxis) chart.getXAxis();
+
+			addNewData();
+			FXMLUtil.updateAxis(xAxis, TIME_FRAME, ASIOController.getInstance().getTime());
+			synchronized (series) {
+				FXMLUtil.removeOldData((long) xAxis.getLowerBound(), series);
 			}
-		} else {
-			chart.getData().remove(treshold);
+
+			synchronized (treshold) {
+				if (treshold.getData().size() >= 2) {
+					treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
+				}
+			}
 		}
 	}
-
-	public void setThreshold(final double value1) {
-		double value = Math.abs(Constants.FFT_MIN) - value1;
-		NumberAxis time = (NumberAxis) chart.getXAxis();
-		synchronized (treshold) {
-			treshold.getData().clear();
-			treshold.getData().add(new Data<>(time.getLowerBound(), value));
-			treshold.getData().add(new Data<>(time.getUpperBound() + 10000, value));
-		}
-	}
-
-	@Override
-	public void nameChanged(String name) {}
-
-	@Override
-	public void colorChanged(String newColor) {}
 }

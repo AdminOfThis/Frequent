@@ -22,20 +22,20 @@ public final class ColorEntry implements Serializable {
 		this.entry = color;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getEntry() {
 		return entry;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	public void setEntry(String entry) {
 		this.entry = entry;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

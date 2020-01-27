@@ -16,6 +16,11 @@ import gui.preloader.PreLoader;
 import javafx.application.Application;
 import preferences.PropertiesIO;
 
+/**
+ * 
+ * @author AdminOfThis
+ *
+ */
 public class Main {
 	private static final String DEFAULT_PROPERTIES_PATH = "./settings.conf";
 
@@ -36,6 +41,82 @@ public class Main {
 	private static boolean development = false;
 	private static Logger LOG = LogManager.getLogger(Main.class);
 	private static boolean debug = false, fast = false;
+
+	public static String getAccentColor() {
+		return color_accent;
+	}
+
+	public static String getBaseColor() {
+		return color_base;
+	}
+
+	public static String getFocusColor() {
+		return color_focus;
+	}
+
+	public static String getFromManifest(final String key, final String def) {
+		try {
+			Enumeration<URL> resources = Main.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+			while (resources.hasMoreElements()) {
+				try {
+					Manifest manifest = new Manifest(resources.nextElement().openStream());
+					if (POM_TITLE.equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Title")))
+						// check that this is your manifest and do what you need
+						// or get the next one
+						return manifest.getMainAttributes().getValue(key);
+				} catch (IOException e) {
+					LOG.warn(e);
+				}
+			}
+		} catch (Exception e) {
+			LOG.warn("Unable to read version from manifest", e);
+		}
+		return def;
+	}
+
+	public static String getOnlyTitle() {
+		if (title == null || title.isEmpty()) {
+			return "";
+		}
+		return title.substring(0, 1).toUpperCase() + title.substring(1).toLowerCase();
+	}
+
+	public static String getReadableTitle() {
+		return getOnlyTitle() + " " + getVersion();
+	}
+
+	public static String getStyle() {
+		if (style == null || style.isEmpty()) {
+			initColors();
+		}
+		return style;
+	}
+
+	public static String getVersion() {
+		return version;
+	}
+
+	public static void initColors() {
+		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus + "; ";
+		FXMLUtil.setDefaultStyle(style);
+	}
+
+	public static void initialize() {
+		title = getFromManifest(TITLE_KEY, POM_TITLE);
+		version = getFromManifest(VERSION_KEY, "Local Build");
+	}
+
+	public static boolean isDebug() {
+		return debug;
+	}
+
+	public static boolean isErrorReporting() {
+		return externalLog;
+	}
+
+	public static boolean isFast() {
+		return fast;
+	}
 
 	/**
 	 * The main method of the programm. Starts with parsing arguments, then launches
@@ -69,6 +150,15 @@ public class Main {
 		}
 	}
 
+	public static void setDebug(boolean value) {
+		debug = value;
+
+	}
+
+	public static void setErrorReporting(boolean noLog) {
+		setErrorReporting(noLog, true);
+	}
+
 	private static boolean checkIfStart() {
 		boolean alreadyRunning = MainUtil.createRunningLockFile(Constants.LOCK_FILE);
 		if (Main.isDevelopment()) {
@@ -78,10 +168,6 @@ public class Main {
 		} else {
 			return alreadyRunning;
 		}
-	}
-
-	private static boolean isDevelopment() {
-		return development;
 	}
 
 	private static void initLog4jParams() {
@@ -104,9 +190,14 @@ public class Main {
 		MainMapLookup.setMainArguments(log4jArgs);
 	}
 
-	public static void initialize() {
-		title = getFromManifest(TITLE_KEY, POM_TITLE);
-		version = getFromManifest(VERSION_KEY, "Local Build");
+	private static boolean isDevelopment() {
+		return development;
+	}
+
+	private static void loadProperties() {
+		PropertiesIO.setSavePath(propertiesPath);
+		PropertiesIO.loadProperties();
+
 	}
 
 	/**
@@ -183,100 +274,6 @@ public class Main {
 
 	}
 
-	public static String getFromManifest(final String key, final String def) {
-		try {
-			Enumeration<URL> resources = Main.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
-			while (resources.hasMoreElements()) {
-				try {
-					Manifest manifest = new Manifest(resources.nextElement().openStream());
-					if (POM_TITLE.equalsIgnoreCase(manifest.getMainAttributes().getValue("Specification-Title")))
-						// check that this is your manifest and do what you need
-						// or get the next one
-						return manifest.getMainAttributes().getValue(key);
-				} catch (IOException e) {
-					LOG.warn(e);
-				}
-			}
-		} catch (Exception e) {
-			LOG.warn("Unable to read version from manifest", e);
-		}
-		return def;
-	}
-
-	private static void loadProperties() {
-		PropertiesIO.setSavePath(propertiesPath);
-		PropertiesIO.loadProperties();
-
-	}
-
-	public static void initColors() {
-		style = "-fx-base:" + color_base + "; -fx-accent:" + color_accent + "; -fx-focus-color:" + color_focus + "; ";
-		FXMLUtil.setDefaultStyle(style);
-	}
-
-	public static String getAccentColor() {
-		return color_accent;
-	}
-
-	public static String getBaseColor() {
-		return color_base;
-	}
-
-	public static String getFocusColor() {
-		return color_focus;
-	}
-
-	public static String getStyle() {
-		if (style == null || style.isEmpty()) {
-			initColors();
-		}
-		return style;
-	}
-
-	public static boolean isDebug() {
-		return debug;
-	}
-
-	public static boolean isFast() {
-		return fast;
-	}
-
-	public String getPOMTitle() {
-		return POM_TITLE;
-	}
-
-	public static String getReadableTitle() {
-		return getOnlyTitle() + " " + getVersion();
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public static String getVersion() {
-		return version;
-	}
-
-	public static String getOnlyTitle() {
-		if (title == null || title.isEmpty()) {
-			return "";
-		}
-		return title.substring(0, 1).toUpperCase() + title.substring(1).toLowerCase();
-	}
-
-	public static void setDebug(boolean value) {
-		debug = value;
-
-	}
-
-	public static boolean isErrorReporting() {
-		return externalLog;
-	}
-
-	public static void setErrorReporting(boolean noLog) {
-		setErrorReporting(noLog, true);
-	}
-
 	private static void setErrorReporting(boolean noLog, boolean save) {
 		externalLog = noLog;
 		if (!noLog) {
@@ -291,6 +288,14 @@ public class Main {
 			MainMapLookup.setMainArguments(log4jArgs);
 		}
 		PropertiesIO.setProperty(Constants.SETTING_ERROR_REPORTING, Boolean.toString(noLog));
+	}
+
+	public String getPOMTitle() {
+		return POM_TITLE;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 
 }

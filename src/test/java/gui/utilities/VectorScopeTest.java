@@ -31,18 +31,9 @@ public class VectorScopeTest extends Application {
 	private static Channel c1;
 	private static Channel c2;
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		root = new BorderPane();
-		FXMLUtil.setStyleSheet(root);
-		primaryStage.setScene(new Scene(root));
-		primaryStage.setWidth(800);
-		primaryStage.setHeight(600);
-		primaryStage.show();
-		vector = new VectorScope();
-		c1 = new Channel("Channel 1");
-		c2 = new Channel("Channel 2");
-		root.setCenter(vector);
+	@AfterAll
+	public static void shutdown() throws Exception {
+		Platform.exit();
 	}
 
 	@BeforeAll
@@ -55,59 +46,6 @@ public class VectorScopeTest extends Application {
 			e.printStackTrace();
 		}
 		latch.await(5, TimeUnit.SECONDS);
-	}
-
-	@AfterEach
-	public void sleep() throws InterruptedException {
-		Thread.sleep(500);
-	}
-
-	@AfterAll
-	public static void shutdown() throws Exception {
-		Platform.exit();
-	}
-
-	@Test
-	public void inits() throws InterruptedException, ExecutionException {
-		assertNotNull(root);
-		assertNotNull(vector);
-	}
-
-	@Test
-	public void setChannels() {
-
-		try {
-			vector.setChannels(c1, c2);
-			assertEquals(c1, vector.getChannel1());
-			assertEquals(c2, vector.getChannel2());
-		} catch (Exception e) {
-			throw (e);
-		}
-	}
-
-	@Test
-	public void removeChannels() {
-
-		try {
-			vector.setChannels(null, null);
-			assertNull(vector.getChannel1());
-			assertNull(vector.getChannel2());
-		} catch (Exception e) {
-			throw (e);
-		}
-	}
-
-	@Test
-	public void checkPause() {
-		assertFalse(vector.isPaused());
-		vector.pause(true);
-		assertTrue(vector.isPaused());
-		setChannels();
-		assertTrue(vector.isPaused());
-		vector.pause(false);
-		assertFalse(vector.isPaused());
-		vector.setChannels(c1, null);
-		assertTrue(vector.isPaused());
 	}
 
 	@Test
@@ -135,5 +73,67 @@ public class VectorScopeTest extends Application {
 		} catch (Exception e) {
 			throw (e);
 		}
+	}
+
+	@Test
+	public void checkPause() {
+		assertFalse(vector.isPaused());
+		vector.pause(true);
+		assertTrue(vector.isPaused());
+		setChannels();
+		assertTrue(vector.isPaused());
+		vector.pause(false);
+		assertFalse(vector.isPaused());
+		vector.setChannels(c1, null);
+		assertTrue(vector.isPaused());
+	}
+
+	@Test
+	public void inits() throws InterruptedException, ExecutionException {
+		assertNotNull(root);
+		assertNotNull(vector);
+	}
+
+	@Test
+	public void removeChannels() {
+
+		try {
+			vector.setChannels(null, null);
+			assertNull(vector.getChannel1());
+			assertNull(vector.getChannel2());
+		} catch (Exception e) {
+			throw (e);
+		}
+	}
+
+	@Test
+	public void setChannels() {
+
+		try {
+			vector.setChannels(c1, c2);
+			assertEquals(c1, vector.getChannel1());
+			assertEquals(c2, vector.getChannel2());
+		} catch (Exception e) {
+			throw (e);
+		}
+	}
+
+	@AfterEach
+	public void sleep() throws InterruptedException {
+		Thread.sleep(500);
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		root = new BorderPane();
+		FXMLUtil.setStyleSheet(root);
+		primaryStage.setScene(new Scene(root));
+		primaryStage.setWidth(800);
+		primaryStage.setHeight(600);
+		primaryStage.show();
+		vector = new VectorScope();
+		c1 = new Channel("Channel 1");
+		c2 = new Channel("Channel 2");
+		root.setCenter(vector);
 	}
 }

@@ -39,26 +39,11 @@ class MainTest {
 		} while (!stage.isShowing());
 	}
 
-	@AfterEach
-	public void tearDown(FxRobot robot) throws Exception {
-		FxToolkit.hideStage();
-		robot.release(new KeyCode[] {});
-		robot.release(new MouseButton[] {});
-	}
-
 	@Test
-	public void clickWaveCharts(FxRobot robot) {
-		robot.clickOn("#toggleBtmRaw");
-		robot.clickOn("#toggleBtmWave");
-	}
+	public void checkResizable(FxRobot robot) throws InterruptedException {
+		Stage stage = (Stage) robot.lookup("#root").queryAs(BorderPane.class).getScene().getWindow();
+		assertTrue(stage.isResizable());
 
-	@Test
-	public void clickWave(FxRobot robot) {
-		assertNotNull(robot.lookup("#waveFormPane").query());
-		robot.clickOn("#togglePreview");
-		assertThrows(EmptyNodeQueryException.class, () -> robot.lookup("#waveFormPane").query());
-		robot.clickOn("#togglePreview");
-		assertNotNull(robot.lookup("#waveFormPane").query());
 	}
 
 	@Test
@@ -107,10 +92,25 @@ class MainTest {
 	}
 
 	@Test
-	public void checkResizable(FxRobot robot) throws InterruptedException {
-		Stage stage = (Stage) robot.lookup("#root").queryAs(BorderPane.class).getScene().getWindow();
-		assertTrue(stage.isResizable());
+	public void clickWave(FxRobot robot) {
+		assertNotNull(robot.lookup("#waveFormPane").query());
+		robot.clickOn("#togglePreview");
+		assertThrows(EmptyNodeQueryException.class, () -> robot.lookup("#waveFormPane").query());
+		robot.clickOn("#togglePreview");
+		assertNotNull(robot.lookup("#waveFormPane").query());
+	}
 
+	@Test
+	public void clickWaveCharts(FxRobot robot) {
+		robot.clickOn("#toggleBtmRaw");
+		robot.clickOn("#toggleBtmWave");
+	}
+
+	@AfterEach
+	public void tearDown(FxRobot robot) throws Exception {
+		FxToolkit.hideStage();
+		robot.release(new KeyCode[] {});
+		robot.release(new MouseButton[] {});
 	}
 
 }

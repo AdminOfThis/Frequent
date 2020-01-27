@@ -34,16 +34,16 @@ public class DriverInfo {
 		version = vers;
 	}
 
-	public String getName() {
-		return driverName;
-	}
-
 	public int getAsioVersion() {
 		return asioVersion;
 	}
 
-	public int getVersion() {
-		return version;
+	public int getBuffer() {
+		return buffer;
+	}
+
+	public int getInputCount() {
+		return inputCount;
 	}
 
 	public int getLatencyInput() {
@@ -54,20 +54,20 @@ public class DriverInfo {
 		return latencyOutput;
 	}
 
-	public int getInputCount() {
-		return inputCount;
+	public String getName() {
+		return driverName;
 	}
 
 	public int getOutputCount() {
 		return outputCount;
 	}
 
-	public int getBuffer() {
-		return buffer;
-	}
-
 	public double getSampleRate() {
 		return sampleRate;
+	}
+
+	public int getVersion() {
+		return version;
 	}
 
 }

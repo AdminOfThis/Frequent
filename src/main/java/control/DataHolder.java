@@ -14,11 +14,9 @@ public interface DataHolder<T> {
 	public void add(Object t);
 
 	/**
-	 * Overwrides all currently existing data with the list of new data
-	 * 
-	 * @param list The list of new Data
+	 * Clears all the previously existing data
 	 */
-	public void set(List<T> list);
+	public void clear();
 
 	/**
 	 * 
@@ -27,8 +25,10 @@ public interface DataHolder<T> {
 	public List<T> getData();
 
 	/**
-	 * Clears all the previously existing data
+	 * Overwrides all currently existing data with the list of new data
+	 * 
+	 * @param list The list of new Data
 	 */
-	public void clear();
+	public void set(List<T> list);
 
 }

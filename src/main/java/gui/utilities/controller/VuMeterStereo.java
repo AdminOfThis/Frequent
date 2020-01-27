@@ -39,6 +39,24 @@ public class VuMeterStereo extends VuMeter {
 		root.getChildren().addAll(meter1, meter2);
 	}
 
+	@Override
+	public boolean isPaused() {
+		return pause || parentPausable != null && parentPausable.isPaused();
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		this.pause = pause;
+	}
+
+	@Override
+	public void setChannel(Input c) {
+		meter1.setChannel(c);
+		if (((Channel) c).getStereoChannel() != null) {
+			meter2.setChannel(((Channel) c).getStereoChannel());
+		}
+	}
+
 	public void setChannel1(final Input channel) {
 		meter1.setChannel(channel);
 	}
@@ -65,24 +83,6 @@ public class VuMeterStereo extends VuMeter {
 	@Override
 	public void setParentPausable(final Pausable parent) {
 		parentPausable = parent;
-	}
-
-	@Override
-	public void pause(boolean pause) {
-		this.pause = pause;
-	}
-
-	@Override
-	public boolean isPaused() {
-		return pause || parentPausable != null && parentPausable.isPaused();
-	}
-
-	@Override
-	public void setChannel(Input c) {
-		meter1.setChannel(c);
-		if (((Channel) c).getStereoChannel() != null) {
-			meter2.setChannel(((Channel) c).getStereoChannel());
-		}
 	}
 
 	@Override

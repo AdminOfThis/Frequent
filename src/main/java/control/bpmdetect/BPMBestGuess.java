@@ -13,17 +13,9 @@ import java.util.Map.Entry;
  */
 public final class BPMBestGuess {
 
-	private Map<Double, Double> bpmEntries = Collections.synchronizedMap(new HashMap<Double, Double>());
 	private static double DECAY_RATE = 0.999;
 	private static double DELETE_THRESHHOLD = 0.01;
-	private double confidence = 0;
-	private long lastCalc;
-	private double bpm;
 	private static BPMBestGuess instance;
-
-	private BPMBestGuess() {
-	}
-
 	/**
 	 * Returns the singleton isntance of {@link BPMBestGuess}
 	 * 
@@ -35,25 +27,35 @@ public final class BPMBestGuess {
 		}
 		return instance;
 	}
+	private Map<Double, Double> bpmEntries = Collections.synchronizedMap(new HashMap<Double, Double>());
+	private double confidence = 0;
+	private long lastCalc;
 
-	void appendBPMGuess(double bpm, double confidence) {
-		if (bpm > 0) {
-			synchronized (bpmEntries) {
-				Iterator<Entry<Double, Double>> it = bpmEntries.entrySet().iterator();
-				while (it.hasNext()) {
-					Entry<Double, Double> e = it.next();
-					e.setValue(e.getValue() * DECAY_RATE);
-					if (e.getValue() < DELETE_THRESHHOLD) {
-						it.remove();
-					}
-				}
-				if (bpmEntries.containsKey(bpm)) {
-					bpmEntries.put(bpm, bpmEntries.get(bpm) + confidence);
-				} else {
-					bpmEntries.put(bpm, confidence);
-				}
-			}
+	private double bpm;
+
+	private BPMBestGuess() {
+	}
+
+	/**
+	 * The BOM of the beat pattern given
+	 * @return bpm The BPM which the algorithm detected
+	 */
+	public double getBPM() {
+		long time = System.currentTimeMillis();
+		if (time - lastCalc > 1000) {
+			// calc new every second
+			bpm = calculateGuess();
+			lastCalc = time;
 		}
+		return bpm;
+	}
+
+	/**
+	 * Return the confidence, with which the algorithm detected a given BPM
+	 * @return confidence, the confidence of the detection
+	 */
+	public double getConfidence() {
+		return this.confidence;
 	}
 
 	private double calculateGuess() {
@@ -91,25 +93,23 @@ public final class BPMBestGuess {
 		return bestGuessStart;
 	}
 
-	/**
-	 * Return the confidence, with which the algorithm detected a given BPM
-	 * @return confidence, the confidence of the detection
-	 */
-	public double getConfidence() {
-		return this.confidence;
-	}
-
-	/**
-	 * The BOM of the beat pattern given
-	 * @return bpm The BPM which the algorithm detected
-	 */
-	public double getBPM() {
-		long time = System.currentTimeMillis();
-		if (time - lastCalc > 1000) {
-			// calc new every second
-			bpm = calculateGuess();
-			lastCalc = time;
+	void appendBPMGuess(double bpm, double confidence) {
+		if (bpm > 0) {
+			synchronized (bpmEntries) {
+				Iterator<Entry<Double, Double>> it = bpmEntries.entrySet().iterator();
+				while (it.hasNext()) {
+					Entry<Double, Double> e = it.next();
+					e.setValue(e.getValue() * DECAY_RATE);
+					if (e.getValue() < DELETE_THRESHHOLD) {
+						it.remove();
+					}
+				}
+				if (bpmEntries.containsKey(bpm)) {
+					bpmEntries.put(bpm, bpmEntries.get(bpm) + confidence);
+				} else {
+					bpmEntries.put(bpm, confidence);
+				}
+			}
 		}
-		return bpm;
 	}
 }

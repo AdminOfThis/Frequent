@@ -31,66 +31,31 @@ public class FXMLMain extends MainGUI {
 
 	private static FXMLMain instance;
 
+	/******************* GETTERS AND SETTERS ****************/
+
+	public static FXMLMain getInstance() {
+		return instance;
+	}
+	public static String getLogoPath() {
+		return LOGO;
+	}
+	public static void showAlreadyRunningDialog() {
+		// this will prepare JavaFX toolkit and environment
+		new JFXPanel();
+		Platform.runLater(() -> {
+			InformationDialog dialog = new InformationDialog("Application is already running", true);
+			dialog.setText("Another instance of this application is already running");
+			dialog.setSubText("Please use the other instance,\r\nor terminate the other instance and launch the application again.");
+			dialog.show();
+			dialog.getDialogPane().getScene().getWindow().centerOnScreen();
+		});
+	}
+
 	private Scene loginScene;
+
 	private Scene mainScene;
+
 	private IOChooserController loginController;
-
-	@Override
-	public void init() throws Exception {
-		super.init();
-		if (FXMLUtil.getDefaultStyle().isEmpty()) {
-			Main.initColors();
-		}
-		instance = this;
-		notifyPreloader(new Preloader.ProgressNotification(0.1));
-		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
-		loginController = (IOChooserController) FXMLUtil.getController();
-		FXMLUtil.setStyleSheet(parent);
-		loginScene = new Scene(parent);
-		notifyPreloader(new Preloader.ProgressNotification(0.2));
-		mainScene = loadMain();
-		loginController.setMainScene(mainScene);
-		notifyPreloader(new Preloader.ProgressNotification(0.95));
-	}
-
-	private Scene loadMain() {
-		LOG.debug("Loading from: " + GUI_MAIN_PATH);
-		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
-		try {
-			Parent p = loader.load();
-			// MainController controller = loader.getController();
-			// if (ioName != null) {
-			// controller.initIO(ioName);
-			// }
-			LOG.info("Main Window loaded");
-			return new Scene(p);
-		} catch (IOException e) {
-			LOG.error("Unable to load Main GUI", e);
-			FXMLMain.getInstance().close();
-		}
-		return null;
-	}
-
-	@Override
-	public void start(final Stage primaryStage) throws Exception {
-		LOG.info("Showing IOChooser");
-		primaryStage.setScene(loginScene);
-		primaryStage.setOnCloseRequest(e -> {
-			if (!FXMLMain.getInstance().close()) {
-				MainController.getInstance().setStatus("Close cancelled");
-				e.consume();
-			}
-		});
-		primaryStage.setTitle(Main.getReadableTitle());
-		primaryStage.setResizable(false);
-		FXMLUtil.setIcon(primaryStage, LOGO);
-		primaryStage.setOnShowing(e -> {
-			if (Main.isDebug()) {
-				loginController.startDebug();
-			}
-		});
-		primaryStage.show();
-	}
 
 	/**
 	 * stops all running threads and terminates the gui
@@ -132,34 +97,69 @@ public class FXMLMain extends MainGUI {
 		return true;
 	}
 
-	/******************* GETTERS AND SETTERS ****************/
+	public Scene getScene() {
+		return mainScene;
+	}
 
-	public static FXMLMain getInstance() {
-		return instance;
+	@Override
+	public void init() throws Exception {
+		super.init();
+		if (FXMLUtil.getDefaultStyle().isEmpty()) {
+			Main.initColors();
+		}
+		instance = this;
+		notifyPreloader(new Preloader.ProgressNotification(0.1));
+		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
+		loginController = (IOChooserController) FXMLUtil.getController();
+		FXMLUtil.setStyleSheet(parent);
+		loginScene = new Scene(parent);
+		notifyPreloader(new Preloader.ProgressNotification(0.2));
+		mainScene = loadMain();
+		loginController.setMainScene(mainScene);
+		notifyPreloader(new Preloader.ProgressNotification(0.95));
 	}
 
 	public void setProgress(final double prog) {
 		notifyPreloader(new Preloader.ProgressNotification(prog));
 	}
 
-	public Scene getScene() {
-		return mainScene;
-	}
-
-	public static String getLogoPath() {
-		return LOGO;
-	}
-
-	public static void showAlreadyRunningDialog() {
-		// this will prepare JavaFX toolkit and environment
-		new JFXPanel();
-		Platform.runLater(() -> {
-			InformationDialog dialog = new InformationDialog("Application is already running", true);
-			dialog.setText("Another instance of this application is already running");
-			dialog.setSubText("Please use the other instance,\r\nor terminate the other instance and launch the application again.");
-			dialog.show();
-			dialog.getDialogPane().getScene().getWindow().centerOnScreen();
+	@Override
+	public void start(final Stage primaryStage) throws Exception {
+		LOG.info("Showing IOChooser");
+		primaryStage.setScene(loginScene);
+		primaryStage.setOnCloseRequest(e -> {
+			if (!FXMLMain.getInstance().close()) {
+				MainController.getInstance().setStatus("Close cancelled");
+				e.consume();
+			}
 		});
+		primaryStage.setTitle(Main.getReadableTitle());
+		primaryStage.setResizable(false);
+		FXMLUtil.setIcon(primaryStage, LOGO);
+		primaryStage.setOnShowing(e -> {
+			if (Main.isDebug()) {
+				loginController.startDebug();
+			}
+		});
+		primaryStage.show();
+	}
+
+	private Scene loadMain() {
+		LOG.debug("Loading from: " + GUI_MAIN_PATH);
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
+		try {
+			Parent p = loader.load();
+			// MainController controller = loader.getController();
+			// if (ioName != null) {
+			// controller.initIO(ioName);
+			// }
+			LOG.info("Main Window loaded");
+			return new Scene(p);
+		} catch (IOException e) {
+			LOG.error("Unable to load Main GUI", e);
+			FXMLMain.getInstance().close();
+		}
+		return null;
 	}
 
 }

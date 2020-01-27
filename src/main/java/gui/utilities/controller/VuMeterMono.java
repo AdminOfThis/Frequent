@@ -80,6 +80,9 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 
 	}
 
+	@Override
+	public void colorChanged(String newColor) {}
+
 	public Input getInput() {
 		return channel;
 	}
@@ -113,6 +116,11 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 	@Override
 	public void levelChanged(final Input input, final double level, final long time) {
 		pendingLevelList.add(new double[] { Channel.percentToDB(level), Channel.percentToDB(input.getRMSLevel()) });
+	}
+
+	@Override
+	public void nameChanged(String name) {
+		Platform.runLater(() -> lblTitle.setText(name));
 	}
 
 	@Override
@@ -237,12 +245,4 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 		}
 		pendingLevelList.clear();
 	}
-
-	@Override
-	public void nameChanged(String name) {
-		Platform.runLater(() -> lblTitle.setText(name));
-	}
-
-	@Override
-	public void colorChanged(String newColor) {}
 }

@@ -64,32 +64,12 @@ public abstract class Input implements Serializable {
 		return level;
 	}
 
-	public float getRMSLevel() {
-		return rmsLevel;
-	}
-
-	protected List<InputListener> getListeners() {
-		return listeners;
-	}
-
 	public String getName() {
 		return name;
 	}
 
-	protected void notifyListeners() {
-		if (listeners == null) {
-			listeners = Collections.synchronizedList(new ArrayList<>());
-		}
-		synchronized (listeners) {
-			for (InputListener obs : listeners) {
-				try {
-					obs.levelChanged(this, level, time);
-				} catch (Exception e) {
-					LOG.warn("Unable to notify Level Listener", e);
-					LOG.debug("", e);
-				}
-			}
-		}
+	public float getRMSLevel() {
+		return rmsLevel;
 	}
 
 	public void removeListener(final InputListener obs) {
@@ -121,19 +101,6 @@ public abstract class Input implements Serializable {
 		return true;
 	}
 
-	protected void setLevel(final float level, long time) {
-		if (level >= 0) {
-			this.level = level;
-			this.time = time;
-			notifyListeners();
-		}
-	}
-
-	protected void setLevel(final float level, final float rms, long time) {
-		rmsLevel = rms;
-		setLevel(level, time);
-	}
-
 	public void setName(final String name) {
 		this.name = name;
 		listeners.forEach(l -> new Thread(() -> l.nameChanged(name)).start());
@@ -143,5 +110,38 @@ public abstract class Input implements Serializable {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	protected List<InputListener> getListeners() {
+		return listeners;
+	}
+
+	protected void notifyListeners() {
+		if (listeners == null) {
+			listeners = Collections.synchronizedList(new ArrayList<>());
+		}
+		synchronized (listeners) {
+			for (InputListener obs : listeners) {
+				try {
+					obs.levelChanged(this, level, time);
+				} catch (Exception e) {
+					LOG.warn("Unable to notify Level Listener", e);
+					LOG.debug("", e);
+				}
+			}
+		}
+	}
+
+	protected void setLevel(final float level, final float rms, long time) {
+		rmsLevel = rms;
+		setLevel(level, time);
+	}
+
+	protected void setLevel(final float level, long time) {
+		if (level >= 0) {
+			this.level = level;
+			this.time = time;
+			notifyListeners();
+		}
 	}
 }

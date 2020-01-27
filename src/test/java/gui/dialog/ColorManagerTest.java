@@ -23,6 +23,14 @@ import main.Main;
 @ExtendWith(ApplicationExtension.class)
 class ColorManagerTest {
 
+	@Test
+	public void addColor(FxRobot robot) {
+		ListView<?> list = robot.lookup("#list").queryListView();
+		assertEquals(0, list.getItems().size());
+		robot.clickOn("#btnAdd");
+		assertEquals(1, list.getItems().size());
+	}
+
 	@BeforeEach
 	public void before() throws Exception {
 
@@ -34,13 +42,6 @@ class ColorManagerTest {
 			Thread.yield();
 		} while (!stage.isShowing());
 
-	}
-
-	@AfterEach
-	public void tearDown(FxRobot robot) throws Exception {
-		FxToolkit.hideStage();
-		robot.release(new KeyCode[] {});
-		robot.release(new MouseButton[] {});
 	}
 
 	@RepeatedTest(value = 2)
@@ -58,14 +59,6 @@ class ColorManagerTest {
 	}
 
 	@Test
-	public void addColor(FxRobot robot) {
-		ListView<?> list = robot.lookup("#list").queryListView();
-		assertEquals(0, list.getItems().size());
-		robot.clickOn("#btnAdd");
-		assertEquals(1, list.getItems().size());
-	}
-
-	@Test
 	public void removeColor(FxRobot robot) {
 		ListView<?> list = robot.lookup("#list").queryListView();
 //		assertEquals(0, list.getItems().size());
@@ -77,6 +70,13 @@ class ColorManagerTest {
 		robot.clickOn("#btnDelete");
 		int after = list.getItems().size();
 		assertEquals(before - 1, after);
+	}
+
+	@AfterEach
+	public void tearDown(FxRobot robot) throws Exception {
+		FxToolkit.hideStage();
+		robot.release(new KeyCode[] {});
+		robot.release(new MouseButton[] {});
 	}
 
 }

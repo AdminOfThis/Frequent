@@ -47,15 +47,18 @@ public class TimeKeeperController implements Initializable {
 
 	private static final Logger LOG = LogManager.getLogger(TimeKeeperController.class);
 	private static TimeKeeperController instance;
+	public static TimeKeeperController getInstance() {
+		return instance;
+	}
 	@FXML
 	private Parent paneCue;
 	@FXML
 	private StackPane piePane;
 	@FXML
 	private PieChart timeChart;
+
 	@FXML
 	private Button btnTime, btnStart, btnStop;
-
 	@FXML
 	private TableView<Cue> cueTable;
 	@FXML
@@ -68,11 +71,20 @@ public class TimeKeeperController implements Initializable {
 	private Label lblTime;
 	@FXML
 	private GridPane infoPane;
+
 	/**************
 	 * contextmenu
 	 *************/
 	@FXML
 	private MenuItem cxtResetChannel, cxtDeleteCue;
+
+	public Button getRoundButton() {
+		return btnTime;
+	}
+
+	public Button getStartButton() {
+		return btnStart;
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -82,8 +94,144 @@ public class TimeKeeperController implements Initializable {
 		enableContextMenu(false);
 	}
 
-	public static TimeKeeperController getInstance() {
-		return instance;
+	public void refresh() {
+		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
+		choiceCueChannel.getItems().setAll(ASIOController.getInstance().getInputList());
+	}
+
+	public void round() {
+		btnTime.fire();
+	}
+
+	public void save(File file) {
+		LOG.info("Saving cues");
+		List<Serializable> list = new ArrayList<>();
+		for (Cue c : cueTable.getItems()) {
+			list.add(c);
+		}
+		boolean result = FileIO.save(list, file);
+		if (result) {
+			LOG.info("Saving successful");
+		} else {
+			LOG.warn("Unable to save");
+		}
+	}
+
+	public void setChannels(List<Channel> list) {
+		Channel selected = choiceCueChannel.getSelectionModel().getSelectedItem();
+		choiceCueChannel.getItems().setAll(list);
+		if (selected != null) {
+			choiceCueChannel.getSelectionModel().select(selected);
+		}
+	}
+
+	public void show(boolean value) {
+		paneCue.setVisible(value);
+		paneCue.setManaged(value);
+		if (value) {
+			cueTable.requestFocus();
+		}
+	}
+
+	public void toggleTimer() {
+		btnStart.fire();
+	}
+
+	@FXML
+	private void deleteCue(ActionEvent e) {
+		if (TimeKeeper.getInstance().getActiveIndex() < 0 && cueTable.getSelectionModel().getSelectedItem() != null) {
+			Cue del = cueTable.getSelectionModel().getSelectedItem();
+			int index = cueTable.getSelectionModel().getSelectedIndex();
+			TimeKeeper.getInstance().removeCue(del);
+			cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
+			if (cueTable.getItems().size() > index) {
+				cueTable.getSelectionModel().select(index);
+			} else {
+				cueTable.getSelectionModel().select(cueTable.getItems().size() - 1);
+			}
+		}
+		e.consume();
+	}
+
+	private void enableContextMenu(boolean value) {
+		cxtResetChannel.setDisable(!value);
+		cxtDeleteCue.setDisable(!value);
+	}
+
+	private void initButtons() {
+		// btnTime.disableProperty().bind(btnStart.selectedProperty().not());
+		btnStart.setOnAction(e -> {
+			if (TimeKeeper.getInstance().getActiveIndex() < 0) {
+				startTimer();
+				btnStart.setText("Pause");
+				btnStop.setDisable(false);
+			} else {
+				TimeKeeper.getInstance().pause();
+				if (btnStart.getText().equals("Pause")) {
+					btnStart.setText("Continue");
+				} else {
+					btnStart.setText("Pause");
+
+				}
+			}
+			e.consume();
+		});
+
+		btnStop.setDisable(true);
+		btnStop.setOnAction(e -> stopTimer());
+		txtCue.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.ENTER) {
+					TimeKeeper.getInstance().addCue(new Cue(txtCue.getText().trim()));
+					cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
+					txtCue.clear();
+					event.consume();
+				}
+			}
+		});
+	}
+
+	private void initChart() {
+		timeChart = new DoughnutChart(FXCollections.observableArrayList());
+		piePane.setOnMouseClicked(e -> {
+			if (MouseButton.SECONDARY.equals(e.getButton())) {
+				ContextMenu menu = new ContextMenu();
+				MenuItem btnClear = new MenuItem("Clear Chart");
+				btnClear.setDisable(timeChart.getData().isEmpty() || TimeKeeper.getInstance().getTimeRunning() > 0);
+				btnClear.setOnAction(ex -> {
+					timeChart.getData().clear();
+					lblTime.setText("--:--");
+				});
+				menu.getItems().add(btnClear);
+				menu.show(timeChart, e.getScreenX(), e.getScreenY());
+			}
+		});
+		piePane.getChildren().add(0, timeChart);
+	}
+
+	private void initTable() {
+		colName.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getName()));
+		colChannel.setCellValueFactory(e -> {
+			String result = "";
+			if (e.getValue().getChannelToSelect() != null) {
+				result = e.getValue().getChannelToSelect().getName();
+			}
+			return new SimpleStringProperty(result);
+		});
+		colTime.setStyle("-fx-alignment: CENTER;");
+		colTime.setCellValueFactory(e -> {
+			long time = e.getValue().getTime();
+			String result = "--:--";
+			if (time > 0) {
+				time = time / 1000;
+				int mins = (int) (time / 60);
+				int secs = (int) (time % 60);
+				result = String.format("%02d", mins) + ":" + String.format("%02d", secs);
+			}
+			return new SimpleStringProperty(result);
+		});
 	}
 
 	private void initTimeKeeper() {
@@ -94,16 +242,16 @@ public class TimeKeeperController implements Initializable {
 		choiceCueChannel.setConverter(new StringConverter<Channel>() {
 
 			@Override
+			public Channel fromString(String string) {
+				return null;
+			}
+
+			@Override
 			public String toString(Channel object) {
 				if (object == null) {
 					return "- NONE -";
 				}
 				return object.getName();
-			}
-
-			@Override
-			public Channel fromString(String string) {
-				return null;
 			}
 		});
 		// EDIT
@@ -155,49 +303,26 @@ public class TimeKeeperController implements Initializable {
 		});
 	}
 
-	private void initButtons() {
-		// btnTime.disableProperty().bind(btnStart.selectedProperty().not());
-		btnStart.setOnAction(e -> {
-			if (TimeKeeper.getInstance().getActiveIndex() < 0) {
-				startTimer();
-				btnStart.setText("Pause");
-				btnStop.setDisable(false);
-			} else {
-				TimeKeeper.getInstance().pause();
-				if (btnStart.getText().equals("Pause")) {
-					btnStart.setText("Continue");
-				} else {
-					btnStart.setText("Pause");
-
-				}
-			}
-			e.consume();
-		});
-
-		btnStop.setDisable(true);
-		btnStop.setOnAction(e -> stopTimer());
-		txtCue.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent event) {
-				if (event.getCode() == KeyCode.ENTER) {
-					TimeKeeper.getInstance().addCue(new Cue(txtCue.getText().trim()));
-					cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
-					txtCue.clear();
-					event.consume();
-				}
-			}
-		});
+	@FXML
+	private void resetChannel(ActionEvent e) {
+		Cue cue = cueTable.getSelectionModel().getSelectedItem();
+		if (cue != null) {
+			cue.setChannelToSelect(null);
+		}
+		e.consume();
 	}
 
-	private void stopTimer() {
-		LOG.info("Stopping timer");
-		txtCueName.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
-		choiceCueChannel.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
-		TimeKeeper.getInstance().reset();
-		// Update GUI
-		btnStart.setText("Start");
-		btnStop.setDisable(true);
+	@FXML
+	private void round(ActionEvent e) {
+		TimeKeeper.getInstance().round();
+		Cue activeCue = TimeKeeper.getInstance().getActiveCue();
+		LOG.info("Jump to next cue: " + activeCue.getName());
+		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
+		cueTable.getSelectionModel().select(TimeKeeper.getInstance().getActiveIndex());
+		if (TimeKeeper.getInstance().getActiveCue().getChannelToSelect() != null) {
+			MainController.getInstance().setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
+		}
+		e.consume();
 	}
 
 	private void startTimer() {
@@ -251,138 +376,13 @@ public class TimeKeeperController implements Initializable {
 		cueTable.requestFocus();
 	}
 
-	private void initTable() {
-		colName.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getName()));
-		colChannel.setCellValueFactory(e -> {
-			String result = "";
-			if (e.getValue().getChannelToSelect() != null) {
-				result = e.getValue().getChannelToSelect().getName();
-			}
-			return new SimpleStringProperty(result);
-		});
-		colTime.setStyle("-fx-alignment: CENTER;");
-		colTime.setCellValueFactory(e -> {
-			long time = e.getValue().getTime();
-			String result = "--:--";
-			if (time > 0) {
-				time = time / 1000;
-				int mins = (int) (time / 60);
-				int secs = (int) (time % 60);
-				result = String.format("%02d", mins) + ":" + String.format("%02d", secs);
-			}
-			return new SimpleStringProperty(result);
-		});
-	}
-
-	private void initChart() {
-		timeChart = new DoughnutChart(FXCollections.observableArrayList());
-		piePane.setOnMouseClicked(e -> {
-			if (MouseButton.SECONDARY.equals(e.getButton())) {
-				ContextMenu menu = new ContextMenu();
-				MenuItem btnClear = new MenuItem("Clear Chart");
-				btnClear.setDisable(timeChart.getData().isEmpty() || TimeKeeper.getInstance().getTimeRunning() > 0);
-				btnClear.setOnAction(ex -> {
-					timeChart.getData().clear();
-					lblTime.setText("--:--");
-				});
-				menu.getItems().add(btnClear);
-				menu.show(timeChart, e.getScreenX(), e.getScreenY());
-			}
-		});
-		piePane.getChildren().add(0, timeChart);
-	}
-
-	public void setChannels(List<Channel> list) {
-		Channel selected = choiceCueChannel.getSelectionModel().getSelectedItem();
-		choiceCueChannel.getItems().setAll(list);
-		if (selected != null) {
-			choiceCueChannel.getSelectionModel().select(selected);
-		}
-	}
-
-	public void toggleTimer() {
-		btnStart.fire();
-	}
-
-	public void round() {
-		btnTime.fire();
-	}
-
-	@FXML
-	private void round(ActionEvent e) {
-		TimeKeeper.getInstance().round();
-		Cue activeCue = TimeKeeper.getInstance().getActiveCue();
-		LOG.info("Jump to next cue: " + activeCue.getName());
-		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
-		cueTable.getSelectionModel().select(TimeKeeper.getInstance().getActiveIndex());
-		if (TimeKeeper.getInstance().getActiveCue().getChannelToSelect() != null) {
-			MainController.getInstance().setSelectedChannel(TimeKeeper.getInstance().getActiveCue().getChannelToSelect());
-		}
-		e.consume();
-	}
-
-	@FXML
-	private void deleteCue(ActionEvent e) {
-		if (TimeKeeper.getInstance().getActiveIndex() < 0 && cueTable.getSelectionModel().getSelectedItem() != null) {
-			Cue del = cueTable.getSelectionModel().getSelectedItem();
-			int index = cueTable.getSelectionModel().getSelectedIndex();
-			TimeKeeper.getInstance().removeCue(del);
-			cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
-			if (cueTable.getItems().size() > index) {
-				cueTable.getSelectionModel().select(index);
-			} else {
-				cueTable.getSelectionModel().select(cueTable.getItems().size() - 1);
-			}
-		}
-		e.consume();
-	}
-
-	public Button getStartButton() {
-		return btnStart;
-	}
-
-	public Button getRoundButton() {
-		return btnTime;
-	}
-
-	public void show(boolean value) {
-		paneCue.setVisible(value);
-		paneCue.setManaged(value);
-		if (value) {
-			cueTable.requestFocus();
-		}
-	}
-
-	public void save(File file) {
-		LOG.info("Saving cues");
-		List<Serializable> list = new ArrayList<>();
-		for (Cue c : cueTable.getItems()) {
-			list.add(c);
-		}
-		boolean result = FileIO.save(list, file);
-		if (result) {
-			LOG.info("Saving successful");
-		} else {
-			LOG.warn("Unable to save");
-		}
-	}
-
-	public void refresh() {
-		cueTable.getItems().setAll(TimeKeeper.getInstance().getCueList());
-		choiceCueChannel.getItems().setAll(ASIOController.getInstance().getInputList());
-	}
-
-	private void enableContextMenu(boolean value) {
-		cxtResetChannel.setDisable(!value);
-		cxtDeleteCue.setDisable(!value);
-	}
-
-	@FXML
-	private void resetChannel(ActionEvent e) {
-		Cue cue = cueTable.getSelectionModel().getSelectedItem();
-		if (cue != null) {
-			cue.setChannelToSelect(null);
-		}
-		e.consume();
+	private void stopTimer() {
+		LOG.info("Stopping timer");
+		txtCueName.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
+		choiceCueChannel.setDisable(cueTable.getSelectionModel().selectedItemProperty().isNull().get());
+		TimeKeeper.getInstance().reset();
+		// Update GUI
+		btnStart.setText("Start");
+		btnStop.setDisable(true);
 	}
 }

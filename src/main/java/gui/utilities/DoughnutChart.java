@@ -23,15 +23,6 @@ public class DoughnutChart extends PieChart {
 		setLegendSide(Side.TOP);
 	}
 
-	@Override
-	protected void layoutChartChildren(double top, double left, double contentWidth, double contentHeight) {
-		super.layoutChartChildren(top, left, contentWidth, contentHeight);
-
-		addInnerCircleIfNotPresent();
-		updateInnerCircleLayout();
-
-	}
-
 	private void addInnerCircleIfNotPresent() {
 		if (getData().size() > 0) {
 			Node pie = getData().get(0).getNode();
@@ -75,5 +66,14 @@ public class DoughnutChart extends PieChart {
 		innerCircle.setCenterY(minY + (maxY - minY) / 2);
 
 		innerCircle.setRadius((maxX - minX) * CIRCLE_PERCENT / 2);
+	}
+
+	@Override
+	protected void layoutChartChildren(double top, double left, double contentWidth, double contentHeight) {
+		super.layoutChartChildren(top, left, contentWidth, contentHeight);
+
+		addInnerCircleIfNotPresent();
+		updateInnerCircleLayout();
+
 	}
 }

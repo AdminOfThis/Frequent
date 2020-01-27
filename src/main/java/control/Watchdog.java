@@ -27,11 +27,18 @@ public class Watchdog implements InputListener {
 
 	private static Watchdog instance;
 
+	public static Watchdog getInstance() {
+		if (instance == null) {
+			instance = new Watchdog();
+		}
+		return instance;
+	}
 	private List<WatchdogListener> listeners = Collections.synchronizedList(new ArrayList<WatchdogListener>());
-	private ArrayListValuedHashMap<Long, Input> missingInputs = new ArrayListValuedHashMap<Long, Input>();
 
+	private ArrayListValuedHashMap<Long, Input> missingInputs = new ArrayListValuedHashMap<Long, Input>();
 	private ArrayListValuedHashMap<Long, Input> watchMap = new ArrayListValuedHashMap<Long, Input>();
 	private Map<Input, Long> heartBeatMap = Collections.synchronizedMap(new HashMap<Input, Long>());
+
 	private ScheduledExecutorService exec;
 
 	private Watchdog() {
@@ -45,11 +52,90 @@ public class Watchdog implements InputListener {
 		}, 5, 1, TimeUnit.SECONDS);
 	}
 
-	public static Watchdog getInstance() {
-		if (instance == null) {
-			instance = new Watchdog();
+	/******* WatchMap functions ***************/
+	public void addEntry(long seconds, Input channel) {
+		removeEntry(channel);
+		if (!watchMap.containsValue(channel) && channel != null) {
+			watchMap.put(seconds, channel);
+			heartBeatMap.put(channel, System.currentTimeMillis());
+			channel.addListener(this);
 		}
-		return instance;
+	}
+
+	/****** LISTENERS **************/
+	public void addListener(WatchdogListener lis) {
+		if (!listeners.contains(lis)) {
+			listeners.add(lis);
+		}
+	}
+
+	public void clear() {
+		watchMap.clear();
+	}
+
+	@Override
+	public void colorChanged(String newColor) {}
+
+	public void finish() {
+		if (exec != null) {
+			exec.shutdown();
+		}
+		for (Input input : watchMap.values()) {
+			input.removeListener(this);
+		}
+		LOG.info("Watchdog terminated");
+	}
+
+	/************* GETTER AND SETTER ****************/
+	public ArrayListValuedHashMap<Long, Input> getMissingInputs() {
+		return new ArrayListValuedHashMap<>(missingInputs);
+	}
+
+	public int getSize() {
+		return watchMap.size();
+	}
+
+	public long getTimeForInput(Input input) {
+		long result = 0;
+		for (Entry<Long, Input> e : watchMap.entries()) {
+			if (Objects.equals(e.getValue(), input)) {
+				result = e.getKey();
+				break;
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public void levelChanged(Input input, double level, long time) {
+		double leveldB = Channel.percentToDB(level);
+		if (leveldB > Double.parseDouble(PropertiesIO.getProperty(Constants.SETTING_WATCHDOG_THRESHOLD, Double.toString(DEFAULT_THRESHOLD)))) {
+			heartBeatMap.put(input, System.currentTimeMillis());
+		}
+	}
+
+	@Override
+	public void nameChanged(String name) {}
+
+	public boolean removeEntry(Input input) {
+		boolean success = false;
+		if (input != null) {
+			for (Entry<Long, Input> entry : watchMap.entries()) {
+				if (entry.getValue().equals(input)) {
+					watchMap.remove(entry.getKey());
+					missingInputs.removeMapping(entry.getKey(), input);
+					success = true;
+					break;
+				}
+			}
+
+			input.removeListener(this);
+		}
+		return success;
+	}
+
+	public boolean removeListener(WatchdogListener lis) {
+		return listeners.remove(lis);
 	}
 
 	private void check() {
@@ -79,90 +165,4 @@ public class Watchdog implements InputListener {
 			}
 		}
 	}
-
-	public void finish() {
-		if (exec != null) {
-			exec.shutdown();
-		}
-		for (Input input : watchMap.values()) {
-			input.removeListener(this);
-		}
-		LOG.info("Watchdog terminated");
-	}
-
-	@Override
-	public void levelChanged(Input input, double level, long time) {
-		double leveldB = Channel.percentToDB(level);
-		if (leveldB > Double.parseDouble(PropertiesIO.getProperty(Constants.SETTING_WATCHDOG_THRESHOLD, Double.toString(DEFAULT_THRESHOLD)))) {
-			heartBeatMap.put(input, System.currentTimeMillis());
-		}
-	}
-
-	/****** LISTENERS **************/
-	public void addListener(WatchdogListener lis) {
-		if (!listeners.contains(lis)) {
-			listeners.add(lis);
-		}
-	}
-
-	public boolean removeListener(WatchdogListener lis) {
-		return listeners.remove(lis);
-	}
-
-	/******* WatchMap functions ***************/
-	public void addEntry(long seconds, Input channel) {
-		removeEntry(channel);
-		if (!watchMap.containsValue(channel) && channel != null) {
-			watchMap.put(seconds, channel);
-			heartBeatMap.put(channel, System.currentTimeMillis());
-			channel.addListener(this);
-		}
-	}
-
-	public boolean removeEntry(Input input) {
-		boolean success = false;
-		if (input != null) {
-			for (Entry<Long, Input> entry : watchMap.entries()) {
-				if (entry.getValue().equals(input)) {
-					watchMap.remove(entry.getKey());
-					missingInputs.removeMapping(entry.getKey(), input);
-					success = true;
-					break;
-				}
-			}
-
-			input.removeListener(this);
-		}
-		return success;
-	}
-
-	public void clear() {
-		watchMap.clear();
-	}
-
-	public int getSize() {
-		return watchMap.size();
-	}
-
-	/************* GETTER AND SETTER ****************/
-	public ArrayListValuedHashMap<Long, Input> getMissingInputs() {
-		return new ArrayListValuedHashMap<>(missingInputs);
-	}
-
-	public long getTimeForInput(Input input) {
-		long result = 0;
-		for (Entry<Long, Input> e : watchMap.entries()) {
-			if (Objects.equals(e.getValue(), input)) {
-				result = e.getKey();
-				break;
-			}
-		}
-		return result;
-	}
-
-	@Override
-	public void nameChanged(String name) {}
-
-	@Override
-	public void colorChanged(String newColor) {}
 }

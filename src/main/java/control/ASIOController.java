@@ -42,22 +42,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	private static ASIOController instance;
 	private static final Logger LOG = LogManager.getLogger(ASIOController.class);
 	private static int fftBufferSize;
-	private String driverName;
-	private AsioDriver asioDriver;
-	private int bufferSize = 1024;
-	private double sampleRate;
-	private Channel activeChannel;
-	private float baseFrequency = -1;
-	// FFT
-	// private float[] output;
-	private int bufferCount;
-	private int[] index;
-	private List<Channel> channelList;
-	private List<Group> groupList = new ArrayList<>();
-	private List<FFTListener> fftListeners = new ArrayList<>();
-	private ExecutorService exe;
-	private long time;
-	private boolean isFFTing = false;
 	private static List<DriverInfo> driverList;
 
 	/**
@@ -73,14 +57,28 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	}
 
 	/**
-	 * @return Returns a list of {@link String} of found active ASIO drivers on the
-	 *         system
+	 * Returns a list of {@link String} of found active ASIO drivers on the system
+	 * 
+	 * @return a list of all available ASIO drivers of the type {@link DriverInfo}
 	 */
 	public static List<DriverInfo> getPossibleDrivers() {
 		if (driverList == null) {
 			driverList = loadPossibleDrivers();
 		}
 		return new ArrayList<>(driverList);
+	}
+
+	/**
+	 * Returns a list of {@link String} wih the names of all possible drivers
+	 * 
+	 * @return a list of al detected drivers
+	 */
+	public static List<String> getPossibleDriverStrings() {
+		List<String> result = new ArrayList<String>();
+		for (DriverInfo info : getPossibleDrivers()) {
+			result.add(info.getName());
+		}
+		return result;
 	}
 
 	private static List<DriverInfo> loadPossibleDrivers() {
@@ -112,6 +110,27 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 		return result;
 	}
 
+	private String driverName;
+	private AsioDriver asioDriver;
+	private int bufferSize = 1024;
+	private double sampleRate;
+	private Channel activeChannel;
+	private float baseFrequency = -1;
+	// FFT
+	// private float[] output;
+	private int bufferCount;
+	private int[] index;
+	private List<Channel> channelList;
+	private List<Group> groupList = new ArrayList<>();
+
+	private List<FFTListener> fftListeners = new ArrayList<>();
+
+	private ExecutorService exe;
+
+	private long time;
+
+	private boolean isFFTing = false;
+
 	/**
 	 * Constructor of the ASIOController
 	 * 
@@ -134,6 +153,77 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 			initFFT();
 		}
 		LOG.info("FFT Analysis started");
+	}
+
+	@Override
+	public void add(final Object t) {
+		if (t instanceof Channel) {
+			Channel channel = (Channel) t;
+			if (!channelList.contains(channel)) {
+				Channel oldChannel = null;
+				for (Channel c : channelList) {
+					// remove pld channel, and replace with new
+					if (c.getChannelIndex() == channel.getChannelIndex()) {
+						oldChannel = c;
+						break;
+					}
+				}
+				if (oldChannel != null) {
+					channelList.remove(oldChannel);
+					channelList.add(channel);
+					channel.addListener(this);
+					channel.setChannel(oldChannel.getChannel());
+					for (Group g : groupList) {
+						g.refreshChannels();
+					}
+				}
+				channelList.sort(Channel.COMPARATOR);
+			}
+		} else if (t instanceof Group) {
+			Group g = (Group) t;
+			if (!groupList.contains(g)) {
+				groupList.add(g);
+			}
+			g.refreshChannels();
+		}
+	}
+
+	public void addDriverInfo(DriverInfo info) {
+		if (driverList == null) {
+			driverList = new ArrayList<>();
+		}
+		driverList.add(info);
+	}
+
+	/**
+	 * Adds a {@link FFTListener} to the list of listeners that get notified by fft
+	 * events, if that listener is not already an entry in that list
+	 * 
+	 * @param fftListener The listener to be added
+	 */
+	public void addFFTListener(final FFTListener fftListener) {
+		if (!fftListeners.contains(fftListener)) {
+			fftListeners.add(fftListener);
+		}
+	}
+
+	/**
+	 * Adds a group to the {@link ASIOController}, for the level of the group to be
+	 * calculated by the controller
+	 * 
+	 * @param group The group to add to the list of groups
+	 */
+	public void addGroup(final Group group) {
+		if (!groupList.contains(group)) {
+			LOG.info("Group " + group.getName() + " added");
+			groupList.add(group);
+		}
+	}
+
+	@Override
+	public void bufferSizeChanged(final int bufferSize) {
+		LOG.info("Buffer size changed");
+		restart();
 	}
 
 	@Override
@@ -182,88 +272,13 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	}
 
 	@Override
-	public void add(final Object t) {
-		if (t instanceof Channel) {
-			Channel channel = (Channel) t;
-			if (!channelList.contains(channel)) {
-				Channel oldChannel = null;
-				for (Channel c : channelList) {
-					// remove pld channel, and replace with new
-					if (c.getChannelIndex() == channel.getChannelIndex()) {
-						oldChannel = c;
-						break;
-					}
-				}
-				if (oldChannel != null) {
-					channelList.remove(oldChannel);
-					channelList.add(channel);
-					channel.addListener(this);
-					channel.setChannel(oldChannel.getChannel());
-					for (Group g : groupList) {
-						g.refreshChannels();
-					}
-				}
-				channelList.sort(Channel.COMPARATOR);
-			}
-		} else if (t instanceof Group) {
-			Group g = (Group) t;
-			if (!groupList.contains(g)) {
-				groupList.add(g);
-			}
-			g.refreshChannels();
-		}
-	}
-
-	/**
-	 * Adds a {@link FFTListener} to the list of listeners that get notified by fft
-	 * events, if that listener is not already an entry in that list
-	 * 
-	 * @param fftListener The listener to be added
-	 */
-	public void addFFTListener(final FFTListener fftListener) {
-		if (!fftListeners.contains(fftListener)) {
-			fftListeners.add(fftListener);
-		}
-	}
-
-	/**
-	 * Adds a group to the {@link ASIOController}, for the level of the group to be
-	 * calculated by the controller
-	 * 
-	 * @param group The group to add to the list of groups
-	 */
-	public void addGroup(final Group group) {
-		if (!groupList.contains(group)) {
-			LOG.info("Group " + group.getName() + " added");
-			groupList.add(group);
-		}
-	}
-
-	@Override
-	public void bufferSizeChanged(final int bufferSize) {
-		LOG.info("Buffer size changed");
-		restart();
-	}
-
-	@Override
 	public void clear() {
 		// do nothing
 	}
 
-	private void notifyFFTListeners(final float[] spectrumMap) {
-		for (int i = 0; i < fftListeners.size(); i++) {
-			FFTListener l = fftListeners.get(i);
-			if (l != null) {
-				new Thread(() -> {
-					try {
-						l.newFFT(spectrumMap);
-					} catch (Exception e) {
-						LOG.warn("Unable to notify FFTListener");
-						LOG.debug("", e);
-					}
-				}).start();
-			}
-		}
+	@Override
+	public void colorChanged(String newColor) {
+		// do nothing
 	}
 
 	/**
@@ -276,12 +291,30 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 		return baseFrequency;
 	}
 
+	/**
+	 * Returns the buffer size of the driver
+	 * 
+	 * @return The buffersize
+	 */
+	public int getBufferSize() {
+		return bufferSize;
+	}
+
 	@Override
 	public List<Input> getData() {
 		ArrayList<Input> result = new ArrayList<>();
 		result.addAll(getInputList());
 		result.addAll(getGroupList());
 		return result;
+	}
+
+	/**
+	 * Returns the name of the loaded driver
+	 * 
+	 * @return The name of the active driver as {@link String}
+	 */
+	public String getDevice() {
+		return driverName;
 	}
 
 	/**
@@ -338,21 +371,63 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 		}
 	}
 
-	private void initFFT() {
-		// fftBufferSize = 16384;
-		fftBufferSize = DESIRED_BUFFER_SIZE;
-		bufferCount = 1;
-		// fft = new DoubleFFT_1D(fftBufferSize);
-		index = new int[bufferCount];
-		for (int i = 0; i < bufferCount; i++) {
-			index[i] = i * fftBufferSize / bufferCount;
-		}
+	/**
+	 * Returns the sample rate of the active driver
+	 * 
+	 * @return samplerate
+	 */
+	public int getSampleRate() {
+		return (int) Math.floor(sampleRate);
+	}
+
+	/**
+	 * Returns the current time, read from the {@link AsioDriver}
+	 * 
+	 * @return The time as {@link Long}
+	 */
+	public long getTime() {
+		return time;
+	}
+
+	/**
+	 * Returns true if a driver is already loaded
+	 * 
+	 * @return true if a driver is loaded, false otherwise
+	 */
+	public boolean isLoaded() {
+		return (getDevice() != null && getDevice().isEmpty());
 	}
 
 	@Override
 	public void latenciesChanged(final int inputLatency, final int outputLatency) {
 		LOG.info("Latencies changed");
 		restart();
+	}
+
+	@Override
+	public void levelChanged(Input input, double level, long time) {
+		// do nothing
+	}
+
+	@Override
+	public void nameChanged(String name) {
+		// do nothing
+
+	}
+
+	@Override
+	public void newBuffer(Channel channel, float[] buffer, long time) {
+		// if channel is currently selected
+		if (activeChannel != null && Objects.equal(channel.getChannelIndex(), activeChannel.getChannelIndex())) {
+			if (!isFFTing) {
+				isFFTing = true;
+
+				float[] spectrum = FFT.fftThis(activeChannel.getBuffer(), (float) sampleRate);
+
+				notifyFFTListeners(spectrum);
+				isFFTing = false;
+			}
+		}
 	}
 
 	/**
@@ -459,52 +534,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	}
 
 	/**
-	 * Closes and unloads the {@link AsioDriver}
-	 */
-	public void shutdown() {
-		if (asioDriver != null) {
-			asioDriver.shutdownAndUnloadDriver();
-			FileIO.unregisterSaveData(this);
-		}
-	}
-
-	/**
-	 * Returns the buffer size of the driver
-	 * 
-	 * @return The buffersize
-	 */
-	public int getBufferSize() {
-		return bufferSize;
-	}
-
-	/**
-	 * Returns the current time, read from the {@link AsioDriver}
-	 * 
-	 * @return The time as {@link Long}
-	 */
-	public long getTime() {
-		return time;
-	}
-
-	/**
-	 * Returns the sample rate of the active driver
-	 * 
-	 * @return samplerate
-	 */
-	public int getSampleRate() {
-		return (int) Math.floor(sampleRate);
-	}
-
-	/**
-	 * Sets the driver to reloaded once {@link #resetRequest()} is called
-	 * 
-	 * @param device
-	 */
-	public void setDevice(String device) {
-		driverName = device;
-	}
-
-	/**
 	 * Sets the buffersize, which gets only loaded once the driver ist restarted via
 	 * {@link #restart()}
 	 * 
@@ -517,61 +546,48 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	}
 
 	/**
-	 * Returns the name of the loaded driver
+	 * Sets the driver to reloaded once {@link #resetRequest()} is called
 	 * 
-	 * @return The name of the active driver as {@link String}
+	 * @param device
 	 */
-	public String getDevice() {
-		return driverName;
+	public void setDevice(String device) {
+		driverName = device;
 	}
 
-	public boolean isLoaded() {
-		return (getDevice() != null && getDevice().isEmpty());
-	}
-
-	public static List<String> getPossibleDriverStrings() {
-		List<String> result = new ArrayList<String>();
-		for (DriverInfo info : getPossibleDrivers()) {
-			result.add(info.getName());
+	/**
+	 * Closes and unloads the {@link AsioDriver}
+	 */
+	public void shutdown() {
+		if (asioDriver != null) {
+			asioDriver.shutdownAndUnloadDriver();
+			FileIO.unregisterSaveData(this);
 		}
-		return result;
 	}
 
-	@Override
-	public void levelChanged(Input input, double level, long time) {
-		// do nothing
+	private void initFFT() {
+		// fftBufferSize = 16384;
+		fftBufferSize = DESIRED_BUFFER_SIZE;
+		bufferCount = 1;
+		// fft = new DoubleFFT_1D(fftBufferSize);
+		index = new int[bufferCount];
+		for (int i = 0; i < bufferCount; i++) {
+			index[i] = i * fftBufferSize / bufferCount;
+		}
 	}
 
-	@Override
-	public void nameChanged(String name) {
-		// do nothing
-
-	}
-
-	@Override
-	public void colorChanged(String newColor) {
-		// do nothing
-	}
-
-	@Override
-	public void newBuffer(Channel channel, float[] buffer, long time) {
-		// if channel is currently selected
-		if (activeChannel != null && Objects.equal(channel.getChannelIndex(), activeChannel.getChannelIndex())) {
-			if (!isFFTing) {
-				isFFTing = true;
-
-				float[] spectrum = FFT.fftThis(activeChannel.getBuffer(), (float) sampleRate);
-
-				notifyFFTListeners(spectrum);
-				isFFTing = false;
+	private void notifyFFTListeners(final float[] spectrumMap) {
+		for (int i = 0; i < fftListeners.size(); i++) {
+			FFTListener l = fftListeners.get(i);
+			if (l != null) {
+				new Thread(() -> {
+					try {
+						l.newFFT(spectrumMap);
+					} catch (Exception e) {
+						LOG.warn("Unable to notify FFTListener");
+						LOG.debug("", e);
+					}
+				}).start();
 			}
 		}
-	}
-
-	public void addDriverInfo(DriverInfo info) {
-		if (driverList == null) {
-			driverList = new ArrayList<>();
-		}
-		driverList.add(info);
 	}
 }

@@ -28,12 +28,77 @@ import main.Main;
 
 public class ColorManager extends AnchorPane implements Initializable {
 
+	private class ColorListCell extends ListCell<ColorEntry> {
+		private final TextField textField = new TextField();
+
+		public ColorListCell() {
+			textField.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+				if (e.getCode() == KeyCode.ESCAPE) {
+					cancelEdit();
+				}
+			});
+			textField.setOnAction(e -> {
+				getItem().setName(textField.getText());
+				setText(textField.getText());
+				setContentDisplay(ContentDisplay.TEXT_ONLY);
+				cancelEdit();
+			});
+			setGraphic(textField);
+
+			selectedProperty().addListener((e, oldV, newV) -> {
+				if (getItem() != null) {
+					if (newV) {
+						setStyle("-fx-background-color: " + getItem().getEntry() + "; -fx-border-color: " + Main.getAccentColor() + "; -fx-border-style: solid; -fx-border-width: 3px;");
+					} else {
+						setStyle("-fx-background-color: " + getItem().getEntry());
+					}
+				} else {
+					setStyle("");
+				}
+			});
+		}
+
+		@Override
+		public void cancelEdit() {
+			super.cancelEdit();
+			setText(getItem().getName());
+			setContentDisplay(ContentDisplay.TEXT_ONLY);
+		}
+
+		@Override
+		public void startEdit() {
+			super.startEdit();
+			textField.setText(getItem().getName());
+			setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+			textField.requestFocus();
+			textField.selectAll();
+		}
+
+		protected void updateItem(ColorEntry item, boolean empty) {
+
+			super.updateItem(item, empty);
+			if (isEditing()) {
+				textField.setText(item.getName());
+				setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+			} else {
+				setContentDisplay(ContentDisplay.TEXT_ONLY);
+				if (item == null || empty) {
+					setText("");
+					setStyle("");
+				} else if (item != null) {
+					setText(item.getName());
+					setStyle("-fx-background-color: " + item.getEntry());
+				}
+			}
+		}
+	}
 	private static final Logger LOG = LogManager.getLogger(ColorManager.class);
 	private static final String FXML_PATH = "/fxml/dialog/ColorManager.fxml";
 	@FXML
 	private ListView<ColorEntry> list;
 	@FXML
 	private Button btnAdd, btnCancel, btnDelete, btnRename;
+
 	@FXML
 	private ColorPicker colorPicker;
 
@@ -85,14 +150,6 @@ public class ColorManager extends AnchorPane implements Initializable {
 		refreshData();
 	}
 
-	private void refreshData() {
-		int selectedIndex = list.getSelectionModel().getSelectedIndex();
-		list.getItems().setAll(ColorController.getInstance().getColors());
-		if (list.getItems().size() >= selectedIndex) {
-			list.getSelectionModel().clearAndSelect(selectedIndex);
-		}
-	}
-
 	@FXML
 	private void cancel(ActionEvent e) {
 		try {
@@ -104,13 +161,6 @@ public class ColorManager extends AnchorPane implements Initializable {
 	}
 
 	@FXML
-	private void rename(ActionEvent e) {
-		if (list.getSelectionModel().getSelectedIndex() >= 0) {
-			list.edit(list.getSelectionModel().getSelectedIndex());
-		}
-	}
-
-	@FXML
 	private void delete(ActionEvent e) {
 		if (list.getSelectionModel().getSelectedIndex() >= 0) {
 			ColorController.getInstance().removeColor(list.getSelectionModel().getSelectedItem());
@@ -118,68 +168,18 @@ public class ColorManager extends AnchorPane implements Initializable {
 		}
 	}
 
-	private class ColorListCell extends ListCell<ColorEntry> {
-		private final TextField textField = new TextField();
-
-		public ColorListCell() {
-			textField.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-				if (e.getCode() == KeyCode.ESCAPE) {
-					cancelEdit();
-				}
-			});
-			textField.setOnAction(e -> {
-				getItem().setName(textField.getText());
-				setText(textField.getText());
-				setContentDisplay(ContentDisplay.TEXT_ONLY);
-				cancelEdit();
-			});
-			setGraphic(textField);
-
-			selectedProperty().addListener((e, oldV, newV) -> {
-				if (getItem() != null) {
-					if (newV) {
-						setStyle("-fx-background-color: " + getItem().getEntry() + "; -fx-border-color: " + Main.getAccentColor() + "; -fx-border-style: solid; -fx-border-width: 3px;");
-					} else {
-						setStyle("-fx-background-color: " + getItem().getEntry());
-					}
-				} else {
-					setStyle("");
-				}
-			});
+	private void refreshData() {
+		int selectedIndex = list.getSelectionModel().getSelectedIndex();
+		list.getItems().setAll(ColorController.getInstance().getColors());
+		if (list.getItems().size() >= selectedIndex) {
+			list.getSelectionModel().clearAndSelect(selectedIndex);
 		}
+	}
 
-		protected void updateItem(ColorEntry item, boolean empty) {
-
-			super.updateItem(item, empty);
-			if (isEditing()) {
-				textField.setText(item.getName());
-				setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-			} else {
-				setContentDisplay(ContentDisplay.TEXT_ONLY);
-				if (item == null || empty) {
-					setText("");
-					setStyle("");
-				} else if (item != null) {
-					setText(item.getName());
-					setStyle("-fx-background-color: " + item.getEntry());
-				}
-			}
-		}
-
-		@Override
-		public void startEdit() {
-			super.startEdit();
-			textField.setText(getItem().getName());
-			setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-			textField.requestFocus();
-			textField.selectAll();
-		}
-
-		@Override
-		public void cancelEdit() {
-			super.cancelEdit();
-			setText(getItem().getName());
-			setContentDisplay(ContentDisplay.TEXT_ONLY);
+	@FXML
+	private void rename(ActionEvent e) {
+		if (list.getSelectionModel().getSelectedIndex() >= 0) {
+			list.edit(list.getSelectionModel().getSelectedIndex());
 		}
 	}
 }

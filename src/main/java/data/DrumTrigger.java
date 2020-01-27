@@ -25,6 +25,23 @@ public class DrumTrigger implements InputListener {
 		this.bpmDetect = new BPMDetect();
 	}
 
+	public void addListeners(final DrumTriggerListener obs) {
+		synchronized (listeners) {
+			if (!listeners.contains(obs)) {
+				this.listeners.add(obs);
+			}
+		}
+	}
+
+	public void calcBPM() {
+		if (getChannel() != null) {
+			bpmDetect.detect(getChannel().getBuffer(), ASIOController.getInstance().getSampleRate());
+		}
+	}
+
+	@Override
+	public void colorChanged(String newColor) {}
+
 	public Channel getChannel() {
 		return channel;
 	}
@@ -57,6 +74,15 @@ public class DrumTrigger implements InputListener {
 		}
 	}
 
+	@Override
+	public void nameChanged(String name) {}
+
+	public void removeListeners(DrumTriggerListener obs) {
+		synchronized (listeners) {
+			listeners.remove(obs);
+		}
+	}
+
 	public void setChannel(final Channel channel) {
 		if (this.channel != null) {
 			this.channel.removeListener(this);
@@ -71,33 +97,7 @@ public class DrumTrigger implements InputListener {
 		this.name = name;
 	}
 
-	public void addListeners(final DrumTriggerListener obs) {
-		synchronized (listeners) {
-			if (!listeners.contains(obs)) {
-				this.listeners.add(obs);
-			}
-		}
-	}
-
-	public void removeListeners(DrumTriggerListener obs) {
-		synchronized (listeners) {
-			listeners.remove(obs);
-		}
-	}
-
 	public void setTreshold(final double treshold) {
 		this.treshold = treshold;
 	}
-
-	public void calcBPM() {
-		if (getChannel() != null) {
-			bpmDetect.detect(getChannel().getBuffer(), ASIOController.getInstance().getSampleRate());
-		}
-	}
-
-	@Override
-	public void nameChanged(String name) {}
-
-	@Override
-	public void colorChanged(String newColor) {}
 }

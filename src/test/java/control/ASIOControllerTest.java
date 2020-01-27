@@ -8,11 +8,6 @@ import org.junit.jupiter.api.Test;
 class ASIOControllerTest {
 
 	@Test
-	public void possibleDrivers() {
-		assertNotNull(ASIOController.getPossibleDrivers());
-	}
-
-	@Test
 	public void instance() {
 		if (ASIOController.getPossibleDrivers() == null || ASIOController.getPossibleDrivers().isEmpty()) {
 			return;
@@ -20,5 +15,10 @@ class ASIOControllerTest {
 		new ASIOController(ASIOController.getPossibleDrivers().get(0).getName());
 		assertNotNull(ASIOController.getInstance().getInputList());
 		assertTrue(ASIOController.getInstance().getInputList().size() > 0);
+	}
+
+	@Test
+	public void possibleDrivers() {
+		assertNotNull(ASIOController.getPossibleDrivers());
 	}
 }

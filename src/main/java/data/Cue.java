@@ -19,36 +19,6 @@ public class Cue implements Serializable {
 	}
 
 
-	public String getName() {
-		return name;
-	}
-
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
-	public Channel getChannelToSelect() {
-		return channelToSelect;
-	}
-
-
-	public void setChannelToSelect(Channel channelToSelect) {
-		this.channelToSelect = channelToSelect;
-	}
-
-
-	public long getTime() {
-		return time;
-	}
-
-
-	public void setTime(long time) {
-		this.time = time;
-	}
-
-
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Cue) {
@@ -62,6 +32,36 @@ public class Cue implements Serializable {
 			}
 		}
 		return false;
+	}
+
+
+	public Channel getChannelToSelect() {
+		return channelToSelect;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public long getTime() {
+		return time;
+	}
+
+
+	public void setChannelToSelect(Channel channelToSelect) {
+		this.channelToSelect = channelToSelect;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public void setTime(long time) {
+		this.time = time;
 	}
 
 	@Override

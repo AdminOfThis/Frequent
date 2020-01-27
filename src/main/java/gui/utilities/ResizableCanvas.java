@@ -15,11 +15,19 @@ public class ResizableCanvas extends Canvas {
 		widthProperty().addListener(e -> redraw());
 	}
 
-	public void redraw() {
-		// System.out.println(" Real Canvas Width is:" + getWidth() + " , Real Canvas
-		// Height is:" + getHeight() + "\n")
-		gc.setLineWidth(3);
-		gc.clearRect(0, 0, getWidth(), getHeight());
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
+
+	@Override
+	public double maxHeight(double width) {
+		return Double.MAX_VALUE;
+	}
+
+	@Override
+	public double maxWidth(double height) {
+		return Double.MAX_VALUE;
 	}
 
 	@Override
@@ -33,28 +41,20 @@ public class ResizableCanvas extends Canvas {
 	}
 
 	@Override
-	public double prefWidth(double width) {
-		return minWidth(width);
-	}
-
-	@Override
 	public double prefHeight(double width) {
 		return minHeight(width);
 	}
 
 	@Override
-	public double maxWidth(double height) {
-		return Double.MAX_VALUE;
+	public double prefWidth(double width) {
+		return minWidth(width);
 	}
 
-	@Override
-	public double maxHeight(double width) {
-		return Double.MAX_VALUE;
-	}
-
-	@Override
-	public boolean isResizable() {
-		return true;
+	public void redraw() {
+		// System.out.println(" Real Canvas Width is:" + getWidth() + " , Real Canvas
+		// Height is:" + getHeight() + "\n")
+		gc.setLineWidth(3);
+		gc.clearRect(0, 0, getWidth(), getHeight());
 	}
 
 	@Override

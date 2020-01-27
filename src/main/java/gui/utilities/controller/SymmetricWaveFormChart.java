@@ -37,13 +37,17 @@ public class SymmetricWaveFormChart extends AnchorPane implements PausableCompon
 	}
 
 	@Override
+	public boolean isPaused() {
+		return chart.isPaused();
+	}
+
+	@Override
 	public void pause(final boolean pause) {
 		chart.pause(pause);
 	}
 
-	@Override
-	public boolean isPaused() {
-		return chart.isPaused();
+	public void setChannel(Input newValue) {
+		chart.setChannel(newValue);
 	}
 
 	@Override
@@ -51,16 +55,12 @@ public class SymmetricWaveFormChart extends AnchorPane implements PausableCompon
 		chart.setParentPausable(parent);
 	}
 
-	public void setChannel(Input newValue) {
-		chart.setChannel(newValue);
+	public void setThreshold(double abs) {
+		chart.setThreshold(abs);
 	}
 
 	public void showTreshold(boolean b) {
 		chart.showTreshold(b);
-	}
-
-	public void setThreshold(double abs) {
-		chart.setThreshold(abs);
 	}
 
 }

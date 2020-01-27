@@ -110,6 +110,32 @@ public class IOChooserController implements Initializable {
 		listIO.getItems().setAll(devices);
 	}
 
+	public void setMainScene(Scene scene) {
+		mainScene = scene;
+		btnStart.requestFocus();
+	}
+
+	public void startDebug() {
+		// if (!listIO.getItems().isEmpty()) {
+		start(new ActionEvent());
+		// }
+	}
+
+	@FXML
+	private void errorReports(ActionEvent e) {
+		Main.setErrorReporting(errorReports.isSelected());
+	}
+
+	private void launchMain(String selectedIO) {
+		if (selectedIO != null && !selectedIO.isEmpty()) {
+			MainController.getInstance().initIO(selectedIO);
+		}
+		Stage stage = (Stage) listIO.getScene().getWindow();
+		stage.setScene(mainScene);
+		stage.setResizable(true);
+		stage.centerOnScreen();
+	}
+
 	@FXML
 	private void start(ActionEvent e) {
 		String selectedIO = null;
@@ -133,31 +159,5 @@ public class IOChooserController implements Initializable {
 			stage.close();
 		}
 		e.consume();
-	}
-
-	private void launchMain(String selectedIO) {
-		if (selectedIO != null && !selectedIO.isEmpty()) {
-			MainController.getInstance().initIO(selectedIO);
-		}
-		Stage stage = (Stage) listIO.getScene().getWindow();
-		stage.setScene(mainScene);
-		stage.setResizable(true);
-		stage.centerOnScreen();
-	}
-
-	public void startDebug() {
-		// if (!listIO.getItems().isEmpty()) {
-		start(new ActionEvent());
-		// }
-	}
-
-	public void setMainScene(Scene scene) {
-		mainScene = scene;
-		btnStart.requestFocus();
-	}
-
-	@FXML
-	private void errorReports(ActionEvent e) {
-		Main.setErrorReporting(errorReports.isSelected());
 	}
 }

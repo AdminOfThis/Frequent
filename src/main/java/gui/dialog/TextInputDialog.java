@@ -20,6 +20,10 @@ public class TextInputDialog extends CustomDialog<String> {
 	private TextField text;
 	private String oldText, description;
 
+	public TextInputDialog(String title) {
+		this(title, null);
+	}
+
 	public TextInputDialog(String title, String oldText) {
 		super(FXML_PATH, title);
 		Platform.runLater(() -> init());
@@ -36,19 +40,15 @@ public class TextInputDialog extends CustomDialog<String> {
 		Platform.runLater(() -> text.selectAll());
 	}
 
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		topText.setText("");
+	}
+
 	private void init() {
 		topText.setText(description);
 		text.setText(oldText);
 
-	}
-
-	public TextInputDialog(String title) {
-		this(title, null);
-	}
-
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		topText.setText("");
 	}
 
 }

@@ -88,6 +88,16 @@ public class SettingsController implements Initializable {
 		loadValues();
 	}
 
+	@FXML
+	private void cancel(ActionEvent e) {
+		close();
+	}
+
+	private void close() {
+		Stage stage = (Stage) btnCancel.getScene().getWindow();
+		stage.close();
+	}
+
 	private void initSpecificPanel() {
 		flwPanel.getChildren().clear();
 		for (String panel : MainController.getInstance().getPanels()) {
@@ -98,11 +108,9 @@ public class SettingsController implements Initializable {
 		startUpPanel.getToggles().get(1).setSelected(true);
 	}
 
-	private void loadValues() {
-
-		loadGUIPanel();
-		loadFilePanel();
-		loadWatchdogPanel();
+	private void loadFilePanel() {
+		setSettingSecure(() -> chkRestoreLastFile.setSelected(Boolean.parseBoolean(PropertiesIO.getProperty(Constants.SETTING_RELOAD_LAST_FILE))), Constants.SETTING_RELOAD_LAST_FILE);
+		setSettingSecure(() -> chkWarnUnsavedChanges.setSelected(Boolean.parseBoolean(PropertiesIO.getProperty(Constants.SETTING_WARN_UNSAVED_CHANGES))), Constants.SETTING_WARN_UNSAVED_CHANGES);
 	}
 
 	private void loadGUIPanel() {
@@ -127,32 +135,15 @@ public class SettingsController implements Initializable {
 		}
 	}
 
-	private void loadFilePanel() {
-		setSettingSecure(() -> chkRestoreLastFile.setSelected(Boolean.parseBoolean(PropertiesIO.getProperty(Constants.SETTING_RELOAD_LAST_FILE))), Constants.SETTING_RELOAD_LAST_FILE);
-		setSettingSecure(() -> chkWarnUnsavedChanges.setSelected(Boolean.parseBoolean(PropertiesIO.getProperty(Constants.SETTING_WARN_UNSAVED_CHANGES))), Constants.SETTING_WARN_UNSAVED_CHANGES);
+	private void loadValues() {
+
+		loadGUIPanel();
+		loadFilePanel();
+		loadWatchdogPanel();
 	}
 
 	private void loadWatchdogPanel() {
 		setSettingSecure(() -> sldrThreshold.setValue(Double.parseDouble(PropertiesIO.getProperty(Constants.SETTING_WATCHDOG_THRESHOLD))), Constants.SETTING_WATCHDOG_THRESHOLD);
-	}
-
-	/**
-	 * secure in this case means it will not crash if setting can not be loaded
-	 * 
-	 * @param r
-	 * @param setting
-	 */
-	private void setSettingSecure(Runnable r, String setting) {
-		try {
-			r.run();
-		} catch (Exception e) {
-			LOG.warn("Unable to load Setting \"" + setting + "\"");
-		}
-	}
-
-	@FXML
-	private void cancel(ActionEvent e) {
-		close();
 	}
 
 	@FXML
@@ -189,8 +180,17 @@ public class SettingsController implements Initializable {
 		close();
 	}
 
-	private void close() {
-		Stage stage = (Stage) btnCancel.getScene().getWindow();
-		stage.close();
+	/**
+	 * secure in this case means it will not crash if setting can not be loaded
+	 * 
+	 * @param r
+	 * @param setting
+	 */
+	private void setSettingSecure(Runnable r, String setting) {
+		try {
+			r.run();
+		} catch (Exception e) {
+			LOG.warn("Unable to load Setting \"" + setting + "\"");
+		}
 	}
 }

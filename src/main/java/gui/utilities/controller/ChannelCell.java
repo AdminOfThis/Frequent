@@ -69,6 +69,11 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 		pausable = p;
 	}
 
+	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		// nothing to do
+	}
+
 	private void changeMeter(final Input channel) {
 		boolean refresh = false;
 		if (meter != null) {
@@ -116,11 +121,6 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 //			menu.show(this, e.getScreenX(), e.getScreenY());
 //		});
 		setContextMenu(menu);
-	}
-
-	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {
-		// nothing to do
 	}
 
 	private void update(final Input item) {

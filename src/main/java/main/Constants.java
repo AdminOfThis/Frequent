@@ -21,6 +21,11 @@ import javafx.util.StringConverter;
  */
 public final class Constants {
 
+	public enum RESTORE_PANEL {
+		NOTHING, LAST, SPECIFIC
+
+	}
+
 	// Will log on behalf of mains class, since it is used there
 	private static final Logger LOG = LogManager.getLogger(Main.class);
 
@@ -30,38 +35,33 @@ public final class Constants {
 			+ "\r\n" + "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\r\n" + "\r\n"
 			+ "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.";
 
-	public static final String GITHUB_REPOSITORY_URL = "https://github.com/AdminOfThis/Frequent";
-
 	/*************** Settings ********************/
 	/* Keys */
 
+	public static final String GITHUB_REPOSITORY_URL = "https://github.com/AdminOfThis/Frequent";
 	/** Setting wether the db Label should display current or peak values */
 	public static final String SETTING_DB_LABEL_CURRENT = "gui.label.db.current";
 	/** Setting, wether a specific panel should be opened on start */
 	public static final String SETTING_RESTORE_PANEL = "gui.panel.restore";
 	/** If open specific panel is selected, index of panel to be openend */
 	public static final String SETTING_RESTORE_PANEL_SPECIFIC = "gui.panel.restore.specific";
+
 	/**
 	 * if open last is selected, stores the last opened panel, gets updated every
 	 * time a new panel is selected
 	 */
 	public static final String SETTING_RESTORE_PANEL_LAST = "gui.panel.restore.last";
-
 	public static final String SETTING_RELOAD_LAST_FILE = "data.file.reloadLast";
+
 	public static final String SETTING_WARN_UNSAVED_CHANGES = "data.save.unsaved.warn";
 
 	public static final String SETTING_ERROR_REPORTING = "log.reporting";
 
 	public static final String SETTING_WATCHDOG_THRESHOLD = "watchdog.threshold";
-
 	public static final int LOG4J_INDEX_REPORTING = 0;
 	public static final int LOG4J_INDEX_VERSION = 1;
-	public static final int LOG4J_INDEX_ENVIRONMENT = 2;
 
-	public enum RESTORE_PANEL {
-		NOTHING, LAST, SPECIFIC
-
-	};
+	public static final int LOG4J_INDEX_ENVIRONMENT = 2;;
 
 	/*********** GUI **************/
 	public static final double FFT_MIN = -90;

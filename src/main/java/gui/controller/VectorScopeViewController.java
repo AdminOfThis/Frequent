@@ -116,18 +116,6 @@ public class VectorScopeViewController implements Initializable, PausableView {
 		}
 	}
 
-	private void refreshComboBoxes() {
-		// refreshing combo boxes
-		cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
-		cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
-		if (Objects.equals(vectorScope.getChannel1(), cmbChannel1.getValue())) {
-			cmbChannel1.setValue(vectorScope.getChannel1());
-		}
-		if (Objects.equals(vectorScope.getChannel2(), cmbChannel2.getValue())) {
-			cmbChannel2.setValue(vectorScope.getChannel2());
-		}
-	}
-
 	@Override
 	public void setSelectedChannel(final Input in) {
 		if (MainController.getInstance().getSelectedChannels().size() >= 1) {
@@ -145,6 +133,18 @@ public class VectorScopeViewController implements Initializable, PausableView {
 			}
 			cmbChannel1.setValue((Channel) MainController.getInstance().getSelectedChannels().get(0));
 			cmbChannel2.setValue((Channel) MainController.getInstance().getSelectedChannels().get(1));
+		}
+	}
+
+	private void refreshComboBoxes() {
+		// refreshing combo boxes
+		cmbChannel1.getItems().setAll(ASIOController.getInstance().getInputList());
+		cmbChannel2.getItems().setAll(ASIOController.getInstance().getInputList());
+		if (Objects.equals(vectorScope.getChannel1(), cmbChannel1.getValue())) {
+			cmbChannel1.setValue(vectorScope.getChannel1());
+		}
+		if (Objects.equals(vectorScope.getChannel2(), cmbChannel2.getValue())) {
+			cmbChannel2.setValue(vectorScope.getChannel2());
 		}
 	}
 }

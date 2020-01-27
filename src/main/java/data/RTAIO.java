@@ -21,27 +21,6 @@ public abstract class RTAIO {
 	public static final String SEPARATOR = ";";
 	private static BufferedWriter writer;
 
-	public static void writeToFile(float[] freq) {
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				if (writer == null) {
-					writer = createWriter();
-				}
-				if (writer != null) {
-					try {
-						writer.write(freqToString(freq));
-						writer.flush();
-					} catch (IOException e) {
-						LOG.warn("Unable to write rta temp");
-						LOG.debug("", e);
-					}
-				}
-			}
-		}).start();
-	}
-
 	public static void closeFile() {
 		if (writer != null) {
 			try {
@@ -85,6 +64,50 @@ public abstract class RTAIO {
 		return result;
 	}
 
+	public static void writeToFile(float[] freq) {
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				if (writer == null) {
+					writer = createWriter();
+				}
+				if (writer != null) {
+					try {
+						writer.write(freqToString(freq));
+						writer.flush();
+					} catch (IOException e) {
+						LOG.warn("Unable to write rta temp");
+						LOG.debug("", e);
+					}
+				}
+			}
+		}).start();
+	}
+
+	private static BufferedWriter createWriter() {
+		deleteFile();
+		BufferedWriter w = null;
+		try {
+			w = new BufferedWriter(new FileWriter(tempFile, true));
+		} catch (Exception e) {
+			LOG.warn("Unable to create new writer for temp rta file");
+			LOG.debug("", e);
+		}
+		return w;
+	}
+
+	private static String freqToString(float[] freq) {
+		String result = "";
+		for (int i = 0; i < freq.length; i++) {
+			result += Double.toString(Math.round(FFT.getFrequencyForIndex(i, freq.length, ASIOController.getInstance().getSampleRate()) * 100.0) / 100.0);
+			result += SEPARATOR;
+		}
+		// removes to last separator
+		result = result.substring(0, result.length() - SEPARATOR.length());
+		return result + "\r\n";
+	}
+
 	private static float[] parseLine(String line) {
 		ArrayList<Float> result = new ArrayList<>();
 		String[] split = line.split(SEPARATOR);
@@ -104,28 +127,5 @@ public abstract class RTAIO {
 			count++;
 		}
 		return array;
-	}
-
-	private static String freqToString(float[] freq) {
-		String result = "";
-		for (int i = 0; i < freq.length; i++) {
-			result += Double.toString(Math.round(FFT.getFrequencyForIndex(i, freq.length, ASIOController.getInstance().getSampleRate()) * 100.0) / 100.0);
-			result += SEPARATOR;
-		}
-		// removes to last separator
-		result = result.substring(0, result.length() - SEPARATOR.length());
-		return result + "\r\n";
-	}
-
-	private static BufferedWriter createWriter() {
-		deleteFile();
-		BufferedWriter w = null;
-		try {
-			w = new BufferedWriter(new FileWriter(tempFile, true));
-		} catch (Exception e) {
-			LOG.warn("Unable to create new writer for temp rta file");
-			LOG.debug("", e);
-		}
-		return w;
 	}
 }

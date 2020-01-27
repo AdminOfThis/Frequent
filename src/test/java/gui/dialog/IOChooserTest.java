@@ -40,19 +40,29 @@ class IOChooserTest {
 
 	}
 
-	@AfterEach
-	public void tearDown(FxRobot robot) throws Exception {
-		FxToolkit.hideStage();
-		robot.release(new KeyCode[] {});
-		robot.release(new MouseButton[] {});
-	}
-
 	@Test
 	public void checkElementsLoaded(FxRobot robot) {
 		assertNotNull(robot.lookup("#root"));
 		assertNotNull(robot.lookup("#listIO"));
 		assertNotNull(robot.lookup("#btnStart"));
 		assertNotNull(robot.lookup("#btnQuit"));
+	}
+
+	@Test
+	public void checkNumItems(FxRobot robot) throws InterruptedException {
+		ListView<?> list = robot.lookup("#listIO").queryAs(ListView.class);
+		assertEquals(1, list.getItems().size());
+	}
+
+	@Test
+	public void checkResizable(FxRobot robot) throws InterruptedException {
+		Stage stage = (Stage) robot.lookup("#root").queryAs(BorderPane.class).getScene().getWindow();
+		assertFalse(stage.isResizable());
+	}
+
+	@Test
+	public void clickOnListView(FxRobot robot) {
+		robot.clickOn("#listIO");
 	}
 
 	@Test
@@ -63,21 +73,11 @@ class IOChooserTest {
 		robot.moveTo("#btnQuit");
 	}
 
-	@Test
-	public void clickOnListView(FxRobot robot) {
-		robot.clickOn("#listIO");
-	}
-
-	@Test
-	public void checkResizable(FxRobot robot) throws InterruptedException {
-		Stage stage = (Stage) robot.lookup("#root").queryAs(BorderPane.class).getScene().getWindow();
-		assertFalse(stage.isResizable());
-	}
-
-	@Test
-	public void checkNumItems(FxRobot robot) throws InterruptedException {
-		ListView<?> list = robot.lookup("#listIO").queryAs(ListView.class);
-		assertEquals(1, list.getItems().size());
+	@AfterEach
+	public void tearDown(FxRobot robot) throws Exception {
+		FxToolkit.hideStage();
+		robot.release(new KeyCode[] {});
+		robot.release(new MouseButton[] {});
 	}
 
 }

@@ -29,6 +29,10 @@ import main.Constants;
 public class BleedViewController implements Initializable, PausableView {
 
 	private static final Logger LOG = LogManager.getLogger(BleedViewController.class);
+	private static BleedViewController instance;
+	public static BleedViewController getInstance() {
+		return instance;
+	}
 	private boolean pause = true;
 	@FXML
 	private HBox topBox;
@@ -38,11 +42,22 @@ public class BleedViewController implements Initializable, PausableView {
 	private HBox content;
 	@FXML
 	private ComboBox<Channel> primaryCombo;
-	private VuMeterMono primaryMeter;
-	private static BleedViewController instance;
 
-	public static BleedViewController getInstance() {
-		return instance;
+	private VuMeterMono primaryMeter;
+
+	@Override
+	public ArrayList<Region> getHeader() {
+		ArrayList<Region> topList = new ArrayList<>();
+		for (Node node : topBox.getChildren()) {
+			if (node instanceof Region) {
+				topList.add((Region) node);
+			}
+		}
+		return topList;
+	}
+
+	public Channel getPrimary() {
+		return primaryCombo.getValue();
 	}
 
 	@Override
@@ -70,24 +85,21 @@ public class BleedViewController implements Initializable, PausableView {
 	}
 
 	@Override
-	public void pause(boolean pause) {
-		this.pause = pause;
-	}
-
-	@Override
 	public boolean isPaused() {
 		return pause;
 	}
 
-	@Override
-	public ArrayList<Region> getHeader() {
-		ArrayList<Region> topList = new ArrayList<>();
-		for (Node node : topBox.getChildren()) {
-			if (node instanceof Region) {
-				topList.add((Region) node);
+	public void minimizeAll() {
+		for (Node n : content.getChildren()) {
+			if (n instanceof BleedMonitor) {
+				((BleedMonitor) n).maximize(false);
 			}
 		}
-		return topList;
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		this.pause = pause;
 	}
 
 	@Override
@@ -115,17 +127,5 @@ public class BleedViewController implements Initializable, PausableView {
 			content.getChildren().add(monitor);
 		}
 		e.consume();
-	}
-
-	public Channel getPrimary() {
-		return primaryCombo.getValue();
-	}
-
-	public void minimizeAll() {
-		for (Node n : content.getChildren()) {
-			if (n instanceof BleedMonitor) {
-				((BleedMonitor) n).maximize(false);
-			}
-		}
 	}
 }

@@ -65,11 +65,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 
 	}
 
-	private void refresh() {
-		refreshColors();
-		refreshWatchdog();
-	}
-
 	private void initWatchDogMenu() {
 		ToggleGroup tglGroup = new ToggleGroup();
 		RadioMenuItem disableWatchdog = new RadioMenuItem("Disable Watchdog");
@@ -90,20 +85,6 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		}
 	}
 
-	private void rename() {
-		TextInputDialog dialog;
-		if (input == null) {
-			dialog = new TextInputDialog("Rename");
-		} else {
-			dialog = new TextInputDialog("Rename", input.getName());
-		}
-		FXMLUtil.setStyleSheet(dialog.getDialogPane());
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()) {
-			input.setName(result.get());
-		}
-	}
-
 	private void openColorManager() {
 		ColorManager cm = new ColorManager();
 		FXMLUtil.setStyleSheet(cm);
@@ -115,6 +96,11 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		stage.initOwner(this.getOwnerWindow());
 		FXMLUtil.setIcon(stage, FXMLMain.getLogoPath());
 		stage.show();
+	}
+
+	private void refresh() {
+		refreshColors();
+		refreshWatchdog();
 	}
 
 	private void refreshColors() {
@@ -151,6 +137,20 @@ public abstract class InputCellContextMenu extends ContextMenu {
 
 		}
 
+	}
+
+	private void rename() {
+		TextInputDialog dialog;
+		if (input == null) {
+			dialog = new TextInputDialog("Rename");
+		} else {
+			dialog = new TextInputDialog("Rename", input.getName());
+		}
+		FXMLUtil.setStyleSheet(dialog.getDialogPane());
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			input.setName(result.get());
+		}
 	}
 
 }

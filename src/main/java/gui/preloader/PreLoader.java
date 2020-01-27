@@ -33,6 +33,32 @@ public class PreLoader extends Preloader implements Initializable {
 	private Label title, version;
 
 	@Override
+	public void handleApplicationNotification(PreloaderNotification arg0) {
+		if (arg0 instanceof ProgressNotification) {
+			ProgressNotification pn = (ProgressNotification) arg0;
+			progress.setProgress(pn.getProgress());
+		}
+	}
+
+	@Override
+	public void handleStateChangeNotification(StateChangeNotification evt) {
+		switch (evt.getType()) {
+		case BEFORE_INIT:
+			status.setText("Initializing ...");
+			progress.setProgress(0.1);
+			break;
+		case BEFORE_LOAD:
+			status.setText("Loading GUI");
+			break;
+		case BEFORE_START:
+			stage.close();
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		status.setText("Starting ...");
 		title.setText(Main.getOnlyTitle());
@@ -58,31 +84,5 @@ public class PreLoader extends Preloader implements Initializable {
 		Scene scene = new Scene(p);
 		stage.setScene(scene);
 		stage.show();
-	}
-
-	@Override
-	public void handleStateChangeNotification(StateChangeNotification evt) {
-		switch (evt.getType()) {
-		case BEFORE_INIT:
-			status.setText("Initializing ...");
-			progress.setProgress(0.1);
-			break;
-		case BEFORE_LOAD:
-			status.setText("Loading GUI");
-			break;
-		case BEFORE_START:
-			stage.close();
-			break;
-		default:
-			break;
-		}
-	}
-
-	@Override
-	public void handleApplicationNotification(PreloaderNotification arg0) {
-		if (arg0 instanceof ProgressNotification) {
-			ProgressNotification pn = (ProgressNotification) arg0;
-			progress.setProgress(pn.getProgress());
-		}
 	}
 }

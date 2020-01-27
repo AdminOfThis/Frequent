@@ -107,17 +107,45 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 		maximize(false);
 	}
 
+	@Override
+	public boolean isPaused() {
+		return pause || (parent != null && parent.isPaused() || !ASIOController.getInstance().isLoaded());
+	}
+
+	public void maximize(boolean value) {
+		maximized = value;
+		if (maximized) {
+			HBox.setHgrow(this, Priority.ALWAYS);
+			if (!root.getChildren().contains(chart)) {
+				root.getChildren().add(chart);
+			}
+		} else {
+			HBox.setHgrow(this, Priority.NEVER);
+			root.getChildren().remove(chart);
+		}
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		this.pause = pause;
+	}
+
+	public void refresh() {
+		combo.getItems().addAll(ASIOController.getInstance().getInputList());
+	}
+
 	public void setChannel(Channel channel) {
 		vuMeter.setChannel(channel);
 		analyzer.setSecondaryChannel(channel);
 	}
 
-	public void setPrimaryChannel(Channel c) {
-		analyzer.setPrimaryChannel(c);
+	@Override
+	public void setParentPausable(Pausable parent) {
+		this.parent = parent;
 	}
 
-	public void refresh() {
-		combo.getItems().addAll(ASIOController.getInstance().getInputList());
+	public void setPrimaryChannel(Channel c) {
+		analyzer.setPrimaryChannel(c);
 	}
 
 	private void update() {
@@ -142,33 +170,5 @@ public class BleedMonitor extends AnchorPane implements Initializable, PausableC
 		// making sure percent is between 0 and 1
 		double percentCorr = Math.min(1.0, Math.max(0.0, percent));
 		bleedPane.setPrefHeight(percentCorr * bleedTopPane.getHeight());
-	}
-
-	@Override
-	public void pause(boolean pause) {
-		this.pause = pause;
-	}
-
-	@Override
-	public boolean isPaused() {
-		return pause || (parent != null && parent.isPaused() || !ASIOController.getInstance().isLoaded());
-	}
-
-	@Override
-	public void setParentPausable(Pausable parent) {
-		this.parent = parent;
-	}
-
-	public void maximize(boolean value) {
-		maximized = value;
-		if (maximized) {
-			HBox.setHgrow(this, Priority.ALWAYS);
-			if (!root.getChildren().contains(chart)) {
-				root.getChildren().add(chart);
-			}
-		} else {
-			HBox.setHgrow(this, Priority.NEVER);
-			root.getChildren().remove(chart);
-		}
 	}
 }

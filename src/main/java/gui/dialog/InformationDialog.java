@@ -35,22 +35,14 @@ public class InformationDialog extends CustomDialog<Void> {
 		}
 	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		for (Label l : new Label[] { text, subText, topText }) {
-			l.setText("");
-		}
-	}
-
-	public void setText(String string) {
-		text.setText(string);
-	}
-
-	public void clear() {
+	public void addSubText(String text) {
 		Platform.runLater(() -> {
-			center.getChildren().clear();
-			center.getChildren().add(topText);
+			Label label = new Label(text);
+			label.setFont(subText.getFont());
+			label.setStyle(subText.getStyle());
+			center.getChildren().add(label);
 		});
+
 	}
 
 	public void addText(String mainText) {
@@ -62,22 +54,30 @@ public class InformationDialog extends CustomDialog<Void> {
 		});
 	}
 
-	public void setTopText(String string) {
-		topText.setText(string);
+	public void clear() {
+		Platform.runLater(() -> {
+			center.getChildren().clear();
+			center.getChildren().add(topText);
+		});
+	}
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		for (Label l : new Label[] { text, subText, topText }) {
+			l.setText("");
+		}
 	}
 
 	public void setSubText(String string) {
 		subText.setText(string);
 	}
 
-	public void addSubText(String text) {
-		Platform.runLater(() -> {
-			Label label = new Label(text);
-			label.setFont(subText.getFont());
-			label.setStyle(subText.getStyle());
-			center.getChildren().add(label);
-		});
+	public void setText(String string) {
+		text.setText(string);
+	}
 
+	public void setTopText(String string) {
+		topText.setText(string);
 	}
 
 	public void sizeToScene() {

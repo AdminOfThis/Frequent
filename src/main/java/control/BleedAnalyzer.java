@@ -40,27 +40,70 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 		start();
 	}
 
-	private void startSubtractor() {
-		new Thread(new Runnable() {
+	@Override
+	public void colorChanged(String newColor) {}
 
-			@Override
-			public void run() {
-				while (true) {
-					if (confidence > MIN_CONFIDENCE && !isPaused()) {
-						float[] original = Arrays.copyOfRange(originalSeries, 0, originalSeries.length - delay);
-						float[] other = Arrays.copyOfRange(otherSeries, delay, otherSeries.length);
-						float diffTotal = 0f;
-						for (int i = 0; i < Math.min(original.length, other.length); i++) {
-							diffTotal += Math.abs(multi * other[i]) - Math.abs(original[i]);
-						}
-						diffTotal = diffTotal / Math.min(original.length, other.length);
-						equal = 1.0 - diffTotal;
-					} else {
-						Thread.yield();
-					}
-				}
+	public double getEqual() {
+		return equal;
+	}
+
+	public float[] getNewData1() {
+		return newData1;
+	}
+
+	public float[] getNewData2() {
+		return newData2;
+	}
+
+	public Channel getPrimaryChannel() {
+		return primaryChannel;
+	}
+
+	public Channel getSecondaryChannel() {
+		return secondaryChannel;
+	}
+
+	@Override
+	public boolean isPaused() {
+		return pause || (parent != null && parent.isPaused()) || primaryChannel == null || secondaryChannel == null || Objects.equals(primaryChannel, secondaryChannel);
+	}
+
+	@Override
+	public void levelChanged(Input input, double level, long time) {
+		if (!Objects.equals(input, primaryChannel) && !Objects.equals(input, secondaryChannel)) {
+			LOG.warn("Had to remove Channel listener by force");
+			input.removeListener(this);
+		}
+	}
+
+	@Override
+	public void nameChanged(String name) {}
+
+	@Override
+	public void newBuffer(Channel channel, float[] buffer, long time) {
+		if (Objects.equals(channel, primaryChannel)) {
+			for (int i = 0; i < newData1.length - ASIOController.DESIRED_BUFFER_SIZE; i++) {
+				newData1[i] = newData1[i + ASIOController.DESIRED_BUFFER_SIZE];
 			}
-		}).start();
+			for (int i = 0; i < buffer.length; i++) {
+				newData1[newData1.length - ASIOController.DESIRED_BUFFER_SIZE + i] = buffer[i];
+			}
+		} else if (Objects.equals(channel, secondaryChannel)) {
+			for (int i = 0; i < newData2.length - ASIOController.DESIRED_BUFFER_SIZE; i++) {
+				newData2[i] = newData2[i + ASIOController.DESIRED_BUFFER_SIZE];
+			}
+			for (int i = 0; i < buffer.length; i++) {
+				newData2[newData2.length - ASIOController.DESIRED_BUFFER_SIZE + i] = buffer[i];
+			}
+		} else {
+			LOG.warn("Had to remove Channel listener by force");
+			channel.removeListener(this);
+		}
+	}
+
+	@Override
+	public void pause(boolean pause) {
+		this.pause = pause;
 	}
 
 	@Override
@@ -84,6 +127,31 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 					}
 				}
 			}
+		}
+	}
+
+	@Override
+	public void setParentPausable(Pausable parent) {
+		this.parent = parent;
+	}
+
+	public void setPrimaryChannel(Channel primaryChannel) {
+		if (this.primaryChannel != null) {
+			this.primaryChannel.removeListener(this);
+		}
+		this.primaryChannel = primaryChannel;
+		if (this.primaryChannel != null) {
+			this.primaryChannel.addListener(this);
+		}
+	}
+
+	public void setSecondaryChannel(Channel secondaryChannel) {
+		if (this.secondaryChannel != null) {
+			this.secondaryChannel.removeListener(this);
+		}
+		this.secondaryChannel = secondaryChannel;
+		if (this.secondaryChannel != null) {
+			this.secondaryChannel.addListener(this);
 		}
 	}
 
@@ -125,94 +193,26 @@ public class BleedAnalyzer extends Thread implements PausableComponent, ChannelL
 		return 0.0;
 	}
 
-	@Override
-	public void pause(boolean pause) {
-		this.pause = pause;
-	}
+	private void startSubtractor() {
+		new Thread(new Runnable() {
 
-	@Override
-	public boolean isPaused() {
-		return pause || (parent != null && parent.isPaused()) || primaryChannel == null || secondaryChannel == null || Objects.equals(primaryChannel, secondaryChannel);
-	}
-
-	@Override
-	public void setParentPausable(Pausable parent) {
-		this.parent = parent;
-	}
-
-	public Channel getPrimaryChannel() {
-		return primaryChannel;
-	}
-
-	public void setPrimaryChannel(Channel primaryChannel) {
-		if (this.primaryChannel != null) {
-			this.primaryChannel.removeListener(this);
-		}
-		this.primaryChannel = primaryChannel;
-		if (this.primaryChannel != null) {
-			this.primaryChannel.addListener(this);
-		}
-	}
-
-	public void setSecondaryChannel(Channel secondaryChannel) {
-		if (this.secondaryChannel != null) {
-			this.secondaryChannel.removeListener(this);
-		}
-		this.secondaryChannel = secondaryChannel;
-		if (this.secondaryChannel != null) {
-			this.secondaryChannel.addListener(this);
-		}
-	}
-
-	public Channel getSecondaryChannel() {
-		return secondaryChannel;
-	}
-
-	public double getEqual() {
-		return equal;
-	}
-
-	public float[] getNewData1() {
-		return newData1;
-	}
-
-	public float[] getNewData2() {
-		return newData2;
-	}
-
-	@Override
-	public void levelChanged(Input input, double level, long time) {
-		if (!Objects.equals(input, primaryChannel) && !Objects.equals(input, secondaryChannel)) {
-			LOG.warn("Had to remove Channel listener by force");
-			input.removeListener(this);
-		}
-	}
-
-	@Override
-	public void newBuffer(Channel channel, float[] buffer, long time) {
-		if (Objects.equals(channel, primaryChannel)) {
-			for (int i = 0; i < newData1.length - ASIOController.DESIRED_BUFFER_SIZE; i++) {
-				newData1[i] = newData1[i + ASIOController.DESIRED_BUFFER_SIZE];
+			@Override
+			public void run() {
+				while (true) {
+					if (confidence > MIN_CONFIDENCE && !isPaused()) {
+						float[] original = Arrays.copyOfRange(originalSeries, 0, originalSeries.length - delay);
+						float[] other = Arrays.copyOfRange(otherSeries, delay, otherSeries.length);
+						float diffTotal = 0f;
+						for (int i = 0; i < Math.min(original.length, other.length); i++) {
+							diffTotal += Math.abs(multi * other[i]) - Math.abs(original[i]);
+						}
+						diffTotal = diffTotal / Math.min(original.length, other.length);
+						equal = 1.0 - diffTotal;
+					} else {
+						Thread.yield();
+					}
+				}
 			}
-			for (int i = 0; i < buffer.length; i++) {
-				newData1[newData1.length - ASIOController.DESIRED_BUFFER_SIZE + i] = buffer[i];
-			}
-		} else if (Objects.equals(channel, secondaryChannel)) {
-			for (int i = 0; i < newData2.length - ASIOController.DESIRED_BUFFER_SIZE; i++) {
-				newData2[i] = newData2[i + ASIOController.DESIRED_BUFFER_SIZE];
-			}
-			for (int i = 0; i < buffer.length; i++) {
-				newData2[newData2.length - ASIOController.DESIRED_BUFFER_SIZE + i] = buffer[i];
-			}
-		} else {
-			LOG.warn("Had to remove Channel listener by force");
-			channel.removeListener(this);
-		}
+		}).start();
 	}
-
-	@Override
-	public void nameChanged(String name) {}
-
-	@Override
-	public void colorChanged(String newColor) {}
 }

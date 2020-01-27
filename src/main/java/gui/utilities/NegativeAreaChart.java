@@ -17,26 +17,27 @@ public class NegativeAreaChart extends AreaChart<Number, Number> {
 
 	private static final int SUBDIVISION_POINTS = 6;
 
-	public NegativeAreaChart(Axis<Number> xAxis, Axis<Number> yAxis) {
-		super(xAxis, yAxis);
+	public static final Point2D[] subdividePoints(final Point2D[] POINTS, final int SUB_DEVISIONS) {
+		assert POINTS != null;
+		assert POINTS.length >= 3;
+		int noOfPoints = POINTS.length;
+		Point2D[] subdividedPoints = new Point2D[((noOfPoints - 1) * SUB_DEVISIONS) + 1];
+		double increments = 1.0 / SUB_DEVISIONS;
+		for (int i = 0; i < noOfPoints - 1; i++) {
+			Point2D p0 = i == 0 ? POINTS[i] : POINTS[i - 1];
+			Point2D p1 = POINTS[i];
+			Point2D p2 = POINTS[i + 1];
+			Point2D p3 = (i + 2 == noOfPoints) ? POINTS[i + 1] : POINTS[i + 2];
+			CatmullRom crs = new CatmullRom(p0, p1, p2, p3);
+			for (int j = 0; j <= SUB_DEVISIONS; j++) {
+				subdividedPoints[(i * SUB_DEVISIONS) + j] = crs.q(j * increments);
+			}
+		}
+		return subdividedPoints;
 	}
 
-	@Override
-	protected void layoutPlotChildren() {
-		super.layoutPlotChildren();
-		if (!Main.isFast()) {
-			// smoothing
-			double height = getLayoutBounds().getHeight();
-			getData().forEach(series -> {
-				final Path[] paths = getPaths(series);
-				if (null == paths) {
-					return;
-				}
-				smooth(paths[1].getElements(), paths[0].getElements(), height);
-				paths[0].setVisible(true);
-				paths[0].setManaged(true);
-			});
-		}
+	public NegativeAreaChart(Axis<Number> xAxis, Axis<Number> yAxis) {
+		super(xAxis, yAxis);
 	}
 
 	/**
@@ -97,22 +98,21 @@ public class NegativeAreaChart extends AreaChart<Number, Number> {
 		fillElements.add(new ClosePath());
 	}
 
-	public static final Point2D[] subdividePoints(final Point2D[] POINTS, final int SUB_DEVISIONS) {
-		assert POINTS != null;
-		assert POINTS.length >= 3;
-		int noOfPoints = POINTS.length;
-		Point2D[] subdividedPoints = new Point2D[((noOfPoints - 1) * SUB_DEVISIONS) + 1];
-		double increments = 1.0 / SUB_DEVISIONS;
-		for (int i = 0; i < noOfPoints - 1; i++) {
-			Point2D p0 = i == 0 ? POINTS[i] : POINTS[i - 1];
-			Point2D p1 = POINTS[i];
-			Point2D p2 = POINTS[i + 1];
-			Point2D p3 = (i + 2 == noOfPoints) ? POINTS[i + 1] : POINTS[i + 2];
-			CatmullRom crs = new CatmullRom(p0, p1, p2, p3);
-			for (int j = 0; j <= SUB_DEVISIONS; j++) {
-				subdividedPoints[(i * SUB_DEVISIONS) + j] = crs.q(j * increments);
-			}
+	@Override
+	protected void layoutPlotChildren() {
+		super.layoutPlotChildren();
+		if (!Main.isFast()) {
+			// smoothing
+			double height = getLayoutBounds().getHeight();
+			getData().forEach(series -> {
+				final Path[] paths = getPaths(series);
+				if (null == paths) {
+					return;
+				}
+				smooth(paths[1].getElements(), paths[0].getElements(), height);
+				paths[0].setVisible(true);
+				paths[0].setManaged(true);
+			});
 		}
-		return subdividedPoints;
 	}
 }

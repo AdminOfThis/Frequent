@@ -29,13 +29,9 @@ public class UtilitiesTest extends Application {
 
 	private static BorderPane root;
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		root = new BorderPane();
-		primaryStage.setScene(new Scene(root));
-		primaryStage.setWidth(800);
-		primaryStage.setHeight(600);
-		primaryStage.show();
+	@AfterAll
+	public static void shutdown() throws Exception {
+		Platform.exit();
 	}
 
 	@BeforeAll
@@ -50,14 +46,18 @@ public class UtilitiesTest extends Application {
 		latch.await(2, TimeUnit.SECONDS);
 	}
 
-	@AfterEach
-	public void sleep() throws InterruptedException {
-		Thread.sleep(500);
+	@Test
+	public void bleedMonitor() throws InterruptedException, ExecutionException {
+		Node node = new BleedMonitor();
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
 	}
 
-	@AfterAll
-	public static void shutdown() throws Exception {
-		Platform.exit();
+	@Test
+	public void doughnutChart() throws InterruptedException, ExecutionException {
+		Node node = new DoughnutChart(FXCollections.observableArrayList());
+		setAsRoot(node);
+		assertEquals(node, root.getCenter());
 	}
 
 	@Test
@@ -88,6 +88,20 @@ public class UtilitiesTest extends Application {
 		assertEquals(node, root.getCenter());
 	}
 
+	@AfterEach
+	public void sleep() throws InterruptedException {
+		Thread.sleep(500);
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		root = new BorderPane();
+		primaryStage.setScene(new Scene(root));
+		primaryStage.setWidth(800);
+		primaryStage.setHeight(600);
+		primaryStage.show();
+	}
+
 	@Test
 	public void vectorScope() throws InterruptedException, ExecutionException {
 		VectorScope node = new VectorScope();
@@ -98,20 +112,6 @@ public class UtilitiesTest extends Application {
 	@Test
 	public void waveFormChart() throws InterruptedException, ExecutionException {
 		Node node = new WaveFormChart();
-		setAsRoot(node);
-		assertEquals(node, root.getCenter());
-	}
-
-	@Test
-	public void doughnutChart() throws InterruptedException, ExecutionException {
-		Node node = new DoughnutChart(FXCollections.observableArrayList());
-		setAsRoot(node);
-		assertEquals(node, root.getCenter());
-	}
-
-	@Test
-	public void bleedMonitor() throws InterruptedException, ExecutionException {
-		Node node = new BleedMonitor();
 		setAsRoot(node);
 		assertEquals(node, root.getCenter());
 	}
