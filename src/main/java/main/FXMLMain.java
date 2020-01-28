@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import control.ASIOController;
 import data.FileIO;
-import data.RTAIO;
 import gui.FXMLUtil;
 import gui.MainGUI;
 import gui.controller.MainController;
@@ -91,7 +90,6 @@ public class FXMLMain extends MainGUI {
 		LOG.info("Stopping AudioDriver");
 		ASIOController.getInstance().shutdown();
 		LOG.info("Deleting RTA file");
-		RTAIO.deleteFile();
 		LOG.info("Bye");
 		System.exit(0);
 		return true;

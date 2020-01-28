@@ -1,6 +1,5 @@
 package gui.controller;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,12 +14,9 @@ import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.Region;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 
 public class FFTViewController implements Initializable, FFTListener, PausableView {
 
@@ -30,15 +26,12 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 	private RTACanvas canvas;
 	@FXML
 	private ToggleButton tglPlay;
-	@FXML
-	private Button btnExport;
 	private List<float[]> pendingMap = Collections.synchronizedList(new ArrayList<>());
 
 	@Override
 	public ArrayList<Region> getHeader() {
 		ArrayList<Region> result = new ArrayList<>();
 		result.add(tglPlay);
-		result.add(btnExport);
 		return result;
 	}
 
@@ -88,26 +81,6 @@ public class FFTViewController implements Initializable, FFTListener, PausableVi
 		synchronized (pendingMap) {
 			pendingMap.clear();
 		}
-	}
-
-	@FXML
-	private void export(ActionEvent e) {
-		// pausing
-		if (tglPlay.isSelected()) {
-			tglPlay.fire();
-		}
-		FileChooser chooser = new FileChooser();
-		chooser.setTitle("Save to");
-		chooser.setInitialDirectory(new File("."));
-		chooser.getExtensionFilters().add(new ExtensionFilter("PNG", "*.png"));
-		chooser.setSelectedExtensionFilter(chooser.getExtensionFilters().get(0));
-		File file = chooser.showSaveDialog(canvasParent.getScene().getWindow());
-		if (file != null) {
-			MainController.getInstance().setStatus("Saving");
-			canvas.save(file);
-			MainController.getInstance().resetStatus();
-		}
-		e.consume();
 	}
 
 	@FXML

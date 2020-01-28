@@ -1,12 +1,8 @@
 package gui.utilities;
 
-import java.awt.image.RenderedImage;
-import java.io.File;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,21 +10,14 @@ import org.apache.logging.log4j.Logger;
 import control.ASIOController;
 import control.FFT;
 import data.Channel;
-import data.RTAIO;
 import gui.FXMLUtil;
-import gui.controller.MainController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
 import main.Constants;
@@ -40,30 +29,13 @@ public class RTACanvas extends Canvas implements PausableComponent {
 	private int count = 0;
 	private GraphicsContext content;
 	private boolean pause = false;
-	private boolean exporting = false;
 	private Pausable pausableParent;
 
 	public RTACanvas(final ScrollPane parent) {
-		this();
+		content = getGraphicsContext2D();
 		widthProperty().bind(parent.widthProperty());
 		widthProperty().addListener(e -> reset());
 		setHeight(1.0);
-	}
-
-	private RTACanvas() {
-		content = getGraphicsContext2D();
-	}
-
-	private RTACanvas(final double width, final double heigth) {
-		this();
-		setWidth(width);
-		setHeight(heigth);
-	}
-
-	public void addLine(final float[] map) {
-		if (!exporting) {
-			addLine(map, false);
-		}
 	}
 
 	@Override
@@ -82,7 +54,6 @@ public class RTACanvas extends Canvas implements PausableComponent {
 			this.pause = pause;
 			if (!pause) {
 				reset();
-				RTAIO.deleteFile();
 			}
 		}
 	}
@@ -103,49 +74,13 @@ public class RTACanvas extends Canvas implements PausableComponent {
 		setHeight(10);
 	}
 
-	public void save(final File file) {
-		final Task<Boolean> task = new Task<Boolean>() {
-
-			@Override
-			public Boolean call() {
-				MainController.getInstance().setStatus("Exporting RTA");
-				try {
-					RTACanvas canvas = recreateCanvas();
-					SnapshotParameters params = new SnapshotParameters();
-					params.setFill(Color.web(FXMLUtil.getStyleValue("-fx-base")));
-					Platform.runLater(() -> {
-						try {
-							WritableImage image = canvas.snapshot(params, null);
-							RenderedImage renderedImage = SwingFXUtils.fromFXImage(image, null);
-							ImageIO.write(renderedImage, "png", file);
-						} catch (Exception e) {
-							LOG.warn("Unable to export image", e);
-						} finally {
-							MainController.getInstance().resetStatus();
-						}
-					});
-				} catch (Exception ex) {
-					LOG.warn("Unable to export image", ex);
-					MainController.getInstance().resetStatus();
-				}
-				return true;
-			}
-		};
-		Thread th = new Thread(task);
-		th.setDaemon(true);
-		th.start();
-	}
-
 	@Override
 	public void setParentPausable(final Pausable parent) {
 		pausableParent = parent;
 	}
 
-	private void addLine(final float[] map, final boolean toExport) {
-		if (!isPaused() || toExport) {
-			if (!toExport) {
-				RTAIO.writeToFile(map);
-			}
+	public void addLine(final float[] map) {
+		if (!isPaused()) {
 			setHeight(getHeight() + 1);
 // adding points
 			List<Color> baseColors = createBaseColorList(map);
@@ -208,16 +143,6 @@ public class RTACanvas extends Canvas implements PausableComponent {
 		}
 		double percent = (Math.abs(Constants.FFT_MIN) - Math.abs(level)) / Math.abs(Constants.FFT_MIN);
 		return percent;
-	}
-
-	private RTACanvas recreateCanvas() {
-		RTACanvas printCanvas = new RTACanvas(getWidth(), 1);
-		reset();
-		ArrayList<float[]> list = RTAIO.readFile();
-		for (float[] entry : list) {
-			printCanvas.addLine(entry, true);
-		}
-		return printCanvas;
 	}
 
 	private int toInt(Color c) {
