@@ -105,30 +105,22 @@ public class RTACanvas extends Canvas implements PausableComponent {
 
 	private void drawDots(final List<Color> list) {
 		if (!list.isEmpty()) {
-			// System.out.println(map[1][pointCount]);
 			PixelWriter p = content.getPixelWriter();
 			int width = (int) Math.floor(getWidth());
-			int[] buffer = new int[width];
-//			for (int i = 0; i < ((list.size() - 1) * MICROSTEPS) - 1; i++) {
-//				Color baseColor = list.get(Math.floorDiv(i, MICROSTEPS));
-//				Color targetColor = list.get(Math.floorDiv(i, MICROSTEPS) + 1);
-//				double percent = (i % MICROSTEPS) / (double) MICROSTEPS;
-//				Color resultColor = FXMLUtil.colorFade(percent, baseColor, targetColor);
-//// drawing using pixelWriter
-//				buffer[Math.floorDiv(width, 1 + (i * MICROSTEPS))] = toInt(resultColor);
-//			}
-			for (int i = 0; i < width; i++) {
-				int index = (int) Math.round(i * ((list.size() - 1) / getWidth()));
-				Color baseColor = list.get(index);
-				// drawing using pixelWriter
-				buffer[i] = toInt(baseColor);
+			if (width > 0) {
+				int[] buffer = new int[width];
+				for (int i = 0; i < width; i++) {
+					int index = (int) Math.round(i * ((list.size() - 1) / getWidth()));
+					Color baseColor = list.get(index);
+					// drawing using pixelWriter
+					buffer[i] = toInt(baseColor);
 
-			}
-//			System.out.println(buffer[width / 2 - 5]);
-			try {
-				p.setPixels(0, count, width, 1, PIXEL_FORMAT, buffer, 0, buffer.length - 1);
-			} catch (Exception e) {
-				LOG.error(e);
+				}
+				try {
+					p.setPixels(0, count, width, 1, PIXEL_FORMAT, buffer, 0, buffer.length - 1);
+				} catch (Exception e) {
+					LOG.error(e);
+				}
 			}
 		}
 	}

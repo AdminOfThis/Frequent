@@ -25,8 +25,11 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import main.Constants;
+import main.Constants.WINDOW_OPEN;
 import main.FXMLMain;
 import main.Main;
+import preferences.PropertiesIO;
 
 public class IOChooserController implements Initializable {
 
@@ -133,7 +136,60 @@ public class IOChooserController implements Initializable {
 		Stage stage = (Stage) listIO.getScene().getWindow();
 		stage.setScene(mainScene);
 		stage.setResizable(true);
-		stage.centerOnScreen();
+
+		// Set resloution depending on settings
+		Constants.WINDOW_OPEN windowBehaviour = WINDOW_OPEN.DEFAULT;
+		String value = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN);
+		if (value != null && !value.isEmpty()) {
+			try {
+				windowBehaviour = Constants.WINDOW_OPEN.valueOf(PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN));
+			} catch (Exception e) {
+				LOG.warn("Cannot parse " + value + " to enum");
+			}
+		}
+		switch (windowBehaviour) {
+
+		case MAXIMIZED:
+			stage.setMaximized(true);
+			break;
+		case WINDOWED:
+			stage.setMaximized(false);
+			String windowed = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN_WINDOWED);
+			try {
+				String[] windowedSplit = windowed.split(",");
+				stage.setWidth(Integer.parseInt(windowedSplit[0]));
+				stage.setHeight(Integer.parseInt(windowedSplit[1]));
+				if (windowedSplit.length >= 4) {
+					stage.setX(Integer.parseInt(windowedSplit[2]));
+					stage.setY(Integer.parseInt(windowedSplit[3]));
+					if (windowedSplit.length >= 5) {
+						stage.setFullScreen(Boolean.parseBoolean(windowedSplit[4]));
+					}
+				}
+			} catch (Exception e) {
+				LOG.warn("Unable to open Application with windowed parameters");
+			}
+			break;
+		case FULLSCREEN:
+			stage.setFullScreen(true);
+		case DEFAULT:
+		default:
+			stage.setWidth(1280);
+			stage.setHeight(720);
+			stage.centerOnScreen();
+			break;
+
+		}
+
+		stage.xProperty().addListener(e -> writePos(stage));
+		stage.yProperty().addListener(e -> writePos(stage));
+		stage.widthProperty().addListener(e -> writePos(stage));
+		stage.heightProperty().addListener(e -> writePos(stage));
+	}
+
+	private void writePos(final Stage stage) {
+		String value = Math.round(stage.getX()) + "," + Math.round(stage.getY()) + "," + Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + "," + Boolean.toString(stage.isFullScreen());
+		PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN_WINDOWED, value);
 	}
 
 	@FXML

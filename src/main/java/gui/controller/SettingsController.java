@@ -25,6 +25,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import main.Constants;
 import main.Constants.RESTORE_PANEL;
+import main.Constants.WINDOW_OPEN;
 import preferences.PropertiesIO;
 
 /**
@@ -57,6 +58,11 @@ public class SettingsController implements Initializable {
 	private ToggleGroup startUp, startUpPanel;
 
 	@FXML
+	private RadioButton rdWinAsClosed, rdWinFullscreen, rdWinMaximized, rdWinWindowed;
+	@FXML
+	private TextField txtWidth, txtHeight;
+
+	@FXML
 	private RadioButton rBtnPanelNothing, rBtnPanelLast, rBtnPanelSpecific;
 
 	@FXML
@@ -84,8 +90,34 @@ public class SettingsController implements Initializable {
 		chbBuffer.setValue(ASIOController.getInstance().getBufferSize());
 		chbDevice.setValue(ASIOController.getInstance().getDevice());
 
+		initWindowPanel();
+
 		initSpecificPanel();
 		loadValues();
+	}
+
+	private void initWindowPanel() {
+		initField(txtHeight);
+		initField(txtWidth);
+	}
+
+	private void initField(final TextField field) {
+		field.disableProperty().bind(rdWinWindowed.selectedProperty().not());
+		field.setOnMouseClicked(e -> {
+			rdWinWindowed.setSelected(true);
+		});
+		field.textProperty().addListener((e, oldV, newV) -> {
+			boolean isNumber = true;
+			for (char c : newV.toCharArray()) {
+				if (!Character.isDigit(c)) {
+					isNumber = false;
+					break;
+				}
+			}
+			if (!isNumber) {
+				field.setText(oldV);
+			}
+		});
 	}
 
 	@FXML
@@ -148,7 +180,16 @@ public class SettingsController implements Initializable {
 
 	@FXML
 	private void save(ActionEvent e) {
-
+		// window on open
+		WINDOW_OPEN windowOpen = WINDOW_OPEN.DEFAULT;
+		if (rdWinFullscreen.isSelected()) {
+			windowOpen = WINDOW_OPEN.FULLSCREEN;
+		} else if (rdWinMaximized.isSelected()) {
+			windowOpen = WINDOW_OPEN.MAXIMIZED;
+		} else if (rdWinWindowed.isSelected()) {
+			windowOpen = WINDOW_OPEN.WINDOWED;
+		}
+		PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, windowOpen.toString(), false);
 		// gui db label
 		PropertiesIO.setProperty(Constants.SETTING_DB_LABEL_CURRENT, Boolean.toString(rBtndbCurrent.isSelected()), false);
 		// Panel restore
