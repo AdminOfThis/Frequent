@@ -6,6 +6,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
@@ -142,29 +143,34 @@ public class IOChooserController implements Initializable {
 		String value = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN);
 		if (value != null && !value.isEmpty()) {
 			try {
-				windowBehaviour = Constants.WINDOW_OPEN.valueOf(PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN));
+				if (value.contains(",")) {
+					value = value.split(",")[0];
+				}
+				windowBehaviour = Constants.WINDOW_OPEN.valueOf(value);
 			} catch (Exception e) {
 				LOG.warn("Cannot parse " + value + " to enum");
 			}
 		}
 		switch (windowBehaviour) {
-
 		case MAXIMIZED:
+			stage.setFullScreen(false);
 			stage.setMaximized(true);
 			break;
-		case WINDOWED:
+		case DEFAULT:
+			stage.setFullScreen(false);
 			stage.setMaximized(false);
-			String windowed = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN_WINDOWED);
+			String windowed = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN);
 			try {
 				String[] windowedSplit = windowed.split(",");
-				stage.setWidth(Integer.parseInt(windowedSplit[0]));
-				stage.setHeight(Integer.parseInt(windowedSplit[1]));
-				if (windowedSplit.length >= 4) {
-					stage.setX(Integer.parseInt(windowedSplit[2]));
-					stage.setY(Integer.parseInt(windowedSplit[3]));
-					if (windowedSplit.length >= 5) {
-						stage.setFullScreen(Boolean.parseBoolean(windowedSplit[4]));
-					}
+				if (windowedSplit.length >= 6) {
+					stage.setFullScreen(Boolean.parseBoolean(windowedSplit[5]));
+				}
+				stage.setWidth(Integer.parseInt(windowedSplit[1]));
+				stage.setHeight(Integer.parseInt(windowedSplit[2]));
+				if (windowedSplit.length >= 5) {
+					stage.setX(Integer.parseInt(windowedSplit[3]));
+					stage.setY(Integer.parseInt(windowedSplit[4]));
+
 				}
 			} catch (Exception e) {
 				LOG.warn("Unable to open Application with windowed parameters");
@@ -172,10 +178,23 @@ public class IOChooserController implements Initializable {
 			break;
 		case FULLSCREEN:
 			stage.setFullScreen(true);
-		case DEFAULT:
-		default:
-			stage.setWidth(1280);
-			stage.setHeight(720);
+			break;
+		case WINDOWED:
+			stage.setFullScreen(false);
+			stage.setMaximized(false);
+			int width = 800;
+			int height = 600;
+			String windowed2 = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN);
+
+			try {
+				String[] windowedSplit = windowed2.split(",");
+				width = Integer.parseInt(windowedSplit[1]);
+				height = Integer.parseInt(windowedSplit[2]);
+			} catch (Exception e) {
+				LOG.warn("Unable to open Application with windowed parameters");
+			}
+			stage.setWidth(width);
+			stage.setHeight(height);
 			stage.centerOnScreen();
 			break;
 
@@ -188,8 +207,17 @@ public class IOChooserController implements Initializable {
 	}
 
 	private void writePos(final Stage stage) {
-		String value = Math.round(stage.getX()) + "," + Math.round(stage.getY()) + "," + Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + "," + Boolean.toString(stage.isFullScreen());
-		PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN_WINDOWED, value);
+		String value = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN).split(",")[0];
+		if (value.contains(",")) {
+			value = value.split(",")[0];
+		}
+		if (Objects.equals(Constants.WINDOW_OPEN.DEFAULT, Constants.WINDOW_OPEN.valueOf(value))) {
+			if (value != null && !value.isEmpty()) {
+				value += ",";
+			}
+			value = value += Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + "," + Math.round(stage.getX()) + "," + Math.round(stage.getY()) + "," + Boolean.toString(stage.isFullScreen());
+			PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, value);
+		}
 	}
 
 	@FXML

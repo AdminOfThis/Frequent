@@ -181,15 +181,15 @@ public class SettingsController implements Initializable {
 	@FXML
 	private void save(ActionEvent e) {
 		// window on open
-		WINDOW_OPEN windowOpen = WINDOW_OPEN.DEFAULT;
+		String windowOpen = WINDOW_OPEN.DEFAULT.toString();
 		if (rdWinFullscreen.isSelected()) {
-			windowOpen = WINDOW_OPEN.FULLSCREEN;
+			windowOpen = WINDOW_OPEN.FULLSCREEN.toString();
 		} else if (rdWinMaximized.isSelected()) {
-			windowOpen = WINDOW_OPEN.MAXIMIZED;
+			windowOpen = WINDOW_OPEN.MAXIMIZED.toString();
 		} else if (rdWinWindowed.isSelected()) {
-			windowOpen = WINDOW_OPEN.WINDOWED;
+			windowOpen = WINDOW_OPEN.WINDOWED.toString() + "," + txtWidth.getText() + "," + txtHeight.getText();
 		}
-		PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, windowOpen.toString(), false);
+		PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, windowOpen, false);
 		// gui db label
 		PropertiesIO.setProperty(Constants.SETTING_DB_LABEL_CURRENT, Boolean.toString(rBtndbCurrent.isSelected()), false);
 		// Panel restore

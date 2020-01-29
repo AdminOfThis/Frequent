@@ -44,8 +44,6 @@ public final class Constants {
 
 	public static final String SETTING_WINDOW_OPEN = "gui.window.open";
 
-	public static final String SETTING_WINDOW_OPEN_WINDOWED = "gui.window.open.windowed";
-
 	/** Setting wether the db Label should display current or peak values */
 	public static final String SETTING_DB_LABEL_CURRENT = "gui.label.db.current";
 	/** Setting, wether a specific panel should be opened on start */
