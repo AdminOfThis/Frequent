@@ -74,7 +74,11 @@ public final class Constants {
 	public static final double YELLOW = -5.0;
 	public static final UncaughtExceptionHandler EMERGENCY_EXCEPTION_HANDLER = new Thread.UncaughtExceptionHandler() {
 		public void uncaughtException(Thread th, Throwable ex) {
-			LOG.fatal("Uncaught exception in thread \"" + th.getName() + "\".", ex);
+			try {
+				LOG.fatal("Uncaught exception in thread \"" + th.getName() + "\".", ex);
+			} catch (Exception e) {
+				System.err.println("There seems to be a problem with logging");
+			}
 		}
 	};
 

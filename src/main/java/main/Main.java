@@ -42,6 +42,38 @@ public class Main {
 	private static Logger LOG = LogManager.getLogger(Main.class);
 	private static boolean debug = false, fast = false;
 
+	/**
+	 * The main method of the programm. Starts with parsing arguments, then launches
+	 * the GUI
+	 * 
+	 * @param args
+	 */
+	public static void main(final String[] args) {
+		try {
+
+			Thread.setDefaultUncaughtExceptionHandler(Constants.EMERGENCY_EXCEPTION_HANDLER);
+			initialize();
+			LOG.info(" === " + getReadableTitle() + " ===");
+			if (parseArgs(args)) {
+
+				loadProperties();
+				initColors();
+				initLog4jParams();
+				if (checkIfStart()) {
+					System.setProperty("javafx.preloader", PreLoader.class.getName());
+					Application.launch(FXMLMain.class, args);
+				} else {
+					LOG.info("Application is already running, unable to run multiple instances");
+					FXMLMain.showAlreadyRunningDialog();
+				}
+			}
+		} catch (Exception exception) {
+			LOG.fatal("Fatal uncaught exception: ", exception);
+		} catch (Error error) {
+			LOG.fatal("Fatal uncaught error: ", error);
+		}
+	}
+
 	public static String getAccentColor() {
 		return color_accent;
 	}
@@ -118,38 +150,6 @@ public class Main {
 		return fast;
 	}
 
-	/**
-	 * The main method of the programm. Starts with parsing arguments, then launches
-	 * the GUI
-	 * 
-	 * @param args
-	 */
-	public static void main(final String[] args) {
-		try {
-
-			Thread.setDefaultUncaughtExceptionHandler(Constants.EMERGENCY_EXCEPTION_HANDLER);
-			initialize();
-			LOG.info(" === " + getReadableTitle() + " ===");
-			if (parseArgs(args)) {
-
-				loadProperties();
-				initColors();
-				initLog4jParams();
-				if (checkIfStart()) {
-					System.setProperty("javafx.preloader", PreLoader.class.getName());
-					Application.launch(FXMLMain.class, args);
-				} else {
-					LOG.info("Application is already running, unable to run multiple instances");
-					FXMLMain.showAlreadyRunningDialog();
-				}
-			}
-		} catch (Exception exception) {
-			LOG.fatal("Fatal uncaught exception: ", exception);
-		} catch (Error error) {
-			LOG.fatal("Fatal uncaught error: ", error);
-		}
-	}
-
 	public static void setDebug(boolean value) {
 		debug = value;
 
@@ -188,6 +188,8 @@ public class Main {
 		String args = sb.substring(0, sb.length() - 1);
 		LOG.debug("Set log4j args to: " + args);
 		MainMapLookup.setMainArguments(log4jArgs);
+
+//		new RollbarUncaughtExceptionHandler(rollbar., Constants.EMERGENCY_EXCEPTION_HANDLER);
 	}
 
 	private static boolean isDevelopment() {

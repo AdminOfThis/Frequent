@@ -21,8 +21,9 @@
 		<Rollbar name="ROLLBAR">
 			<accessToken>15be8db3e6a744ceaaeedea7a0dfb20c</accessToken>
 			<enabled>${main:0}</enabled>
-			<!-- <codeVersion>${main:1}</codeVersion> -->
-			<!-- <environment>${main:2}</environment> -->
+			 <codeVersion>${main:1}</codeVersion>
+			 <environment>${main:2}</environment>
+			 <ignoreExceptions>true</ignoreExceptions> 
 
 			<ThresholdFilter level="warn" />
 		</Rollbar>
