@@ -200,14 +200,11 @@ public class IOChooserController implements Initializable {
 
 		}
 
-		stage.xProperty().addListener(e -> writePos(stage));
-		stage.yProperty().addListener(e -> writePos(stage));
-		stage.widthProperty().addListener(e -> writePos(stage));
-		stage.heightProperty().addListener(e -> writePos(stage));
+		stage.setOnCloseRequest(e -> writePos(stage));
 	}
 
-	private synchronized void writePos(final Stage stage) {
-		String value = "";
+	private void writePos(final Stage stage) {
+		String value = WINDOW_OPEN.DEFAULT.toString();
 		if (PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN) != null) {
 			value = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN).split(",")[0];
 		}
