@@ -206,8 +206,11 @@ public class IOChooserController implements Initializable {
 		stage.heightProperty().addListener(e -> writePos(stage));
 	}
 
-	private void writePos(final Stage stage) {
-		String value = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN).split(",")[0];
+	private synchronized void writePos(final Stage stage) {
+		String value = "";
+		if (PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN) != null) {
+			value = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN).split(",")[0];
+		}
 		if (value.contains(",")) {
 			value = value.split(",")[0];
 		}
