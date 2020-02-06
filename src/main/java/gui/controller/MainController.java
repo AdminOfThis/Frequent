@@ -35,7 +35,7 @@ import gui.pausable.PausableComponent;
 import gui.pausable.PausableView;
 import gui.utilities.controller.ChannelCell;
 import gui.utilities.controller.DataChart;
-import gui.utilities.controller.SymmetricWaveFormChart;
+import gui.utilities.controller.DataFlowChart;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -143,7 +143,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	private ASIOController controller;
 	private TimeKeeperController timeKeeperController;
 	// private DrumController drumController;
-	private SymmetricWaveFormChart waveFormChart;
+	private DataFlowChart waveFormChart;
 	private DataChart dataChart;
 	private double minHeaderButtonWidth = 0;
 	private InformationDialog missingChannelDialog;
@@ -518,7 +518,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		// channelList.setOnEditCommit(e ->
 		// timeKeeperController.setChannels(channelList.getItems()));
 		channelList.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
-			waveFormChart.setChannel(newValue);
+			waveFormChart.setChannel((Channel) newValue);
 			if (newValue instanceof Channel) {
 				dataChart.setChannel((Channel) newValue);
 			}
@@ -698,7 +698,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	private void initWaveForm() {
 		LOG.debug("Loading WaveForm");
-		waveFormChart = new SymmetricWaveFormChart();
+		waveFormChart = new DataFlowChart();
 		waveFormChart.setParentPausable(this);
 		dataChart = new DataChart();
 		for (PausableComponent n : new PausableComponent[] { dataChart, waveFormChart }) {

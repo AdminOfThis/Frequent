@@ -36,7 +36,7 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, Pausab
 	private Slider slider;
 	@FXML
 	private AnchorPane waveFormPane;
-	private SymmetricWaveFormChart chart;
+	private DataFlowChart chart;
 	private DrumTrigger trigger;
 
 	private boolean pause = false;
@@ -54,8 +54,9 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, Pausab
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		chart = new SymmetricWaveFormChart();
+		chart = new DataFlowChart();
 		chart.setParentPausable(this);
+		chart.setPrefWidth(200);
 //		chart.maxHeightProperty().bind(chart.prefHeightProperty().divide(2));
 		// Should be own subclass of WaveformChart
 		chart.showTreshold(true);
@@ -76,9 +77,8 @@ public class DrumTriggerItem extends AnchorPane implements Initializable, Pausab
 			}
 		});
 		combo.setConverter(Constants.CHANNEL_CONVERTER);
-		slider.setMin(Constants.FFT_MIN);
 		slider.valueProperty().addListener(e -> {
-			trigger.setTreshold(slider.getValue());
+			trigger.setTreshold(Channel.percentToDB(slider.getValue()));
 			chart.setThreshold(Math.abs(slider.getValue()));
 		});
 

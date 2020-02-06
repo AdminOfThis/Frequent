@@ -6,7 +6,6 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
@@ -200,24 +199,6 @@ public class IOChooserController implements Initializable {
 
 		}
 
-		stage.setOnCloseRequest(e -> writePos(stage));
-	}
-
-	private void writePos(final Stage stage) {
-		String value = WINDOW_OPEN.DEFAULT.toString();
-		if (PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN) != null) {
-			value = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN).split(",")[0];
-		}
-		if (value.contains(",")) {
-			value = value.split(",")[0];
-		}
-		if (Objects.equals(Constants.WINDOW_OPEN.DEFAULT, Constants.WINDOW_OPEN.valueOf(value))) {
-			if (value != null && !value.isEmpty()) {
-				value += ",";
-			}
-			value = value += Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + "," + Math.round(stage.getX()) + "," + Math.round(stage.getY()) + "," + Boolean.toString(stage.isFullScreen());
-			PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, value);
-		}
 	}
 
 	@FXML

@@ -26,7 +26,7 @@
       <HBox spacing="5.0" VBox.vgrow="SOMETIMES">
          <children>
             <AnchorPane fx:id="waveFormPane" HBox.hgrow="SOMETIMES" />
-            <Slider fx:id="slider" blockIncrement="6.0" majorTickUnit="12.0" max="0.0" min="-60.0" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" />
+            <Slider fx:id="slider" blockIncrement="6.0" majorTickUnit="0.25" max="1.0" orientation="VERTICAL" showTickMarks="true" value="0.9" />
          </children>
       </HBox>
       <Separator prefWidth="200.0" />

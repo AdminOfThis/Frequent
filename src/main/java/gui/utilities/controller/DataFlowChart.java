@@ -10,8 +10,8 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import control.ASIOController;
 import control.ChannelListener;
-import control.FFT;
 import data.Channel;
 import data.Input;
 import gui.FXMLUtil;
@@ -28,21 +28,24 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.AnchorPane;
 
-public class DataChart extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
+public class DataFlowChart extends AnchorPane implements Initializable, PausableComponent, ChannelListener {
 
-	private static final Logger LOG = LogManager.getLogger(WaveFormChart.class);
-	private static final String FXML = "/fxml/utilities/DataChart.fxml";
+	private static final Logger LOG = LogManager.getLogger(DataFlowChart.class);
+	private static final String FXML = "/fxml/utilities/DataFlowChart.fxml";
+
+	private static final double TIME_FRAME = .6;
 	@FXML
 	private LineChart<Number, Number> chart;
 	@FXML
 	private NumberAxis yAxis;
 	private Series<Number, Number> series = new Series<>();
+	private Series<Number, Number> treshold = new Series<>();
 	private Channel channel;
 	private List<Float> pendingData = Collections.synchronizedList(new ArrayList<>());
 	private Pausable pausableParent;
 	private boolean pause = false;
 
-	public DataChart() {
+	public DataFlowChart() {
 		LOG.debug("Creating new DataChart");
 		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML), this);
 		getChildren().add(p);
@@ -85,10 +88,10 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 
 	@Override
 	public void newBuffer(final Channel channel, final float[] buffer, final long time) {
-		float[] windowed = FFT.applyWindow(buffer);
+//		float[] windowed = FFT.applyWindow(buffer);
 		synchronized (pendingData) {
 			pendingData.clear();
-			for (float buf : windowed) {
+			for (float buf : buffer) {
 				pendingData.add(buf);
 			}
 		}
@@ -97,27 +100,42 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 	@Override
 	public void pause(boolean pause) {
 		this.pause = pause;
+		if (pause) {
+			clear();
+		}
+	}
+
+	private void clear() {
+		Platform.runLater(() -> {
+			try {
+				chart.getData().remove(series);
+				series.getData().clear();
+				chart.getData().add(series);
+				pendingData.clear();
+
+			} catch (Exception e) {
+				LOG.error("Problem displaying data", e);
+			}
+		});
 	}
 
 	public void setChannel(final Channel c) {
-		try {
-			if (!Objects.equals(c, channel)) {
-				if (channel != null) {
-					channel.removeListener(this);
+		new Thread(() -> {
+			try {
+				if (!Objects.equals(c, channel)) {
+					if (channel != null) {
+						channel.removeListener(this);
+					}
+					clear();
+					channel = c;
+					if (c != null) {
+						c.addListener(this);
+					}
 				}
-				series.getData().clear();
-				pendingData.clear();
-				synchronized (pendingData) {
-					pendingData.clear();
-				}
-				channel = c;
-				if (c != null) {
-					c.addListener(this);
-				}
+			} catch (Exception e) {
+				LOG.warn("", e);
 			}
-		} catch (Exception e) {
-			LOG.warn("", e);
-		}
+		}).start();
 	}
 
 	@Override
@@ -131,24 +149,63 @@ public class DataChart extends AnchorPane implements Initializable, PausableComp
 			synchronized (pendingData) {
 				dataCopy = new ArrayList<>(pendingData);
 			}
-			ArrayList<Data<Number, Number>> adding = new ArrayList<>();
-			float max = Float.NEGATIVE_INFINITY;
-			for (int i = 0; i < dataCopy.size(); i++) {
-				max = Math.max(max, Math.abs(dataCopy.get(i)));
-				adding.add(new Data<Number, Number>(i, dataCopy.get(i)));
+			pendingData.clear();
+
+			int count = 0;
+			if (series.getData().isEmpty()) {
+				count = 0;
+			} else {
+				count = series.getData().get(series.getData().size() - 1).getXValue().intValue();
 			}
-			max = max + .05f;
-			final float axisTop = Math.max(max, .2f);
+			ArrayList<Data<Number, Number>> adding = new ArrayList<>();
+			for (int i = 0; i < dataCopy.size(); i++) {
+				adding.add(new Data<Number, Number>(count + i, dataCopy.get(i)));
+			}
+			int show = (int) (ASIOController.getInstance().getSampleRate() * TIME_FRAME);
 
 			Platform.runLater(() -> {
-				series.getData().setAll(adding);
-				yAxis.setLowerBound(-axisTop);
-				yAxis.setUpperBound(axisTop);
+				synchronized (series.getData()) {
+					try {
+						if (!series.getData().isEmpty()) {
+							series.getData().remove(0, Math.max(0, series.getData().size() - show));
+						}
+						series.getData().addAll(adding);
+					} catch (Exception e) {
+						LOG.error("Problem displaying data", e);
+					}
+				}
 			});
+			NumberAxis xAxis = ((NumberAxis) chart.getXAxis());
 			if (!series.getData().isEmpty()) {
-				((NumberAxis) chart.getXAxis()).setLowerBound(series.getData().get(0).getXValue().doubleValue());
-				((NumberAxis) chart.getXAxis()).setUpperBound(series.getData().get(series.getData().size() - 1).getXValue().doubleValue());
+				double upper = series.getData().get(series.getData().size() - 1).getXValue().doubleValue();
+				xAxis.setUpperBound(upper);
+				xAxis.setLowerBound(upper - show);
 			}
+			synchronized (treshold) {
+				if (treshold.getData().size() >= 2) {
+					treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
+				}
+			}
+		}
+
+	}
+
+	public void setThreshold(final double value) {
+		NumberAxis time = (NumberAxis) chart.getXAxis();
+		synchronized (treshold) {
+			treshold.getData().clear();
+			treshold.getData().add(new Data<>(time.getLowerBound(), value));
+			treshold.getData().add(new Data<>(time.getUpperBound() + 10000, value));
+		}
+	}
+
+	public void showTreshold(boolean value) {
+		if (value) {
+			if (!chart.getData().contains(treshold)) {
+				chart.getData().add(treshold);
+			}
+		} else {
+			chart.getData().remove(treshold);
 		}
 	}
 }

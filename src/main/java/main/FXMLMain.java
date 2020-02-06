@@ -1,6 +1,7 @@
 package main;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 import control.ASIOController;
@@ -20,6 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import main.Constants.WINDOW_OPEN;
 import preferences.PropertiesIO;
 
 public class FXMLMain extends MainGUI {
@@ -126,6 +128,7 @@ public class FXMLMain extends MainGUI {
 		LOG.info("Showing IOChooser");
 		primaryStage.setScene(loginScene);
 		primaryStage.setOnCloseRequest(e -> {
+			writePos(primaryStage);
 			if (!FXMLMain.getInstance().close()) {
 				MainController.getInstance().setStatus("Close cancelled");
 				e.consume();
@@ -158,6 +161,29 @@ public class FXMLMain extends MainGUI {
 			FXMLMain.getInstance().close();
 		}
 		return null;
+	}
+
+	private void writePos(final Stage stage) {
+		String value = WINDOW_OPEN.DEFAULT.toString();
+		if (PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN) != null) {
+			value = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN).split(",")[0];
+		}
+		if (value.contains(",")) {
+			value = value.split(",")[0];
+		}
+
+		if (Objects.equals(Constants.WINDOW_OPEN.DEFAULT, Constants.WINDOW_OPEN.valueOf(value)) || Objects.equals(Constants.WINDOW_OPEN.MAXIMIZED, Constants.WINDOW_OPEN.valueOf(value))) {
+			if (stage.isMaximized()) {
+				value = Constants.WINDOW_OPEN.MAXIMIZED.toString();
+			} else {
+				value = Constants.WINDOW_OPEN.DEFAULT.toString();
+			}
+			if (value != null && !value.isEmpty()) {
+				value += ",";
+			}
+			value = value += Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + "," + Math.round(stage.getX()) + "," + Math.round(stage.getY()) + "," + Boolean.toString(stage.isFullScreen());
+			PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, value);
+		}
 	}
 
 }
