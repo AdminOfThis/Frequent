@@ -529,7 +529,9 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 				}
 				if (newValue instanceof Channel) {
 					Channel channel = (Channel) newValue;
-					controller.setActiveChannel(channel);
+					if (controller != null) {
+						controller.setActiveChannel(channel);
+					}
 				}
 			}
 		});

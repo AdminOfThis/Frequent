@@ -33,7 +33,10 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 	private CheckMenuItem noPair = new CheckMenuItem("Unpaired");
 
 	public ChannelCellContextMenu(final Channel in) {
+
 		super(in);
+
+		setIds();
 
 		if (in != null) {
 			resetName.setOnAction(e -> {
@@ -64,6 +67,12 @@ public class ChannelCellContextMenu extends InputCellContextMenu {
 			setAutoHide(true);
 			setConsumeAutoHidingEvents(false);
 		}
+	}
+
+	private void setIds() {
+
+		resetName.setId("resetName");
+
 	}
 
 	private void groupAllSelected(final Group g) {

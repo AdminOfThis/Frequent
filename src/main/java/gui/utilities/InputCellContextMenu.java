@@ -31,25 +31,26 @@ public abstract class InputCellContextMenu extends ContextMenu {
 
 	private static final int TIMES[] = { 1, 5, 10, 20, 30, 60, 300 };
 	private static final Logger LOG = LogManager.getLogger(InputCellContextMenu.class);
-	private MenuItem name = new MenuItem("Rename");
+	private MenuItem rename = new MenuItem("Rename");
 	private Menu colorMenu = new Menu("Color");
 	Menu watchList = new Menu("Watchdog");
 	private Input input;
 
 	public InputCellContextMenu(final Input in) {
 		super();
+		setIds();
 		setAutoFix(true);
 		setAutoHide(true);
 		input = in;
 		if (input != null) {
 			// NAME
-			name.setOnAction(e -> rename());
+			rename.setOnAction(e -> rename());
 
 			MenuItem colorManager = new MenuItem("Color Manager");
 			colorManager.setOnAction(e -> openColorManager());
 			colorMenu.getItems().add(colorManager);
 			colorMenu.getItems().add(new SeparatorMenuItem());
-			getItems().add(name);
+			getItems().add(rename);
 			getItems().add(colorMenu);
 			getItems().add(watchList);
 			initWatchDogMenu();
@@ -62,6 +63,11 @@ public abstract class InputCellContextMenu extends ContextMenu {
 		addEventHandler(MouseEvent.MOUSE_CLICKED, e -> hide());
 //		setOnHidden(e -> MainController.getInstance().refresh());
 		colorMenu.setOnShowing(e -> refresh());
+
+	}
+
+	private void setIds() {
+		rename.setId("rename");
 
 	}
 

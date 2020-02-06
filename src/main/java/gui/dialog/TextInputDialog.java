@@ -48,6 +48,7 @@ public class TextInputDialog extends CustomDialog<String> {
 	private void init() {
 		topText.setText(description);
 		text.setText(oldText);
+		text.setId("textField");
 
 	}
 

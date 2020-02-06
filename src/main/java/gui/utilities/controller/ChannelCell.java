@@ -138,7 +138,9 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 			meter.pause(false);
 			meter.setTitle(item.getName());
 			if (item instanceof Channel) {
-				lblNumber.setText(Integer.toString(((Channel) item).getChannel().getChannelIndex() + 1));
+				if (((Channel) item).getChannel() != null) {
+					lblNumber.setText(Integer.toString(((Channel) item).getChannel().getChannelIndex() + 1));
+				}
 			}
 		}
 	}

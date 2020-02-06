@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration strict="true" status="warn" name="XMLConfig">
+<Configuration strict="true" status="warn" name="XMLConfig" shutdownHook="disable">
 
 	<Filter type="ThresholdFilter" level="trace" />
 

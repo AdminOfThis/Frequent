@@ -73,38 +73,43 @@ public class FXMLMain extends MainGUI {
 	 */
 	@Override
 	public boolean close() {
-
-		if (!Main.isDebug() && PropertiesIO.getBooleanProperty(Constants.SETTING_WARN_UNSAVED_CHANGES)) {
-			LOG.info("Checking for unsaved changes");
-			if (FileIO.unsavedChanges()) {
-				LOG.info("Unsaved changes found");
-				ConfirmationDialog dialog = new ConfirmationDialog("Save changes before exit?", true);
-				Optional<ButtonType> result = dialog.showAndWait();
-				if (!result.isPresent()) {
-					return false;
-				}
-				if (result.get() == ButtonType.YES) {
-					boolean saveResult = MainController.getInstance().save(new ActionEvent());
-					if (!saveResult) {
-						LOG.info("Saving cancelled");
-						return false;
+		boolean result = true;
+		try {
+			if (!Main.isDebug() && PropertiesIO.getBooleanProperty(Constants.SETTING_WARN_UNSAVED_CHANGES)) {
+				LOG.info("Checking for unsaved changes");
+				if (FileIO.unsavedChanges()) {
+					LOG.info("Unsaved changes found");
+					ConfirmationDialog dialog = new ConfirmationDialog("Save changes before exit?", true);
+					Optional<ButtonType> diaresult = dialog.showAndWait();
+					if (!diaresult.isPresent()) {
+						result = false;
 					}
-				} else if (result.get() == ButtonType.NO) {
-					LOG.info("Closing without saving unfinished changes");
-				} else if (result.get() == ButtonType.CANCEL) {
-					LOG.info("Cancelled closing of program");
-					return false;
+					if (diaresult.get() == ButtonType.YES) {
+						boolean saveResult = MainController.getInstance().save(new ActionEvent());
+						if (!saveResult) {
+							LOG.info("Saving cancelled");
+							result = false;
+						}
+					} else if (diaresult.get() == ButtonType.NO) {
+						LOG.info("Closing without saving unfinished changes");
+					} else if (diaresult.get() == ButtonType.CANCEL) {
+						LOG.info("Cancelled closing of program");
+						result = false;
+					}
 				}
 			}
+			LOG.info("Stopping GUI");
+			Platform.exit();
+			LOG.info("Stopping AudioDriver");
+			ASIOController.getInstance().shutdown();
+			LOG.info("Deleting RTA file");
+			LOG.info("Bye");
+			System.exit(0);
+			result = true;
+		} catch (Exception e) {
+			LOG.error("Problem closing window", e);
 		}
-		LOG.info("Stopping GUI");
-		Platform.exit();
-		LOG.info("Stopping AudioDriver");
-		ASIOController.getInstance().shutdown();
-		LOG.info("Deleting RTA file");
-		LOG.info("Bye");
-		System.exit(0);
-		return true;
+		return result;
 	}
 
 	/**
@@ -184,26 +189,31 @@ public class FXMLMain extends MainGUI {
 	}
 
 	private void writePos(final Stage stage) {
-		String value = WINDOW_OPEN.DEFAULT.toString();
-		if (PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN) != null) {
-			value = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN).split(",")[0];
-		}
-		if (value.contains(",")) {
-			value = value.split(",")[0];
+		try {
+			String value = WINDOW_OPEN.DEFAULT.toString();
+			if (PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN) != null) {
+				value = PropertiesIO.getProperty(Constants.SETTING_WINDOW_OPEN).split(",")[0];
+			}
+			if (value.contains(",")) {
+				value = value.split(",")[0];
+			}
+
+			if (Objects.equals(Constants.WINDOW_OPEN.DEFAULT, Constants.WINDOW_OPEN.valueOf(value)) || Objects.equals(Constants.WINDOW_OPEN.MAXIMIZED, Constants.WINDOW_OPEN.valueOf(value))) {
+				if (stage.isMaximized()) {
+					value = Constants.WINDOW_OPEN.MAXIMIZED.toString();
+				} else {
+					value = Constants.WINDOW_OPEN.DEFAULT.toString();
+				}
+				if (value != null && !value.isEmpty()) {
+					value += ",";
+				}
+				value = value += Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + "," + Math.round(stage.getX()) + "," + Math.round(stage.getY()) + "," + Boolean.toString(stage.isFullScreen());
+				PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, value);
+			}
+		} catch (Exception e) {
+			LOG.error("Problem writing window position", e);
 		}
 
-		if (Objects.equals(Constants.WINDOW_OPEN.DEFAULT, Constants.WINDOW_OPEN.valueOf(value)) || Objects.equals(Constants.WINDOW_OPEN.MAXIMIZED, Constants.WINDOW_OPEN.valueOf(value))) {
-			if (stage.isMaximized()) {
-				value = Constants.WINDOW_OPEN.MAXIMIZED.toString();
-			} else {
-				value = Constants.WINDOW_OPEN.DEFAULT.toString();
-			}
-			if (value != null && !value.isEmpty()) {
-				value += ",";
-			}
-			value = value += Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + "," + Math.round(stage.getX()) + "," + Math.round(stage.getY()) + "," + Boolean.toString(stage.isFullScreen());
-			PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, value);
-		}
 	}
 
 }
