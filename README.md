@@ -36,10 +36,10 @@ The whole project is built with Maven. It currently contains two submodules, and
  
 After the main project is checked out, it is required to initialize and update the submodules with `git submodule --init` and `git submodule update --remote`.
 
-Since the root project contains most of the source code, but since root maven projects must be packaged as `pom`, it requires another set of commands to compile it into a `jar` with the help of several Maven plugins.
+Since the root project contains most of the source code, but root maven projects must be packaged as `pom`, it requires another set of commands to compile it into a `jar` with the help of several Maven plugins.
 
 The main project can be built using `mvn clean compiler:compile compiler:testCompile validate surefire:test package`
-It produces a "fat" *jar*, with all dependencies extracted into the jar, as well as a *.zip* file, which contains everything (except a Java8 runtime) required to run the program.
+It produces a "fat" *jar*, with all dependencies extracted into the jar, as well as a *.zip* file, which contains everything (except a Java13 runtime) required to run the program.
 Those artifacts can be found in the `./target` subdirectory.
 
 ## Usage
