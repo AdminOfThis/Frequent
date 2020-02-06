@@ -24,6 +24,11 @@ import javafx.stage.Stage;
 import main.Constants.WINDOW_OPEN;
 import preferences.PropertiesIO;
 
+/**
+ * 
+ * @author AdminOfThis
+ *
+ */
 public class FXMLMain extends MainGUI {
 
 	private static final String GUI_IO_CHOOSER = "/fxml/dialog/IOChooser.fxml";
@@ -36,16 +41,21 @@ public class FXMLMain extends MainGUI {
 	private Scene mainScene;
 	private IOChooserController loginController;
 
-	/******************* GETTERS AND SETTERS ****************/
-
 	public static FXMLMain getInstance() {
 		return instance;
 	}
 
+	/**
+	 * 
+	 * @return The relative path to the logo of the application
+	 */
 	public static String getLogoPath() {
 		return LOGO;
 	}
 
+	/**
+	 * Shows a dialog that there is already an instance of the application running
+	 */
 	public static void showAlreadyRunningDialog() {
 		// this will prepare JavaFX toolkit and environment
 		new JFXPanel();
@@ -97,6 +107,11 @@ public class FXMLMain extends MainGUI {
 		return true;
 	}
 
+	/**
+	 * Returns the initialized main scene of the program
+	 * 
+	 * @return mainScene the main Scene of the application
+	 */
 	public Scene getScene() {
 		return mainScene;
 	}
@@ -119,6 +134,11 @@ public class FXMLMain extends MainGUI {
 		notifyPreloader(new Preloader.ProgressNotification(0.95));
 	}
 
+	/**
+	 * Sets the progress in the preloader
+	 * 
+	 * @param prog the progress of loading the main window
+	 */
 	public void setProgress(final double prog) {
 		notifyPreloader(new Preloader.ProgressNotification(prog));
 	}

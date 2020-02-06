@@ -50,7 +50,7 @@ public class Main {
 	 */
 	public static void main(final String[] args) {
 		try {
-
+			long timeStart = System.currentTimeMillis();
 			Thread.setDefaultUncaughtExceptionHandler(Constants.EMERGENCY_EXCEPTION_HANDLER);
 			initialize();
 			LOG.info(" === " + getReadableTitle() + " ===");
@@ -60,6 +60,8 @@ public class Main {
 				initColors();
 				initLog4jParams();
 				if (checkIfStart()) {
+					long timeDone = System.currentTimeMillis();
+					LOG.info("Time until preloader: " + (timeDone - timeStart) + " ms");
 					System.setProperty("javafx.preloader", PreLoader.class.getName());
 					Application.launch(FXMLMain.class, args);
 				} else {
