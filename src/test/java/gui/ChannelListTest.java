@@ -67,15 +67,17 @@ public class ChannelListTest {
 	}
 
 	@Test
-	@Timeout(1000)
+	@Timeout(2)
 	public ContextMenu openContextMenuWithMouse(FxRobot robot) throws InterruptedException {
 		ListCell<?> cell = selectFirstElement(robot);
 		ContextMenu menu = cell.getContextMenu();
-		robot.clickOn(cell, MouseButton.SECONDARY);
+		robot.moveTo(cell);
+//		robot.clickOn(cell, MouseButton.SECONDARY);
 		// Bugfix for monocle bug, see https://github.com/TestFX/Monocle/issues/12
 		while (!menu.isShowing()) {
 			Platform.runLater(() -> menu.show(cell.getScene().getWindow()));
 		}
+		Thread.sleep(2000);
 		assertTrue(cell.getContextMenu().isShowing());
 		return cell.getContextMenu();
 	}
@@ -83,7 +85,7 @@ public class ChannelListTest {
 	@Test
 	public void rename(FxRobot robot) throws InterruptedException {
 		int windowsPrior = robot.listWindows().size();
-		openContextMenuWithMouse(robot);
+		ContextMenu menu = openContextMenuWithMouse(robot);
 		robot.clickOn("#rename");
 		assertEquals(windowsPrior + 1, robot.listWindows().size());
 		robot.clickOn("#textField");
