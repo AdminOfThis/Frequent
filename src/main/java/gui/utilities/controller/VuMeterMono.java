@@ -147,10 +147,10 @@ public class VuMeterMono extends VuMeter implements Initializable, InputListener
 				setTitle("");
 				setOnContextMenuRequested(null);
 				if (lblPeak != null) {
-					lblPeak.setText("");
+					Platform.runLater(() -> lblPeak.setText(""));
 				}
 				if (lblTitle != null) {
-					lblTitle.setText("");
+					Platform.runLater(() -> lblTitle.setText(""));
 				}
 			}
 		}

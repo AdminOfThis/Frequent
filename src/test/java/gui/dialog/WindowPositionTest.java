@@ -49,7 +49,7 @@ class WindowPositionTest {
 		assertTrue(getStage(robot).isFullScreen());
 	}
 
-	@RepeatedTest(5)
+	@RepeatedTest(3)
 	public void openWindowed(FxRobot robot) throws Exception {
 		int width = (int) Math.random() * (1920 - 600) + 600;
 		int height = (int) Math.random() * (1920 - 400) + 400;
@@ -60,7 +60,7 @@ class WindowPositionTest {
 		assertEquals(height, getStage(robot).getHeight());
 	}
 
-	@RepeatedTest(10)
+	@RepeatedTest(5)
 	public void openAsClosed(FxRobot robot) throws Exception {
 		int width = (int) Math.random() * (1920 - 600) + 600;
 		int height = (int) Math.random() * (1920 - 400) + 400;

@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration strict="true" status="warn" name="XMLConfig" shutdownHook="disable">
 
-	<Filter type="ThresholdFilter" level="trace" />
-
 	<Appenders>
 		<Console name="STDOUT" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{HH:mm:ss} %-5p %-3L:%-30c{1} - %m%n" />
-			<ThresholdFilter level="info" />
+			<Filters>
+				<BurstFilter level="warn" rate="5" />
+				<ThresholdFilter level="warn" />
+			</Filters>
 		</Console>
 
 		<RollingFile name="FILE" fileName="logs/frequent.log" filePattern="logs/$${date:yyyy-MM}/frequent-%d{MM-dd-yyyy}-%i.log">
+			<Filters>
+				<ThresholdFilter level="debug" />
+			</Filters>
 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %-3L:%-30c{1} - %m%n" />
 			<Policies>
 				<OnStartupTriggeringPolicy />
@@ -19,18 +23,21 @@
 		</RollingFile>
 
 		<Rollbar name="ROLLBAR">
+			<Filters>
+				<BurstFilter level="warn" rate="5" />
+				<ThresholdFilter level="error" />
+			</Filters>
 			<accessToken>15be8db3e6a744ceaaeedea7a0dfb20c</accessToken>
-			<enabled>${main:0}</enabled>
-			 <codeVersion>${main:1}</codeVersion>
-			 <environment>${main:2}</environment>
-			 <ignoreExceptions>true</ignoreExceptions> 
+			<!--<enabled>${main:0}</enabled>-->
+			<!--<codeVersion>${main:1}</codeVersion>-->
+			<environment>${main:2}</environment>
+			<ignoreExceptions>true</ignoreExceptions> 
 
-			<ThresholdFilter level="warn" />
 		</Rollbar>
 	</Appenders>
 
 	<Loggers>
-		<Root level="trace">
+		<Root level="all">
 			<AppenderRef ref="STDOUT" />
 			<AppenderRef ref="FILE" />
 			<AppenderRef ref="ROLLBAR" />

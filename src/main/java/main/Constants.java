@@ -7,6 +7,8 @@ import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.ErrorHandler;
+import org.apache.logging.log4j.core.LogEvent;
 
 import control.ASIOController;
 import data.Channel;
@@ -98,6 +100,27 @@ public final class Constants {
 			} catch (Exception e) {
 				System.err.println("There seems to be a problem with logging");
 			}
+		}
+	};
+
+	public static final ErrorHandler HANDLER = new ErrorHandler() {
+
+		@Override
+		public void error(String msg, LogEvent event, Throwable t) {
+			System.out.println("UNABLE TO LOG " + msg);
+
+		}
+
+		@Override
+		public void error(String msg, Throwable t) {
+			System.out.println("UNABLE TO LOG " + msg);
+
+		}
+
+		@Override
+		public void error(String msg) {
+			System.out.println("UNABLE TO LOG " + msg);
+
 		}
 	};
 

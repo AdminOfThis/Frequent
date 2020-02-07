@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,15 +24,12 @@ import gui.controller.MainController;
 import gui.controller.TimeKeeperController;
 
 public abstract class FileIO {
-
-	private static final String PROPERTIES_FILE = "./frequent.properties";
 	private static final Logger LOG = LogManager.getLogger(FileIO.class);
 	public static final String ENDING = ".fre";
 	// files
 	private static File currentDir = new File(System.getProperty("user.home"));
 	private static File currentFile;
 	private static List<DataHolder<? extends Serializable>> holderList = new ArrayList<>();
-	private static Properties properties;
 
 	public static File getCurrentDir() {
 		return currentDir;
@@ -41,32 +37,6 @@ public abstract class FileIO {
 
 	public static File getCurrentFile() {
 		return currentFile;
-	}
-
-	public static Properties loadProperties() {
-		if (properties == null) {
-			properties = new Properties();
-		}
-		FileInputStream stream = null;
-		try {
-			File file = new File(PROPERTIES_FILE);
-			if (file.exists()) {
-				stream = new FileInputStream(file);
-				properties.load(stream);
-			}
-		} catch (Exception e) {
-			LOG.warn("Unable to load properties", e);
-			LOG.debug("", e);
-		} finally {
-			if (stream != null) {
-				try {
-					stream.close();
-				} catch (IOException e) {
-					LOG.error("Problem closing fileinput stream", e);
-				}
-			}
-		}
-		return properties;
 	}
 
 	public static boolean open(final File file) {
@@ -100,13 +70,6 @@ public abstract class FileIO {
 			}
 		}
 		return false;
-	}
-
-	public static String readPropertiesString(final String key, final String defaultValue) {
-		if (properties == null) {
-			loadProperties();
-		}
-		return properties.getProperty(key, defaultValue);
 	}
 
 	public static void registerDatahandlers() {
@@ -177,14 +140,6 @@ public abstract class FileIO {
 			}
 		}
 		return false;
-	}
-
-	public static void writeProperties(final String key, final String value) {
-		if (properties == null) {
-			loadProperties();
-		}
-		properties.put(key, value);
-		saveProperties();
 	}
 
 	private static List<Serializable> collectData() {
@@ -261,24 +216,4 @@ public abstract class FileIO {
 		return result;
 	}
 
-	private static boolean saveProperties() {
-		FileOutputStream stream = null;
-		try {
-			stream = new FileOutputStream(new File(PROPERTIES_FILE));
-			properties.store(stream, "");
-		} catch (Exception e) {
-			LOG.warn("Unable to save preferences");
-			LOG.debug("", e);
-			return false;
-		} finally {
-			if (stream != null) {
-				try {
-					stream.close();
-				} catch (IOException e) {
-					LOG.error("Problem closing filoutput stream", e);
-				}
-			}
-		}
-		return true;
-	}
 }

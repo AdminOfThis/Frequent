@@ -1,24 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration strict="true" status="warn" name="XMLConfigTest" shutdownHook="disable" >
 
-	<Filter type="ThresholdFilter" level="trace" />
+
 
 	<Appenders>
 		<Console name="STDOUT" target="SYSTEM_OUT">
+			<Filters>
+				<BurstFilter level="warn" rate="5" />
+				<ThresholdFilter level="error" />
+			</Filters>
+
 			<PatternLayout pattern="%d{HH:mm:ss} %-5p %-3L:%-30c{1} - %m%n" />
-			<ThresholdFilter level="error" />
 		</Console>
 
 		<Rollbar name="ROLLBAR">
+			<Filters>
+				<BurstFilter level="warn" rate="5" />
+				<ThresholdFilter level="error" />
+			</Filters>
+
 			<accessToken>15be8db3e6a744ceaaeedea7a0dfb20c</accessToken>
+			<!--<enabled>${main:0}</enabled>-->
+			<!--<codeVersion>${main:1}</codeVersion>-->
 			<environment>qa</environment>
-			<ThresholdFilter level="warn" />
+			<ignoreExceptions>true</ignoreExceptions>
+
 		</Rollbar>
 	</Appenders>
 
 
 	<Loggers>
-		<Root level="trace">
+		<Root level="all">
 			<AppenderRef ref="STDOUT" />
 			<AppenderRef ref="ROLLBAR" />
 		</Root>

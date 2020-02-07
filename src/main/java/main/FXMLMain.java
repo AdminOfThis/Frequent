@@ -45,6 +45,27 @@ public class FXMLMain extends MainGUI {
 		return instance;
 	}
 
+	@Override
+	public void init() throws Exception {
+		if (!Main.isInitialized()) {
+			Main.initialize();
+		}
+		super.init();
+		if (FXMLUtil.getDefaultStyle().isEmpty()) {
+			Main.initColors();
+		}
+		instance = this;
+		notifyPreloader(new Preloader.ProgressNotification(0.1));
+		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
+		loginController = (IOChooserController) FXMLUtil.getController();
+		FXMLUtil.setStyleSheet(parent);
+		loginScene = new Scene(parent);
+		notifyPreloader(new Preloader.ProgressNotification(0.2));
+		mainScene = loadMain();
+		loginController.setMainScene(mainScene);
+		notifyPreloader(new Preloader.ProgressNotification(0.95));
+	}
+
 	/**
 	 * 
 	 * @return The relative path to the logo of the application
@@ -119,24 +140,6 @@ public class FXMLMain extends MainGUI {
 	 */
 	public Scene getScene() {
 		return mainScene;
-	}
-
-	@Override
-	public void init() throws Exception {
-		super.init();
-		if (FXMLUtil.getDefaultStyle().isEmpty()) {
-			Main.initColors();
-		}
-		instance = this;
-		notifyPreloader(new Preloader.ProgressNotification(0.1));
-		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
-		loginController = (IOChooserController) FXMLUtil.getController();
-		FXMLUtil.setStyleSheet(parent);
-		loginScene = new Scene(parent);
-		notifyPreloader(new Preloader.ProgressNotification(0.2));
-		mainScene = loadMain();
-		loginController.setMainScene(mainScene);
-		notifyPreloader(new Preloader.ProgressNotification(0.95));
 	}
 
 	/**

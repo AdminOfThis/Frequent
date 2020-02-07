@@ -40,7 +40,8 @@ public class Main {
 	private static boolean externalLog = true;
 	private static boolean development = false;
 	private static Logger LOG = LogManager.getLogger(Main.class);
-	private static boolean debug = false, fast = false;
+	private static boolean debug = false;
+	private static boolean initialized = false;
 
 	/**
 	 * The main method of the programm. Starts with parsing arguments, then launches
@@ -52,13 +53,11 @@ public class Main {
 		try {
 			long timeStart = System.currentTimeMillis();
 			Thread.setDefaultUncaughtExceptionHandler(Constants.EMERGENCY_EXCEPTION_HANDLER);
-			initialize();
+			initTitle();
 			LOG.info(" === " + getReadableTitle() + " ===");
 			if (parseArgs(args)) {
 
-				loadProperties();
-				initColors();
-				initLog4jParams();
+				initialize();
 				if (checkIfStart()) {
 					long timeDone = System.currentTimeMillis();
 					LOG.info("Time until preloader: " + (timeDone - timeStart) + " ms");
@@ -74,6 +73,19 @@ public class Main {
 		} catch (Error error) {
 			LOG.fatal("Fatal uncaught error: ", error);
 		}
+	}
+
+	protected static void initialize() {
+		initTitle();
+		loadProperties();
+		initColors();
+		initLog4jParams();
+
+		initialized = true;
+	}
+
+	public static boolean isInitialized() {
+		return initialized;
 	}
 
 	public static String getAccentColor() {
@@ -135,7 +147,7 @@ public class Main {
 		FXMLUtil.setDefaultStyle(style);
 	}
 
-	public static void initialize() {
+	public static void initTitle() {
 		title = getFromManifest(TITLE_KEY, POM_TITLE);
 		version = getFromManifest(VERSION_KEY, "Local Build");
 	}
@@ -146,10 +158,6 @@ public class Main {
 
 	public static boolean isErrorReporting() {
 		return externalLog;
-	}
-
-	public static boolean isFast() {
-		return fast;
 	}
 
 	public static void setDebug(boolean value) {
@@ -173,6 +181,7 @@ public class Main {
 	}
 
 	private static void initLog4jParams() {
+
 		setErrorReporting(!development && PropertiesIO.getBooleanProperty(Constants.SETTING_ERROR_REPORTING, true), false);
 		log4jArgs[Constants.LOG4J_INDEX_VERSION] = version;
 		if (development) {
@@ -191,7 +200,6 @@ public class Main {
 		LOG.debug("Set log4j args to: " + args);
 		MainMapLookup.setMainArguments(log4jArgs);
 
-//		new RollbarUncaughtExceptionHandler(rollbar., Constants.EMERGENCY_EXCEPTION_HANDLER);
 	}
 
 	private static boolean isDevelopment() {
@@ -222,9 +230,6 @@ public class Main {
 				debug = true;
 				LOG.info("Enabling debug settings");
 				FileIO.setCurrentDir(new File("."));
-			} else if (arg.equalsIgnoreCase("-fast")) {
-				LOG.info("Enabling fast UI elements");
-				fast = true;
 			} else if (arg.equalsIgnoreCase("-nolog")) {
 				externalLog = false;
 			} else if (arg.equalsIgnoreCase("-dev") || arg.equalsIgnoreCase("-development")) {

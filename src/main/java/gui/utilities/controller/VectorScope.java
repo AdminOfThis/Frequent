@@ -164,7 +164,7 @@ public class VectorScope extends AnchorPane implements Initializable, PausableCo
 
 	public void setChannels(final Channel c1, final Channel c2) {
 		if (!Objects.equals(c1, channel1) || !Objects.equals(c2, channel2)) {
-			vectorSeries.getData().clear();
+			Platform.runLater(() -> vectorSeries.getData().clear());
 			if (channel1 != null) {
 				channel1.removeListener(this);
 			}

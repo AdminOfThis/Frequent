@@ -11,7 +11,6 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
-import main.Main;
 
 public class NegativeAreaChart extends AreaChart<Number, Number> {
 
@@ -101,18 +100,16 @@ public class NegativeAreaChart extends AreaChart<Number, Number> {
 	@Override
 	protected void layoutPlotChildren() {
 		super.layoutPlotChildren();
-		if (!Main.isFast()) {
-			// smoothing
-			double height = getLayoutBounds().getHeight();
-			getData().forEach(series -> {
-				final Path[] paths = getPaths(series);
-				if (null == paths) {
-					return;
-				}
-				smooth(paths[1].getElements(), paths[0].getElements(), height);
-				paths[0].setVisible(true);
-				paths[0].setManaged(true);
-			});
-		}
+		// smoothing
+		double height = getLayoutBounds().getHeight();
+		getData().forEach(series -> {
+			final Path[] paths = getPaths(series);
+			if (null == paths) {
+				return;
+			}
+			smooth(paths[1].getElements(), paths[0].getElements(), height);
+			paths[0].setVisible(true);
+			paths[0].setManaged(true);
+		});
 	}
 }

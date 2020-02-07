@@ -13,6 +13,7 @@ import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.GroupCellContextMenu;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -125,7 +126,7 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 
 	private void update(final Input item) {
 		changeMeter(item);
-		lblNumber.setText("");
+		Platform.runLater(() -> lblNumber.setText(""));
 		if (item == null || item.getColor() == null) {
 			setStyle("");
 		} else {
@@ -139,7 +140,7 @@ public class ChannelCell extends ListCell<Input> implements Initializable {
 			meter.setTitle(item.getName());
 			if (item instanceof Channel) {
 				if (((Channel) item).getChannel() != null) {
-					lblNumber.setText(Integer.toString(((Channel) item).getChannel().getChannelIndex() + 1));
+					Platform.runLater(() -> lblNumber.setText(Integer.toString(((Channel) item).getChannel().getChannelIndex() + 1)));
 				}
 			}
 		}
