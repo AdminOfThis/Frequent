@@ -63,15 +63,16 @@ public class ChannelListTest {
 	}
 
 	@Test
-	public ContextMenu openContextMenuWithMouse(FxRobot robot) {
+	public ContextMenu openContextMenuWithMouse(FxRobot robot) throws InterruptedException {
 		ListCell<?> cell = selectFirstElement(robot);
 		robot.clickOn(cell, MouseButton.SECONDARY);
+		Thread.sleep(100);
 		assertTrue(cell.getContextMenu().isShowing());
 		return cell.getContextMenu();
 	}
 
 	@Test
-	public void rename(FxRobot robot) {
+	public void rename(FxRobot robot) throws InterruptedException {
 		int windowsPrior = robot.listWindows().size();
 		openContextMenuWithMouse(robot);
 		robot.clickOn("#rename");
@@ -84,7 +85,7 @@ public class ChannelListTest {
 	}
 
 	@Test
-	public void resetName(FxRobot robot) {
+	public void resetName(FxRobot robot) throws InterruptedException {
 		rename(robot);
 		openContextMenuWithMouse(robot);
 		robot.clickOn("#resetName");
@@ -94,6 +95,7 @@ public class ChannelListTest {
 
 	private ListCell<?> selectFirstElement(FxRobot robot) {
 		ListView<?> list = robot.lookup("#channelList").queryListView();
+		assertTrue(list.getItems().size() >= 1);
 		robot.moveTo(list);
 		ListCell<?> cell = robot.from(list).lookup(".list-cell").nth(0).query();
 		return cell;
