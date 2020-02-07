@@ -3,7 +3,6 @@ package gui.dialog;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,13 +24,12 @@ class ConfirmationTest {
 
 	private ConfirmationDialog dialog;
 
-	@BeforeEach
-	public void before() throws Exception {
+	public void init(final boolean showCancel) throws Exception {
 		FxToolkit.setupSceneRoot(() -> {
 			Button openDialogButton = new Button("Open Dialog");
 			openDialogButton.setId("openDialog");
 			openDialogButton.setOnAction(event -> {
-				dialog = new ConfirmationDialog("Bla");
+				dialog = new ConfirmationDialog("Bla", showCancel);
 				dialog.show();
 			});
 			StackPane root = new StackPane(openDialogButton);
@@ -53,12 +51,14 @@ class ConfirmationTest {
 
 	@Test
 	public void openDialog(FxRobot robot) throws Exception {
+		init(false);
 		robot.clickOn("#openDialog");
 		assertEquals(2, robot.listWindows().size());
 	}
 
 	@Test
 	public void confirm(FxRobot robot) throws Exception {
+		init(false);
 		openDialog(robot);
 		Button yesButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.YES);
 		robot.clickOn(yesButton);
@@ -68,6 +68,7 @@ class ConfirmationTest {
 
 	@Test
 	public void deny(FxRobot robot) throws Exception {
+		init(true);
 		openDialog(robot);
 		Button noButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.NO);
 		robot.clickOn(noButton);
@@ -77,6 +78,7 @@ class ConfirmationTest {
 
 	@Test
 	public void close(FxRobot robot) throws Exception {
+		init(true);
 		openDialog(robot);
 		Platform.runLater(() -> dialog.close());
 		ButtonType result = dialog.getResult();
