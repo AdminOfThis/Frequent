@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -28,6 +29,7 @@ import main.FXMLMain;
 import main.Main;
 
 @ExtendWith(ApplicationExtension.class)
+@Tag("gui")
 public class ChannelListTest {
 
 	private static final String NAME = "TestChannel";
@@ -93,10 +95,11 @@ public class ChannelListTest {
 		assertEquals(NAME, channel.getName());
 	}
 
-	private ListCell<?> selectFirstElement(FxRobot robot) {
+	private ListCell<?> selectFirstElement(FxRobot robot) throws InterruptedException {
 		ListView<?> list = robot.lookup("#channelList").queryListView();
 		assertTrue(list.getItems().size() >= 1);
 		robot.moveTo(list);
+		Thread.sleep(100);
 		ListCell<?> cell = robot.from(list).lookup(".list-cell").nth(0).query();
 		return cell;
 	}

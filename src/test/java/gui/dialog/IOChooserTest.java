@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
@@ -23,6 +24,7 @@ import javafx.stage.Stage;
 import main.FXMLMain;
 
 @ExtendWith(ApplicationExtension.class)
+@Tag("gui")
 class IOChooserTest {
 
 	@BeforeAll
