@@ -67,14 +67,18 @@ class ConfirmationTest {
 	@Test
 	public void openDialog(FxRobot robot) throws Exception {
 		init();
+		start(robot);
+	}
+
+	private void start(FxRobot robot) throws Exception {
 		robot.clickOn("#openDialog");
 		assertEquals(2, robot.listWindows().size());
 	}
 
 	@Test
 	public void confirm(FxRobot robot) throws Exception {
-		init();
-		openDialog(robot);
+		init(true);
+		start(robot);
 		Button yesButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.YES);
 		robot.clickOn(yesButton);
 		ButtonType result = dialog.getResult();
@@ -84,7 +88,7 @@ class ConfirmationTest {
 	@Test
 	public void deny(FxRobot robot) throws Exception {
 		init(true);
-		openDialog(robot);
+		start(robot);
 		Button noButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.NO);
 		robot.clickOn(noButton);
 		ButtonType result = dialog.getResult();
@@ -94,7 +98,7 @@ class ConfirmationTest {
 	@Test
 	public void close(FxRobot robot) throws Exception {
 		init(false);
-		openDialog(robot);
+		start(robot);
 		Platform.runLater(() -> dialog.close());
 		ButtonType result = dialog.getResult();
 		assertEquals(null, result);
