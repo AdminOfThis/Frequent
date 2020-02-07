@@ -9,17 +9,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationExtension;
-import org.testfx.util.WaitForAsyncUtils;
 
 import com.synthbot.jasiohost.AsioChannel;
 
 import data.Channel;
 import gui.controller.MainController;
+import javafx.application.Platform;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -66,12 +67,14 @@ public class ChannelListTest {
 	}
 
 	@Test
+	@Timeout(1000)
 	public ContextMenu openContextMenuWithMouse(FxRobot robot) throws InterruptedException {
 		ListCell<?> cell = selectFirstElement(robot);
 		ContextMenu menu = cell.getContextMenu();
 		robot.clickOn(cell, MouseButton.SECONDARY);
-		if (!menu.isShowing()) {
-			WaitForAsyncUtils.async(() -> menu.show(cell.getScene().getWindow()));
+		// Bugfix for monocle bug, see https://github.com/TestFX/Monocle/issues/12
+		while (!menu.isShowing()) {
+			Platform.runLater(() -> menu.show(cell.getScene().getWindow()));
 		}
 		assertTrue(cell.getContextMenu().isShowing());
 		return cell.getContextMenu();
