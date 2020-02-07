@@ -24,12 +24,27 @@ class ConfirmationTest {
 
 	private ConfirmationDialog dialog;
 
-	public void init(final ConfirmationDialog dial) throws Exception {
+	public void init(final boolean showCancel) throws Exception {
 		FxToolkit.setupSceneRoot(() -> {
 			Button openDialogButton = new Button("Open Dialog");
 			openDialogButton.setId("openDialog");
 			openDialogButton.setOnAction(event -> {
-				dialog = dial;
+				dialog = new ConfirmationDialog("Bla", showCancel);
+				dialog.show();
+			});
+			StackPane root = new StackPane(openDialogButton);
+			root.setPrefSize(500, 500);
+			return new StackPane(root);
+		});
+		FxToolkit.setupStage(Stage::show);
+	}
+
+	public void init() throws Exception {
+		FxToolkit.setupSceneRoot(() -> {
+			Button openDialogButton = new Button("Open Dialog");
+			openDialogButton.setId("openDialog");
+			openDialogButton.setOnAction(event -> {
+				dialog = new ConfirmationDialog("Bla");
 				dialog.show();
 			});
 			StackPane root = new StackPane(openDialogButton);
@@ -51,14 +66,14 @@ class ConfirmationTest {
 
 	@Test
 	public void openDialog(FxRobot robot) throws Exception {
-		init(new ConfirmationDialog("Bla"));
+		init();
 		robot.clickOn("#openDialog");
 		assertEquals(2, robot.listWindows().size());
 	}
 
 	@Test
 	public void confirm(FxRobot robot) throws Exception {
-		init(new ConfirmationDialog("Bla"));
+		init();
 		openDialog(robot);
 		Button yesButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.YES);
 		robot.clickOn(yesButton);
@@ -68,7 +83,7 @@ class ConfirmationTest {
 
 	@Test
 	public void deny(FxRobot robot) throws Exception {
-		init(new ConfirmationDialog("Bla", true));
+		init(true);
 		openDialog(robot);
 		Button noButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.NO);
 		robot.clickOn(noButton);
@@ -78,7 +93,7 @@ class ConfirmationTest {
 
 	@Test
 	public void close(FxRobot robot) throws Exception {
-		init(new ConfirmationDialog("Bla", false));
+		init(false);
 		openDialog(robot);
 		Platform.runLater(() -> dialog.close());
 		ButtonType result = dialog.getResult();
