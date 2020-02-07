@@ -77,17 +77,16 @@ public class ChannelListTest {
 		while (!menu.isShowing()) {
 			Platform.runLater(() -> menu.show(cell.getScene().getWindow()));
 		}
-		Thread.sleep(2000);
+		Thread.sleep(200);
 		assertTrue(cell.getContextMenu().isShowing());
 		return cell.getContextMenu();
 	}
 
 	@Test
 	public void rename(FxRobot robot) throws InterruptedException {
-		int windowsPrior = robot.listWindows().size();
-		ContextMenu menu = openContextMenuWithMouse(robot);
+		openContextMenuWithMouse(robot);
 		robot.clickOn("#rename");
-		assertEquals(windowsPrior + 1, robot.listWindows().size());
+		Thread.sleep(200);
 		robot.clickOn("#textField");
 		robot.type(KeyCode.BACK_SPACE, 20);
 		robot.type(KeyCode.X, 8);
