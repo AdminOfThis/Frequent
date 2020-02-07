@@ -87,11 +87,12 @@ class WindowPositionTest {
 		Stage stage = FxToolkit.registerPrimaryStage();
 		Main.setDebug(true);
 		PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, open);
+		Thread.sleep(100);
 		FxToolkit.setupApplication(FXMLMain.class);
 		do {
 			Thread.yield();
 		} while (!stage.isShowing());
-		Thread.sleep(100);
+		Thread.sleep(1000);
 	}
 
 	private Stage getStage(FxRobot robot) {
