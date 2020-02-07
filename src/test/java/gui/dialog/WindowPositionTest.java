@@ -87,7 +87,6 @@ class WindowPositionTest {
 		Stage stage = FxToolkit.registerPrimaryStage();
 		Main.setDebug(true);
 		PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, open);
-		PropertiesIO.saveProperties();
 		FxToolkit.setupApplication(FXMLMain.class);
 		do {
 			Thread.yield();
