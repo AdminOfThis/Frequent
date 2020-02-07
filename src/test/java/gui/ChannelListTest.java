@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationExtension;
+import org.testfx.util.WaitForAsyncUtils;
 
 import com.synthbot.jasiohost.AsioChannel;
 
@@ -67,8 +68,11 @@ public class ChannelListTest {
 	@Test
 	public ContextMenu openContextMenuWithMouse(FxRobot robot) throws InterruptedException {
 		ListCell<?> cell = selectFirstElement(robot);
+		ContextMenu menu = cell.getContextMenu();
 		robot.clickOn(cell, MouseButton.SECONDARY);
-		Thread.sleep(100);
+		if (!menu.isShowing()) {
+			WaitForAsyncUtils.async(() -> menu.show(cell.getScene().getWindow()));
+		}
 		assertTrue(cell.getContextMenu().isShowing());
 		return cell.getContextMenu();
 	}
