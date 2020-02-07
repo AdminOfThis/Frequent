@@ -3,19 +3,26 @@ package gui.dialog;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import gui.FXMLUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import main.Constants;
 import main.FXMLMain;
 import main.Main;
 
-public class AboutController implements Initializable {
+public class AboutController extends AnchorPane implements Initializable {
 
-	public static final String FXML_PATH = "/fxml/dialog/About.fxml";
+	private static final String FXML_PATH = "/fxml/dialog/About.fxml";
+	private static final Logger LOG = LogManager.getLogger(AboutController.class);
 
 	@FXML
 	private BorderPane root;
@@ -23,6 +30,22 @@ public class AboutController implements Initializable {
 	private Label lblName, lblVersion, lblCommit, lblCreator, lblBuildJDK, lblCreated;
 	@FXML
 	private TextArea lblLicense;
+
+	public AboutController() {
+		super();
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML_PATH), this);
+		if (p != null) {
+			getChildren().add(p);
+			AnchorPane.setTopAnchor(p, .0);
+			AnchorPane.setBottomAnchor(p, .0);
+			AnchorPane.setLeftAnchor(p, .0);
+			AnchorPane.setRightAnchor(p, .0);
+
+		} else {
+			LOG.warn("Unable to load About");
+		}
+
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {

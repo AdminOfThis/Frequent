@@ -43,7 +43,6 @@ class ColorManagerTest {
 		do {
 			Thread.yield();
 		} while (!stage.isShowing());
-
 	}
 
 	@RepeatedTest(value = 2)

@@ -755,9 +755,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	@FXML
 	private void openAbout(ActionEvent e) {
-
-		Parent about = FXMLUtil.loadFXML(getClass().getResource(AboutController.FXML_PATH));
-		if (about != null) {
+		try {
 			Stage stageAbout = new Stage();
 			stageAbout.setTitle("About " + Main.getOnlyTitle());
 			FXMLUtil.setIcon(stageAbout, FXMLMain.getLogoPath());
@@ -765,10 +763,11 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 //			stageAbout.initStyle(StageStyle.UNDECORATED);
 			stageAbout.initModality(Modality.APPLICATION_MODAL);
 			stageAbout.initOwner(getStage());
-			stageAbout.setScene(new Scene(about));
+			stageAbout.setScene(new Scene(new AboutController()));
 			stageAbout.setOnCloseRequest(close -> stageAbout.hide());
 			stageAbout.show();
-
+		} catch (Exception ex) {
+			LOG.error("Unable to load About Window", ex);
 		}
 	}
 

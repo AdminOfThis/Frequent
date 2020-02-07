@@ -39,7 +39,6 @@ class IOChooserTest {
 		do {
 			Thread.yield();
 		} while (!stage.isShowing());
-
 	}
 
 	@Test

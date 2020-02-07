@@ -92,6 +92,7 @@ public class ColorManager extends AnchorPane implements Initializable {
 			}
 		}
 	}
+
 	private static final Logger LOG = LogManager.getLogger(ColorManager.class);
 	private static final String FXML_PATH = "/fxml/dialog/ColorManager.fxml";
 	@FXML
@@ -113,7 +114,7 @@ public class ColorManager extends AnchorPane implements Initializable {
 			AnchorPane.setRightAnchor(p, .0);
 
 		} else {
-			LOG.warn("Unable to load ChannelCell");
+			LOG.warn("Unable to load ColorManager");
 		}
 
 	}
