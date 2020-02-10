@@ -25,8 +25,8 @@ public class Main {
 	private static final String DEFAULT_PROPERTIES_PATH = "./settings.conf";
 
 	private static final String POM_TITLE = "Frequent";
-	private static final String VERSION_KEY = "Implementation-Version";
-	private static final String TITLE_KEY = "Implementation-Title";
+	public static final String VERSION_KEY = "Implementation-Version";
+	public static final String TITLE_KEY = "Implementation-Title";
 
 	private static String title = "";
 	private static String version = "";

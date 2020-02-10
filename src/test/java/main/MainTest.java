@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
@@ -27,6 +28,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 @ExtendWith(ApplicationExtension.class)
+@Tag("gui")
 class MainTest {
 
 	@BeforeEach
