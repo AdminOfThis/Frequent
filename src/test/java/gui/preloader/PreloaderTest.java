@@ -65,6 +65,7 @@ class PreloaderTest {
 		ProgressBar prog = robot.lookup("#progress").queryAs(ProgressBar.class);
 		double progress = Math.random();
 		WaitForAsyncUtils.asyncFx(() -> loader.handleApplicationNotification(new ProgressNotification(progress)));
+		Thread.sleep(100);
 		assertEquals(progress, prog.getProgress());
 	}
 
@@ -76,9 +77,9 @@ class PreloaderTest {
 		assertNotEquals(progress, prog.getProgress());
 	}
 
-	@ParameterizedTest()
-	@EnumSource(StateChangeNotification.Type.class)
-	void stateChange(FxRobot robot, Type type) throws Exception {
+	@ParameterizedTest
+	@EnumSource(Type.class)
+	void stateChange(Type type) throws Exception {
 		WaitForAsyncUtils.asyncFx(() -> loader.handleApplicationNotification(new StateChangeNotification(type)));
 	}
 
