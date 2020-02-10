@@ -9,6 +9,8 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationExtension;
@@ -16,6 +18,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import javafx.application.Preloader.ProgressNotification;
 import javafx.application.Preloader.StateChangeNotification;
+import javafx.application.Preloader.StateChangeNotification.Type;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
@@ -71,6 +74,12 @@ class PreloaderTest {
 		double progress = Math.random();
 		WaitForAsyncUtils.asyncFx(() -> loader.handleApplicationNotification(new StateChangeNotification(StateChangeNotification.Type.BEFORE_INIT)));
 		assertNotEquals(progress, prog.getProgress());
+	}
+
+	@ParameterizedTest()
+	@EnumSource(StateChangeNotification.Type.class)
+	void stateChange(FxRobot robot, Type type) throws Exception {
+		WaitForAsyncUtils.asyncFx(() -> loader.handleApplicationNotification(new StateChangeNotification(type)));
 	}
 
 }
