@@ -2,6 +2,7 @@ package gui.preloader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.RepeatedTest;
@@ -11,9 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationExtension;
+import org.testfx.util.WaitForAsyncUtils;
 
-import javafx.application.Platform;
 import javafx.application.Preloader.ProgressNotification;
+import javafx.application.Preloader.StateChangeNotification;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
@@ -59,17 +61,16 @@ class PreloaderTest {
 	void progress(FxRobot robot) throws Exception {
 		ProgressBar prog = robot.lookup("#progress").queryAs(ProgressBar.class);
 		double progress = Math.random();
-		Platform.runLater(() -> loader.handleApplicationNotification(new ProgressNotification(progress)));
-		Thread.sleep(200);
+		WaitForAsyncUtils.asyncFx(() -> loader.handleApplicationNotification(new ProgressNotification(progress)));
 		assertEquals(progress, prog.getProgress());
 	}
 
-//	@Test
-//	void finish(FxRobot robot) throws Exception {
-//
-//		Platform.runLater(() -> loader.handleStateChangeNotification(new StateChangeNotification(StateChangeNotification.Type.BEFORE_START)));
-//		Thread.sleep(5000);
-//		assertEquals(0, robot.listWindows().size());
-//	}
+	@Test
+	void wrongProgress(FxRobot robot) throws Exception {
+		ProgressBar prog = robot.lookup("#progress").queryAs(ProgressBar.class);
+		double progress = Math.random();
+		WaitForAsyncUtils.asyncFx(() -> loader.handleApplicationNotification(new StateChangeNotification(StateChangeNotification.Type.BEFORE_INIT)));
+		assertNotEquals(progress, prog.getProgress());
+	}
 
 }
