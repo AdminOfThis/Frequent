@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 
 @ExtendWith(ApplicationExtension.class)
 @Tag("gui")
-class ConfirmationTest {
+class ConfirmationDialogTest {
 
 	private ConfirmationDialog dialog;
 
