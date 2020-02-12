@@ -8,9 +8,11 @@ import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import control.Watchdog;
+import gui.FXMLUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -20,8 +22,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import main.Constants;
 import main.Constants.RESTORE_PANEL;
@@ -33,14 +36,18 @@ import preferences.PropertiesIO;
  * @author AdminOfThis
  *
  */
-public class SettingsController implements Initializable {
+public class SettingsController extends AnchorPane implements Initializable {
 
+	private static final String FXML_PATH = "/fxml/Settings.fxml";
 	private static final Logger LOG = LogManager.getLogger(SettingsController.class);
 
 	private static final Number[] BUFFERS = new Number[] { 64, 128, 256, 512, 1024, 2048 };
 
 	@FXML
-	private BorderPane root;
+	private VBox root;
+
+	@FXML
+	private GridPane grid;
 
 	@FXML
 	private Button btnCancel, btnSave;
@@ -66,7 +73,7 @@ public class SettingsController implements Initializable {
 	private RadioButton rBtnPanelNothing, rBtnPanelLast, rBtnPanelSpecific;
 
 	@FXML
-	private FlowPane flwPanel;
+	private VBox vPanel;
 	@FXML
 	private CheckBox chkRestoreLastFile, chkWarnUnsavedChanges;
 
@@ -74,6 +81,22 @@ public class SettingsController implements Initializable {
 	private Slider sldrThreshold;
 	@FXML
 	private TextField tfThreshold;
+
+	public SettingsController() {
+		super();
+		Parent p = FXMLUtil.loadFXML(getClass().getResource(FXML_PATH), this);
+		FXMLUtil.setStyleSheet(this);
+		if (p != null) {
+			getChildren().add(p);
+			AnchorPane.setTopAnchor(p, .0);
+			AnchorPane.setBottomAnchor(p, .0);
+			AnchorPane.setLeftAnchor(p, .0);
+			AnchorPane.setRightAnchor(p, .0);
+
+		} else {
+			LOG.warn("Unable to load About");
+		}
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -83,7 +106,7 @@ public class SettingsController implements Initializable {
 		sldrThreshold.setValue(Double.parseDouble(PropertiesIO.getProperty(Constants.SETTING_WATCHDOG_THRESHOLD, Double.toString(Watchdog.DEFAULT_THRESHOLD))));
 		tfThreshold.setText(Math.round(sldrThreshold.getValue()) + " dB");
 		// controls
-		flwPanel.disableProperty().bind(rBtnPanelSpecific.selectedProperty().not());
+		vPanel.disableProperty().bind(rBtnPanelSpecific.selectedProperty().not());
 		// Init data
 		chbBuffer.getItems().addAll(BUFFERS);
 		chbDevice.getItems().addAll(ASIOController.getPossibleDriverStrings());
@@ -131,13 +154,15 @@ public class SettingsController implements Initializable {
 	}
 
 	private void initSpecificPanel() {
-		flwPanel.getChildren().clear();
-		for (String panel : MainController.getInstance().getPanels()) {
-			RadioButton button = new RadioButton(panel);
-			button.setToggleGroup(startUpPanel);
-			flwPanel.getChildren().add(button);
+		vPanel.getChildren().clear();
+		if (MainController.getInstance() != null) {
+			for (String panel : MainController.getInstance().getPanels()) {
+				RadioButton button = new RadioButton(panel);
+				button.setToggleGroup(startUpPanel);
+				vPanel.getChildren().add(button);
+			}
+			startUpPanel.getToggles().get(1).setSelected(true);
 		}
-		startUpPanel.getToggles().get(1).setSelected(true);
 	}
 
 	private void loadFilePanel() {
@@ -217,7 +242,9 @@ public class SettingsController implements Initializable {
 		ASIOController.getInstance().setDevice(chbDevice.getValue());
 		ASIOController.getInstance().restart();
 
-		MainController.getInstance().resetInfosFromDevice();
+		if (MainController.getInstance() != null) {
+			MainController.getInstance().resetInfosFromDevice();
+		}
 		close();
 	}
 

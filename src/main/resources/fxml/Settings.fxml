@@ -12,33 +12,21 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefHeight="720.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.SettingsController">
-   <bottom>
-      <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" onAction="#cancel" prefWidth="75.0" text="Cancel" />
-            <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#save" prefWidth="75.0" text="Save" />
-         </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-      </HBox>
-   </bottom>
-   <center>
-      <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
+
+<VBox fx:id="root" spacing="5.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ScrollPane fitToWidth="true">
          <content>
-            <GridPane hgap="10.0" vgap="10.0">
+            <GridPane fx:id="grid" hgap="10.0" vgap="10.0">
               <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" prefWidth="50.0" />
-                <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" />
+                <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" prefWidth="150.0" />
                 <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
                   <ColumnConstraints hgrow="ALWAYS" />
               </columnConstraints>
@@ -91,67 +79,77 @@
                         </RadioButton>
                         <RadioButton fx:id="rBtnPanelLast" mnemonicParsing="false" text="Show last used Panel on Application start" toggleGroup="$startUp" />
                         <RadioButton fx:id="rBtnPanelSpecific" mnemonicParsing="false" text="Show specific Panel on Application Start" toggleGroup="$startUp" />
-                        <FlowPane fx:id="flwPanel" hgap="5.0" rowValignment="TOP" style="-fx-background-color: derive(-fx-base, 10%);" vgap="5.0">
-                           <children>
-                              <RadioButton mnemonicParsing="false" text="###">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="startUpPanel" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
-                              <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
-                              <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
-                              <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
-                              <RadioButton mnemonicParsing="false" text="###">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="startUpPanel1" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="###">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="startUpPanel2" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="###">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="startUpPanel3" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="###">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="startUpPanel4" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="###">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="startUpPanel5" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="###">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="startUpPanel6" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="###">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="startUpPanel7" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="###">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="startUpPanel8" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="###">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="startUpPanel9" />
-                                 </toggleGroup>
-                              </RadioButton>
-                           </children>
+                        <ScrollPane fitToWidth="true" minViewportHeight="50.0" prefViewportHeight="100.0">
+                           <content>
+                              <VBox fx:id="vPanel" spacing="5.0">
+                                 <children>
+                                    <RadioButton mnemonicParsing="false" text="###">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="startUpPanel" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
+                                    <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
+                                    <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
+                                    <RadioButton mnemonicParsing="false" text="###" toggleGroup="$startUpPanel" />
+                                    <RadioButton mnemonicParsing="false" text="###">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="startUpPanel1" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" text="###">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="startUpPanel2" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" text="###">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="startUpPanel3" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" text="###">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="startUpPanel4" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" text="###">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="startUpPanel5" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" text="###">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="startUpPanel6" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" text="###">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="startUpPanel7" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" text="###">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="startUpPanel8" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" text="###">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="startUpPanel9" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </VBox>
+                           </content>
                            <padding>
-                              <Insets bottom="5.0" left="25.0" right="5.0" top="5.0" />
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
-                        </FlowPane>
+                           <VBox.margin>
+                              <Insets left="27.0" />
+                           </VBox.margin>
+                        </ScrollPane>
                      </children>
                   </VBox>
                   <Label text="Missing Signal" GridPane.columnSpan="2" GridPane.rowIndex="15" />
@@ -164,7 +162,7 @@
                      </children>
                   </HBox>
                   <Label text="On Reappearance" GridPane.columnIndex="1" GridPane.rowIndex="17" />
-                  <FlowPane hgap="5.0" vgap="5.0" GridPane.columnIndex="2" GridPane.rowIndex="17">
+                  <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="17">
                      <children>
                         <RadioButton mnemonicParsing="false" selected="true" text="Hide Notification">
                            <toggleGroup>
@@ -174,7 +172,7 @@
                         <RadioButton mnemonicParsing="false" text="Do Nothing" toggleGroup="$watchDogDo" />
                         <RadioButton mnemonicParsing="false" text="Highlight" toggleGroup="$watchDogDo" />
                      </children>
-                  </FlowPane>
+                  </VBox>
                   <Label text="Panel on startup" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                   <Label text="dB-Values" GridPane.columnIndex="1" GridPane.rowIndex="9" />
                   <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="9">
@@ -200,6 +198,7 @@
                         <HBox alignment="CENTER_LEFT" spacing="5.0">
                            <children>
                               <RadioButton fx:id="rdWinWindowed" mnemonicParsing="false" text="Windowed" toggleGroup="$window" />
+                              <Separator HBox.hgrow="SOMETIMES" />
                               <TextField fx:id="txtWidth" prefWidth="70.0" promptText="Width" text="800" />
                               <Label text="x" />
                               <TextField fx:id="txtHeight" prefWidth="70.0" promptText="Heigth" text="600" />
@@ -216,9 +215,15 @@
                </padding>
             </GridPane>
          </content>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
       </ScrollPane>
-   </center>
-</BorderPane>
+      <HBox alignment="CENTER_RIGHT" spacing="5.0" style="-fx-background-color: transparent;">
+         <children>
+            <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" onAction="#cancel" prefWidth="75.0" text="Cancel" />
+            <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#save" prefWidth="75.0" text="Save" />
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</VBox>

@@ -1,9 +1,8 @@
-/* .root { */
-/*     -fx-base: rgba(30, 33, 35, 255); // dark */
+ .root {
+     -fx-base: rgba(30, 33, 35, 255); // dark */
 /* 	-fx-accent: #7DFF2F; */
 /* 	-fx-focus-color: derive(-fx-accent, 20%); */
-
-/* } */
+ } 
 .default-color0.chart-symbol {
 	-fx-background-color: derive(-fx-accent, -50%);
 }
@@ -103,7 +102,17 @@
 	-fx-border-width: 5px;
 }
 
-.chart-vertical-grid-lines, .chart-horizontal-grid-lines {
+.scroll-pane  {
+      -fx-padding: 0;
+}
+
+.scroll-pane .viewport {
+      -fx-border-color: -fx-base;
+	  -fx-border-width: .05em;
+}
+
+.chart-vertical-grid-lines,
+.chart-horizontal-grid-lines {
 	-fx-stroke: derive(-fx-base, 80%);
 }
 

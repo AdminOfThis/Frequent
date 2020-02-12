@@ -123,7 +123,6 @@ public class FXMLMain extends MainGUI {
 			Platform.exit();
 			LOG.info("Stopping AudioDriver");
 			ASIOController.getInstance().shutdown();
-			LOG.info("Deleting RTA file");
 			LOG.info("Bye");
 			System.exit(0);
 			result = true;

@@ -85,7 +85,6 @@ import preferences.PropertiesIO;
 
 public class MainController implements Initializable, Pausable, CueListener, WatchdogListener {
 
-	private static final String SETTINGS_PATH = "/fxml/Settings.fxml";
 	// modules
 	private static final String OVERVIEW_PATH = "/fxml/OverView.fxml";
 	private static final String FFT_PATH = "/fxml/RTAView.fxml";
@@ -773,13 +772,12 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	@FXML
 	private void openSettings(ActionEvent e) {
-		Parent setting = FXMLUtil.loadFXML(getClass().getResource(SETTINGS_PATH));
 		Stage settingStage = new Stage();
 		settingStage.setTitle("Settings");
+		settingStage.setHeight(700);
 		settingStage.setResizable(false);
 		FXMLUtil.setIcon(settingStage, FXMLMain.getLogoPath());
-		FXMLUtil.setStyleSheet(setting);
-		settingStage.setScene(new Scene(setting));
+		settingStage.setScene(new Scene(new SettingsController()));
 		settingStage.initOwner(root.getScene().getWindow());
 		settingStage.initModality(Modality.NONE);
 		settingStage.show();
