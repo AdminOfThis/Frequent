@@ -82,7 +82,7 @@
 			<artifactId>mockito-core</artifactId>
 			<version>3.2.4</version>
 			<scope>compile</scope>
-			</dependency>
+		</dependency>
 
 
 		<dependency>
