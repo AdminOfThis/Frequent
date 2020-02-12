@@ -6,7 +6,7 @@
 			<PatternLayout pattern="%d{HH:mm:ss} %-5p %-3L:%-30c{1} - %m%n" />
 			<Filters>
 				<BurstFilter level="warn" rate="5" />
-				<ThresholdFilter level="warn" />
+				<ThresholdFilter level="info" />
 			</Filters>
 		</Console>
 
@@ -28,8 +28,8 @@
 				<ThresholdFilter level="error" />
 			</Filters>
 			<accessToken>15be8db3e6a744ceaaeedea7a0dfb20c</accessToken>
-			<!--<enabled>${main:0}</enabled>-->
-			<!--<codeVersion>${main:1}</codeVersion>-->
+			<enabled>${main:0}</enabled>
+			<codeVersion>${main:1}</codeVersion>
 			<environment>${main:2}</environment>
 			<ignoreExceptions>true</ignoreExceptions> 
 

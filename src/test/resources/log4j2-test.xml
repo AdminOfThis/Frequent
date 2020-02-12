@@ -20,8 +20,8 @@
 			</Filters>
 
 			<accessToken>15be8db3e6a744ceaaeedea7a0dfb20c</accessToken>
-			<!--<enabled>${main:0}</enabled>-->
-			<!--<codeVersion>${main:1}</codeVersion>-->
+			<enabled>${main:0}</enabled>
+			<codeVersion>${main:1}</codeVersion>
 			<environment>qa</environment>
 			<ignoreExceptions>true</ignoreExceptions>
 
