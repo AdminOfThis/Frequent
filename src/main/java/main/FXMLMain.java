@@ -95,9 +95,8 @@ public class FXMLMain extends MainGUI {
 	}
 
 	/**
-	 * stops all running threads and terminates the gui
+	 * checks if the application can be closed
 	 */
-	@Override
 	public boolean askForClose() {
 		boolean result = true;
 		try {
