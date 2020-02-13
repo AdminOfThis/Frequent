@@ -85,8 +85,8 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 			restart();
 			LOG.info("ASIO driver started");
 			initFFT();
+			LOG.info("FFT Analysis started");
 		}
-		LOG.info("FFT Analysis started");
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				} catch (Exception e) {
 					LOG.debug(possibleDriver + " is unavailable");
 				} finally {
-					if (tempDriver != null && (!tempDriver.getName().equals(ASIOController.getInstance().getDevice()))) {
+					if (tempDriver != null) {
 						tempDriver.shutdownAndUnloadDriver();
 					}
 				}
@@ -261,7 +261,11 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 									}
 								}
 								if (c != null) {
-									c.setBuffer(output, samplePosition);
+									try {
+										c.setBuffer(output, samplePosition);
+									} catch (IndexOutOfBoundsException e) {
+										LOG.debug("Out of bounds while writing to channel", e);
+									}
 								}
 							}
 						} catch (Exception e2) {
@@ -476,7 +480,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 			}
 			if (asioDriver == null) {
 				LOG.warn("Unable to load ASIO driver '" + driverName + "'");
-				FXMLMain.getInstance().close();
+				FXMLMain.getInstance().askForClose();
 			}
 
 			else if (asioDriver.getCurrentState() == AsioDriverState.LOADED || asioDriver.getCurrentState() == AsioDriverState.INITIALIZED) {

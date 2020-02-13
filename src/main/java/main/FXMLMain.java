@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import control.ASIOController;
 import data.FileIO;
 import gui.FXMLUtil;
@@ -30,6 +33,8 @@ import preferences.PropertiesIO;
  *
  */
 public class FXMLMain extends MainGUI {
+
+	private static final Logger LOG = LogManager.getLogger(FXMLMain.class);
 
 	private static final String GUI_IO_CHOOSER = "/fxml/dialog/IOChooser.fxml";
 	private static final String GUI_MAIN_PATH = "/fxml/Main.fxml";
@@ -93,7 +98,7 @@ public class FXMLMain extends MainGUI {
 	 * stops all running threads and terminates the gui
 	 */
 	@Override
-	public boolean close() {
+	public boolean askForClose() {
 		boolean result = true;
 		try {
 			if (!Main.isDebug() && PropertiesIO.getBooleanProperty(Constants.SETTING_WARN_UNSAVED_CHANGES)) {
@@ -119,12 +124,7 @@ public class FXMLMain extends MainGUI {
 					}
 				}
 			}
-			LOG.info("Stopping GUI");
-			Platform.exit();
-			LOG.info("Stopping AudioDriver");
-			ASIOController.getInstance().shutdown();
-			LOG.info("Bye");
-			System.exit(0);
+
 			result = true;
 		} catch (Exception e) {
 			LOG.error("Problem closing window", e);
@@ -155,11 +155,17 @@ public class FXMLMain extends MainGUI {
 		LOG.info("Showing IOChooser");
 		primaryStage.setScene(loginScene);
 		primaryStage.setOnCloseRequest(e -> {
-			writePos(primaryStage);
-			if (!FXMLMain.getInstance().close()) {
-				MainController.getInstance().setStatus("Close cancelled");
-				e.consume();
-			}
+
+			new Thread(() -> {
+				LOG.info("Close requested");
+				writePos(primaryStage);
+				if (FXMLMain.getInstance().askForClose()) {
+					finish();
+				} else {
+					MainController.getInstance().setStatus("Close cancelled");
+					e.consume();
+				}
+			}).start();
 		});
 		primaryStage.setTitle(Main.getReadableTitle());
 		primaryStage.setResizable(false);
@@ -170,6 +176,24 @@ public class FXMLMain extends MainGUI {
 			}
 		});
 		primaryStage.show();
+	}
+
+	/**
+	 * Terminates the application. Should always be the last function called
+	 */
+	private void finish() {
+		LOG.info("Stopping GUI");
+		Platform.exit();
+		LOG.info("Stopping AudioDriver");
+		ASIOController.getInstance().shutdown();
+		LOG.info("Waiting for unfinished threads");
+		try {
+			Thread.sleep(3000);
+		} catch (Exception e) {
+			LOG.error("Unable to sleep at application finish");
+		}
+		LOG.info("Bye");
+		System.exit(0);
 	}
 
 	private Scene loadMain() {
@@ -185,7 +209,7 @@ public class FXMLMain extends MainGUI {
 			return new Scene(p);
 		} catch (IOException e) {
 			LOG.error("Unable to load Main GUI", e);
-			FXMLMain.getInstance().close();
+			FXMLMain.getInstance().askForClose();
 		}
 		return null;
 	}

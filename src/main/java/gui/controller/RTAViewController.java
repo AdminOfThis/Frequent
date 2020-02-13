@@ -212,9 +212,9 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 			float freq = (float) (Math.round(FFT.getFrequency(map) * 100.0) / 100.0);
 			Platform.runLater(() -> chart.setTitle(freq + " Hz"));
 			// max
-			synchronized (chart) {
-				synchronized (series) {
-					synchronized (maxSeries) {
+			synchronized (series) {
+				synchronized (maxSeries) {
+					if (chart.getData().contains(maxSeries)) {
 						if (series.getData().size() != maxSeries.getData().size()) {
 							maxSeries.getData().setAll(FXCollections.observableArrayList(series.getData()));
 						} else {
@@ -228,9 +228,8 @@ public class RTAViewController implements Initializable, FFTListener, PausableVi
 								}
 							}
 						}
-
-						series.getData().setAll(dataList);
 					}
+					series.getData().setAll(dataList);
 				}
 			}
 			((LogarithmicAxis) chart.getXAxis()).setLowerBound(FFT.getFrequencyForIndex(1, map.length, ASIOController.getInstance().getSampleRate()));

@@ -43,7 +43,7 @@ public class DataFlowChart extends AnchorPane implements Initializable, Pausable
 	private Channel channel;
 	private List<Float> pendingData = Collections.synchronizedList(new ArrayList<>());
 	private Pausable pausableParent;
-	private boolean pause = false;
+	private boolean pause = true;
 
 	public DataFlowChart() {
 		LOG.debug("Creating new DataChart");
@@ -65,17 +65,18 @@ public class DataFlowChart extends AnchorPane implements Initializable, Pausable
 	}
 
 	@Override
-	public void colorChanged(String newColor) {}
+	public void colorChanged(String newColor) {
+		// do nothing
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		chart.getData().add(series);
-
 	}
 
 	@Override
 	public boolean isPaused() {
-		return pause || pausableParent != null && pausableParent.isPaused() || channel == null;
+		return pause || channel == null || (pausableParent != null && pausableParent.isPaused());
 	}
 
 	@Override
@@ -84,7 +85,9 @@ public class DataFlowChart extends AnchorPane implements Initializable, Pausable
 	}
 
 	@Override
-	public void nameChanged(String name) {}
+	public void nameChanged(String name) {
+		// do nothing
+	}
 
 	@Override
 	public void newBuffer(final Channel channel, final float[] buffer, final long time) {
@@ -151,40 +154,40 @@ public class DataFlowChart extends AnchorPane implements Initializable, Pausable
 			}
 			pendingData.clear();
 
+			int show = (int) (ASIOController.getInstance().getSampleRate() * TIME_FRAME);
+			if (!series.getData().isEmpty()) {
+				int upperbound = Math.max(0, series.getData().size() - show);
+				if (upperbound > 0) {
+					Platform.runLater(() -> {
+						if (series.getData().size() > upperbound) {
+							series.getData().remove(0, upperbound);
+						}
+					});
+				}
+			}
+
 			int count = 0;
-			if (series.getData().isEmpty()) {
-				count = 0;
-			} else {
+			if (!series.getData().isEmpty()) {
 				count = series.getData().get(series.getData().size() - 1).getXValue().intValue();
 			}
 			ArrayList<Data<Number, Number>> adding = new ArrayList<>();
 			for (int i = 0; i < dataCopy.size(); i++) {
 				adding.add(new Data<Number, Number>(count + i, dataCopy.get(i)));
 			}
-			int show = (int) (ASIOController.getInstance().getSampleRate() * TIME_FRAME);
 
-			Platform.runLater(() -> {
-				synchronized (series.getData()) {
-					try {
-						if (!series.getData().isEmpty()) {
-							series.getData().remove(0, Math.max(0, series.getData().size() - show));
-						}
-						series.getData().addAll(adding);
-					} catch (Exception e) {
-						LOG.error("Problem displaying data", e);
-					}
-				}
-			});
+			try {
+				Platform.runLater(() -> series.getData().addAll(adding));
+			} catch (Exception e) {
+				LOG.error("Problem displaying data", e);
+			}
 			NumberAxis xAxis = ((NumberAxis) chart.getXAxis());
 			if (!series.getData().isEmpty()) {
-				double upper = series.getData().get(series.getData().size() - 1).getXValue().doubleValue();
+				double upper = series.getData().get(series.getData().size() - 1).getXValue().intValue();
 				xAxis.setUpperBound(upper);
 				xAxis.setLowerBound(upper - show);
 			}
-			synchronized (treshold) {
-				if (treshold.getData().size() >= 2) {
-					treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
-				}
+			if (treshold.getData().size() >= 2) {
+				treshold.getData().get(1).setXValue(xAxis.getUpperBound() + 10000);
 			}
 		}
 

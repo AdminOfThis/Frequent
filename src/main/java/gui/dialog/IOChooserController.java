@@ -99,7 +99,7 @@ public class IOChooserController implements Initializable {
 		// Quit Button
 		btnQuit.setOnAction(e -> {
 			((Stage) root.getScene().getWindow()).close();
-			FXMLMain.getInstance().close();
+			FXMLMain.getInstance().askForClose();
 		});
 		btnStart.disableProperty().bind(listIO.getSelectionModel().selectedItemProperty().isNull());
 
@@ -213,16 +213,5 @@ public class IOChooserController implements Initializable {
 		}
 		LOG.info("Loading Main-Window with selected Driver \"" + selectedIO + "\"");
 		launchMain(selectedIO);
-		// }
-		Stage stage = null;
-		try {
-			stage = (Stage) listIO.getScene().getWindow();
-		} catch (Exception ex) {
-			LOG.warn("Unable to read stage", e);
-		}
-		if (stage != null) {
-			stage.close();
-		}
-		e.consume();
 	}
 }

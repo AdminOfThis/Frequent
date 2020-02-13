@@ -5,7 +5,6 @@
 		<Console name="STDOUT" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{HH:mm:ss} %-5p %-3L:%-30c{1} - %m%n" />
 			<Filters>
-				<BurstFilter level="warn" rate="5" />
 				<ThresholdFilter level="info" />
 			</Filters>
 		</Console>

@@ -135,7 +135,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	private Label lblStatus;
 	@FXML
 	private ProgressBar progStatus;
-	private boolean pause = false;
+	private boolean pause = true;
 	private LinkedHashMap<ToggleButton, Node> contentMap = new LinkedHashMap<>();
 	private HashMap<Node, PausableView> controllerMap = new HashMap<>();
 	private double channelSplitRatio = 0.8, rootSplitRatio = 0.8;
@@ -239,6 +239,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		TimeKeeper.getInstance().addListener(this);
 		Watchdog.getInstance().addListener(this);
 
+		pause = false;
 	}
 
 	public void initIO(final String ioName) {
@@ -441,7 +442,7 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	@FXML
 	private void close(ActionEvent e) {
-		FXMLMain.getInstance().close();
+		FXMLMain.getInstance().askForClose();
 	}
 
 	private void createViewMenu() {
