@@ -44,6 +44,7 @@ class SettingControllerTest {
 	@Test
 	public void save(FxRobot robot) throws InterruptedException {
 		robot.clickOn("#btnSave");
+		Thread.sleep(1000);
 	}
 
 	@Test

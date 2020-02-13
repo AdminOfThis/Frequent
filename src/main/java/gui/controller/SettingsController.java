@@ -236,7 +236,7 @@ public class SettingsController extends AnchorPane implements Initializable {
 //watchdog
 		PropertiesIO.setProperty(Constants.SETTING_WATCHDOG_THRESHOLD, Double.toString(sldrThreshold.getValue()));
 
-		PropertiesIO.saveProperties();
+		new Thread(() -> PropertiesIO.saveProperties()).start();
 
 		ASIOController.getInstance().setBufferSize(chbBuffer.getValue().intValue());
 		ASIOController.getInstance().setDevice(chbDevice.getValue());
