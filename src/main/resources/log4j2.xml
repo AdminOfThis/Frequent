@@ -23,7 +23,7 @@
 
 		<Rollbar name="ROLLBAR">
 			<Filters>
-				<BurstFilter level="warn" rate="5" />
+				<BurstFilter level="warn" rate="100" />
 				<ThresholdFilter level="error" />
 			</Filters>
 			<accessToken>15be8db3e6a744ceaaeedea7a0dfb20c</accessToken>

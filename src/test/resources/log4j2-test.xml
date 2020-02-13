@@ -6,7 +6,6 @@
 	<Appenders>
 		<Console name="STDOUT" target="SYSTEM_OUT">
 			<Filters>
-				<BurstFilter level="warn" rate="5" />
 				<ThresholdFilter level="error" />
 			</Filters>
 
@@ -15,7 +14,7 @@
 
 		<Rollbar name="ROLLBAR">
 			<Filters>
-				<BurstFilter level="warn" rate="5" />
+				<BurstFilter level="warn" rate="500" />
 				<ThresholdFilter level="error" />
 			</Filters>
 
