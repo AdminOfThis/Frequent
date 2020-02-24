@@ -35,9 +35,9 @@
                <children>
                   <HBox>
                      <children>
-                        <Label text="Choose Input Device" />
+                        <Label text="%iochooser.topLabel" />
                         <Pane HBox.hgrow="ALWAYS" />
-                        <Label fx:id="lblDriverCount" text="##" />
+                        <Label fx:id="lblDriverCount" text="###" />
                      </children>
                   </HBox>
                   <ListView fx:id="listIO" fixedCellSize="30.0" minHeight="100.0" prefHeight="250.0" />
@@ -66,9 +66,24 @@
                   <RowConstraints vgrow="ALWAYS" />
               </rowConstraints>
                <children>
-                  <Label text="Name:" />
-                  <Label text="Sample-Rate:" GridPane.rowIndex="4" />
-                  <Label text="Buffer:" GridPane.rowIndex="5" />
+                  <HBox alignment="CENTER_RIGHT">
+                     <children>
+                        <Label text="%iochooser.driver.name" />
+                        <Label text=":" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="4">
+                     <children>
+                        <Label text="%iochooser.driver.samplerate" />
+                        <Label text=":" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="5">
+                     <children>
+                        <Label text="%iochooser.driver.buffer" />
+                        <Label text=":" />
+                     </children>
+                  </HBox>
                   <Separator GridPane.columnSpan="2" GridPane.rowIndex="6" />
                   <Label text="Input-Latency:" GridPane.rowIndex="7" />
                   <Label text="Output-Latency:" GridPane.rowIndex="8" />
@@ -82,8 +97,18 @@
                   <Label fx:id="lblLatencyOut" text="###" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                   <Label fx:id="lblInput" text="###" GridPane.columnIndex="1" GridPane.rowIndex="10" />
                   <Label fx:id="lblOutput" text="###" GridPane.columnIndex="1" GridPane.rowIndex="11" />
-                  <Label text="Version:" GridPane.rowIndex="1" />
-                  <Label text="ASIO-Version:" GridPane.rowIndex="2" />
+                  <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="1">
+                     <children>
+                        <Label text="%iochooser.driver.version" />
+                        <Label text=":" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="2">
+                     <children>
+                        <Label text="%iochooser.driver.asioVersion" />
+                        <Label text=":" />
+                     </children>
+                  </HBox>
                   <Label fx:id="lblVersion" text="###" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label fx:id="lblASIOVersion" text="###" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <Separator GridPane.columnSpan="2" GridPane.rowIndex="3" />
