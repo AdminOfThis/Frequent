@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.jar.Manifest;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,6 +26,7 @@ import preferences.PropertiesIO;
  */
 public class Main {
 	private static final String DEFAULT_PROPERTIES_PATH = "./settings.conf";
+	private static final String LOCALIZAZION_FILES = "loc.Strings";
 
 	private static final String POM_TITLE = "Frequent";
 	public static final String VERSION_KEY = "Implementation-Version";
@@ -57,15 +61,20 @@ public class Main {
 			LOG.info(" === " + getReadableTitle() + " ===");
 			if (parseArgs(args)) {
 
-				initialize();
-				if (checkIfStart()) {
-					long timeDone = System.currentTimeMillis();
-					LOG.info("Time until preloader: " + (timeDone - timeStart) + " ms");
-					System.setProperty("javafx.preloader", PreLoader.class.getName());
-					Application.launch(FXMLMain.class, args);
+				if (initialize()) {
+
+					if (checkIfStart()) {
+						long timeDone = System.currentTimeMillis();
+
+						LOG.info("Time until preloader: " + (timeDone - timeStart) + " ms");
+						System.setProperty("javafx.preloader", PreLoader.class.getName());
+						Application.launch(FXMLMain.class, args);
+					} else {
+						LOG.info("Application is already running, unable to run multiple instances");
+						FXMLMain.showAlreadyRunningDialog();
+					}
 				} else {
-					LOG.info("Application is already running, unable to run multiple instances");
-					FXMLMain.showAlreadyRunningDialog();
+					LOG.warn("Unable to initialize Application");
 				}
 			}
 		} catch (Exception exception) {
@@ -75,13 +84,36 @@ public class Main {
 		}
 	}
 
-	protected static void initialize() {
+	protected static boolean initialize() {
+		boolean result = true;
 		initTitle();
 		loadProperties();
+		result = result && initLocalization();
 		initColors();
 		initLog4jParams();
 
 		initialized = true;
+		return result;
+	}
+
+	private static boolean initLocalization() {
+		boolean result = false;
+		try {
+			Locale locale = Locale.getDefault();
+			LOG.info("Trying to load Localization for: " + locale.getCountry());
+			ResourceBundle bundle = ResourceBundle.getBundle(LOCALIZAZION_FILES, locale);
+			if (bundle != null) {
+				if (!Objects.equals(locale, bundle.getLocale())) {
+					LOG.info("Unable to load localization, loaded default instead");
+				}
+				FXMLUtil.setResourceBundle(bundle);
+			}
+			result = true;
+		} catch (Exception e) {
+			LOG.fatal("Unable to load resource bundle", e);
+			System.exit(1);
+		}
+		return result;
 	}
 
 	public static boolean isInitialized() {
