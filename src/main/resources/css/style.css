@@ -182,9 +182,9 @@
 	-fx-text-fill: white;
 }
 
-.button, .toggle-button, .split-menu-button, .text-field, .combo-box, .choice-box, .check-box .box, .color-picker ,.progress-bar, .progress-bar .bar, .progress-bar .track, .slider .track, .spinner, .spinner .increment-arrow-button, .spinner .decrement-arrow-button{
+.button, .toggle-button, .split-menu-button, .text-field, .combo-box, .choice-box, .check-box .box, .color-picker , .slider .track, .spinner, .spinner .increment-arrow-button, .spinner .decrement-arrow-button, .progress-bar, .progress-bar .bar, .progress-bar .track {
 	-fx-background-radius: 0;
-	-fx-background-insets: 0 0 0 0, 0, 1px, 1px;
+	-fx-background-insets: 0;
 }
 
 .button:default {
