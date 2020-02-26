@@ -3,6 +3,7 @@ package main;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,8 @@ import preferences.PropertiesIO;
  *
  */
 public class FXMLMain extends MainGUI {
+
+	private static final int TERMINATE_TIMEOUT = 5000;
 
 	private static final Logger LOG = LogManager.getLogger(FXMLMain.class);
 
@@ -187,9 +190,24 @@ public class FXMLMain extends MainGUI {
 		ASIOController.getInstance().shutdown();
 		LOG.info("Waiting for unfinished threads");
 		try {
-			Thread.sleep(3000);
+			boolean running = false;
+			// Wait until all Threads that are not daemons terminate
+			long timeStart = System.currentTimeMillis();
+			while (running && (System.currentTimeMillis() - timeStart < TERMINATE_TIMEOUT)) {
+				Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+				for (Thread thread : threadSet) {
+					if ((thread.isAlive() && !thread.isDaemon())) {
+						running = false;
+						break;
+					}
+				}
+				Thread.yield();
+			}
+			if ((System.currentTimeMillis() - timeStart >= TERMINATE_TIMEOUT)) {
+				LOG.info("Waiting for finishing Threads timed out, will close forcefully");
+			}
 		} catch (Exception e) {
-			LOG.error("Unable to sleep at application finish");
+			LOG.error("Unable to wait until all threads finish");
 		}
 		LOG.info("Bye");
 		System.exit(0);

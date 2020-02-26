@@ -51,12 +51,8 @@ public class IOChooserController implements Initializable {
 
 		Collection<DriverInfo> ioList = ASIOController.getPossibleDrivers();
 		LOG.info("Loaded " + ioList.size() + " possible drivers");
-		String appendix = " Driver";
-		if (ioList.size() > 1) {
-			appendix += "s";
-		}
 		errorReports.setSelected(Main.isErrorReporting());
-		lblDriverCount.setText(ioList.size() + appendix);
+		lblDriverCount.setText(Integer.toString(ioList.size()));
 		setDevices(ioList);
 		listIO.setCellFactory(e -> new ListCell<>() {
 			@Override
@@ -83,7 +79,7 @@ public class IOChooserController implements Initializable {
 				DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
 				symbols.setGroupingSeparator('.');
 				formatter.setDecimalFormatSymbols(symbols);
-				String sampleRate = formatter.format(info.getSampleRate()) + " Hz";
+				String sampleRate = formatter.format(info.getSampleRate() / 1000.0) + " kHz";
 				lblSampleRate.setText(sampleRate);
 				lblBuffer.setText(Integer.toString(info.getBuffer()));
 				double latency = (double) info.getBuffer() * 1 / info.getSampleRate() * 1000.0;

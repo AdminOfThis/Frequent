@@ -37,7 +37,13 @@
                      <children>
                         <Label text="%iochooser.topLabel" />
                         <Pane HBox.hgrow="ALWAYS" />
-                        <Label fx:id="lblDriverCount" text="###" />
+                        <HBox>
+                           <children>
+                              <Label fx:id="lblDriverCount" text="###" />
+                              <Label text=" " />
+                              <Label text="%iochooser.driver" />
+                           </children>
+                        </HBox>
                      </children>
                   </HBox>
                   <ListView fx:id="listIO" fixedCellSize="30.0" minHeight="100.0" prefHeight="250.0" />
@@ -106,8 +112,8 @@
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="11">
                      <children>
-                        <Label text="%iochooser.driver.inputs" />
-                        <Label text=";" />
+                        <Label text="%iochooser.driver.outputs" />
+                        <Label text=":" />
                      </children>
                   </HBox>
                   <Label fx:id="lblName" text="###" GridPane.columnIndex="1" />

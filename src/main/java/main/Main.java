@@ -28,6 +28,8 @@ public class Main {
 	private static final String DEFAULT_PROPERTIES_PATH = "./settings.conf";
 	private static final String LOCALIZAZION_FILES = "loc.Strings";
 
+	private static final Logger LOG = LogManager.getLogger(Main.class);
+
 	private static final String POM_TITLE = "Frequent";
 	public static final String VERSION_KEY = "Implementation-Version";
 	public static final String TITLE_KEY = "Implementation-Title";
@@ -43,8 +45,8 @@ public class Main {
 	private static String[] log4jArgs = new String[3];
 	private static boolean externalLog = true;
 	private static boolean development = false;
-	private static Logger LOG = LogManager.getLogger(Main.class);
 	private static boolean debug = false;
+	private static Locale language;
 	private static boolean initialized = false;
 
 	/**
@@ -87,8 +89,8 @@ public class Main {
 	protected static boolean initialize() {
 		boolean result = true;
 		initTitle();
-		loadProperties();
 		result = result && initLocalization();
+		loadProperties();
 		initColors();
 		initLog4jParams();
 
@@ -99,12 +101,20 @@ public class Main {
 	private static boolean initLocalization() {
 		boolean result = false;
 		try {
-			Locale locale = Locale.getDefault();
-			LOG.info("Trying to load Localization for: " + locale.getCountry());
-			ResourceBundle bundle = ResourceBundle.getBundle(LOCALIZAZION_FILES, locale);
+			if (language == null) {
+				language = Locale.getDefault();
+				LOG.info("No language preference set, using default: \"" + language.getCountry() + "\"");
+			}
+			LOG.info("Trying to load Localization for: \"" + language.getLanguage() + "\"");
+			ResourceBundle bundle = ResourceBundle.getBundle(LOCALIZAZION_FILES, language);
+
 			if (bundle != null) {
-				if (!Objects.equals(locale, bundle.getLocale())) {
-					LOG.info("Unable to load localization, loaded default instead");
+				if (Objects.equals(language.getLanguage(), bundle.getLocale().getLanguage())) {
+					LOG.info("Loaded Language \"" + bundle.getLocale().getLanguage() + "\"");
+				} else {
+					Locale defaultLang = Locale.ENGLISH;
+					LOG.info("Unable to load localization, loading default (" + defaultLang.getLanguage() + ") instead");
+					bundle = ResourceBundle.getBundle(LOCALIZAZION_FILES, defaultLang);
 				}
 				FXMLUtil.setResourceBundle(bundle);
 			}
@@ -274,14 +284,30 @@ public class Main {
 			} else if (arg.toLowerCase().startsWith("-focus-color=")) {
 				color_focus = arg.replace("-focus-color=", "");
 			} else if (arg.toLowerCase().startsWith("-style=")) {
-				LOG.info("Loading custom style");
 				parseStyle(arg, args);
+			} else if (arg.toLowerCase().startsWith("-lang=") || arg.toLowerCase().startsWith("-language=")) {
+				parseLanguage(arg);
 			}
 		}
 		return result;
 	}
 
+	private static void parseLanguage(String arg) {
+		try {
+			String value = arg.split("=")[1];
+			Locale loc = Locale.forLanguageTag(value);
+			if (loc != null) {
+				language = loc;
+				LOG.info("Set language to \"" + language.getLanguage() + "\"");
+			}
+		} catch (Exception e) {
+			LOG.warn("Unable to load Language: \"" + arg + "\"");
+		}
+
+	}
+
 	private static void parseStyle(String arg, String[] args) {
+		LOG.info("Loading custom style");
 		try {
 			style = arg.substring(arg.indexOf("=") + 1);
 			int index = -1;
