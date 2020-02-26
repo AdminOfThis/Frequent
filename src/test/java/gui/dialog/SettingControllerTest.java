@@ -25,6 +25,9 @@ class SettingControllerTest {
 
 	@BeforeEach
 	public void before() throws Exception {
+		if (!Main.isInitialized()) {
+			Main.initialize();
+		}
 		FXMLUtil.setDefaultStyle(Main.getStyle());
 		Stage stage = FxToolkit.registerPrimaryStage();
 		FxToolkit.setupSceneRoot(() -> new SettingsController());

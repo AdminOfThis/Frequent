@@ -86,7 +86,7 @@ public class Main {
 		}
 	}
 
-	protected static boolean initialize() {
+	public static boolean initialize() {
 		boolean result = true;
 		initTitle();
 		loadProperties();

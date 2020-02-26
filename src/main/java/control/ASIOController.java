@@ -476,7 +476,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 			try {
 				asioDriver = AsioDriver.getDriver(driverName);
 			} catch (AsioException e) {
-				LOG.error("No ASIO device found");
+				LOG.info("No ASIO device found");
 			}
 			if (asioDriver == null) {
 				LOG.warn("Unable to load ASIO driver '" + driverName + "'");
