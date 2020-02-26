@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -14,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.DriverInfo;
-import gui.FXMLUtil;
 import gui.controller.MainController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -24,13 +22,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 import main.Constants;
 import main.Constants.WINDOW_OPEN;
 import main.FXMLMain;
@@ -40,8 +36,7 @@ import preferences.PropertiesIO;
 public class IOChooserController implements Initializable {
 
 	private static final Logger LOG = LogManager.getLogger(IOChooserController.class);
-	@FXML
-	private ChoiceBox<Locale> choiLanguage;
+
 	@FXML
 	private CheckBox errorReports;
 	@FXML
@@ -106,24 +101,6 @@ public class IOChooserController implements Initializable {
 			listIO.getSelectionModel().select(0);
 		}
 
-		// language
-		choiLanguage.setConverter(new StringConverter<Locale>() {
-
-			@Override
-			public String toString(Locale object) {
-				return object.getDisplayLanguage();
-			}
-
-			@Override
-			public Locale fromString(String string) {
-				return Locale.forLanguageTag(string);
-			}
-		});
-
-		choiLanguage.getSelectionModel().selectedItemProperty().addListener((e, oldV, newV) -> {
-			Main.setLanguage(newV);
-		});
-
 		initDataTasks();
 	}
 
@@ -141,24 +118,6 @@ public class IOChooserController implements Initializable {
 			}
 		};
 		new Thread(loadData).start();
-
-		Task<Void> loadLanguages = new Task<Void>() {
-
-			@Override
-			protected Void call() throws Exception {
-				String folder = Main.LOCALIZATION_FILES.replaceAll("\\.", "/");
-				folder = folder.substring(0, folder.lastIndexOf("/"));
-				String languageRootFile = Main.LOCALIZATION_FILES;
-				languageRootFile = languageRootFile.substring(languageRootFile.lastIndexOf(".") + 1);
-				List<Locale> languages = FXMLUtil.getLanguages(folder, languageRootFile, Constants.LANGUAGE_FILE_ENDING);
-				Platform.runLater(() -> {
-					choiLanguage.getItems().setAll(languages);
-					choiLanguage.getSelectionModel().select(Main.getLanguage());
-				});
-				return null;
-			}
-		};
-		new Thread(loadLanguages).start();
 
 	}
 

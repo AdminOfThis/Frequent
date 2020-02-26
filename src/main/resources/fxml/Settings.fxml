@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
@@ -17,7 +18,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-
 
 <VBox fx:id="root" spacing="5.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
@@ -36,6 +36,7 @@
                 <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
                   <RowConstraints vgrow="NEVER" />
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
@@ -67,10 +68,10 @@
                   <Separator GridPane.columnSpan="4" GridPane.rowIndex="3" />
                   <Label text="Audio-Device" GridPane.columnSpan="2" />
                   <Label text="User-Interface" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-                  <CheckBox fx:id="chkRestoreLastFile" mnemonicParsing="false" text="Reload last File when opening the Application" GridPane.columnIndex="2" GridPane.rowIndex="12" />
-                  <Label text="Load and Save" GridPane.columnSpan="2" GridPane.rowIndex="11" />
-                  <CheckBox fx:id="chkWarnUnsavedChanges" mnemonicParsing="false" selected="true" text="Warn about unsaved changes when closing" GridPane.columnIndex="2" GridPane.rowIndex="13" />
-                  <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="7">
+                  <CheckBox fx:id="chkRestoreLastFile" mnemonicParsing="false" text="Reload last File when opening the Application" GridPane.columnIndex="2" GridPane.rowIndex="13" />
+                  <Label text="Load and Save" GridPane.columnSpan="2" GridPane.rowIndex="12" />
+                  <CheckBox fx:id="chkWarnUnsavedChanges" mnemonicParsing="false" selected="true" text="Warn about unsaved changes when closing" GridPane.columnIndex="2" GridPane.rowIndex="14" />
+                  <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="8">
                      <children>
                         <RadioButton fx:id="rBtnPanelNothing" mnemonicParsing="false" selected="true" text="Show nothing on Application start">
                            <toggleGroup>
@@ -152,17 +153,17 @@
                         </ScrollPane>
                      </children>
                   </VBox>
-                  <Label text="Missing Signal" GridPane.columnSpan="2" GridPane.rowIndex="15" />
-                  <Label text="Threshold" GridPane.columnIndex="1" GridPane.rowIndex="16" />
-                  <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="14" />
-                  <HBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="16">
+                  <Label text="Missing Signal" GridPane.columnSpan="2" GridPane.rowIndex="16" />
+                  <Label text="Threshold" GridPane.columnIndex="1" GridPane.rowIndex="17" />
+                  <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="15" />
+                  <HBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="17">
                      <children>
                         <Slider fx:id="sldrThreshold" blockIncrement="3.0" max="-10.0" min="-90.0" showTickLabels="true" showTickMarks="true" value="-85.0" HBox.hgrow="SOMETIMES" />
                         <TextField fx:id="tfThreshold" editable="false" prefWidth="70.0" text="###" />
                      </children>
                   </HBox>
-                  <Label text="On Reappearance" GridPane.columnIndex="1" GridPane.rowIndex="17" />
-                  <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="17">
+                  <Label text="On Reappearance" GridPane.columnIndex="1" GridPane.rowIndex="18" />
+                  <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="18">
                      <children>
                         <RadioButton mnemonicParsing="false" selected="true" text="Hide Notification">
                            <toggleGroup>
@@ -173,9 +174,9 @@
                         <RadioButton mnemonicParsing="false" text="Highlight" toggleGroup="$watchDogDo" />
                      </children>
                   </VBox>
-                  <Label text="Panel on startup" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                  <Label text="dB-Values" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-                  <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="9">
+                  <Label text="Panel on startup" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                  <Label text="dB-Values" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                  <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="10">
                      <children>
                         <RadioButton fx:id="rBtndbCurrent" mnemonicParsing="false" selected="true" text="Current">
                            <toggleGroup>
@@ -185,8 +186,8 @@
                         <RadioButton fx:id="rBtndbPeak" mnemonicParsing="false" text="Peak" toggleGroup="$dbValues" />
                      </children>
                   </VBox>
-                  <Label text="App on startup" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                  <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                  <Label text="App on startup" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
                      <children>
                         <RadioButton fx:id="rdWinAsClosed" mnemonicParsing="false" selected="true" text="Start as closed">
                            <toggleGroup>
@@ -206,9 +207,11 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="10" />
-                  <Separator GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="6" />
-                  <Separator prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="8" />
+                  <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="11" />
+                  <Separator GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="7" />
+                  <Separator prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="9" />
+                  <Label text="%language" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <ChoiceBox fx:id="choiLanguage" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="5" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

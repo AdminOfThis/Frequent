@@ -66,6 +66,8 @@ public final class Constants {
 	/*************** Settings ********************/
 	/* Keys */
 
+	public static final String SETTING_LANGUAGE = "gui.language";
+
 	public static final String SETTING_WINDOW_OPEN = "gui.window.open";
 
 	/** Setting wether the db Label should display current or peak values */

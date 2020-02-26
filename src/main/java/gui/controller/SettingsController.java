@@ -1,6 +1,8 @@
 package gui.controller;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,12 +11,15 @@ import org.apache.logging.log4j.Logger;
 import control.ASIOController;
 import control.Watchdog;
 import gui.FXMLUtil;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
@@ -26,9 +31,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import main.Constants;
 import main.Constants.RESTORE_PANEL;
 import main.Constants.WINDOW_OPEN;
+import main.Main;
 import preferences.PropertiesIO;
 
 /**
@@ -51,7 +58,8 @@ public class SettingsController extends AnchorPane implements Initializable {
 
 	@FXML
 	private Button btnCancel, btnSave;
-
+	@FXML
+	private ChoiceBox<Locale> choiLanguage;
 	@FXML
 	private ComboBox<Number> chbBuffer;
 
@@ -113,9 +121,24 @@ public class SettingsController extends AnchorPane implements Initializable {
 		chbBuffer.setValue(ASIOController.getInstance().getBufferSize());
 		chbDevice.setValue(ASIOController.getInstance().getDevice());
 
+		// language
+		choiLanguage.setConverter(new StringConverter<Locale>() {
+
+			@Override
+			public String toString(Locale object) {
+				return object.getDisplayLanguage();
+			}
+
+			@Override
+			public Locale fromString(String string) {
+				return Locale.forLanguageTag(string);
+			}
+		});
+
 		initWindowPanel();
 
 		initSpecificPanel();
+
 		loadValues();
 	}
 
@@ -190,6 +213,23 @@ public class SettingsController extends AnchorPane implements Initializable {
 				}
 			}
 		}
+		Task<Void> loadLanguages = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+				String folder = Main.LOCALIZATION_FILES.replaceAll("\\.", "/");
+				folder = folder.substring(0, folder.lastIndexOf("/"));
+				String languageRootFile = Main.LOCALIZATION_FILES;
+				languageRootFile = languageRootFile.substring(languageRootFile.lastIndexOf(".") + 1);
+				List<Locale> languages = FXMLUtil.getLanguages(folder, languageRootFile, Constants.LANGUAGE_FILE_ENDING);
+				Platform.runLater(() -> {
+					choiLanguage.getItems().setAll(languages);
+					choiLanguage.getSelectionModel().select(Main.getLanguage());
+				});
+				return null;
+			}
+		};
+		new Thread(loadLanguages).start();
 	}
 
 	private void loadValues() {
@@ -205,6 +245,9 @@ public class SettingsController extends AnchorPane implements Initializable {
 
 	@FXML
 	private void save(ActionEvent e) {
+		// language
+		PropertiesIO.setProperty(Constants.SETTING_LANGUAGE, choiLanguage.getValue().getLanguage());
+		Main.setLanguage(choiLanguage.getValue());
 		// window on open
 		String windowOpen = WINDOW_OPEN.DEFAULT.toString();
 		if (rdWinFullscreen.isSelected()) {

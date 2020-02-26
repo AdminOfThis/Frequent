@@ -89,8 +89,8 @@ public class Main {
 	protected static boolean initialize() {
 		boolean result = true;
 		initTitle();
-		result = result && loadLocalization();
 		loadProperties();
+		result = result && loadLocalization();
 		initColors();
 		initLog4jParams();
 
@@ -103,8 +103,16 @@ public class Main {
 		try {
 			ResourceBundle.clearCache();
 			if (language == null) {
-				language = Locale.getDefault();
+				// no language set from args
+				String lang = PropertiesIO.getProperty(Constants.SETTING_LANGUAGE, null);
+				if (lang != null) {
+					language = Locale.forLanguageTag(lang);
+				}
+			}
+			if (language == null) {
+				language = Constants.DEFAULT_LANGUAGE;
 				LOG.info("No language preference set, using default: \"" + language.getCountry() + "\"");
+
 			}
 			LOG.info("Trying to load Localization for: \"" + language.getLanguage() + "\"");
 			ResourceBundle bundle = ResourceBundle.getBundle(LOCALIZATION_FILES, language);
