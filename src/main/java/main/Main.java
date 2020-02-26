@@ -89,7 +89,7 @@ public class Main {
 	protected static boolean initialize() {
 		boolean result = true;
 		initTitle();
-		result = result && initLocalization();
+		result = result && loadLocalization();
 		loadProperties();
 		initColors();
 		initLog4jParams();
@@ -98,9 +98,10 @@ public class Main {
 		return result;
 	}
 
-	private static boolean initLocalization() {
+	private static boolean loadLocalization() {
 		boolean result = false;
 		try {
+			ResourceBundle.clearCache();
 			if (language == null) {
 				language = Locale.getDefault();
 				LOG.info("No language preference set, using default: \"" + language.getCountry() + "\"");
@@ -112,7 +113,7 @@ public class Main {
 				if (Objects.equals(language.getLanguage(), bundle.getLocale().getLanguage())) {
 					LOG.info("Loaded Language \"" + bundle.getLocale().getLanguage() + "\"");
 				} else {
-					Locale defaultLang = Locale.ENGLISH;
+					Locale defaultLang = Constants.DEFAULT_LANGUAGE;
 					LOG.info("Unable to load localization, loading default (" + defaultLang.getLanguage() + ") instead");
 					bundle = ResourceBundle.getBundle(LOCALIZATION_FILES, defaultLang);
 				}
@@ -362,6 +363,15 @@ public class Main {
 
 	public String getTitle() {
 		return title;
+	}
+
+	public static Locale getLanguage() {
+		return language;
+	}
+
+	public static void setLanguage(Locale lang) {
+		language = lang;
+		loadLocalization();
 	}
 
 }

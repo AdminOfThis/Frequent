@@ -3,6 +3,7 @@ package main;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
@@ -127,6 +128,8 @@ public final class Constants {
 	};
 
 	public static final String LOCK_FILE = "frequent.lock";
+
+	public static final Locale DEFAULT_LANGUAGE = Locale.ENGLISH;
 
 	public static StringConverter<Channel> CHANNEL_CONVERTER = new StringConverter<Channel>() {
 

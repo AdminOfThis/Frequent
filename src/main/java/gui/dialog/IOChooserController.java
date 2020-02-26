@@ -30,6 +30,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import main.Constants;
 import main.Constants.WINDOW_OPEN;
 import main.FXMLMain;
@@ -40,7 +41,7 @@ public class IOChooserController implements Initializable {
 
 	private static final Logger LOG = LogManager.getLogger(IOChooserController.class);
 	@FXML
-	private ChoiceBox<String> choiLanguage;
+	private ChoiceBox<Locale> choiLanguage;
 	@FXML
 	private CheckBox errorReports;
 	@FXML
@@ -104,6 +105,25 @@ public class IOChooserController implements Initializable {
 		if (listIO.getItems().size() > 0) {
 			listIO.getSelectionModel().select(0);
 		}
+
+		// language
+		choiLanguage.setConverter(new StringConverter<Locale>() {
+
+			@Override
+			public String toString(Locale object) {
+				return object.getDisplayLanguage();
+			}
+
+			@Override
+			public Locale fromString(String string) {
+				return Locale.forLanguageTag(string);
+			}
+		});
+
+		choiLanguage.getSelectionModel().selectedItemProperty().addListener((e, oldV, newV) -> {
+			Main.setLanguage(newV);
+		});
+
 		initDataTasks();
 	}
 
@@ -130,8 +150,11 @@ public class IOChooserController implements Initializable {
 				folder = folder.substring(0, folder.lastIndexOf("/"));
 				String languageRootFile = Main.LOCALIZATION_FILES;
 				languageRootFile = languageRootFile.substring(languageRootFile.lastIndexOf(".") + 1);
-				List<String> languages = FXMLUtil.getLanguages(folder, languageRootFile, Constants.LANGUAGE_FILE_ENDING);
-				Platform.runLater(() -> choiLanguage.getItems().setAll(languages));
+				List<Locale> languages = FXMLUtil.getLanguages(folder, languageRootFile, Constants.LANGUAGE_FILE_ENDING);
+				Platform.runLater(() -> {
+					choiLanguage.getItems().setAll(languages);
+					choiLanguage.getSelectionModel().select(Main.getLanguage());
+				});
 				return null;
 			}
 		};
@@ -145,9 +168,7 @@ public class IOChooserController implements Initializable {
 	}
 
 	public void startDebug() {
-		// if (!listIO.getItems().isEmpty()) {
 		start(new ActionEvent());
-		// }
 	}
 
 	@FXML
