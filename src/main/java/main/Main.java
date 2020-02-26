@@ -26,7 +26,7 @@ import preferences.PropertiesIO;
  */
 public class Main {
 	private static final String DEFAULT_PROPERTIES_PATH = "./settings.conf";
-	private static final String LOCALIZAZION_FILES = "loc.Strings";
+	public static final String LOCALIZATION_FILES = "loc.Strings";
 
 	private static final Logger LOG = LogManager.getLogger(Main.class);
 
@@ -106,7 +106,7 @@ public class Main {
 				LOG.info("No language preference set, using default: \"" + language.getCountry() + "\"");
 			}
 			LOG.info("Trying to load Localization for: \"" + language.getLanguage() + "\"");
-			ResourceBundle bundle = ResourceBundle.getBundle(LOCALIZAZION_FILES, language);
+			ResourceBundle bundle = ResourceBundle.getBundle(LOCALIZATION_FILES, language);
 
 			if (bundle != null) {
 				if (Objects.equals(language.getLanguage(), bundle.getLocale().getLanguage())) {
@@ -114,14 +114,13 @@ public class Main {
 				} else {
 					Locale defaultLang = Locale.ENGLISH;
 					LOG.info("Unable to load localization, loading default (" + defaultLang.getLanguage() + ") instead");
-					bundle = ResourceBundle.getBundle(LOCALIZAZION_FILES, defaultLang);
+					bundle = ResourceBundle.getBundle(LOCALIZATION_FILES, defaultLang);
 				}
 				FXMLUtil.setResourceBundle(bundle);
 			}
 			result = true;
 		} catch (Exception e) {
 			LOG.fatal("Unable to load resource bundle", e);
-			System.exit(1);
 		}
 		return result;
 	}

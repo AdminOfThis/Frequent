@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -13,13 +14,17 @@ import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.DriverInfo;
+import gui.FXMLUtil;
 import gui.controller.MainController;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -35,6 +40,8 @@ public class IOChooserController implements Initializable {
 
 	private static final Logger LOG = LogManager.getLogger(IOChooserController.class);
 	@FXML
+	private ChoiceBox<String> choiLanguage;
+	@FXML
 	private CheckBox errorReports;
 	@FXML
 	private BorderPane root;
@@ -49,11 +56,6 @@ public class IOChooserController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		Collection<DriverInfo> ioList = ASIOController.getPossibleDrivers();
-		LOG.info("Loaded " + ioList.size() + " possible drivers");
-		errorReports.setSelected(Main.isErrorReporting());
-		lblDriverCount.setText(Integer.toString(ioList.size()));
-		setDevices(ioList);
 		listIO.setCellFactory(e -> new ListCell<>() {
 			@Override
 			protected void updateItem(DriverInfo info, boolean empty) {
@@ -102,11 +104,39 @@ public class IOChooserController implements Initializable {
 		if (listIO.getItems().size() > 0) {
 			listIO.getSelectionModel().select(0);
 		}
-
+		initDataTasks();
 	}
 
-	public void setDevices(Collection<DriverInfo> devices) {
-		listIO.getItems().setAll(devices);
+	private void initDataTasks() {
+		Task<Void> loadData = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+				Collection<DriverInfo> ioList = ASIOController.getPossibleDrivers();
+				LOG.info("Loaded " + ioList.size() + " possible drivers");
+				Platform.runLater(() -> errorReports.setSelected(Main.isErrorReporting()));
+				Platform.runLater(() -> lblDriverCount.setText(Integer.toString(ioList.size())));
+				Platform.runLater(() -> listIO.getItems().setAll(ioList));
+				return null;
+			}
+		};
+		new Thread(loadData).start();
+
+		Task<Void> loadLanguages = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+				String folder = Main.LOCALIZATION_FILES.replaceAll("\\.", "/");
+				folder = folder.substring(0, folder.lastIndexOf("/"));
+				String languageRootFile = Main.LOCALIZATION_FILES;
+				languageRootFile = languageRootFile.substring(languageRootFile.lastIndexOf(".") + 1);
+				List<String> languages = FXMLUtil.getLanguages(folder, languageRootFile, Constants.LANGUAGE_FILE_ENDING);
+				Platform.runLater(() -> choiLanguage.getItems().setAll(languages));
+				return null;
+			}
+		};
+		new Thread(loadLanguages).start();
+
 	}
 
 	public void setMainScene(Scene scene) {

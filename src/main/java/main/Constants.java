@@ -49,6 +49,8 @@ public final class Constants {
 		WINDOWED
 	}
 
+	public static final String LANGUAGE_FILE_ENDING = ".properties";
+
 	/** Will log on behalf of mains class, since it is used there */
 	private static final Logger LOG = LogManager.getLogger(Main.class);
 
