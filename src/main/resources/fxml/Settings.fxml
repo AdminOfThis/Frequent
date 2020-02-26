@@ -13,14 +13,16 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="root" spacing="5.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
+
+<BorderPane fx:id="root" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
       <ScrollPane fitToWidth="true">
          <content>
             <GridPane fx:id="grid" hgap="10.0" vgap="10.0">
@@ -223,14 +225,19 @@
             </GridPane>
          </content>
       </ScrollPane>
-      <HBox alignment="CENTER_RIGHT" spacing="5.0" style="-fx-background-color: transparent;">
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" spacing="5.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" onAction="#cancel" prefWidth="75.0" text="Cancel" />
             <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#save" prefWidth="75.0" text="Save" />
          </children>
+         <padding>
+            <Insets top="5.0" />
+         </padding>
       </HBox>
-   </children>
+   </bottom>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
    </padding>
-</VBox>
+</BorderPane>
