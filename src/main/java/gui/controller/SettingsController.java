@@ -152,7 +152,6 @@ public class SettingsController extends AnchorPane implements Initializable {
 				Integer in = GridPane.getColumnIndex(n);
 				if (in == null && n != null && n instanceof Label) {
 					Label label = (Label) n;
-					System.out.println(label.getText());
 					list.getItems().add(label.getText());
 				}
 			} catch (Exception e) {
