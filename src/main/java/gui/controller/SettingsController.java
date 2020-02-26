@@ -16,12 +16,16 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
@@ -53,10 +57,12 @@ public class SettingsController extends AnchorPane implements Initializable {
 
 	@FXML
 	private BorderPane root;
-
+	@FXML
+	private ListView<String> list;
+	@FXML
+	private ScrollPane scrollPane;
 	@FXML
 	private GridPane grid;
-
 	@FXML
 	private Button btnCancel, btnSave;
 	@FXML
@@ -111,6 +117,7 @@ public class SettingsController extends AnchorPane implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		// FXMLUtil.setIcon((Stage) root.getScene().getWindow(), Main.getLogoPath());
+
 		sldrThreshold.valueProperty().addListener((e, newV, oldV) -> tfThreshold.setText(Math.round(newV.doubleValue()) + " dB"));
 		sldrThreshold.setValue(Double.parseDouble(PropertiesIO.getProperty(Constants.SETTING_WATCHDOG_THRESHOLD, Double.toString(Watchdog.DEFAULT_THRESHOLD))));
 		tfThreshold.setText(Math.round(sldrThreshold.getValue()) + " dB");
@@ -140,7 +147,47 @@ public class SettingsController extends AnchorPane implements Initializable {
 
 		initSpecificPanel();
 
+		for (Node n : grid.getChildren()) {
+			try {
+				Integer in = GridPane.getColumnIndex(n);
+				if (in == null && n != null && n instanceof Label) {
+					Label label = (Label) n;
+					System.out.println(label.getText());
+					list.getItems().add(label.getText());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		list.getSelectionModel().selectedItemProperty().addListener((e, oldV, newV) -> {
+			for (Node n : grid.getChildren()) {
+				if (n instanceof Label) {
+					Label label = (Label) n;
+					if (label.getText().equals(newV)) {
+						ensureVisible(scrollPane, label);
+						break;
+					}
+				}
+			}
+		});
+
 		loadValues();
+	}
+
+	private static void ensureVisible(ScrollPane pane, Node node) {
+		double width = pane.getContent().getBoundsInLocal().getWidth();
+		double height = pane.getContent().getBoundsInLocal().getHeight();
+
+		double x = node.getBoundsInParent().getMaxX();
+		double y = node.getBoundsInParent().getMaxY();
+
+		// scrolling values range from 0 to 1
+		pane.setVvalue(y / height);
+		pane.setHvalue(x / width);
+
+		// just for usability
+		node.requestFocus();
 	}
 
 	private void initWindowPanel() {
