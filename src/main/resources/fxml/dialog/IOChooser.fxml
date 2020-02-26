@@ -18,10 +18,10 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" maxHeight="200.0" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <CheckBox fx:id="errorReports" mnemonicParsing="false" onAction="#errorReports" selected="true" text="%iochooser.sendErrorReports" />
+            <CheckBox fx:id="errorReports" mnemonicParsing="false" onAction="#errorReports" selected="true" text="%sendErrorReports" />
             <Pane HBox.hgrow="SOMETIMES" />
-          <Button fx:id="btnQuit" cancelButton="true" mnemonicParsing="false" prefWidth="75.0" text="%iochooser.button.quit" />
-            <Button fx:id="btnStart" defaultButton="true" mnemonicParsing="false" onAction="#start" prefWidth="75.0" text="%iochooser.button.start" />
+          <Button fx:id="btnQuit" cancelButton="true" mnemonicParsing="false" prefWidth="75.0" text="%button.quit" />
+            <Button fx:id="btnStart" defaultButton="true" mnemonicParsing="false" onAction="#start" prefWidth="75.0" text="%button.start" />
          </children>
          <padding>
             <Insets top="5.0" />
@@ -41,7 +41,7 @@
                            <children>
                               <Label fx:id="lblDriverCount" text="###" />
                               <Label text=" " />
-                              <Label text="%iochooser.driver" />
+                              <Label text="%driver" />
                            </children>
                         </HBox>
                      </children>
@@ -74,45 +74,45 @@
                <children>
                   <HBox alignment="CENTER_RIGHT">
                      <children>
-                        <Label text="%iochooser.driver.name" />
+                        <Label text="%name" />
                         <Label text=":" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="4">
                      <children>
-                        <Label text="%iochooser.driver.samplerate" />
+                        <Label text="%samplerate" />
                         <Label text=":" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="5">
                      <children>
-                        <Label text="%iochooser.driver.buffer" />
+                        <Label text="%buffer" />
                         <Label text=":" />
                      </children>
                   </HBox>
                   <Separator GridPane.columnSpan="2" GridPane.rowIndex="6" />
                   <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="7">
                      <children>
-                        <Label text="%iochooser.driver.latency.input" />
+                        <Label text="%latency.input" />
                         <Label text=":" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="8">
                      <children>
-                        <Label text="%iochooser.driver.latency.output" />
+                        <Label text="%latency.output" />
                         <Label text=":" />
                      </children>
                   </HBox>
                   <Separator GridPane.columnSpan="2" GridPane.rowIndex="9" />
                   <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="10">
                      <children>
-                        <Label text="%iochooser.driver.inputs" />
+                        <Label text="%inputs" />
                         <Label text=":" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="11">
                      <children>
-                        <Label text="%iochooser.driver.outputs" />
+                        <Label text="%outputs" />
                         <Label text=":" />
                      </children>
                   </HBox>
@@ -125,13 +125,13 @@
                   <Label fx:id="lblOutput" text="###" GridPane.columnIndex="1" GridPane.rowIndex="11" />
                   <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="1">
                      <children>
-                        <Label text="%iochooser.driver.version" />
+                        <Label text="%version" />
                         <Label text=":" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" GridPane.rowIndex="2">
                      <children>
-                        <Label text="%iochooser.driver.asioVersion" />
+                        <Label text="%asioVersion" />
                         <Label text=":" />
                      </children>
                   </HBox>

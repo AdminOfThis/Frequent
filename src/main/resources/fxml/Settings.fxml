@@ -53,8 +53,8 @@
                 <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
               </rowConstraints>
                <children>
-                  <Label text="ASIO-Device" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label text="Buffer-Size" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label text="%device" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label text="%buffer" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <AnchorPane GridPane.columnIndex="2" GridPane.rowIndex="2">
                      <children>
                         <ComboBox fx:id="chbBuffer" promptText="Buffer-Size" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -66,7 +66,7 @@
                      </children>
                   </AnchorPane>
                   <Separator GridPane.columnSpan="4" GridPane.rowIndex="3" />
-                  <Label text="Audio-Device" GridPane.columnSpan="2" />
+                  <Label text="%driver" GridPane.columnSpan="2" />
                   <Label text="User-Interface" GridPane.columnSpan="2" GridPane.rowIndex="4" />
                   <CheckBox fx:id="chkRestoreLastFile" mnemonicParsing="false" text="Reload last File when opening the Application" GridPane.columnIndex="2" GridPane.rowIndex="13" />
                   <Label text="Load and Save" GridPane.columnSpan="2" GridPane.rowIndex="12" />
@@ -211,7 +211,11 @@
                   <Separator GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="7" />
                   <Separator prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="9" />
                   <Label text="%language" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                  <ChoiceBox fx:id="choiLanguage" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                  <AnchorPane GridPane.columnIndex="2" GridPane.rowIndex="5">
+                     <children>
+                        <ChoiceBox fx:id="choiLanguage" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
