@@ -21,7 +21,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
 <BorderPane fx:id="root" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <ScrollPane fx:id="scrollPane" fitToWidth="true">
@@ -29,7 +28,7 @@
             <GridPane fx:id="grid" hgap="10.0" vgap="10.0">
               <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" prefWidth="50.0" />
-                <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" prefWidth="150.0" />
+                <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" />
                 <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
                   <ColumnConstraints hgrow="ALWAYS" />
               </columnConstraints>
@@ -70,19 +69,19 @@
                   </AnchorPane>
                   <Separator GridPane.columnSpan="4" GridPane.rowIndex="3" />
                   <Label text="%driver" GridPane.columnSpan="2" />
-                  <Label text="User-Interface" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-                  <CheckBox fx:id="chkRestoreLastFile" mnemonicParsing="false" text="Reload last File when opening the Application" GridPane.columnIndex="2" GridPane.rowIndex="13" />
-                  <Label text="Load and Save" GridPane.columnSpan="2" GridPane.rowIndex="12" />
-                  <CheckBox fx:id="chkWarnUnsavedChanges" mnemonicParsing="false" selected="true" text="Warn about unsaved changes when closing" GridPane.columnIndex="2" GridPane.rowIndex="14" />
+                  <Label text="%userinterface" GridPane.columnSpan="2" GridPane.rowIndex="4" />
+                  <CheckBox fx:id="chkRestoreLastFile" mnemonicParsing="false" text="%loadandsave.file.reload" GridPane.columnIndex="2" GridPane.rowIndex="13" />
+                  <Label text="%loadandsave" GridPane.columnSpan="2" GridPane.rowIndex="12" />
+                  <CheckBox fx:id="chkWarnUnsavedChanges" mnemonicParsing="false" selected="true" text="%loadandsave.warn" GridPane.columnIndex="2" GridPane.rowIndex="14" />
                   <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="8">
                      <children>
-                        <RadioButton fx:id="rBtnPanelNothing" mnemonicParsing="false" selected="true" text="Show nothing on Application start">
+                        <RadioButton fx:id="rBtnPanelNothing" mnemonicParsing="false" selected="true" text="%onstartup.panel.nothing">
                            <toggleGroup>
                               <ToggleGroup fx:id="startUp" />
                            </toggleGroup>
                         </RadioButton>
-                        <RadioButton fx:id="rBtnPanelLast" mnemonicParsing="false" text="Show last used Panel on Application start" toggleGroup="$startUp" />
-                        <RadioButton fx:id="rBtnPanelSpecific" mnemonicParsing="false" text="Show specific Panel on Application Start" toggleGroup="$startUp" />
+                        <RadioButton fx:id="rBtnPanelLast" mnemonicParsing="false" text="%onstartup.panel.lastused" toggleGroup="$startUp" />
+                        <RadioButton fx:id="rBtnPanelSpecific" mnemonicParsing="false" text="%onstartup.panel.specific" toggleGroup="$startUp" />
                         <ScrollPane fitToWidth="true" minViewportHeight="50.0" prefViewportHeight="100.0">
                            <content>
                               <VBox fx:id="vPanel" spacing="5.0">
@@ -156,8 +155,8 @@
                         </ScrollPane>
                      </children>
                   </VBox>
-                  <Label text="Missing Signal" GridPane.columnSpan="2" GridPane.rowIndex="16" />
-                  <Label text="Threshold" GridPane.columnIndex="1" GridPane.rowIndex="17" />
+                  <Label text="%missingsignal" GridPane.columnSpan="2" GridPane.rowIndex="16" />
+                  <Label text="%threshold" GridPane.columnIndex="1" GridPane.rowIndex="17" />
                   <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="15" />
                   <HBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="17">
                      <children>
@@ -165,43 +164,43 @@
                         <TextField fx:id="tfThreshold" editable="false" prefWidth="70.0" text="###" />
                      </children>
                   </HBox>
-                  <Label text="On Reappearance" GridPane.columnIndex="1" GridPane.rowIndex="18" />
+                  <Label text="%missingsignal.onreappearance" GridPane.columnIndex="1" GridPane.rowIndex="18" />
                   <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="18">
                      <children>
-                        <RadioButton mnemonicParsing="false" selected="true" text="Hide Notification">
+                        <RadioButton mnemonicParsing="false" selected="true" text="%missingsignal.onreappearance.hide">
                            <toggleGroup>
                               <ToggleGroup fx:id="watchDogDo" />
                            </toggleGroup>
                         </RadioButton>
-                        <RadioButton mnemonicParsing="false" text="Do Nothing" toggleGroup="$watchDogDo" />
-                        <RadioButton mnemonicParsing="false" text="Highlight" toggleGroup="$watchDogDo" />
+                        <RadioButton mnemonicParsing="false" text="%missingsignal.onreappearance.nothing" toggleGroup="$watchDogDo" />
+                        <RadioButton mnemonicParsing="false" text="%missingsignal.onreappearance.highlight" toggleGroup="$watchDogDo" />
                      </children>
                   </VBox>
-                  <Label text="Panel on startup" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                  <Label text="dB-Values" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                  <Label text="%onstartup.panel" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                  <Label text="%dbvalues" GridPane.columnIndex="1" GridPane.rowIndex="10" />
                   <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="10">
                      <children>
-                        <RadioButton fx:id="rBtndbCurrent" mnemonicParsing="false" selected="true" text="Current">
+                        <RadioButton fx:id="rBtndbCurrent" mnemonicParsing="false" selected="true" text="%dbvalues.current">
                            <toggleGroup>
                               <ToggleGroup fx:id="dbValues" />
                            </toggleGroup>
                         </RadioButton>
-                        <RadioButton fx:id="rBtndbPeak" mnemonicParsing="false" text="Peak" toggleGroup="$dbValues" />
+                        <RadioButton fx:id="rBtndbPeak" mnemonicParsing="false" text="%dbvalues.peak" toggleGroup="$dbValues" />
                      </children>
                   </VBox>
-                  <Label text="App on startup" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <Label text="%onstartup.app" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                   <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
                      <children>
-                        <RadioButton fx:id="rdWinAsClosed" mnemonicParsing="false" selected="true" text="Start as closed">
+                        <RadioButton fx:id="rdWinAsClosed" mnemonicParsing="false" selected="true" text="%onstartup.app.startasclosed">
                            <toggleGroup>
                               <ToggleGroup fx:id="window" />
                            </toggleGroup>
                         </RadioButton>
-                        <RadioButton fx:id="rdWinFullscreen" mnemonicParsing="false" text="Fullscreen" toggleGroup="$window" />
-                        <RadioButton fx:id="rdWinMaximized" mnemonicParsing="false" text="Maximized" toggleGroup="$window" />
+                        <RadioButton fx:id="rdWinFullscreen" mnemonicParsing="false" text="%onstartup.app.fullscreen" toggleGroup="$window" />
+                        <RadioButton fx:id="rdWinMaximized" mnemonicParsing="false" text="%onstartup.app.maximized" toggleGroup="$window" />
                         <HBox alignment="CENTER_LEFT" spacing="5.0">
                            <children>
-                              <RadioButton fx:id="rdWinWindowed" mnemonicParsing="false" text="Windowed" toggleGroup="$window" />
+                              <RadioButton fx:id="rdWinWindowed" mnemonicParsing="false" text="%onstartup.app.windowed" toggleGroup="$window" />
                               <Separator HBox.hgrow="SOMETIMES" />
                               <TextField fx:id="txtWidth" prefWidth="70.0" promptText="Width" text="800" />
                               <Label text="x" />
@@ -230,8 +229,8 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" spacing="5.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" onAction="#cancel" prefWidth="75.0" text="Cancel" />
-            <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#save" prefWidth="75.0" text="Save" />
+            <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" onAction="#cancel" text="%button.cancel" />
+            <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%button.save" />
          </children>
          <padding>
             <Insets top="5.0" />

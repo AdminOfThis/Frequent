@@ -12,6 +12,8 @@ import control.ASIOController;
 import control.Watchdog;
 import gui.FXMLUtil;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -171,6 +173,14 @@ public class SettingsController extends AnchorPane implements Initializable {
 			}
 		});
 
+		btnSave.widthProperty().addListener(new ChangeListener<Number>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				FXMLUtil.setPrefWidthToMaximumRequired(btnSave, btnCancel);
+				btnSave.widthProperty().removeListener(this);
+			}
+		});
 		loadValues();
 	}
 

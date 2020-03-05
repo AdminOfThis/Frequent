@@ -18,6 +18,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.Region;
 
+/**
+ * 
+ * @author AdminOfThis
+ *
+ */
 public class FFTViewController implements Initializable, FFTListener, PausableView {
 
 	@FXML
