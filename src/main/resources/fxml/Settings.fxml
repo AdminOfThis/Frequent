@@ -156,7 +156,7 @@
                      </children>
                   </VBox>
                   <Label text="%missingsignal" GridPane.columnSpan="2" GridPane.rowIndex="16" />
-                  <Label text="%threshold" GridPane.columnIndex="1" GridPane.rowIndex="17" />
+                  <Label text="%threshold" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="17" />
                   <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="15" />
                   <HBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="17">
                      <children>
@@ -164,7 +164,7 @@
                         <TextField fx:id="tfThreshold" editable="false" prefWidth="70.0" text="###" />
                      </children>
                   </HBox>
-                  <Label text="%missingsignal.onreappearance" GridPane.columnIndex="1" GridPane.rowIndex="18" />
+                  <Label text="%missingsignal.onreappearance" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="18" />
                   <VBox spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="18">
                      <children>
                         <RadioButton mnemonicParsing="false" selected="true" text="%missingsignal.onreappearance.hide">
