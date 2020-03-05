@@ -229,8 +229,8 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" spacing="5.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" onAction="#cancel" prefWidth="75.0" text="%button.cancel" />
-            <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#save" prefWidth="75.0" text="%button.save" />
+            <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" onAction="#cancel" text="%button.cancel" />
+            <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%button.save" />
          </children>
          <padding>
             <Insets top="5.0" />
