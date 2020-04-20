@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>com.rollbar</groupId>
 			<artifactId>rollbar-log4j2</artifactId>
-			<version>1.6.0</version>
+			<version>1.7.1</version>
 		</dependency>
 
 		<!-- needed for rollback -->
