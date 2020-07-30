@@ -101,6 +101,10 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 
 	}
 
+	public static List<String> getRegisteredDrivers() {
+		return AsioDriver.getDriverNames();
+	}
+
 	/**
 	 * Returns a list of {@link String} of found active ASIO drivers on the system
 	 * 
@@ -127,32 +131,43 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	}
 
 	private static List<DriverInfo> loadPossibleDrivers() {
-		ArrayList<DriverInfo> result = new ArrayList<>();
 		try {
 			List<String> preList = AsioDriver.getDriverNames();
 			// checking if connected
 			for (String possibleDriver : preList) {
-				AsioDriver tempDriver = null;
-				try {
-					tempDriver = AsioDriver.getDriver(possibleDriver);
-					// adding if inputs avaliable
-					if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
-						DriverInfo driverInfo = new DriverInfo(tempDriver);
-						result.add(driverInfo);
-					}
-				} catch (Exception e) {
-					LOG.debug(possibleDriver + " is unavailable");
-				} finally {
-					if (tempDriver != null) {
-						tempDriver.shutdownAndUnloadDriver();
-					}
-				}
+
+				loadPossibleDriver(possibleDriver);
 			}
 		} catch (UnsatisfiedLinkError e) {
 			LOG.warn("The corresponding library jasiohost64.dll was not found");
 		}
 
-		return result;
+		return new ArrayList<>(driverList);
+	}
+
+	public static void loadPossibleDriver(String possibleDriver) {
+		System.out.println("LOADING " + possibleDriver);
+		AsioDriver tempDriver = null;
+		try {
+			tempDriver = AsioDriver.getDriver(possibleDriver);
+			// adding if inputs avaliable
+			if (tempDriver != null && tempDriver.getNumChannelsInput() > 0) {
+				DriverInfo driverInfo = new DriverInfo(tempDriver);
+				if (driverList == null) {
+					driverList = new ArrayList<DriverInfo>();
+				}
+				if (!driverList.contains(driverInfo)) {
+					driverList.add(driverInfo);
+					System.out.println("TREIBER  " + driverList.size());
+				}
+			}
+		} catch (Exception e) {
+			LOG.debug(possibleDriver + " is unavailable");
+		} finally {
+			if (tempDriver != null) {
+				tempDriver.shutdownAndUnloadDriver();
+			}
+		}
 	}
 
 	@Override
@@ -477,13 +492,15 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				asioDriver = AsioDriver.getDriver(driverName);
 			} catch (AsioException e) {
 				LOG.info("No ASIO device found");
+				e.printStackTrace();
 			}
 			if (asioDriver == null) {
 				LOG.warn("Unable to load ASIO driver '" + driverName + "'");
 				FXMLMain.getInstance().askForClose();
 			}
 
-			else if (asioDriver.getCurrentState() == AsioDriverState.LOADED || asioDriver.getCurrentState() == AsioDriverState.INITIALIZED) {
+			else if (asioDriver.getCurrentState() == AsioDriverState.LOADED
+					|| asioDriver.getCurrentState() == AsioDriverState.INITIALIZED) {
 				asioDriver.addAsioDriverListener(this);
 
 				// create a Set of AsioChannels, defining which input and output
@@ -502,8 +519,10 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				// start the driver
 				asioDriver.start();
 				// creating ThreadPool
-				exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-				LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
+				exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS,
+						new LinkedBlockingQueue<Runnable>());
+				LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs "
+						+ asioDriver.getNumChannelsOutput());
 				LOG.info("Buffer size: " + bufferSize);
 				LOG.info("Samplerate: " + sampleRate);
 			}

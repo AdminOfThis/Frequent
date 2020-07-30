@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import data.util.StringProgressNotification;
 import gui.FXMLUtil;
 import javafx.application.Preloader;
 import javafx.fxml.FXML;
@@ -37,6 +38,11 @@ public class PreLoader extends Preloader implements Initializable {
 		if (arg0 instanceof ProgressNotification) {
 			ProgressNotification pn = (ProgressNotification) arg0;
 			progress.setProgress(pn.getProgress());
+			if(pn instanceof StringProgressNotification) {
+				StringProgressNotification spn = (StringProgressNotification) pn;
+				progress.setProgress(pn.getProgress());
+				status.setText(spn.getMessage());
+			}
 		}
 	}
 
@@ -44,11 +50,8 @@ public class PreLoader extends Preloader implements Initializable {
 	public void handleStateChangeNotification(StateChangeNotification evt) {
 		switch (evt.getType()) {
 		case BEFORE_INIT:
-			status.setText("Initializing ...");
-			progress.setProgress(0.1);
 			break;
 		case BEFORE_LOAD:
-			status.setText("Loading GUI");
 			break;
 		case BEFORE_START:
 			stage.close();

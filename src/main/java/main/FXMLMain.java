@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import control.ASIOController;
 import data.FileIO;
+import data.util.StringProgressNotification;
 import gui.FXMLUtil;
 import gui.MainGUI;
 import gui.controller.MainController;
@@ -63,15 +64,58 @@ public class FXMLMain extends MainGUI {
 			Main.initColors();
 		}
 		instance = this;
-		notifyPreloader(new Preloader.ProgressNotification(0.1));
+		loadPossibleDrivers(0.05, 0.5);
+		notifyPreloader(new Preloader.ProgressNotification(0.55));
 		Parent parent = FXMLUtil.loadFXML(Main.class.getResource(GUI_IO_CHOOSER));
 		loginController = (IOChooserController) FXMLUtil.getController();
 		FXMLUtil.setStyleSheet(parent);
 		loginScene = new Scene(parent);
-		notifyPreloader(new Preloader.ProgressNotification(0.2));
+		notifyPreloader(new StringProgressNotification(0.6, "Initializing"));
+		
+
 		mainScene = loadMain();
 		loginController.setMainScene(mainScene);
-		notifyPreloader(new Preloader.ProgressNotification(0.95));
+		notifyPreloader(new StringProgressNotification(0.95, "Finished"));
+	}
+
+	private void loadPossibleDrivers(double start, double end) {
+
+		double number = ASIOController.getRegisteredDrivers().size();
+		for (int i = 0; i < ASIOController.getRegisteredDrivers().size(); i++) {
+			String possibleDriverName = ASIOController.getRegisteredDrivers().get(i);
+			double progress = start + (((double) i) / number * (end - start));
+			ASIOController.loadPossibleDriver(possibleDriverName);
+			notifyPreloader(new StringProgressNotification(progress, "Loading " + possibleDriverName));
+		}
+
+	}
+
+	@Override
+	public void start(final Stage primaryStage) throws Exception {
+		LOG.info("Showing IOChooser");
+		primaryStage.setScene(loginScene);
+		primaryStage.setOnCloseRequest(e -> {
+
+			new Thread(() -> {
+				LOG.info("Close requested");
+				writePos(primaryStage);
+				if (FXMLMain.getInstance().askForClose()) {
+					finish();
+				} else {
+					MainController.getInstance().setStatus("Close cancelled");
+					e.consume();
+				}
+			}).start();
+		});
+		primaryStage.setTitle(Main.getReadableTitle());
+		primaryStage.setResizable(false);
+		FXMLUtil.setIcon(primaryStage, LOGO);
+		primaryStage.setOnShowing(e -> {
+			if (Main.isDebug()) {
+				loginController.startDebug();
+			}
+		});
+		primaryStage.show();
 	}
 
 	/**
@@ -91,7 +135,8 @@ public class FXMLMain extends MainGUI {
 		Platform.runLater(() -> {
 			InformationDialog dialog = new InformationDialog("Application is already running", true);
 			dialog.setText("Another instance of this application is already running");
-			dialog.setSubText("Please use the other instance,\r\nor terminate the other instance and launch the application again.");
+			dialog.setSubText(
+					"Please use the other instance,\r\nor terminate the other instance and launch the application again.");
 			dialog.show();
 			dialog.getDialogPane().getScene().getWindow().centerOnScreen();
 		});
@@ -152,34 +197,6 @@ public class FXMLMain extends MainGUI {
 		notifyPreloader(new Preloader.ProgressNotification(prog));
 	}
 
-	@Override
-	public void start(final Stage primaryStage) throws Exception {
-		LOG.info("Showing IOChooser");
-		primaryStage.setScene(loginScene);
-		primaryStage.setOnCloseRequest(e -> {
-
-			new Thread(() -> {
-				LOG.info("Close requested");
-				writePos(primaryStage);
-				if (FXMLMain.getInstance().askForClose()) {
-					finish();
-				} else {
-					MainController.getInstance().setStatus("Close cancelled");
-					e.consume();
-				}
-			}).start();
-		});
-		primaryStage.setTitle(Main.getReadableTitle());
-		primaryStage.setResizable(false);
-		FXMLUtil.setIcon(primaryStage, LOGO);
-		primaryStage.setOnShowing(e -> {
-			if (Main.isDebug()) {
-				loginController.startDebug();
-			}
-		});
-		primaryStage.show();
-	}
-
 	/**
 	 * Terminates the application. Should always be the last function called
 	 */
@@ -214,6 +231,7 @@ public class FXMLMain extends MainGUI {
 	}
 
 	private Scene loadMain() {
+
 		LOG.debug("Loading from: " + GUI_MAIN_PATH);
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(GUI_MAIN_PATH));
 		try {
@@ -241,7 +259,8 @@ public class FXMLMain extends MainGUI {
 				value = value.split(",")[0];
 			}
 
-			if (Objects.equals(Constants.WINDOW_OPEN.DEFAULT, Constants.WINDOW_OPEN.valueOf(value)) || Objects.equals(Constants.WINDOW_OPEN.MAXIMIZED, Constants.WINDOW_OPEN.valueOf(value))) {
+			if (Objects.equals(Constants.WINDOW_OPEN.DEFAULT, Constants.WINDOW_OPEN.valueOf(value))
+					|| Objects.equals(Constants.WINDOW_OPEN.MAXIMIZED, Constants.WINDOW_OPEN.valueOf(value))) {
 				if (stage.isMaximized()) {
 					value = Constants.WINDOW_OPEN.MAXIMIZED.toString();
 				} else {
@@ -250,7 +269,9 @@ public class FXMLMain extends MainGUI {
 				if (value != null && !value.isEmpty()) {
 					value += ",";
 				}
-				value = value += Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + "," + Math.round(stage.getX()) + "," + Math.round(stage.getY()) + "," + Boolean.toString(stage.isFullScreen());
+				value = value += Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + ","
+						+ Math.round(stage.getX()) + "," + Math.round(stage.getY()) + ","
+						+ Boolean.toString(stage.isFullScreen());
 				PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, value);
 			}
 		} catch (Exception e) {

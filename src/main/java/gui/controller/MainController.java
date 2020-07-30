@@ -95,7 +95,8 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	private static final String PHASE_PATH = "/fxml/VectorScopeView.fxml";
 	private static final String BLEED_PATH = "/fxml/BleedView.fxml";
 	private static final Logger LOG = LogManager.getLogger(MainController.class);
-	private static final ExtensionFilter FILTER = new ExtensionFilter(Main.getOnlyTitle() + " File", "*" + FileIO.ENDING);
+	private static final ExtensionFilter FILTER = new ExtensionFilter(Main.getOnlyTitle() + " File",
+			"*" + FileIO.ENDING);
 	private static MainController instance;
 	@FXML
 	private AnchorPane waveFormPane;
@@ -109,10 +110,12 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	 * Buttons for cues, get mapped with content to contentMap
 	 */
 	@FXML
-	private ToggleButton toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView, toggleBleedView;
+	private ToggleButton toggleFFTView, toggleRTAView, toggleDrumView, toggleGroupsView, togglePhaseView,
+			toggleBleedView;
 
 	@FXML
-	private ToggleButton togglePreview, toggleCue, toggleChannels, toggleGroupChannels, toggleBtmRaw, toggleBtmWave, tglOverView;
+	private ToggleButton togglePreview, toggleCue, toggleChannels, toggleGroupChannels, toggleBtmRaw, toggleBtmWave,
+			tglOverView;
 	@FXML
 	private BorderPane root;
 	@FXML
@@ -201,34 +204,34 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		instance = this;
 		setStatus("Loading GUI", -1);
 		FXMLUtil.setStyleSheet(root);
+
 //		root.setStyle(Main.getStyle());
-		FXMLMain.getInstance().setProgress(0.3);
-		initWaveForm();
-		FXMLMain.getInstance().setProgress(0.35);
-		initTimekeeper();
-		initMenu();
-		initChannelList();
-		FXMLMain.getInstance().setProgress(0.4);
-		initFullScreen();
-		FXMLMain.getInstance().setProgress(0.45);
-		initOverView();
-		FXMLMain.getInstance().setProgress(0.5);
-		initChart();
-		FXMLMain.getInstance().setProgress(0.65);
-		initRTA();
-		FXMLMain.getInstance().setProgress(0.6);
-		initDrumMonitor();
-		FXMLMain.getInstance().setProgress(0.65);
-		initGroups();
-		FXMLMain.getInstance().setProgress(0.7);
-		initPhaseMonitor();
-		FXMLMain.getInstance().setProgress(0.8);
-		initBleedView();
-		FXMLMain.getInstance().setProgress(0.85);
-		initListener();
-		FXMLMain.getInstance().setProgress(0.9);
-		applyLoadedProperties();
-		FXMLMain.getInstance().setProgress(0.95);
+		List<Runnable> toDo = new ArrayList<Runnable>();
+
+		toDo.add(() -> FXMLMain.getInstance().setProgress(0.75));
+		toDo.add(() -> initWaveForm());
+		toDo.add(() -> initTimekeeper());
+		toDo.add(() -> initMenu());
+		toDo.add(() -> initChannelList());
+		toDo.add(() -> initFullScreen());
+		toDo.add(() -> initOverView());
+		toDo.add(() -> initChart());
+		toDo.add(() -> initRTA());
+		toDo.add(() -> initDrumMonitor());
+		toDo.add(() -> initGroups());
+		toDo.add(() -> initPhaseMonitor());
+		toDo.add(() -> initBleedView());
+		toDo.add(() -> initListener());
+		toDo.add(() -> applyLoadedProperties());
+		
+		double start = .75;
+		double end = .95;
+
+		for (int i = 0; i < toDo.size(); i++) {
+			Runnable r = toDo.get(i);
+			r.run();
+			FXMLMain.getInstance().setProgress(start + i / (double) toDo.size() * (end - start));
+		}
 
 		hideAllDebugModules();
 		createViewMenu();
@@ -281,7 +284,8 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 	}
 
 	public void refresh() {
-		ObservableList<Integer> selectedItems = FXCollections.observableArrayList(channelList.getSelectionModel().getSelectedIndices());
+		ObservableList<Integer> selectedItems = FXCollections
+				.observableArrayList(channelList.getSelectionModel().getSelectedIndices());
 		if (controller != null) {
 			refreshInputs();
 		}
@@ -517,24 +521,25 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 		channelList.setCellFactory(e -> new ChannelCell(this));
 		// channelList.setOnEditCommit(e ->
 		// timeKeeperController.setChannels(channelList.getItems()));
-		channelList.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
-			waveFormChart.setChannel((Channel) newValue);
-			if (newValue instanceof Channel) {
-				dataChart.setChannel((Channel) newValue);
-			}
-			if (newValue != null) {
-				LOG.debug("Switching to channel " + newValue.getName());
-				for (PausableView v : controllerMap.values()) {
-					v.setSelectedChannel(newValue);
-				}
-				if (newValue instanceof Channel) {
-					Channel channel = (Channel) newValue;
-					if (controller != null) {
-						controller.setActiveChannel(channel);
+		channelList.getSelectionModel().selectedItemProperty()
+				.addListener((ChangeListener<Input>) (observable, oldValue, newValue) -> {
+					waveFormChart.setChannel((Channel) newValue);
+					if (newValue instanceof Channel) {
+						dataChart.setChannel((Channel) newValue);
 					}
-				}
-			}
-		});
+					if (newValue != null) {
+						LOG.debug("Switching to channel " + newValue.getName());
+						for (PausableView v : controllerMap.values()) {
+							v.setSelectedChannel(newValue);
+						}
+						if (newValue instanceof Channel) {
+							Channel channel = (Channel) newValue;
+							if (controller != null) {
+								controller.setActiveChannel(channel);
+							}
+						}
+					}
+				});
 		// Edit channel list
 		channelList.setEditable(true);
 		toggleGroupChannels.selectedProperty().addListener((obs, oldV, newV) -> {
@@ -634,9 +639,13 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 
 	private void initMenu() {
 		// Fit buttons to size
-		toggleFFTView.widthProperty().addListener((e, oldV, newV) -> Platform.runLater(() -> minHeaderButtonWidth = FXMLUtil.setPrefWidthToMaximumRequired(toggleFFTView, toggleRTAView, toggleGroupsView, toggleDrumView, togglePhaseView, toggleBleedView)));
+		toggleFFTView.widthProperty()
+				.addListener((e, oldV, newV) -> Platform
+						.runLater(() -> minHeaderButtonWidth = FXMLUtil.setPrefWidthToMaximumRequired(toggleFFTView,
+								toggleRTAView, toggleGroupsView, toggleDrumView, togglePhaseView, toggleBleedView)));
 
-		toggleChannels.widthProperty().addListener((e, oldV, newV) -> Platform.runLater(() -> FXMLUtil.setPrefWidthToMaximumRequired(toggleChannels, toggleCue)));
+		toggleChannels.widthProperty().addListener((e, oldV, newV) -> Platform
+				.runLater(() -> FXMLUtil.setPrefWidthToMaximumRequired(toggleChannels, toggleCue)));
 
 		// Add Accelerator manually, makes working in the scen builder easier, because
 		// save still works
@@ -812,7 +821,8 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 			for (Channel channel : newChanneList) {
 				// if channel is not hidden, or showHidden, and if
 				// sterechannel isn't already added to list
-				if ((!channel.isHidden() || isShowHidden()) && (channel.getStereoChannel() == null || !channelList.getItems().contains(channel.getStereoChannel()))) {
+				if ((!channel.isHidden() || isShowHidden()) && (channel.getStereoChannel() == null
+						|| !channelList.getItems().contains(channel.getStereoChannel()))) {
 					channelList.getItems().add(channel);
 				}
 			}
@@ -927,7 +937,8 @@ public class MainController implements Initializable, Pausable, CueListener, Wat
 				return sum;
 			} else {
 				Region headerRegion = (Region) headerButton;
-				int minSize = Math.max(0, (int) Math.floor(Math.max(headerRegion.getPrefWidth(), headerRegion.getMinWidth())));
+				int minSize = Math.max(0,
+						(int) Math.floor(Math.max(headerRegion.getPrefWidth(), headerRegion.getMinWidth())));
 
 				int factor = (int) ((minSize / minHeaderButtonWidth) + 1);
 				double size = factor * minHeaderButtonWidth;
