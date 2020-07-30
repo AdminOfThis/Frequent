@@ -15,14 +15,18 @@ public class DriverInfo {
 	private int outputCount;
 	private int buffer;
 	private double sampleRate;
+	private boolean offline = false;
 
 	public DriverInfo(final AsioDriver driver) {
 
-		this(driver.getName(), driver.getNumChannelsInput(), driver.getNumChannelsOutput(), driver.getBufferPreferredSize(), driver.getAsioVersion(), driver.getLatencyInput(), driver.getLatencyOutput(), driver.getSampleRate(), driver.getVersion());
+		this(driver.getName(), driver.getNumChannelsInput(), driver.getNumChannelsOutput(),
+				driver.getBufferPreferredSize(), driver.getAsioVersion(), driver.getLatencyInput(),
+				driver.getLatencyOutput(), driver.getSampleRate(), driver.getVersion());
 
 	}
 
-	public DriverInfo(String name, int inCount, int outCount, int buff, int asioV, int latIn, int latOut, double sample, int vers) {
+	public DriverInfo(String name, int inCount, int outCount, int buff, int asioV, int latIn, int latOut, double sample,
+			int vers) {
 		driverName = name;
 		inputCount = inCount;
 		outputCount = outCount;
@@ -32,6 +36,11 @@ public class DriverInfo {
 		latencyOutput = latOut;
 		sampleRate = sample;
 		version = vers;
+	}
+
+	public DriverInfo(String name, boolean offline) {
+		driverName = name;
+		this.offline=offline;
 	}
 
 	public int getAsioVersion() {
@@ -68,6 +77,10 @@ public class DriverInfo {
 
 	public int getVersion() {
 		return version;
+	}
+
+	public boolean isOffline() {
+		return offline;
 	}
 
 }

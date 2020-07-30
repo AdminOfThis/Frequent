@@ -146,7 +146,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 	}
 
 	public static void loadPossibleDriver(String possibleDriver) {
-		System.out.println("LOADING " + possibleDriver);
 		AsioDriver tempDriver = null;
 		try {
 			tempDriver = AsioDriver.getDriver(possibleDriver);
@@ -158,7 +157,6 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				}
 				if (!driverList.contains(driverInfo)) {
 					driverList.add(driverInfo);
-					System.out.println("TREIBER  " + driverList.size());
 				}
 			}
 		} catch (Exception e) {

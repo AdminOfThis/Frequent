@@ -11,6 +11,8 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.synthbot.jasiohost.AsioDriver;
+
 import control.ASIOController;
 import data.DriverInfo;
 import gui.controller.MainController;
@@ -38,7 +40,7 @@ public class IOChooserController implements Initializable {
 	private static final Logger LOG = LogManager.getLogger(IOChooserController.class);
 
 	@FXML
-	private CheckBox errorReports;
+	private CheckBox errorReports, chkOfflineDrivers;
 	@FXML
 	private BorderPane root;
 	@FXML
@@ -46,7 +48,8 @@ public class IOChooserController implements Initializable {
 	@FXML
 	private Button btnStart, btnQuit;
 	@FXML
-	private Label lblDriverCount, lblName, lblVersion, lblASIOVersion, lblSampleRate, lblBuffer, lblLatencyIn, lblLatencyOut, lblInput, lblOutput;
+	private Label lblDriverCount, lblName, lblVersion, lblASIOVersion, lblSampleRate, lblBuffer, lblLatencyIn,
+			lblLatencyOut, lblInput, lblOutput;
 	private Scene mainScene;
 
 	@Override
@@ -60,13 +63,21 @@ public class IOChooserController implements Initializable {
 					setText("");
 				} else {
 					setText(info.getName());
+					
+					if(info.isOffline()) {
+						setOpacity(.5);
+					} else {
+						setOpacity(1);
+					}
+					setDisable(info.isOffline());
 				}
 			}
 		});
 
 		listIO.getSelectionModel().selectedItemProperty().addListener((e, oldV, info) -> {
 			if (info == null) {
-				for (Label tempLabel : new Label[] { lblName, lblVersion, lblASIOVersion, lblSampleRate, lblBuffer, lblLatencyIn, lblLatencyOut, lblInput, lblOutput }) {
+				for (Label tempLabel : new Label[] { lblName, lblVersion, lblASIOVersion, lblSampleRate, lblBuffer,
+						lblLatencyIn, lblLatencyOut, lblInput, lblOutput }) {
 					tempLabel.setText("");
 				}
 			} else {
@@ -219,5 +230,17 @@ public class IOChooserController implements Initializable {
 		}
 		LOG.info("Loading Main-Window with selected Driver \"" + selectedIO + "\"");
 		launchMain(selectedIO);
+	}
+
+	@FXML
+	private void chkOfflineDrivers(ActionEvent e) {
+		if(chkOfflineDrivers.isSelected()) {
+			listIO.getItems().clear();
+			for(String s : ASIOController.getRegisteredDrivers()) {
+				listIO.getItems().add(new DriverInfo(s,! ASIOController.getPossibleDriverStrings().contains(s)));
+			}
+		} else {
+			listIO.getItems().setAll(ASIOController.getPossibleDrivers());
+		}
 	}
 }

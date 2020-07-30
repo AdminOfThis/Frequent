@@ -71,8 +71,6 @@ public class FXMLMain extends MainGUI {
 		FXMLUtil.setStyleSheet(parent);
 		loginScene = new Scene(parent);
 		notifyPreloader(new StringProgressNotification(0.6, "Initializing"));
-		
-
 		mainScene = loadMain();
 		loginController.setMainScene(mainScene);
 		notifyPreloader(new StringProgressNotification(0.95, "Finished"));
@@ -86,6 +84,11 @@ public class FXMLMain extends MainGUI {
 			double progress = start + (((double) i) / number * (end - start));
 			ASIOController.loadPossibleDriver(possibleDriverName);
 			notifyPreloader(new StringProgressNotification(progress, "Loading " + possibleDriverName));
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

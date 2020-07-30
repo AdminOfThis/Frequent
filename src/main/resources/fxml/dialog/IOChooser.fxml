@@ -14,12 +14,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefWidth="250.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.dialog.IOChooserController">
+<BorderPane fx:id="root" prefWidth="500.0" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.dialog.IOChooserController">
    <bottom>
-      <HBox alignment="CENTER_RIGHT" maxHeight="200.0" spacing="5.0" BorderPane.alignment="CENTER">
+      <HBox alignment="BOTTOM_RIGHT" maxHeight="200.0" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <CheckBox fx:id="errorReports" mnemonicParsing="false" onAction="#errorReports" selected="true" text="%sendErrorReports" />
             <Pane HBox.hgrow="SOMETIMES" />
+            <CheckBox fx:id="errorReports" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#errorReports" selected="true" text="%sendErrorReports" />
           <Button fx:id="btnQuit" cancelButton="true" mnemonicParsing="false" prefWidth="75.0" text="%button.quit" />
             <Button fx:id="btnStart" defaultButton="true" mnemonicParsing="false" onAction="#start" prefWidth="75.0" text="%button.start" />
          </children>
@@ -28,10 +28,23 @@
          </padding>
       </HBox>
    </bottom>
-   <center>
-      <BorderPane BorderPane.alignment="CENTER">
-         <left>
-            <VBox alignment="TOP_CENTER" spacing="5.0" BorderPane.alignment="CENTER">
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+   <top>
+      <GridPane hgap="5.0" prefHeight="300.0" prefWidth="500.0" vgap="5.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" vgrow="NEVER" />
+          <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="NEVER" />
+            <RowConstraints vgrow="ALWAYS" />
+        </rowConstraints>
+         <children>
+            <VBox>
                <children>
                   <HBox>
                      <children>
@@ -46,12 +59,15 @@
                         </HBox>
                      </children>
                   </HBox>
+                  <HBox alignment="CENTER_LEFT" />
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" spacing="5.0" GridPane.rowIndex="1">
+               <children>
                   <ListView fx:id="listIO" fixedCellSize="30.0" minHeight="100.0" prefHeight="250.0" />
                </children>
             </VBox>
-         </left>
-         <right>
-            <GridPane hgap="20.0" vgap="5.0" BorderPane.alignment="CENTER">
+            <GridPane hgap="20.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
               <columnConstraints>
                 <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
@@ -139,14 +155,9 @@
                   <Label fx:id="lblASIOVersion" text="###" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <Separator GridPane.columnSpan="2" GridPane.rowIndex="3" />
                </children>
-               <BorderPane.margin>
-                  <Insets left="5.0" />
-               </BorderPane.margin>
             </GridPane>
-         </right>
-      </BorderPane>
-   </center>
-   <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-   </padding>
+            <CheckBox fx:id="chkOfflineDrivers" mnemonicParsing="false" onAction="#chkOfflineDrivers" text="%iochooser.showoffline" GridPane.rowIndex="2" />
+         </children>
+      </GridPane>
+   </top>
 </BorderPane>
