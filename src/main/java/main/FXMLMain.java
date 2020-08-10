@@ -138,8 +138,7 @@ public class FXMLMain extends MainGUI {
 		Platform.runLater(() -> {
 			InformationDialog dialog = new InformationDialog("Application is already running", true);
 			dialog.setText("Another instance of this application is already running");
-			dialog.setSubText(
-					"Please use the other instance,\r\nor terminate the other instance and launch the application again.");
+			dialog.setSubText("Please use the other instance,\r\nor terminate the other instance and launch the application again.");
 			dialog.show();
 			dialog.getDialogPane().getScene().getWindow().centerOnScreen();
 		});
@@ -203,7 +202,7 @@ public class FXMLMain extends MainGUI {
 	/**
 	 * Terminates the application. Should always be the last function called
 	 */
-	private void finish() {
+	public void finish() {
 		LOG.info("Stopping GUI");
 		Platform.exit();
 		LOG.info("Stopping AudioDriver");
@@ -262,8 +261,7 @@ public class FXMLMain extends MainGUI {
 				value = value.split(",")[0];
 			}
 
-			if (Objects.equals(Constants.WINDOW_OPEN.DEFAULT, Constants.WINDOW_OPEN.valueOf(value))
-					|| Objects.equals(Constants.WINDOW_OPEN.MAXIMIZED, Constants.WINDOW_OPEN.valueOf(value))) {
+			if (Objects.equals(Constants.WINDOW_OPEN.DEFAULT, Constants.WINDOW_OPEN.valueOf(value)) || Objects.equals(Constants.WINDOW_OPEN.MAXIMIZED, Constants.WINDOW_OPEN.valueOf(value))) {
 				if (stage.isMaximized()) {
 					value = Constants.WINDOW_OPEN.MAXIMIZED.toString();
 				} else {
@@ -272,9 +270,7 @@ public class FXMLMain extends MainGUI {
 				if (value != null && !value.isEmpty()) {
 					value += ",";
 				}
-				value = value += Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + ","
-						+ Math.round(stage.getX()) + "," + Math.round(stage.getY()) + ","
-						+ Boolean.toString(stage.isFullScreen());
+				value = value += Math.round(stage.getWidth()) + "," + Math.round(stage.getHeight()) + "," + Math.round(stage.getX()) + "," + Math.round(stage.getY()) + "," + Boolean.toString(stage.isFullScreen());
 				PropertiesIO.setProperty(Constants.SETTING_WINDOW_OPEN, value);
 			}
 		} catch (Exception e) {

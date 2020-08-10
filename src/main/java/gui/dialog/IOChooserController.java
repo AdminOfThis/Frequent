@@ -5,12 +5,12 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 
 import control.ASIOController;
 import data.DriverInfo;
@@ -47,8 +47,7 @@ public class IOChooserController implements Initializable {
 	@FXML
 	private Button btnStart, btnQuit;
 	@FXML
-	private Label lblDriverCount, lblName, lblVersion, lblASIOVersion, lblSampleRate, lblBuffer, lblLatencyIn,
-			lblLatencyOut, lblInput, lblOutput;
+	private Label lblDriverCount, lblName, lblVersion, lblASIOVersion, lblSampleRate, lblBuffer, lblLatencyIn, lblLatencyOut, lblInput, lblOutput;
 	private Scene mainScene;
 
 	@Override
@@ -62,8 +61,8 @@ public class IOChooserController implements Initializable {
 					setText("");
 				} else {
 					setText(info.getName());
-					
-					if(info.isOffline()) {
+
+					if (info.isOffline()) {
 						setOpacity(.5);
 					} else {
 						setOpacity(1);
@@ -75,8 +74,7 @@ public class IOChooserController implements Initializable {
 
 		listIO.getSelectionModel().selectedItemProperty().addListener((e, oldV, info) -> {
 			if (info == null) {
-				for (Label tempLabel : new Label[] { lblName, lblVersion, lblASIOVersion, lblSampleRate, lblBuffer,
-						lblLatencyIn, lblLatencyOut, lblInput, lblOutput }) {
+				for (Label tempLabel : new Label[] { lblName, lblVersion, lblASIOVersion, lblSampleRate, lblBuffer, lblLatencyIn, lblLatencyOut, lblInput, lblOutput }) {
 					tempLabel.setText("");
 				}
 			} else {
@@ -103,7 +101,7 @@ public class IOChooserController implements Initializable {
 		// Quit Button
 		btnQuit.setOnAction(e -> {
 			((Stage) root.getScene().getWindow()).close();
-			FXMLMain.getInstance().askForClose();
+			FXMLMain.getInstance().finish();
 		});
 		btnStart.disableProperty().bind(listIO.getSelectionModel().selectedItemProperty().isNull());
 
@@ -233,13 +231,27 @@ public class IOChooserController implements Initializable {
 
 	@FXML
 	private void chkOfflineDrivers(ActionEvent e) {
-		if(chkOfflineDrivers.isSelected()) {
+		if (chkOfflineDrivers.isSelected()) {
 			listIO.getItems().clear();
-			for(String s : ASIOController.getRegisteredDrivers()) {
-				listIO.getItems().add(new DriverInfo(s,! ASIOController.getPossibleDriverStrings().contains(s)));
+			for (String s : ASIOController.getRegisteredDrivers()) {
+				listIO.getItems().add(new DriverInfo(s, !ASIOController.getPossibleDriverStrings().contains(s)));
 			}
 		} else {
 			listIO.getItems().setAll(ASIOController.getPossibleDrivers());
 		}
+
+		listIO.getItems().sort(new Comparator<DriverInfo>() {
+
+			@Override
+			public int compare(DriverInfo o1, DriverInfo o2) {
+				if (o1.isOffline() && !o2.isOffline()) {
+					return 1;
+				} else if (o1.isOffline() && !o2.isOffline()) {
+					return -1;
+				}
+				return o1.getName().compareTo(o2.getName());
+			}
+
+		});
 	}
 }
