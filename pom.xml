@@ -344,6 +344,7 @@
 						<exclude>**/IOChooserTest.java</exclude>
 						<exclude>**/WindowPositionTest.java</exclude>
 						<exclude>**/ChannelListTest.java</exclude>
+						<exclude>**/MainTest.java</exclude>
 					</excludes>
 
 					<executions>
