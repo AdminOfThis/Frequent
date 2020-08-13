@@ -52,7 +52,7 @@ class IOChooserTest {
 	@Test
 	public void checkNumItems(FxRobot robot) throws InterruptedException {
 		ListView<?> list = robot.lookup("#listIO").queryAs(ListView.class);
-		assertEquals(ASIOController.getInstance().getPossibleDrivers().size(), list.getItems().size());
+		assertEquals(ASIOController.getPossibleDrivers().size()+1, list.getItems().size());
 	}
 
 	@Test
