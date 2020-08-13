@@ -1,6 +1,7 @@
 package control;
 
 import java.io.Serializable;
+import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -263,6 +264,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 									channel.read(output);
 								} catch (BufferUnderflowException e1) {
 									LOG.trace("Underflow Exception", e1);
+
+								} catch (BufferOverflowException e1) {
+									LOG.trace("Overflow Exception", e1);
 								}
 
 							}
@@ -519,7 +523,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				// start the driver
 				asioDriver.start();
 				// creating ThreadPool
-				int cores=4;
+				int cores = 4;
 				try {
 					cores = Runtime.getRuntime().availableProcessors();
 				} catch (Exception e) {
