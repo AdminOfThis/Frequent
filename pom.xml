@@ -336,7 +336,7 @@
 					<forkCount>1</forkCount>
 					<reuseForks>false</reuseForks>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
-					<argLine>-Dtestfx.headless=true -Djava.library.path=. -Djni.library.path=. ${surefireArgLine}</argLine>
+					<argLine>-Dtestfx.headless=true -Djava.library.path=./workdir -Djni.library.path=. ${surefireArgLine}</argLine>
 					<rerunFailingTestsCount>1</rerunFailingTestsCount>
 
 <!-- 					<excludes> -->
