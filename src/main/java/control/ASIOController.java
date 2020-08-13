@@ -284,7 +284,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 								}
 							}
 						} catch (Exception e2) {
-							e2.printStackTrace();
+							LOG.trace("Problem reading buffer", e2);
 						}
 					};
 					exe.submit(runnable);
