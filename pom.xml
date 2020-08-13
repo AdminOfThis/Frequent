@@ -343,6 +343,7 @@
 						<exclude>**/SettingControllerTest.java</exclude>
 						<exclude>**/IOChooserTest.java</exclude>
 						<exclude>**/WindowPositionTest.java</exclude>
+						<exclude>**/ChannelListTest.java</exclude>
 					</excludes>
 
 					<executions>
