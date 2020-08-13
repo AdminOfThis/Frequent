@@ -4,8 +4,6 @@ on: [push, pull_request]
 
 jobs:
   build:
-    env:
-     _JAVA_OPTIONS: "-Dtestfx.headless=true -Djava.library.path=. -Djni.library.path=."
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
