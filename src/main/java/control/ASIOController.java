@@ -262,7 +262,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 								try {
 									channel.read(output);
 								} catch (BufferUnderflowException e1) {
-									LOG.debug("Underflow Exception", e1);
+									LOG.trace("Underflow Exception", e1);
 								}
 
 							}
@@ -279,7 +279,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 									try {
 										c.setBuffer(output, samplePosition);
 									} catch (IndexOutOfBoundsException e) {
-										LOG.debug("Out of bounds while writing to channel", e);
+										LOG.trace("Out of bounds while writing to channel", e);
 									}
 								}
 							}
