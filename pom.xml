@@ -337,6 +337,11 @@
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<argLine>-Dtestfx.headless=true -Djava.library.path=. -Djni.library.path=. ${surefireArgLine}</argLine>
 					<rerunFailingTestsCount>1</rerunFailingTestsCount>
+
+					<excludes>
+						<exclude>**/SettingControllerTest.java</exclude>
+					</excludes>
+
 					<executions>
 						<execution>
 							<phase>test</phase>
