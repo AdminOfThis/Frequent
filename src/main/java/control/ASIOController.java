@@ -141,7 +141,9 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 		} catch (UnsatisfiedLinkError e) {
 			LOG.warn("The corresponding library jasiohost64.dll was not found");
 		}
-
+		if (driverList == null) {
+			driverList = new ArrayList<DriverInfo>();
+		}
 		return new ArrayList<>(driverList);
 	}
 
