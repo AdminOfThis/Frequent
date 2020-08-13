@@ -334,7 +334,7 @@
 				<configuration>
 					<printSummary>true</printSummary>
 					<reuseForks>false</reuseForks>
-					<argLine>-Djava.library.path=. -Djni.library.path=. ${surefireArgLine}</argLine>
+					<argLine>-Dtestfx.headless=true -Djava.library.path=. -Djni.library.path=. ${surefireArgLine}</argLine>
 					<workingDirectory>${project.basedir}/workdir</workingDirectory>
 					<rerunFailingTestsCount>1</rerunFailingTestsCount>
 					<executions>
