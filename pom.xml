@@ -342,6 +342,7 @@
 					<excludes>
 						<exclude>**/SettingControllerTest.java</exclude>
 						<exclude>**/IOChooserTest.java</exclude>
+						<exclude>**/WindowPositionTest.java</exclude>
 					</excludes>
 
 					<executions>
