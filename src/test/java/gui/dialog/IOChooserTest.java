@@ -34,6 +34,7 @@ class IOChooserTest {
 
 	@BeforeEach
 	public void before() throws Exception {
+
 		Stage stage = FxToolkit.registerPrimaryStage();
 		FxToolkit.setupApplication(FXMLMain.class);
 		do {
