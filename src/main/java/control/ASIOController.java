@@ -519,7 +519,13 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				// start the driver
 				asioDriver.start();
 				// creating ThreadPool
-				exe = new ThreadPoolExecutor(4, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS,
+				int cores=4;
+				try {
+					cores = Runtime.getRuntime().availableProcessors();
+				} catch (Exception e) {
+					LOG.warn("Unable to detect CPU cores0, e");
+				}
+				exe = new ThreadPoolExecutor(cores, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS,
 						new LinkedBlockingQueue<Runnable>());
 				LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs "
 						+ asioDriver.getNumChannelsOutput());
