@@ -26,7 +26,7 @@ class SettingControllerTest {
 
 	@BeforeAll
 	public static void load() {
-		Runtime.getRuntime().loadLibrary("./workdir/jasiohost64.dll");
+		Runtime.getRuntime().loadLibrary("jasiohost64");
 	}
 	
 	@BeforeEach
