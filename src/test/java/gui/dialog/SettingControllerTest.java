@@ -1,6 +1,7 @@
 package gui.dialog;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,11 @@ import main.Main;
 @Tag("gui")
 class SettingControllerTest {
 
+	@BeforeAll
+	public static void load() {
+		Runtime.getRuntime().loadLibrary("jasiohost64");
+	}
+	
 	@BeforeEach
 	public void before() throws Exception {
 		if (!Main.isInitialized()) {
