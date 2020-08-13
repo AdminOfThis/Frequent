@@ -340,6 +340,7 @@
 
 					<excludes>
 						<exclude>**/SettingControllerTest.java</exclude>
+						<exclude>**/IOChooserTest.java</exclude>
 					</excludes>
 
 					<executions>
