@@ -14,11 +14,7 @@ jobs:
       uses: actions/setup-java@v1.4.1
       with:
         java-version: '13'
-    - name: Run Maven (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: xvfb-run mvn clean compiler:compile compiler:testCompile initialize pre-integration-test validate surefire:test verify package --file pom.xml
     - name: Run Maven
-      if: matrix.os != 'ubuntu-latest'
       run: mvn clean compiler:compile compiler:testCompile initialize pre-integration-test validate surefire:test verify package --file pom.xml
     - name: Upload Coverage Files
       if: matrix.os == 'ubuntu-latest'
