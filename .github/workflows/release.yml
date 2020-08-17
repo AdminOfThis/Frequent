@@ -10,8 +10,6 @@ on:
 
 jobs:
   build_and_release:
-    env:
-      _JAVA_OPTIONS: "-Dtestfx.headless=true"
     runs-on: windows-latest
 
     steps:
