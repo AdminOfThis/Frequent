@@ -17,7 +17,6 @@ jobs:
     - name: Run Maven
       run: mvn clean compiler:compile compiler:testCompile initialize pre-integration-test validate surefire:test verify package --file pom.xml
     - name: Upload Coverage Files
-      if: matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v1.0.12
       with:
         token: ${{secrets.CODECOV_TOKEN}} #required
