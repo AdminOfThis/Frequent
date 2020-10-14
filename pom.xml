@@ -55,6 +55,13 @@
 			<version>3.1</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.13.3</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.rollbar/rollbar-log4j2 -->
 		<dependency>
 			<groupId>com.rollbar</groupId>
@@ -339,13 +346,13 @@
 					<argLine>-Dtestfx.headless=true -Djava.library.path=. -Djni.library.path=. ${surefireArgLine}</argLine>
 					<rerunFailingTestsCount>1</rerunFailingTestsCount>
 
-<!-- 					<excludes> -->
-<!-- 						<exclude>**/SettingControllerTest.java</exclude> -->
-<!-- 						<exclude>**/IOChooserTest.java</exclude> -->
-<!-- 						<exclude>**/WindowPositionTest.java</exclude> -->
-<!-- 						<exclude>**/ChannelListTest.java</exclude> -->
-<!-- 						<exclude>**/MainTest.java</exclude> -->
-<!-- 					</excludes> -->
+					<!-- <excludes> -->
+					<!-- <exclude>**/SettingControllerTest.java</exclude> -->
+					<!-- <exclude>**/IOChooserTest.java</exclude> -->
+					<!-- <exclude>**/WindowPositionTest.java</exclude> -->
+					<!-- <exclude>**/ChannelListTest.java</exclude> -->
+					<!-- <exclude>**/MainTest.java</exclude> -->
+					<!-- </excludes> -->
 
 					<executions>
 						<execution>
