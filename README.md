@@ -1,7 +1,6 @@
 # Frequent
 [![Latest Version](https://img.shields.io/github/v/release/AdminOfThis/Frequent?include_prereleases)](https://github.com/AdminOfThis/Frequent/releases)
-[![CodeFactor](https://www.codefactor.io/repository/github/adminofthis/frequent/badge)](https://www.codefactor.io/repository/github/adminofthis/frequent) [![Build Status](https://github.com/AdminOfThis/Frequent/workflows/Build/badge.svg)](https://github.com/AdminOfThis/Frequent/actions) [![Release Status](https://github.com/AdminOfThis/Frequent/workflows/Release/badge.svg)](https://github.com/AdminOfThis/Frequent/releases) [![Coverage](https://codecov.io/gh/AdminOfThis/Frequent/branch/master/graph/badge.svg)](https://codecov.io/gh/AdminOfThis/Frequent) [![License: MIT](https://img.shields.io/github/license/AdminOfThis/Frequent)](https://opensource.org/licenses/MIT) ![Mergify](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/AdminOfThis/Frequent)
-
+[![CodeFactor](https://www.codefactor.io/repository/github/adminofthis/frequent/badge)](https://www.codefactor.io/repository/github/adminofthis/frequent) [![Build Status](https://github.com/AdminOfThis/Frequent/workflows/Build/badge.svg)](https://github.com/AdminOfThis/Frequent/actions) [![Release Status](https://github.com/AdminOfThis/Frequent/workflows/Release/badge.svg)](https://github.com/AdminOfThis/Frequent/releases) [![Coverage](https://codecov.io/gh/AdminOfThis/Frequent/branch/master/graph/badge.svg)](https://codecov.io/gh/AdminOfThis/Frequent) [![License: MIT](https://img.shields.io/github/license/AdminOfThis/Frequent)](https://opensource.org/licenses/MIT)
 ## Description
 
 This is a lightweight audio analyzer, using the Steinberg ASIO protocol for spectrum analysis of a multichannel audio-stream.
