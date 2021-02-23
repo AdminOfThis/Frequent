@@ -1,9 +1,6 @@
 [submodule "util"]
 	path = util
 	url = https://github.com/AdminOfThis/Util
-[submodule "javaVersionChecker"]
-	path = javaVersionChecker
-	url = https://github.com/AdminOfThis/JavaVersionChecker
 [submodule "jasiohost"]
 	path = jasiohost
 	url = https://github.com/wind-season/jasiohost
