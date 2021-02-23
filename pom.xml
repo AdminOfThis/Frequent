@@ -268,29 +268,6 @@
 							<outputFile>${project.build.directory}/dependencies.txt</outputFile>
 						</configuration>
 					</execution>
-					<execution>
-						<id>copy</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>com.github.adminofthis</groupId>
-									<artifactId>javaVersionChecker</artifactId>
-									<version>0.0.3</version>
-									<type>jar</type>
-									<overWrite>false</overWrite>
-									<outputDirectory>${project.build.directory}</outputDirectory>
-									<destFileName>javaVersionChecker.jar</destFileName>
-								</artifactItem>
-							</artifactItems>
-							<outputDirectory>${project.build.directory}/wars</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>true</overWriteSnapshots>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 
