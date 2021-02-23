@@ -1,6 +1,6 @@
 # Frequent
 [![Latest Version](https://img.shields.io/github/v/release/AdminOfThis/Frequent?include_prereleases)](https://github.com/AdminOfThis/Frequent/releases)
-[![CodeFactor](https://www.codefactor.io/repository/github/adminofthis/frequent/badge)](https://www.codefactor.io/repository/github/adminofthis/frequent) [![Build Status](https://github.com/AdminOfThis/Frequent/workflows/Build/badge.svg)](https://github.com/AdminOfThis/Frequent/actions) [![Release Status](https://github.com/AdminOfThis/Frequent/workflows/Release/badge.svg)](https://github.com/AdminOfThis/Frequent/releases) [![Coverage](https://codecov.io/gh/AdminOfThis/Frequent/branch/master/graph/badge.svg)](https://codecov.io/gh/AdminOfThis/Frequent) [![License: MIT](https://img.shields.io/github/license/AdminOfThis/Frequent)](https://opensource.org/licenses/MIT) ![Mergify](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/AdminOfThis/Frequent) [![Known Vulnerabilities](https://snyk.io/test/github/AdminOfThis/Frequent/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/AdminOfThis/Frequent?targetFile=pom.xml)
+[![CodeFactor](https://www.codefactor.io/repository/github/adminofthis/frequent/badge)](https://www.codefactor.io/repository/github/adminofthis/frequent) [![Build Status](https://github.com/AdminOfThis/Frequent/workflows/Build/badge.svg)](https://github.com/AdminOfThis/Frequent/actions) [![Release Status](https://github.com/AdminOfThis/Frequent/workflows/Release/badge.svg)](https://github.com/AdminOfThis/Frequent/releases) [![Coverage](https://codecov.io/gh/AdminOfThis/Frequent/branch/master/graph/badge.svg)](https://codecov.io/gh/AdminOfThis/Frequent) [![License: MIT](https://img.shields.io/github/license/AdminOfThis/Frequent)](https://opensource.org/licenses/MIT) ![Mergify](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/AdminOfThis/Frequent)
 
 ## Description
 
@@ -29,11 +29,10 @@ Since the project mainly depends on the *jasiohost* library, which in turn uses 
  - **Rollbar** for realtime Exception and Error logging, helps for debugging https://rollbar.com
 
 ### Build
-The whole project is built with Maven. It currently contains two submodules, and the main project. The submodules are:
+The whole project is built with Maven. It currently contains one submodule, and the main project. The submodule is:
 
  - **Util** A generic library which contains convenience methods for writing/loading properties, handling JavaFX problems, initializing Logging and much more.
- - **JavaVersionChecker** A simple mini project which checks the installed Java Version against a minimum requirement, to see if the programm can even start. Sits in an extra project, because it gets compiled for Java 1.7 to show an Error Message if neccessary.
- 
+  
 After the main project is checked out, it is required to initialize and update the submodules with `git submodule --init` and `git submodule update --remote`.
 
 Since the root project contains most of the source code, but root maven projects must be packaged as `pom`, it requires another set of commands to compile it into a `jar` with the help of several Maven plugins.
