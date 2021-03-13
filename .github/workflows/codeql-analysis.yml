@@ -18,13 +18,12 @@ on:
     # The branches below must be a subset of the branches above
     branches: [ master ]
   schedule:
+  # At 12:42PM every Monday
     - cron: '42 12 * * 1'
 
 jobs:
   analyze:
-    name: Analyze
     runs-on: windows-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
