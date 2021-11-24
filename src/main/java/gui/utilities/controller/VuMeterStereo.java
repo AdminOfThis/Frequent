@@ -52,7 +52,7 @@ public class VuMeterStereo extends VuMeter {
 	@Override
 	public void setChannel(Input c) {
 		meter1.setChannel(c);
-		if (((Channel) c).getStereoChannel() != null) {
+		if (c != null &&((Channel) c).getStereoChannel() != null) {
 			meter2.setChannel(((Channel) c).getStereoChannel());
 		}
 	}

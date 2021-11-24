@@ -7,10 +7,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.adminofthis.util.gui.FXMLUtil;
+
 import control.ASIOController;
 import control.FFT;
 import data.Channel;
-import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import javafx.scene.canvas.Canvas;

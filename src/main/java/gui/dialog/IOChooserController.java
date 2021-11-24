@@ -12,6 +12,8 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.adminofthis.util.preferences.PropertiesIO;
+
 import control.ASIOController;
 import data.DriverInfo;
 import gui.controller.MainController;
@@ -32,7 +34,6 @@ import main.Constants;
 import main.Constants.WINDOW_OPEN;
 import main.FXMLMain;
 import main.Main;
-import preferences.PropertiesIO;
 
 public class IOChooserController implements Initializable {
 

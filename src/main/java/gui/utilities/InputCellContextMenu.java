@@ -10,7 +10,7 @@ import control.Watchdog;
 import data.ColorController;
 import data.ColorEntry;
 import data.Input;
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
 import gui.controller.MainController;
 import gui.dialog.ColorManager;
 import gui.dialog.TextInputDialog;

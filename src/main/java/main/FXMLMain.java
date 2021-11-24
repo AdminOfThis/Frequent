@@ -11,8 +11,11 @@ import org.apache.logging.log4j.Logger;
 import control.ASIOController;
 import data.FileIO;
 import data.util.StringProgressNotification;
-import gui.FXMLUtil;
-import gui.MainGUI;
+
+import com.github.adminofthis.util.gui.FXMLUtil;
+import com.github.adminofthis.util.gui.MainGUI;
+import com.github.adminofthis.util.preferences.PropertiesIO;
+
 import gui.controller.MainController;
 import gui.dialog.ConfirmationDialog;
 import gui.dialog.IOChooserController;
@@ -27,7 +30,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import main.Constants.WINDOW_OPEN;
-import preferences.PropertiesIO;
 
 /**
  * 

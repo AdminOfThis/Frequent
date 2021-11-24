@@ -503,8 +503,7 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				FXMLMain.getInstance().askForClose();
 			}
 
-			else if (asioDriver.getCurrentState() == AsioDriverState.LOADED
-					|| asioDriver.getCurrentState() == AsioDriverState.INITIALIZED) {
+			else if (asioDriver.getCurrentState() == AsioDriverState.LOADED || asioDriver.getCurrentState() == AsioDriverState.INITIALIZED) {
 				asioDriver.addAsioDriverListener(this);
 
 				// create a Set of AsioChannels, defining which input and output
@@ -529,10 +528,16 @@ public class ASIOController implements AsioDriverListener, DataHolder<Input>, Ch
 				} catch (Exception e) {
 					LOG.warn("Unable to detect CPU cores0, e");
 				}
-				exe = new ThreadPoolExecutor(cores, activeChannels.size() * 2, 500, TimeUnit.MILLISECONDS,
-						new LinkedBlockingQueue<Runnable>());
-				LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs "
-						+ asioDriver.getNumChannelsOutput());
+				if (exe != null) {
+					try {
+						exe.awaitTermination(500, TimeUnit.MILLISECONDS);
+					} catch (InterruptedException e) {
+						LOG.warn("Unable to terminate executor", e);
+					}
+				}
+				int numChannels = activeChannels.size();
+				exe = new ThreadPoolExecutor(Math.min(cores, numChannels*2), numChannels * 2, 500, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+				LOG.info("Inputs " + asioDriver.getNumChannelsInput() + ", Outputs " + asioDriver.getNumChannelsOutput());
 				LOG.info("Buffer size: " + bufferSize);
 				LOG.info("Samplerate: " + sampleRate);
 			}

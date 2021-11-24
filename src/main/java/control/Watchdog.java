@@ -15,10 +15,11 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.adminofthis.util.preferences.PropertiesIO;
+
 import data.Channel;
 import data.Input;
 import main.Constants;
-import preferences.PropertiesIO;
 
 public class Watchdog implements InputListener {
 

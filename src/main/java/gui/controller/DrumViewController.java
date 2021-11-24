@@ -16,7 +16,7 @@ import control.ASIOController;
 import control.bpmdetect.BeatDetector;
 import data.DrumTrigger;
 import data.Input;
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
 import gui.pausable.PausableView;
 import gui.utilities.DrumTriggerListener;
 import gui.utilities.controller.DrumTriggerItem;

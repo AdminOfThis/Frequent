@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import data.ColorController;
 import data.ColorEntry;
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

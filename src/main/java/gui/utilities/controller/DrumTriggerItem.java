@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 import control.ASIOController;
 import data.Channel;
 import data.DrumTrigger;
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.utilities.AutoCompleteComboBoxListener;

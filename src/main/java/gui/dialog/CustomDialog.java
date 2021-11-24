@@ -1,6 +1,6 @@
 package gui.dialog;
 
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
 import gui.controller.MainController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

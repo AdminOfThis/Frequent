@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import data.Channel;
 import data.Group;
 import data.Input;
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.utilities.ChannelCellContextMenu;
 import gui.utilities.GroupCellContextMenu;

@@ -6,8 +6,9 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.adminofthis.util.gui.FXMLUtil;
+
 import data.util.StringProgressNotification;
-import gui.FXMLUtil;
 import javafx.application.Preloader;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

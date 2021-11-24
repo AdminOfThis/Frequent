@@ -14,7 +14,7 @@ import control.ChannelListener;
 import control.FFT;
 import data.Channel;
 import data.Input;
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import javafx.animation.AnimationTimer;

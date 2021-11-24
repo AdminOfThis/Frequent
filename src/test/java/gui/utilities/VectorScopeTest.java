@@ -15,8 +15,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.github.adminofthis.util.gui.FXMLUtil;
+
 import data.Channel;
-import gui.FXMLUtil;
 import gui.utilities.controller.VectorScope;
 import javafx.application.Application;
 import javafx.application.Platform;

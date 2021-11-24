@@ -10,7 +10,8 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationExtension;
 
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
+
 import gui.controller.SettingsController;
 import javafx.scene.Node;
 import javafx.scene.Parent;

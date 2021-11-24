@@ -15,6 +15,9 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.adminofthis.util.gui.FXMLUtil;
+import com.github.adminofthis.util.preferences.PropertiesIO;
+
 import control.ASIOController;
 import control.CueListener;
 import control.FFTListener;
@@ -27,7 +30,6 @@ import data.Cue;
 import data.FileIO;
 import data.Group;
 import data.Input;
-import gui.FXMLUtil;
 import gui.dialog.AboutController;
 import gui.dialog.InformationDialog;
 import gui.pausable.Pausable;
@@ -81,7 +83,6 @@ import main.Constants;
 import main.Constants.RESTORE_PANEL;
 import main.FXMLMain;
 import main.Main;
-import preferences.PropertiesIO;
 
 public class MainController implements Initializable, Pausable, CueListener, WatchdogListener {
 

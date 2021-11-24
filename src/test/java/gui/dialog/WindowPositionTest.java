@@ -14,6 +14,8 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationExtension;
 
+import com.github.adminofthis.util.preferences.PropertiesIO;
+
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
@@ -22,7 +24,6 @@ import main.Constants;
 import main.Constants.WINDOW_OPEN;
 import main.FXMLMain;
 import main.Main;
-import preferences.PropertiesIO;
 
 @ExtendWith(ApplicationExtension.class)
 @Tag("gui")

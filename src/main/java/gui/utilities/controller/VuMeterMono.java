@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import com.github.adminofthis.util.gui.FXMLUtil;
+import com.github.adminofthis.util.preferences.PropertiesIO;
+
 import control.InputListener;
 import data.Channel;
 import data.Input;
-import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
@@ -27,7 +29,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import main.Constants;
-import preferences.PropertiesIO;
 
 /**
  * 

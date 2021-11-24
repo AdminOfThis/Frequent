@@ -17,7 +17,7 @@ import control.InputListener;
 import data.Channel;
 import data.Group;
 import data.Input;
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
 import gui.pausable.PausableView;
 import gui.utilities.controller.VuMeterMono;
 import javafx.animation.AnimationTimer;

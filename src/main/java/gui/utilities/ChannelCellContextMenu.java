@@ -10,7 +10,7 @@ import control.ASIOController;
 import data.Channel;
 import data.Group;
 import data.Input;
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
 import gui.controller.MainController;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.CheckMenuItem;

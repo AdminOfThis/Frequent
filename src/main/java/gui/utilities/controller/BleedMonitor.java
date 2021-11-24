@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import control.ASIOController;
 import control.BleedAnalyzer;
 import data.Channel;
-import gui.FXMLUtil;
+import com.github.adminofthis.util.gui.FXMLUtil;
 import gui.controller.BleedViewController;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;

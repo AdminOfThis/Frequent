@@ -8,9 +8,11 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.adminofthis.util.gui.FXMLUtil;
+import com.github.adminofthis.util.preferences.PropertiesIO;
+
 import control.ASIOController;
 import control.Watchdog;
-import gui.FXMLUtil;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -43,7 +45,6 @@ import main.Constants;
 import main.Constants.RESTORE_PANEL;
 import main.Constants.WINDOW_OPEN;
 import main.Main;
-import preferences.PropertiesIO;
 
 /**
  * 
@@ -51,7 +52,7 @@ import preferences.PropertiesIO;
  *
  */
 public class SettingsController extends AnchorPane implements Initializable {
-
+	
 	private static final String FXML_PATH = "/fxml/Settings.fxml";
 	private static final Logger LOG = LogManager.getLogger(SettingsController.class);
 
@@ -136,7 +137,11 @@ public class SettingsController extends AnchorPane implements Initializable {
 
 			@Override
 			public String toString(Locale object) {
-				return object.getDisplayLanguage();
+				String result="";
+				if(object !=null) {
+					result = object.getDisplayLanguage();
+				}
+				return result;
 			}
 
 			@Override
@@ -287,6 +292,8 @@ public class SettingsController extends AnchorPane implements Initializable {
 			}
 		};
 		new Thread(loadLanguages).start();
+		
+		//loadLanguages.run();
 	}
 
 	private void loadValues() {

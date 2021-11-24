@@ -12,11 +12,12 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.github.adminofthis.util.gui.FXMLUtil;
+
 import control.ASIOController;
 import control.InputListener;
 import data.Channel;
 import data.Input;
-import gui.FXMLUtil;
 import gui.pausable.Pausable;
 import gui.pausable.PausableComponent;
 import gui.utilities.NegativeAreaChart;
