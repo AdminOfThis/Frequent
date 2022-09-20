@@ -20,7 +20,7 @@ jobs:
     - name: Run Maven
       run: mvn clean compiler:compile compiler:testCompile initialize pre-integration-test validate surefire:test verify package --file pom.xml
     - name: Upload Coverage Files
-      uses: codecov/codecov-action@v2.1.0
+      uses: codecov/codecov-action@v3.1.1
       with:
         token: ${{secrets.CODECOV_TOKEN}} #required
         file: ./target/site/jacoco/jacoco.xml #optional
